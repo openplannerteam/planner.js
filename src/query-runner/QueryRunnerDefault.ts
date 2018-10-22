@@ -1,11 +1,11 @@
-import IQueryRunner from "./IQueryRunner";
 import { inject, injectable } from "inversify";
-import TYPES from "../types";
+import IJourney from "../planner/IJourney";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
+import IRoadPlanner from "../planner/road/IRoadPlanner";
+import TYPES from "../types";
 import IQuery from "./IQuery";
 import IQueryResult from "./IQueryResult";
-import IRoadPlanner from "../planner/road/IRoadPlanner";
-import IJourney from "../planner/IJourney";
+import IQueryRunner from "./IQueryRunner";
 
 @injectable()
 export default class QueryRunnerDefault implements IQueryRunner {
@@ -20,7 +20,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
     this.roadPlanner = roadPlanner;
   }
 
-  async run(query: IQuery): Promise<IQueryResult> {
+  public async run(query: IQuery): Promise<IQueryResult> {
     const result: IJourney[] = await this.roadPlanner.plan(query);
     const firstJourney = result[0];
 
