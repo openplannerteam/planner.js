@@ -13,7 +13,7 @@ import QueryRunnerDefault from "./query-runner/QueryRunnerDefault";
 import TYPES from "./types";
 
 const container = new Container();
-container.bind<Context>(TYPES.Context).to(Context);
+container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner).to(PublicTransportPlannerCSAProfile);
 container.bind<IRoadPlanner>(TYPES.RoadPlanner).to(RoadPlannerBirdsEye);

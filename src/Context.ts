@@ -2,7 +2,6 @@ import { Container, injectable } from "inversify";
 
 @injectable()
 export default class Context {
-  private value: string;
   private container: Container;
 
   public setContainer(container: Container) {
@@ -10,14 +9,6 @@ export default class Context {
   }
 
   public getContainer() {
-    this.container;
-  }
-
-  public setTest(value) {
-    this.value = value;
-  }
-
-  public getTest() {
-    return this.value;
+    return this.container;
   }
 }
