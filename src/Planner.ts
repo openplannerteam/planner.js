@@ -17,7 +17,7 @@ export default class Planner {
     this.context.setContainer(container);
   }
 
-  query(query: IQuery): IQueryResult {
+  async query(query: IQuery): Promise<IQueryResult> {
     return this.queryRunner.run(query);
   }
 }

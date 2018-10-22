@@ -3,5 +3,5 @@ import IQueryResult from "./IQueryResult";
 
 export default interface IQueryRunner {
 
-  run(query: IQuery): IQueryResult;
+  run(query: IQuery): Promise<IQueryResult>;
 }

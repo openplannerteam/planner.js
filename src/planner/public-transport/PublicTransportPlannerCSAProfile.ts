@@ -5,6 +5,6 @@ import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 @injectable()
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
-  plan: () => [IJourney];
+  plan: () => Promise<IJourney[]>;
 
 }
