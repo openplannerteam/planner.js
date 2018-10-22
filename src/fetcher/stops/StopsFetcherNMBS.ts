@@ -1,44 +1,41 @@
-import IStopsFetcher from "./IStopsFetcher";
-import IStop from "./IStop";
 import { injectable } from "inversify";
+import IStop from "./IStop";
+import IStopsFetcher from "./IStopsFetcher";
 
 const IRAIL_STATIONS_URL = "https://api.irail.be/stations/?format=json";
 
-interface StopMap {
-  [stopId: string]: IStop
+interface IStopMap {
+  [stopId: string]: IStop;
 }
 
 @injectable()
 export default class StopsFetcherNMBS implements IStopsFetcher {
-  private _loadPromise: Promise<any>;
-  private stops: StopMap;
+  private loadPromise: Promise<any>;
+  private stops: IStopMap;
 
   constructor() {
     this.loadStops();
   }
 
-  loadStops() {
-    this._loadPromise = fetch(IRAIL_STATIONS_URL)
+  public loadStops() {
+    this.loadPromise = fetch(IRAIL_STATIONS_URL)
       .then((response: Response) => response.json())
       .then(({station: stations}) => {
-        this.stops = stations.reduce((accu: StopMap, stop: IStop) => {
+
+        this.stops = stations.reduce((accu: IStopMap, stop: IStop) => {
           accu[stop["@id"]] = stop;
-          return stop;
+          return accu;
         }, {});
 
-        console.log('Loaded stations');
-        this._loadPromise = null;
+        this.loadPromise = null;
       });
   }
 
-  async getStopById(stopId: string) {
-    if(this._loadPromise) {
-      await this._loadPromise;
+  public async getStopById(stopId: string): Promise<IStop> {
+    if (this.loadPromise) {
+      await this.loadPromise;
     }
 
-    return new Promise<IStop>((resolve, reject) => {
-      resolve({ "@id": "hey", name: "Kortrijk", locationX: 0, locationY: 52 });
-    });
+    return this.stops[stopId];
   }
-};
-
+}

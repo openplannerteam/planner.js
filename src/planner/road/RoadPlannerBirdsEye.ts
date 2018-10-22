@@ -1,21 +1,19 @@
-import IJourney from "../IJourney";
 import { inject, injectable } from "inversify";
-import IRoadPlanner from "./IRoadPlanner";
-import TYPES from "../../types";
 import IStopsFetcher from "../../fetcher/stops/IStopsFetcher";
-
+import IQuery from "../../query-runner/IQuery";
+import TYPES from "../../types";
+import IJourney from "../IJourney";
+import IRoadPlanner from "./IRoadPlanner";
 
 @injectable()
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
   private stopsFetcher: IStopsFetcher;
 
-  constructor(
-    @inject(TYPES.StopsFetcher) stopsFetcher: IStopsFetcher
-  ) {
+  constructor(@inject(TYPES.StopsFetcher) stopsFetcher: IStopsFetcher) {
     this.stopsFetcher = stopsFetcher;
   }
 
-  async plan(): Promise<IJourney[]> {
-    return [{distance: 50}];
+  public async plan(query: IQuery): Promise<IJourney[]> {
+    return [{ distance: 50 }];
   }
 }

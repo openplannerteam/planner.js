@@ -1,3 +1,3 @@
 export default interface IQueryResult {
-  result: number,
+  result: number;
 }

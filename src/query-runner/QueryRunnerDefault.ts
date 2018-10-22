@@ -21,7 +21,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
   }
 
   async run(query: IQuery): Promise<IQueryResult> {
-    const result: IJourney[] = await this.roadPlanner.plan();
+    const result: IJourney[] = await this.roadPlanner.plan(query);
     const firstJourney = result[0];
 
     return Promise.resolve({result: firstJourney.distance});

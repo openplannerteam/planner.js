@@ -1,10 +1,9 @@
-import TYPES from "./types";
 import Context from "./Context";
-import IQueryRunner from "./query-runner/IQueryRunner";
-import IQuery from "./query-runner/IQuery";
 import defaultContainer from "./inversify.config";
+import IQuery from "./query-runner/IQuery";
 import IQueryResult from "./query-runner/IQueryResult";
-
+import IQueryRunner from "./query-runner/IQueryRunner";
+import TYPES from "./types";
 
 export default class Planner {
   private context: Context;
@@ -17,7 +16,7 @@ export default class Planner {
     this.context.setContainer(container);
   }
 
-  async query(query: IQuery): Promise<IQueryResult> {
+  public async query(query: IQuery): Promise<IQueryResult> {
     return this.queryRunner.run(query);
   }
 }

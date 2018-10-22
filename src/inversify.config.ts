@@ -1,17 +1,16 @@
 import { Container } from "inversify";
-import ConnectionsFetcherLDFetch from "./fetcher/connections/ConnectionsFetcherLDFetch";
-import TYPES from "./types";
-import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
-import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
-import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
-import IRoadPlanner from "./planner/road/IRoadPlanner";
-import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import Context from "./Context";
-import IQueryRunner from "./query-runner/IQueryRunner";
-import QueryRunnerDefault from "./query-runner/QueryRunnerDefault";
+import ConnectionsFetcherLDFetch from "./fetcher/connections/ConnectionsFetcherLDFetch";
+import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import StopsFetcherNMBS from "./fetcher/stops/StopsFetcherNMBS";
-
+import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
+import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
+import IRoadPlanner from "./planner/road/IRoadPlanner";
+import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
+import IQueryRunner from "./query-runner/IQueryRunner";
+import QueryRunnerDefault from "./query-runner/QueryRunnerDefault";
+import TYPES from "./types";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context);

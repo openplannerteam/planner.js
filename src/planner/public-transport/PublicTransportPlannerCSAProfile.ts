@@ -1,10 +1,9 @@
-import IJourney from "../IJourney";
 import { injectable } from "inversify";
+import IJourney from "../IJourney";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
-
 
 @injectable()
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
-  plan: () => Promise<IJourney[]>;
+  public plan: () => Promise<IJourney[]>;
 
 }

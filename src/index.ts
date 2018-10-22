@@ -1,5 +1,5 @@
-import "reflect-metadata";
 import "isomorphic-fetch";
+import "reflect-metadata";
 import Planner from "./Planner";
 
 const planner = new Planner();
@@ -8,7 +8,7 @@ const planner = new Planner();
 
   const result = await planner.query({
     from: "Bissegem",
-    to: "Harelbeke"
+    to: "Harelbeke",
   });
   console.log(result);
 

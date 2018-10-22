@@ -1,6 +1,6 @@
 export default interface IStop {
-  '@id': string,
-  name: string,
-  locationX: number,
-  locationY: number,
+  "@id": string;
+  name: string;
+  locationX: number;
+  locationY: number;
 }
