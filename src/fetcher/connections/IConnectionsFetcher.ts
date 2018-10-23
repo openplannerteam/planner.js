@@ -1,4 +1,3 @@
-import { AsyncIterator } from "asynciterator";
 import IConnection from "./IConnection";
 
 export default interface IConnectionsFetcher {

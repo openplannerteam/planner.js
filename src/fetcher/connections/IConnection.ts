@@ -9,5 +9,5 @@ export default interface IConnection {
   departureStop: string;
   departureDelay: number;
 
-  trip: string;
+  "gtfs:trip": string;
 }

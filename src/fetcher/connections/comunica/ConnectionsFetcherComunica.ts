@@ -1,4 +1,3 @@
-import { AsyncIterator } from "asynciterator";
 import { injectable } from "inversify";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";

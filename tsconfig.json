@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["es2017", "dom"],
+    "lib": ["esnext", "dom"],
     "types": ["reflect-metadata"],
     "module": "commonjs",
     "moduleResolution": "node",
