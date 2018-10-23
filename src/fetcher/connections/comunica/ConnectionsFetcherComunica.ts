@@ -6,4 +6,8 @@ import IConnectionsFetcher from "../IConnectionsFetcher";
 export default class ConnectionsFetcherComunica implements IConnectionsFetcher {
   public fetch: () => AsyncIterator<IConnection>;
 
+  public [Symbol.asyncIterator](): AsyncIterator<IConnection> {
+    return undefined;
+  }
+
 }

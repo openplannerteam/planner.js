@@ -7,7 +7,7 @@ import ConnectionsIteratorLDFetch from "./ConnectionsIteratorLDFetch";
 const IRAIL_CONNECTIONS_BASE_URL = "https://graph.irail.be/sncb/connections";
 
 @injectable()
-export default class ConnectionsFetcherLDFetch implements IConnectionsFetcher, AsyncIterable<IConnection> {
+export default class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
 
   private readonly ldFetch: LdFetch;
 
