@@ -1,19 +1,14 @@
-import LdFetch from "ldfetch";
-import ConnectionsIteratorLDFetch from "../fetcher/connections/ld-fetch/ConnectionsIteratorLDFetch";
+import "reflect-metadata";
+import ConnectionsFetcherLDFetch from "../fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 
-const config = { backward: false };
-const iterator = new ConnectionsIteratorLDFetch("https://graph.irail.be/sncb/connections", new LdFetch(), config);
-iterator.setLowerBound(new Date(2018, 10, 2, 10));
-
-const dummyIterable = {
-  [Symbol.asyncIterator]: () => iterator,
-};
+const fetcher = new ConnectionsFetcherLDFetch();
+// iterator.setLowerBound(new Date(2018, 10, 2, 10));
 
 (async () => {
 
   let i = 0;
 
-  for await (const connection of dummyIterable) {
+  for await (const connection of fetcher) {
     console.log(i++, connection.departureTime);
 
     if (i === 500) {
