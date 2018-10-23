@@ -1,6 +1,6 @@
 import { Container } from "inversify";
 import Context from "./Context";
-import ConnectionsFetcherLDFetch from "./fetcher/connections/ConnectionsFetcherLDFetch";
+import ConnectionsFetcherLDFetch from "./fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import StopsFetcherNMBS from "./fetcher/stops/StopsFetcherNMBS";
