@@ -9,7 +9,7 @@ interface IStopMap {
 }
 
 @injectable()
-export default class StopsFetcherNMBS implements IStopsFetcher {
+export default class StopsFetcherNMBSJSON implements IStopsFetcher {
   private loadPromise: Promise<any>;
   private stops: IStopMap;
 
@@ -22,8 +22,10 @@ export default class StopsFetcherNMBS implements IStopsFetcher {
       .then((response: Response) => response.json())
       .then(({station: stations}) => {
 
-        this.stops = stations.reduce((accu: IStopMap, stop: IStop) => {
-          accu[stop["@id"]] = stop;
+        this.stops = stations.reduce((accu: IStopMap, stop) => {
+          stop.latitude = stop.locationY;
+          stop.longitude = stop.locationX;
+          accu[stop["@id"]] = stop as IStop;
           return accu;
         }, {});
 

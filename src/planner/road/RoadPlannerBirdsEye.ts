@@ -1,5 +1,6 @@
 import haversine from "haversine";
 import { inject, injectable } from "inversify";
+import IStop from "../../fetcher/stops/IStop";
 import IStopsFetcher from "../../fetcher/stops/IStopsFetcher";
 import IQuery from "../../query-runner/IQuery";
 import TYPES from "../../types";
@@ -29,9 +30,9 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
     return [{ distance: Number.POSITIVE_INFINITY }];
   }
 
-  private getDistanceBetweenStops(departureStop, arrivalStop): number {
-    const { locationX: depLongitude, locationY: depLatitude } = departureStop;
-    const { locationX: arrLongitude, locationY: arrLatitude } = arrivalStop;
+  private getDistanceBetweenStops(departureStop: IStop, arrivalStop: IStop): number {
+    const { longitude: depLongitude, latitude: depLatitude } = departureStop;
+    const { longitude: arrLongitude, latitude: arrLatitude } = arrivalStop;
 
     return haversine({
       latitude: depLatitude,

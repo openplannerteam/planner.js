@@ -23,4 +23,12 @@ const transformPredicate = (transformMap: {[oldPredicate: string]: string}, trip
   return triple;
 };
 
-export {matchesTriple, transformPredicate};
+const logTripleTable = (triples: Triple[]) => {
+  console.table(triples.map((triple: Triple) => ({
+    subject: triple.subject.value,
+    predicate: triple.predicate.value,
+    object: triple.object.value,
+  })));
+};
+
+export {matchesTriple, transformPredicate, logTripleTable};
