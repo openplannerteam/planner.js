@@ -4,6 +4,7 @@ import { Triple } from "rdf-js";
 import UriTemplate from "uritemplate";
 import { matchesTriple, transformPredicate } from "../../helpers";
 import IConnection from "../IConnection";
+import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 
 interface IEntity {
 }
@@ -19,12 +20,12 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
   private connections: IConnection[];
   private upperBoundDate: Date = new Date();
   private lowerBoundDate: Date = new Date();
-  private config: { backward: boolean };
+  private config: IConnectionsFetcherConfig;
 
   private previousPageIri: string;
   private nextPageIri: string;
 
-  constructor(baseUrl: string, ldFetch: LdFetch, config: { backward: boolean } = { backward: true }) {
+  constructor(baseUrl: string, ldFetch: LdFetch, config: IConnectionsFetcherConfig = { backward: true }) {
     this.baseUrl = baseUrl;
     this.ldFetch = ldFetch;
     this.config = config;

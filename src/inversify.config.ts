@@ -1,9 +1,10 @@
 import { Container } from "inversify";
 import Context from "./Context";
-import ConnectionsFetcherLDFetch from "./fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
+import ConnectionsFetcherLDFetch from "./fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import StopsFetcherNMBSJSON from "./fetcher/stops/StopsFetcherNMBSJSON";
+import StopsFetcherNMBSLDFetch from "./fetcher/stops/StopsFetcherNMBSLDFetch";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
 import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
@@ -11,7 +12,6 @@ import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import QueryRunnerDefault from "./query-runner/QueryRunnerDefault";
 import TYPES from "./types";
-import StopsFetcherNMBSLDFetch from "./fetcher/stops/StopsFetcherNMBSLDFetch";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
