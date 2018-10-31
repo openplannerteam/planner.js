@@ -18,25 +18,23 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
   private ldFetch: LdFetch;
 
   private connections: IConnection[];
-  private upperBoundDate: Date = new Date();
-  private lowerBoundDate: Date = new Date();
   private config: IConnectionsFetcherConfig;
 
   private previousPageIri: string;
   private nextPageIri: string;
 
-  constructor(baseUrl: string, ldFetch: LdFetch, config: IConnectionsFetcherConfig = { backward: true }) {
+  constructor(
+    baseUrl: string,
+    ldFetch: LdFetch,
+    config: IConnectionsFetcherConfig = {
+      lowerBoundDate: new Date(),
+      upperBoundDate: new Date(),
+      backward: true,
+    },
+    ) {
     this.baseUrl = baseUrl;
     this.ldFetch = ldFetch;
     this.config = config;
-  }
-
-  public setUpperBound(upperBound: Date) {
-    this.upperBoundDate = upperBound;
-  }
-
-  public setLowerBound(lowerBound: Date) {
-    this.lowerBoundDate = lowerBound;
   }
 
   public getNextPageIri(): string {
@@ -151,7 +149,7 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
         const searchTemplate = this.getHydraSearchTemplate(metaTriples, response.url);
 
         const departureTimeDate = this.config.backward ?
-          this.upperBoundDate : this.lowerBoundDate;
+          this.config.upperBoundDate : this.config.lowerBoundDate;
 
         const firstPageIri = searchTemplate.expand({
           departureTime: departureTimeDate.toISOString(),

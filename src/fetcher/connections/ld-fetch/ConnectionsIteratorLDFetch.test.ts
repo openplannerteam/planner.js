@@ -6,9 +6,11 @@ const CONNECTIONS_TO_LOAD = 200; // Should be more than contained on first page
 
 test("[ConnectionsIteratorLDFetch] iterate forwards", async () => {
 
-  const config = { backward: false };
+  const config = {
+    backward: false,
+    lowerBoundDate: new Date(2018, 10, 2, 10),
+  };
   const iterator = new ConnectionsIteratorLDFetch("https://graph.irail.be/sncb/connections", new LdFetch(), config);
-  iterator.setLowerBound(new Date(2018, 10, 2, 10));
 
   const dummyIterable = {
     [Symbol.asyncIterator]: () => iterator,

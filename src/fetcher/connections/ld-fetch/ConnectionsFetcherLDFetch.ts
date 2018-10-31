@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import LdFetch from "ldfetch";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
+import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 import ConnectionsIteratorLDFetch from "./ConnectionsIteratorLDFetch";
 
 const IRAIL_CONNECTIONS_BASE_URL = "https://graph.irail.be/sncb/connections";
@@ -10,6 +11,7 @@ const IRAIL_CONNECTIONS_BASE_URL = "https://graph.irail.be/sncb/connections";
 export default class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
 
   private readonly ldFetch: LdFetch;
+  private config: IConnectionsFetcherConfig;
 
   constructor() {
     this.ldFetch = new LdFetch();
@@ -21,7 +23,15 @@ export default class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
   }
 
   public fetch(): AsyncIterator<IConnection> {
-    return new ConnectionsIteratorLDFetch(IRAIL_CONNECTIONS_BASE_URL, this.ldFetch);
+    return new ConnectionsIteratorLDFetch(
+      IRAIL_CONNECTIONS_BASE_URL,
+      this.ldFetch,
+      this.config,
+    );
+  }
+
+  public setConfig(config: IConnectionsFetcherConfig): void {
+    this.config = config;
   }
 
   private setupDebug() {
