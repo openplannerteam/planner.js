@@ -9,11 +9,11 @@ import IPublicTransportPlanner from "./planner/public-transport/IPublicTransport
 import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
+import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
+import LocationResolverDefault from "./query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "./query-runner/QueryRunnerDefault";
 import TYPES from "./types";
-import ILocationResolver from "./query-runner/ILocationResolver";
-import LocationResolverDefault from "./query-runner/LocationResolverDefault";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();

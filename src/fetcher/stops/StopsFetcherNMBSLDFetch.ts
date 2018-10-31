@@ -17,6 +17,9 @@ interface IStopMap {
 
 @injectable()
 export default class StopsFetcherNMBSLDFetch implements IStopsFetcher {
+
+  public prefix = "http://irail.be/stations/NMBS/";
+
   private ldFetch: LDFetch;
   private loadPromise: Promise<any>;
   private stops: IStopMap;

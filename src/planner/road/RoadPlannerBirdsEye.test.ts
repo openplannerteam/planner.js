@@ -1,17 +1,35 @@
 import "jest";
-import IStopsFetcher from "../../fetcher/stops/IStopsFetcher";
+import Context from "../../Context";
 import StopsFetcherNMBSLDFetch from "../../fetcher/stops/StopsFetcherNMBSLDFetch";
 import IPath from "../../interfaces/IPath";
+import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
+import TYPES from "../../types";
 import IRoadPlanner from "./IRoadPlanner";
 import RoadPlannerBirdsEye from "./RoadPlannerBirdsEye";
 
-test("[StopsFetcherNMBSLDFetch] distance between stops", async () => {
-  const stopsFetcher: IStopsFetcher = new StopsFetcherNMBSLDFetch();
-  const planner: IRoadPlanner = new RoadPlannerBirdsEye(stopsFetcher);
+const dummyContext = {
+  getContainer() {
+    return {
+      getAll(type) {
+        if (type === TYPES.StopsFetcher) {
+          return [new StopsFetcherNMBSLDFetch()];
+        }
+      },
+    };
+  },
+};
+
+const planner: IRoadPlanner = new RoadPlannerBirdsEye();
+const locationResolver = new LocationResolverDefault(dummyContext as Context);
+
+test("[RoadPlannerBirdsEye] distance between stops", async () => {
+
+  const kortrijkLocation = await locationResolver.resolve({id: "http://irail.be/stations/NMBS/008896008"});
+  const ghentLocation = await locationResolver.resolve({id: "http://irail.be/stations/NMBS/008892007"});
 
   const result: IPath[] = await planner.plan({
-    from: [{id: "http://irail.be/stations/NMBS/008896008"}], // Kortrijk
-    to: [{id: "http://irail.be/stations/NMBS/008892007"}], // Ghent-Sint-Pieters
+    from: [kortrijkLocation], // Kortrijk
+    to: [ghentLocation], // Ghent-Sint-Pieters
   });
 
   expect(result).toHaveLength(1);

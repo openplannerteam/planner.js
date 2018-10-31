@@ -10,6 +10,9 @@ interface IStopMap {
 
 @injectable()
 export default class StopsFetcherNMBSJSON implements IStopsFetcher {
+
+  public prefix = "http://irail.be/stations/NMBS/";
+
   private loadPromise: Promise<any>;
   private stops: IStopMap;
 
@@ -17,7 +20,15 @@ export default class StopsFetcherNMBSJSON implements IStopsFetcher {
     this.loadStops();
   }
 
-  public loadStops() {
+  public async getStopById(stopId: string): Promise<IStop> {
+    if (this.loadPromise) {
+      await this.loadPromise;
+    }
+
+    return this.stops[stopId];
+  }
+
+  private loadStops() {
     this.loadPromise = fetch(IRAIL_STATIONS_URL)
       .then((response: Response) => response.json())
       .then(({station: stations}) => {
@@ -31,13 +42,5 @@ export default class StopsFetcherNMBSJSON implements IStopsFetcher {
 
         this.loadPromise = null;
       });
-  }
-
-  public async getStopById(stopId: string): Promise<IStop> {
-    if (this.loadPromise) {
-      await this.loadPromise;
-    }
-
-    return this.stops[stopId];
   }
 }
