@@ -68,7 +68,12 @@ export default class StopsFetcherNMBSLDFetch implements IStopsFetcher {
         };
       }
 
-      stopMap[subject][predicate] = object;
+      if (predicate === "longitude" || predicate === "latitude") {
+        stopMap[subject][predicate] = parseFloat(object);
+
+      } else {
+        stopMap[subject][predicate] = object;
+      }
 
       return stopMap;
     }, {}) as IStopMap;
