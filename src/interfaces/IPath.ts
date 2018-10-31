@@ -1,6 +1,5 @@
-import IPoint from "./IPoint";
+import IStep from "./IStep";
 
 export default interface IPath {
-  distance?: number;
-  points: IPoint[];
+  steps: IStep[];
 }

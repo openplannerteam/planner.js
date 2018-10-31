@@ -53,11 +53,13 @@ export default class QueryRunnerDefault implements IQueryRunner {
   }
 
   private async resolveQuery(query: IQuery): Promise<IResolvedQuery> {
-    const { from, to, ...other } = query;
+    const { from, to, minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed, ...other} = query;
     const resolvedQuery: IResolvedQuery = Object.assign({}, other);
 
     resolvedQuery.from = await this.resolveEndpoint(from);
     resolvedQuery.to = await this.resolveEndpoint(to);
+    resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || maximumWalkingSpeed;
+    resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || minimumWalkingSpeed;
 
     return resolvedQuery;
   }

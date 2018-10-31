@@ -1,7 +1,8 @@
 import haversine from "haversine";
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
+import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import IRoadPlanner from "./IRoadPlanner";
 
@@ -9,7 +10,7 @@ import IRoadPlanner from "./IRoadPlanner";
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
 
   public async plan(query: IResolvedQuery): Promise<IPath[]> {
-    const { from: fromLocations, to: toLocations } = query;
+    const { from: fromLocations, to: toLocations, minimumWalkingSpeed, maximumWalkingSpeed} = query;
 
     const paths = [];
 
@@ -17,9 +18,7 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
 
       for (const from of fromLocations) {
         for (const to of toLocations) {
-          const path = await this.getPathBetweenLocations(from, to);
-
-          paths.push(path);
+          paths.push(this.getPathBetweenLocations(from, to, minimumWalkingSpeed, maximumWalkingSpeed));
         }
       }
     }
@@ -27,10 +26,30 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
     return paths;
   }
 
-  private async getPathBetweenLocations(from: ILocation, to: ILocation): Promise<IPath> {
+  private getPathBetweenLocations(
+    from: ILocation,
+    to: ILocation,
+    minWalkingSpeed: number,
+    maxWalkingSpeed: number,
+  ): IPath {
+
+    const distance = this.getDistanceBetweenLocations(from, to);
+    const minDuration = distance / maxWalkingSpeed;
+    const maxDuration = distance / minWalkingSpeed;
+
+    const duration: IProbabilisticValue = {
+      minimum: minDuration,
+      maximum: maxDuration,
+      average: (minDuration + maxDuration) / 2,
+    };
+
     return {
-      distance: this.getDistanceBetweenLocations(from, to),
-      points: [{ location: from }, { location: to }],
+      steps: [{
+        startLocation: from,
+        stopLocation: to,
+        duration,
+        distance,
+      }],
     };
   }
 
