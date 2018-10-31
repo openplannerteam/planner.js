@@ -12,6 +12,6 @@ const planner = new Planner();
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
   });
 
-  console.log(result);
+  console.log(JSON.stringify(result, null, "  "));
 
 })();

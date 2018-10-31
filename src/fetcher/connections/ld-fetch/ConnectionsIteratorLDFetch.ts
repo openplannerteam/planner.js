@@ -57,8 +57,6 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
       const pageIri = this.config.backward ?
         this.previousPageIri : this.nextPageIri;
 
-      console.log("Next page:", pageIri);
-
       await this.loadPage(pageIri);
     }
 
@@ -154,8 +152,6 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
         const firstPageIri = searchTemplate.expand({
           departureTime: departureTimeDate.toISOString(),
         });
-
-        console.log("First page: ", firstPageIri);
 
         await this.loadPage(firstPageIri);
       });
