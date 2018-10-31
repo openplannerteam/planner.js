@@ -1,5 +1,5 @@
-import IQuery from "./IQuery";
-import IQueryResult from "./IQueryResult";
+import IQuery from "../interfaces/IQuery";
+import IQueryResult from "../interfaces/IQueryResult";
 
 export default interface IQueryRunner {
 

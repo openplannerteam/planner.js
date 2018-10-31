@@ -32,11 +32,7 @@ export default class StopsFetcherNMBSLDFetch implements IStopsFetcher {
       await this.loadPromise;
     }
 
-    if (this.stops) {
-      return this.stops[stopId];
-    }
-
-    return { "name": "Ergens", "@id": "id", "longitude": 5, "latitude": 5 };
+    return this.stops[stopId];
   }
 
   private loadStops() {

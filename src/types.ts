@@ -1,6 +1,7 @@
 const TYPES = {
-  Context: Symbol("context"),
-  QueryRunner: Symbol("query"),
+  Context: Symbol("Context"),
+  QueryRunner: Symbol("QueryRunner"),
+  LocationResolver: Symbol("LocationResolver"),
   ConnectionsFetcher: Symbol("ConnectionsFetcher"),
   StopsFetcher: Symbol("StopsFetcher"),
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),

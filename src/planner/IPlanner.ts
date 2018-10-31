@@ -1,6 +1,6 @@
-import IQuery from "../query-runner/IQuery";
-import IJourney from "./IJourney";
+import IPath from "../interfaces/IPath";
+import IResolvedQuery from "../query-runner/IResolvedQuery";
 
 export default interface IPlanner {
-  plan: (query: IQuery) => Promise<IJourney[]>;
+  plan: (query: IResolvedQuery) => Promise<IPath[]>;
 }

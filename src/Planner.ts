@@ -1,7 +1,7 @@
 import Context from "./Context";
 import defaultContainer from "./inversify.config";
-import IQuery from "./query-runner/IQuery";
-import IQueryResult from "./query-runner/IQueryResult";
+import IQuery from "./interfaces/IQuery";
+import IQueryResult from "./interfaces/IQueryResult";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
 
