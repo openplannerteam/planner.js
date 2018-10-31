@@ -47,23 +47,3 @@ test("[LocationResolverDefault] Input {longitude: ..., latitude: ...}", async ()
   expect(location).toBeDefined();
   expect(location.latitude).toBeCloseTo(50.82, 2);
 });
-
-test("[LocationResolverDefault] Input {address: '(some address)'}", async () => {
-
-  const location = await locationResolver.resolve(
-    { address: "Brussels" },
-  );
-
-  expect(location).toBeDefined();
-  expect(location.latitude).toBeCloseTo(50.85, 2);
-});
-
-test("[LocationResolverDefault] Input '(some address)'", async () => {
-
-  const location = await locationResolver.resolve(
-    "Brussels",
-  );
-
-  expect(location).toBeDefined();
-  expect(location.latitude).toBeCloseTo(50.85, 2);
-});

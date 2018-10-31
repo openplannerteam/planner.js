@@ -23,12 +23,11 @@ export default class LocationResolverDefault implements ILocationResolver {
         return this.resolveById(input);
       }
 
-      return this.resolveByAddress(input);
+      return Promise.reject(`Location "${input}" is a string, but not an ID`);
     }
 
     const location: ILocation = input;
     const hasId = "id" in location;
-    const hasAddress = "address" in location;
     const hasCoords = "latitude" in location && "longitude" in location;
 
     if (hasId) {
@@ -37,10 +36,8 @@ export default class LocationResolverDefault implements ILocationResolver {
       return Object.assign({}, location, resolvedLocation);
     }
 
-    if (hasAddress) {
-      const resolveLocation = await this.resolveByAddress(location.address);
-
-      return Object.assign({}, location, resolveLocation);
+    if (!hasCoords) {
+      return Promise.reject(`Location "${JSON.stringify(input)}" should have latitude and longitude`);
     }
 
     return location;
@@ -62,16 +59,6 @@ export default class LocationResolverDefault implements ILocationResolver {
     }
 
     throw new Error(`No fetcher for id ${id}`);
-  }
-
-  private async resolveByAddress(address: string): Promise<ILocation> {
-
-    // todo: geocode address
-    return {
-      address,
-      latitude: 50.85045, // Coords of Brussels
-      longitude: 4.34878,
-    };
   }
 
   private determineStopFetcher(id: string): IStopsFetcher {
