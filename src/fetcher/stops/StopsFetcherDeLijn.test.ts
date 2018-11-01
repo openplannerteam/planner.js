@@ -5,7 +5,7 @@ import StopsFetcherDeLijn from "./StopsFetcherDeLijn";
 
 const fetcher: IStopsFetcher = new StopsFetcherDeLijn();
 
-test("[StopsFetcherNMBSLDFetch] first stop", async () => {
+test("[StopsFetcherDeLijn] first stop", async () => {
   const stop: IStop = await fetcher.getStopById("https://data.delijn.be/stops/590009");
 
   console.log(stop);
@@ -14,7 +14,7 @@ test("[StopsFetcherNMBSLDFetch] first stop", async () => {
   expect(stop.name).toEqual("De Vierweg");
 });
 
-test("[StopsFetcherNMBSLDFetch] second stop", async () => {
+test("[StopsFetcherDeLijn] second stop", async () => {
   const stop: IStop = await fetcher.getStopById("https://data.delijn.be/stops/219025");
 
   console.log(stop);

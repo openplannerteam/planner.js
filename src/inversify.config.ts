@@ -4,7 +4,7 @@ import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import ConnectionsFetcherLDFetch from "./fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import StopsFetcherNMBSJSON from "./fetcher/stops/StopsFetcherNMBSJSON";
-import StopsFetcherNMBSLDFetch from "./fetcher/stops/StopsFetcherNMBSLDFetch";
+import StopsFetcherNMBS from "./fetcher/stops/StopsFetcherNMBS";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
 import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
@@ -22,6 +22,6 @@ container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDef
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner).to(PublicTransportPlannerCSAProfile);
 container.bind<IRoadPlanner>(TYPES.RoadPlanner).to(RoadPlannerBirdsEye);
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLDFetch);
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBSLDFetch);
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
 
 export default container;

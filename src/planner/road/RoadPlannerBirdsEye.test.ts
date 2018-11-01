@@ -1,6 +1,6 @@
 import "jest";
 import Context from "../../Context";
-import StopsFetcherNMBSLDFetch from "../../fetcher/stops/StopsFetcherNMBSLDFetch";
+import StopsFetcherNMBS from "../../fetcher/stops/StopsFetcherNMBS";
 import IPath from "../../interfaces/IPath";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import TYPES from "../../types";
@@ -12,7 +12,7 @@ const dummyContext = {
     return {
       getAll(type) {
         if (type === TYPES.StopsFetcher) {
-          return [new StopsFetcherNMBSLDFetch()];
+          return [new StopsFetcherNMBS()];
         }
       },
     };

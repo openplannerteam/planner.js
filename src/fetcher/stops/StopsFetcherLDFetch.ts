@@ -1,11 +1,8 @@
-import { injectable } from "inversify";
 import LDFetch from "ldfetch";
 import { Triple } from "rdf-js";
 import { logTripleTable, transformPredicate } from "../helpers";
 import IStop from "./IStop";
 import IStopsFetcher from "./IStopsFetcher";
-
-const IRAIL_STATIONS_URL = "https://irail.be/stations/NMBS";
 
 interface IPartialStopMap {
   [stopId: string]: Partial<IStop>;
@@ -15,17 +12,18 @@ interface IStopMap {
   [stopId: string]: IStop;
 }
 
-@injectable()
-export default class StopsFetcherNMBSLDFetch implements IStopsFetcher {
+export default class StopsFetcherLDFetch implements IStopsFetcher {
 
-  public prefix = "http://irail.be/stations/NMBS/";
+  public readonly prefix: string;
+  public readonly sources: string[];
 
   private ldFetch: LDFetch;
   private loadPromise: Promise<any>;
   private stops: IStopMap;
 
-  constructor() {
-
+  constructor(prefix: string, sources: string[]) {
+    this.prefix = prefix;
+    this.sources = sources;
     this.ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
     this.loadStops();
   }
@@ -39,13 +37,21 @@ export default class StopsFetcherNMBSLDFetch implements IStopsFetcher {
   }
 
   private loadStops() {
-    this.loadPromise = this.ldFetch.get(IRAIL_STATIONS_URL)
-      .then((response) => {
-        // logTripleTable(response.triples);
+    if (this.sources) {
 
-        this.stops = this.parseTriples(response.triples);
-        this.loadPromise = null;
-      });
+      this.loadPromise = Promise
+        .all(this.sources.map((url) => this.ldFetch.get(url)))
+        .then((responses) => {
+          // logTripleTable(response.triples);
+
+          this.stops = responses.reduce((stops, response) => {
+            Object.assign(stops, this.parseTriples(response.triples));
+            return stops;
+          }, {});
+
+          this.loadPromise = null;
+        });
+    }
   }
 
   private transformPredicate(triple: Triple): Triple {
