@@ -1,8 +1,10 @@
+import { injectable } from "inversify";
 import LdFetch from "ldfetch";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 
+@injectable()
 export default abstract class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
 
   protected readonly ldFetch: LdFetch;

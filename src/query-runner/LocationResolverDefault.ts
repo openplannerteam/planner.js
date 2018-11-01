@@ -10,7 +10,9 @@ import ILocationResolver from "./ILocationResolver";
 export default class LocationResolverDefault implements ILocationResolver {
   private readonly stopsFetchers: IStopsFetcher[];
 
-  constructor(@inject(TYPES.Context) context: Context) {
+  constructor(
+    @inject(TYPES.Context) context: Context,
+  ) {
     this.stopsFetchers = context.getContainer()
       .getAll<IStopsFetcher>(TYPES.StopsFetcher);
   }

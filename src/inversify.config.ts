@@ -1,7 +1,9 @@
 import { Container } from "inversify";
 import Context from "./Context";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
+import ConnectionsFetcherDeLijn from "./fetcher/connections/ld-fetch/ConnectionsFetcherDeLijn";
 import ConnectionsFetcherNMBS from "./fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
+import ConnectionsFetcherMerge from "./fetcher/connections/merge/ConnectionsFetcherMerge";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import StopsFetcherNMBS from "./fetcher/stops/StopsFetcherNMBS";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
@@ -18,9 +20,19 @@ const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDefault);
+
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner).to(PublicTransportPlannerCSAProfile);
 container.bind<IRoadPlanner>(TYPES.RoadPlanner).to(RoadPlannerBirdsEye);
+
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherNMBS);
+
+/*container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
+  .to(ConnectionsFetcherNMBS).whenTargetTagged("type", "source");
+container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
+  .to(ConnectionsFetcherDeLijn).whenTargetTagged("type", "source");
+container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
+  .to(ConnectionsFetcherMerge).whenTargetTagged("type", "merge");*/
+
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
 
 export default container;

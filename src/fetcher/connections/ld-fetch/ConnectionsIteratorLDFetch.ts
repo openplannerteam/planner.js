@@ -26,11 +26,7 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
   constructor(
     baseUrl: string,
     ldFetch: LdFetch,
-    config: IConnectionsFetcherConfig = {
-      lowerBoundDate: new Date(),
-      upperBoundDate: new Date(),
-      backward: true,
-    },
+    config: IConnectionsFetcherConfig,
     ) {
     this.baseUrl = baseUrl;
     this.ldFetch = ldFetch;
