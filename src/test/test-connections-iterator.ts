@@ -1,7 +1,9 @@
 import "reflect-metadata";
+import ConnectionsFetcherDeLijn from "../fetcher/connections/ld-fetch/ConnectionsFetcherDeLijn";
 import ConnectionsFetcherLDFetch from "../fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
+import ConnectionsFetcherNMBS from "../fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
 
-const fetcher = new ConnectionsFetcherLDFetch();
+const fetcher = new ConnectionsFetcherDeLijn();
 // iterator.setLowerBound(new Date(2018, 10, 2, 10));
 (async () => {
 

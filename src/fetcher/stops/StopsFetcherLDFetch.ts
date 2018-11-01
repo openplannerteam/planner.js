@@ -15,7 +15,7 @@ interface IStopMap {
 export default class StopsFetcherLDFetch implements IStopsFetcher {
 
   public readonly prefix: string;
-  public readonly sources: string[];
+  private readonly sources: string[];
 
   private ldFetch: LDFetch;
   private loadPromise: Promise<any>;
