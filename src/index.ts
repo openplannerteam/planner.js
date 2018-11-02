@@ -16,7 +16,7 @@ const planner = new Planner();
 
   const publicTransportResult = await planner.query({
     publicTransportOnly: true,
-    from: "http://irail.be/stations/NMBS/008896008", // Kortrijk
+    from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
   });
 

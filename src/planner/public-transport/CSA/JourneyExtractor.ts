@@ -1,23 +1,38 @@
 import IConnection from "../../../fetcher/connections/IConnection";
+import ILocation from "../../../interfaces/ILocation";
 import IPath from "../../../interfaces/IPath";
 import IStep from "../../../interfaces/IStep";
+import ILocationResolver from "../../../query-runner/ILocationResolver";
+import IRoadPlanner from "../../road/IRoadPlanner";
 import IProfilesByStop from "./dataStructure/IProfilesByStop";
 import Profile from "./dataStructure/Profile";
 import { filterInfinity } from "./utils";
 
 export default class JourneyExtractor {
+  public readonly roadPlanner: IRoadPlanner;
+  public readonly locationResolver: ILocationResolver;
 
   private bestArrivalTime: number = Infinity;
 
-  public extractJourneys(profilesByStop: IProfilesByStop, from: string, to: string, departureTime: Date): IPath[] {
+  constructor(roadPlanner: IRoadPlanner, locationResolver: ILocationResolver) {
+    this.roadPlanner = roadPlanner;
+    this.locationResolver = locationResolver;
+  }
+
+  public async extractJourneys(
+    profilesByStop: IProfilesByStop,
+    from: ILocation,
+    to: ILocation,
+    departureTime: Date,
+  ): Promise<IPath[]> {
     const profile: IProfilesByStop = filterInfinity(profilesByStop);
 
     const journeys = [];
-    for (const entry of profile[from]) {
+    for (const entry of profile[from.id]) {
       if (entry.departureTime >= departureTime.getTime()) {
         for (let transfers = 0; transfers < entry.arrivalTimes.length; transfers++) {
           if (entry.arrivalTimes[transfers] < this.bestArrivalTime) {
-            const journey = this.extractJourney(to, entry, transfers, profile);
+            const journey = await this.extractJourney(to, entry, transfers, profile);
             journeys.push(journey);
           }
         }
@@ -26,7 +41,12 @@ export default class JourneyExtractor {
     return journeys;
   }
 
-  private extractJourney(target: string, entry: Profile, transfers: number, profile: IProfilesByStop): IPath {
+  private async extractJourney(
+    target: ILocation,
+    entry: Profile,
+    transfers: number,
+    profile: IProfilesByStop,
+  ): Promise<IPath> {
     // Extract journey for amount of transfers
     const journey: IPath = this.createJourney(entry, transfers);
     this.bestArrivalTime = entry.arrivalTimes[transfers];
@@ -38,26 +58,36 @@ export default class JourneyExtractor {
       // Construct and push step
       const enterConnection: IConnection = currentEntry.enterConnections[remainingTransfers];
       const exitConnection: IConnection = currentEntry.exitConnections[remainingTransfers];
-      const step: IStep = this.createStep(enterConnection, exitConnection);
 
+      const step: IStep = this.createStep(enterConnection, exitConnection);
       journey.steps.push(step);
 
       remainingTransfers--;
       if (remainingTransfers >= 0) {
-        // Find profile entry for next step
-        // This is the entry with the earliest departure time
-        // that is later than the previous arrival time + interstop distance
         const nextProfile = profile[step.stopLocation.id];
+
         let i = nextProfile.length - 1;
         let found = false;
-        // No need to check for i >= 0, journey pointers guarantee that some entry must be valid
+
         while (!found) {
           const connection = nextProfile[i].enterConnections[remainingTransfers];
-          const interstopDistance = { duration: 60000 };
-          if (connection.departureTime >= new Date(step.stopLocation.time.getTime() +
-            interstopDistance.duration)) {
+
+          const from = await this.locationResolver.resolve({id: step.stopLocation.id });
+          const to = await this.locationResolver.resolve({id: connection.departureStop});
+
+          const walkingResult = await this.roadPlanner.plan({
+            from: [from],
+            to: [to],
+            minimumWalkingSpeed: 3,
+            maximumWalkingSpeed: 6,
+          });
+
+          if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
+            connection.departureTime.getTime() >= step.stopLocation.time.getTime() +
+            walkingResult[0].steps[0].duration.average
+          ) {
             found = true;
-            journey.steps.push(interstopDistance);
+            journey.steps.push(walkingResult[0].steps[0]);
             currentEntry = nextProfile[i];
           }
           i--;
@@ -65,7 +95,9 @@ export default class JourneyExtractor {
       }
     }
 
-    this.addFinalFootpath(journey, target);
+    if (journey.steps[journey.steps.length - 1].stopLocation.id !== target) {
+      await this.addFinalFootpath(journey, target);
+    }
 
     return journey;
   }
@@ -98,12 +130,21 @@ export default class JourneyExtractor {
     };
   }
 
-  private addFinalFootpath(journey, target) {
-    if (journey.steps[journey.steps.length - 1].stopLocation.id !== target) {
-      const lastLeg = journey.steps[journey.steps.length - 1];
-      const interstopDistance = { duration: 60000 };
-      // TODO this is ugly but there is no real exit connection
-      journey.steps.push(interstopDistance);
+  private async addFinalFootpath(journey: IPath, to: ILocation): Promise<void> {
+    const lastStep = journey.steps[journey.steps.length - 1];
+
+    const fromLocation = await this.locationResolver.resolve({id: lastStep.stopLocation.id });
+    const toLocation = await this.locationResolver.resolve(to);
+
+    const walkingResult = await this.roadPlanner.plan({
+      from: [fromLocation],
+      to: [toLocation],
+      minimumWalkingSpeed: 3,
+      maximumWalkingSpeed: 6,
+    });
+
+    if (walkingResult && walkingResult[0] && walkingResult[0].steps[0]) {
+      journey.steps.push(walkingResult[0].steps[0]);
     }
   }
 }

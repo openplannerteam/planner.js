@@ -2,10 +2,12 @@ import { inject, injectable } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsFetcher from "../../fetcher/connections/IConnectionsFetcher";
 import IPath from "../../interfaces/IPath";
+import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
-import EarliestArrival from "./CSA/dataStructure/EarliestArrival";
+import IRoadPlanner from "../road/IRoadPlanner";
 import IEarliestArrival from "./CSA/dataStructure/EarliestArrival";
+import EarliestArrival from "./CSA/dataStructure/EarliestArrival";
 import IEarliestArrivalByTrip from "./CSA/dataStructure/IEarliestArrivalByTrip";
 import IProfilesByStop from "./CSA/dataStructure/IProfilesByStop";
 import Profile from "./CSA/dataStructure/Profile";
@@ -16,6 +18,10 @@ import IPublicTransportPlanner from "./IPublicTransportPlanner";
 @injectable()
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
   public readonly connectionsFetcher: IConnectionsFetcher;
+  public readonly roadPlanner: IRoadPlanner;
+  public readonly locationResolver: ILocationResolver;
+
+  private readonly journeyExtractor: JourneyExtractor;
 
   private profilesByStop: IProfilesByStop = {}; // S
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
@@ -25,19 +31,32 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   private query: IResolvedQuery;
 
-  constructor(@inject(TYPES.ConnectionsFetcher) connectionsFetcher: IConnectionsFetcher) {
+  constructor(
+    @inject(TYPES.ConnectionsFetcher) connectionsFetcher: IConnectionsFetcher,
+    @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
+    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
+  ) {
     this.connectionsFetcher = connectionsFetcher;
+    this.roadPlanner = roadPlanner;
+    this.locationResolver = locationResolver;
+    this.journeyExtractor = new JourneyExtractor(roadPlanner, locationResolver);
+
+    const upperBoundDate = new Date();
+    upperBoundDate.setHours(upperBoundDate.getHours() + 2 );
+
+    this.connectionsFetcher.setConfig({
+      backward: true,
+      upperBoundDate, // TODO what's the upperBoundDate.
+    });
   }
 
   public async plan(query: IResolvedQuery): Promise<IPath[]> {
-    const testDate = new Date();
-    testDate.setHours(testDate.getHours() - 1 );
-
-    return await this.calculateJourneys(testDate, query);
+    return await this.calculateJourneys(query);
   }
 
-  private async calculateJourneys(earliestDepartureTime: Date, query: IResolvedQuery): Promise<IPath[]> {
+  private async calculateJourneys(query: IResolvedQuery): Promise<IPath[]> {
     this.query = query;
+    const earliestDepartureTime = new Date();
 
     for await (const connection of this.connectionsFetcher) {
       if (connection.departureTime < earliestDepartureTime) {
@@ -54,10 +73,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       }
     }
 
-    return new JourneyExtractor().extractJourneys(
+    return await this.journeyExtractor.extractJourneys(
       this.profilesByStop,
-      query.from[0].id,
-      query.to[0].id,
+      query.from[0],
+      query.to[0],
       earliestDepartureTime,
     );
   }

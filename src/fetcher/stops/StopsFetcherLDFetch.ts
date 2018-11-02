@@ -1,6 +1,7 @@
+import { injectable, unmanaged } from "inversify";
 import LDFetch from "ldfetch";
 import { Triple } from "rdf-js";
-import { logTripleTable, transformPredicate } from "../helpers";
+import { transformPredicate } from "../helpers";
 import IStop from "./IStop";
 import IStopsFetcher from "./IStopsFetcher";
 
@@ -12,6 +13,7 @@ interface IStopMap {
   [stopId: string]: IStop;
 }
 
+@injectable()
 export default class StopsFetcherLDFetch implements IStopsFetcher {
 
   public readonly prefix: string;
@@ -21,7 +23,7 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
   private loadPromise: Promise<any>;
   private stops: IStopMap;
 
-  constructor(prefix: string, sources: string[]) {
+  constructor(@unmanaged() prefix: string, @unmanaged() sources: string[]) {
     this.prefix = prefix;
     this.sources = sources;
     this.ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
