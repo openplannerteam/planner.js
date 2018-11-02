@@ -95,7 +95,7 @@ export default class JourneyExtractor {
       }
     }
 
-    if (journey.steps[journey.steps.length - 1].stopLocation.id !== target) {
+    if (journey.steps[journey.steps.length - 1].stopLocation.id !== target.id) {
       await this.addFinalFootpath(journey, target);
     }
 

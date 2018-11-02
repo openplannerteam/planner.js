@@ -98,7 +98,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const t2 = this.remainSeated(connection);
     const t3 = this.takeTransfer(connection);
 
-    return minVector([t1, t2, t3]);
+    return minVector(t1, t2, t3);
   }
 
   private walkToTarget(connection: IConnection): number[] {
@@ -120,7 +120,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private takeTransfer(connection: IConnection): number[] {
-    return shiftVector(evalProfile(this.profilesByStop, connection.arrivalTime, connection.arrivalStop, this.maxLegs));
+    return shiftVector(evalProfile(this.profilesByStop, connection, this.maxLegs));
   }
 
   private updateEarliestArrivalByTrip(connection: IConnection, currentArrivalTimeByTransfers: number[]): void {
@@ -147,7 +147,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private incorporateForFootpaths(connection: IConnection, currentArrivalTimeByTransfers: number[]): void  {
     const depProfile: Profile[] = this.profilesByStop[connection.departureStop];
     const earliestProfileEntry = depProfile[depProfile.length - 1];
-    const minVectorTimes = minVector([currentArrivalTimeByTransfers, earliestProfileEntry.arrivalTimes]);
+    const minVectorTimes = minVector(currentArrivalTimeByTransfers, earliestProfileEntry.arrivalTimes);
 
     // For all footpaths with f_arr_stop = c_dep_stop
     // TODO getInterstopDistance

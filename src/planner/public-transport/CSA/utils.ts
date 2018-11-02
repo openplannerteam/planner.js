@@ -4,14 +4,13 @@
  * the last number on the right side
  * @param vector: [int]
  */
-export function shiftVector(vector) {
-  // Shift vector to the right
-  // Insert Infinity on left side
-  const result = [Infinity];
-  for (let i = 0; i < vector.length - 1; i++) {
-    result.push(vector[i]);
-  }
-  return result;
+import IConnection from "../../../fetcher/connections/IConnection";
+import IProfilesByStop from "./dataStructure/IProfilesByStop";
+
+export function shiftVector(vector: number[]): number[] {
+  vector.unshift(Infinity);
+  vector.pop();
+  return vector;
 }
 
 /**
@@ -20,43 +19,42 @@ export function shiftVector(vector) {
  * @param vectors: [[int]]
  * @returns {Array}
  */
-export function minVector(vectors) {
-  // Calculate component-wise minimum of vectors (array)
-  const result = [];
-  for (let i = 0; i < vectors[0].length; i++) {
-    const components = [];
-    vectors.forEach((v) => components.push(v[i]));
-    let min = Infinity;
-    components.forEach((comp) => {
-      if (min === Infinity || comp < min) {
-        min = comp;
+export function minVector(...vectors: number[][]): number[] {
+  if (!vectors || !vectors[0]) {
+    return [];
+  }
+
+  const result: number[] = vectors[0];
+  for (let vectorIndex = 1 ; vectorIndex < vectors.length ; vectorIndex++) {
+    for (let numberIndex = 0 ; numberIndex < vectors[vectorIndex].length ; numberIndex++) {
+      if (vectors[vectorIndex][numberIndex] < result[numberIndex]) {
+        result[numberIndex] = vectors[vectorIndex][numberIndex];
       }
-    });
-    result.push(min);
+    }
   }
   return result;
 }
 
-export function filterInfinity(profile) {
-  const iterator = Object.keys(profile);
+export function filterInfinity(profilesByStop: IProfilesByStop): IProfilesByStop {
   const result = {};
 
-  for (const key of iterator) {
-    result[key] = [];
-    profile[key].forEach((entry) => {
-      if (entry.departureTime !== Infinity) {
-        result[key].push(entry);
-      }
-    });
+  for (const stop in profilesByStop) {
+    if (profilesByStop.hasOwnProperty(stop)) {
+        result[stop] = profilesByStop[stop].filter((profile) =>
+          profile.departureTime !== Infinity,
+      );
+    }
   }
   return result;
 }
 
-export function evalProfile(profile, departureTime, departureStop, maxLegs) {
-  let i = profile[departureStop].length - 1;
+export function evalProfile(profilesByStop: IProfilesByStop, connection: IConnection, maxLegs: number): number[] {
+  const {departureStop} = connection;
+
+  let i = profilesByStop[departureStop].length - 1;
   while (i >= 0) {
-    if (profile[departureStop][i].departureTime >= departureTime.getTime()) {
-      return profile[departureStop][i].arrivalTimes.slice(); // Return a copy of the array
+    if (profilesByStop[departureStop][i].departureTime >= connection.departureTime.getTime()) {
+      return profilesByStop[departureStop][i].arrivalTimes.slice(); // Return a copy of the array
     }
     i--;
   }
