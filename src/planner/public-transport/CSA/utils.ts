@@ -1,11 +1,12 @@
+import IConnection from "../../../fetcher/connections/IConnection";
+import IProfilesByStop from "./dataStructure/IProfilesByStop";
+
 /**
  * Shift a number vector to the right,
  * inserting Infinity on the left side and discarding
  * the last number on the right side
  * @param vector: [int]
  */
-import IConnection from "../../../fetcher/connections/IConnection";
-import IProfilesByStop from "./dataStructure/IProfilesByStop";
 
 export function shiftVector(vector: number[]): number[] {
   vector.unshift(Infinity);
@@ -48,13 +49,12 @@ export function filterInfinity(profilesByStop: IProfilesByStop): IProfilesByStop
   return result;
 }
 
-export function evalProfile(profilesByStop: IProfilesByStop, connection: IConnection, maxLegs: number): number[] {
-  const {departureStop} = connection;
-
-  let i = profilesByStop[departureStop].length - 1;
+export function evalProfile(profilesByStop: IProfilesByStop, connection: IConnection, maxLegs) {
+  const {arrivalStop, arrivalTime} = connection;
+  let i = profilesByStop[arrivalStop].length - 1;
   while (i >= 0) {
-    if (profilesByStop[departureStop][i].departureTime >= connection.departureTime.getTime()) {
-      return profilesByStop[departureStop][i].arrivalTimes.slice(); // Return a copy of the array
+    if (profilesByStop[arrivalStop][i].departureTime >= arrivalTime.getTime()) {
+      return profilesByStop[arrivalStop][i].arrivalTimes.slice(); // Return a copy of the array
     }
     i--;
   }
