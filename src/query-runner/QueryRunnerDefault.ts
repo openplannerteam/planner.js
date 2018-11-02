@@ -27,11 +27,14 @@ export default class QueryRunnerDefault implements IQueryRunner {
   }
 
   public async run(query: IQuery): Promise<IQueryResult> {
-
     const resolvedQuery: IResolvedQuery = await this.resolveQuery(query);
 
     if (resolvedQuery.roadOnly) {
       return this.runRoadOnlyQuery(resolvedQuery);
+    }
+
+    if (resolvedQuery.publicTransportOnly) {
+      return this.runPublicTransportOnlyQuery(resolvedQuery);
     }
 
     return Promise.reject("Query not supported");
@@ -67,6 +70,12 @@ export default class QueryRunnerDefault implements IQueryRunner {
   private async runRoadOnlyQuery(query: IResolvedQuery): Promise<IQueryResult> {
 
     const result: IPath[] = await this.roadPlanner.plan(query);
+    return Promise.resolve({ paths: result });
+  }
+
+  private async runPublicTransportOnlyQuery(query: IResolvedQuery): Promise<IQueryResult> {
+
+    const result: IPath[] = await this.publicTransportPlanner.plan(query);
     return Promise.resolve({ paths: result });
   }
 }
