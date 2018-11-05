@@ -125,7 +125,7 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
 
       if (!entities[subject]) {
         entities[subject] = {
-          ["@id"]: subject,
+          id: subject,
         };
       }
 

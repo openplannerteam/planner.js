@@ -80,7 +80,7 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
 
       if (!(subject in stopMap)) {
         stopMap[subject] = {
-          "@id": subject,
+          id: subject,
         };
       }
 

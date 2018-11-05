@@ -1,4 +1,5 @@
 import haversine from "haversine";
+import IStop from "../fetcher/stops/IStop";
 import ILocation from "../interfaces/ILocation";
 
 export default class Geo {
@@ -18,5 +19,9 @@ export default class Geo {
       latitude: arrLatitude,
       longitude: arrLongitude,
     });
+  }
+
+  public static getDistanceBetweenStops(start: IStop, stop: IStop) {
+    return this.getDistanceBetweenLocations(start as ILocation, stop as ILocation);
   }
 }

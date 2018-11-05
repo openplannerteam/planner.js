@@ -44,7 +44,7 @@ export default class StopsFetcherNMBSJSON implements IStopsFetcher {
         this.stops = stations.reduce((accu: IStopMap, stop) => {
           stop.latitude = parseFloat(stop.locationY);
           stop.longitude = parseFloat(stop.locationX);
-          accu[stop["@id"]] = stop as IStop;
+          accu[stop.id] = stop as IStop;
           return accu;
         }, {});
 
