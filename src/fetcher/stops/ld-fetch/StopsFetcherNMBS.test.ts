@@ -1,6 +1,6 @@
 import "jest";
-import IStop from "./IStop";
-import IStopsFetcher from "./IStopsFetcher";
+import IStop from "../IStop";
+import IStopsFetcher from "../IStopsFetcher";
 import StopsFetcherNMBS from "./StopsFetcherNMBS";
 
 test("[StopsFetcherNMBS]", async () => {

@@ -1,22 +1,8 @@
 import "jest";
-import Context from "../Context";
-import StopsFetcherNMBS from "../fetcher/stops/StopsFetcherNMBS";
-import TYPES from "../types";
+import StopsFetcherNMBS from "../fetcher/stops/ld-fetch/StopsFetcherNMBS";
 import LocationResolverDefault from "./LocationResolverDefault";
 
-const dummyContext = {
-  getContainer() {
-    return {
-      getAll(type) {
-        if (type === TYPES.StopsFetcher) {
-          return [new StopsFetcherNMBS()];
-        }
-      },
-    };
-  },
-};
-
-const locationResolver = new LocationResolverDefault(dummyContext as Context);
+const locationResolver = new LocationResolverDefault(new StopsFetcherNMBS());
 
 test("[LocationResolverDefault] Input {id: 'http://...'}", async () => {
 

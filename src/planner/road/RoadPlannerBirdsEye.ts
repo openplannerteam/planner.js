@@ -1,9 +1,9 @@
-import haversine from "haversine";
 import { injectable } from "inversify";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
+import Geo from "../../util/Geo";
 import IRoadPlanner from "./IRoadPlanner";
 
 @injectable()
@@ -33,7 +33,7 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
     maxWalkingSpeed: number,
   ): IPath {
 
-    const distance = this.getDistanceBetweenLocations(from, to);
+    const distance = Geo.getDistanceBetweenLocations(from, to);
     const minDuration = distance / maxWalkingSpeed;
     const maxDuration = distance / minWalkingSpeed;
 
@@ -51,23 +51,5 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
         distance,
       }],
     };
-  }
-
-  private getDistanceBetweenLocations(from: ILocation, to: ILocation): number {
-    const { longitude: depLongitude, latitude: depLatitude } = from;
-    const { longitude: arrLongitude, latitude: arrLatitude } = to;
-
-    if (depLongitude === undefined || depLatitude === undefined ||
-      arrLongitude === undefined || arrLatitude === undefined) {
-      return Number.POSITIVE_INFINITY;
-    }
-
-    return haversine({
-      latitude: depLatitude,
-      longitude: depLongitude,
-    }, {
-      latitude: arrLatitude,
-      longitude: arrLongitude,
-    });
   }
 }

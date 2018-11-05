@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
-import IStop from "./IStop";
-import IStopsFetcher from "./IStopsFetcher";
+import IStop from "../IStop";
+import IStopsFetcher from "../IStopsFetcher";
 
 const IRAIL_STATIONS_URL = "https://api.irail.be/stations/?format=json";
 
@@ -28,15 +28,23 @@ export default class StopsFetcherNMBSJSON implements IStopsFetcher {
     return this.stops[stopId];
   }
 
+  public async getAllStops(): Promise<IStop[]> {
+    if (this.loadPromise) {
+      await this.loadPromise;
+    }
+
+    return Object.values(this.stops);
+  }
+
   private loadStops() {
     this.loadPromise = fetch(IRAIL_STATIONS_URL)
       .then((response: Response) => response.json())
-      .then(({station: stations}) => {
+      .then(({ station: stations }) => {
 
         this.stops = stations.reduce((accu: IStopMap, stop) => {
           stop.latitude = parseFloat(stop.locationY);
           stop.longitude = parseFloat(stop.locationX);
-          accu[stop["@id"]] = stop as IStop;
+          accu[stop.id] = stop as IStop;
           return accu;
         }, {});
 

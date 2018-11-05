@@ -1,5 +1,5 @@
 export default interface IConnection {
-  "@id": string;
+  id: string;
 
   arrivalTime: Date;
   arrivalStop: string;

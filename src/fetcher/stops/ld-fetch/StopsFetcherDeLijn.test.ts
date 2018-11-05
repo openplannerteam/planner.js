@@ -1,6 +1,6 @@
 import "jest";
-import IStop from "./IStop";
-import IStopsFetcher from "./IStopsFetcher";
+import IStop from "../IStop";
+import IStopsFetcher from "../IStopsFetcher";
 import StopsFetcherDeLijn from "./StopsFetcherDeLijn";
 
 const fetcher: IStopsFetcher = new StopsFetcherDeLijn();

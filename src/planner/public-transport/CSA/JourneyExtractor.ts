@@ -83,7 +83,7 @@ export default class JourneyExtractor {
           });
 
           if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
-            connection.departureTime.getTime() >= step.stopLocation.time.getTime() +
+            connection.departureTime.getTime() >= step.stopTime.getTime() +
             walkingResult[0].steps[0].duration.average
           ) {
             found = true;
@@ -115,12 +115,12 @@ export default class JourneyExtractor {
     return {
       startLocation: {
         id: enterConnection.departureStop,
-        time: exitConnection.departureTime,
       },
       stopLocation: {
         id: exitConnection.arrivalStop,
-        time: exitConnection.arrivalTime,
       },
+      startTime: exitConnection.departureTime,
+      stopTime: exitConnection.arrivalTime,
       duration: {
         average: (
           exitConnection.arrivalTime.getTime() -

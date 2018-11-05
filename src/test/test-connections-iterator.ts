@@ -20,7 +20,7 @@ fetcher.setConfig({
   let i = 0;
 
   for await (const connection of fetcher) {
-    console.log(i++, connection["@id"], connection.departureTime);
+    console.log(i++, connection.id, connection.departureTime);
 
     if (i++ > 1000) {
       break;

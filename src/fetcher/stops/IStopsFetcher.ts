@@ -1,6 +1,5 @@
-import IStop from "./IStop";
+import IStopsFetcherMediator from "./IStopsFetcherMediator";
 
-export default interface IStopsFetcher {
+export default interface IStopsFetcher extends IStopsFetcherMediator {
   prefix: string;
-  getStopById: (stopId: string | string[]) => Promise<IStop>;
 }
