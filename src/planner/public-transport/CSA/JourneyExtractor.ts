@@ -10,10 +10,10 @@ import Profile from "./data-structure/Profile";
 import { filterInfinity } from "./util/vectors";
 
 export default class JourneyExtractor {
-  public readonly roadPlanner: IRoadPlanner;
-  public readonly locationResolver: ILocationResolver;
+  private readonly roadPlanner: IRoadPlanner;
+  private readonly locationResolver: ILocationResolver;
 
-  private bestArrivalTime: number = Infinity;
+  private bestArrivalTime: number[][] = [];
 
   constructor(roadPlanner: IRoadPlanner, locationResolver: ILocationResolver) {
     this.roadPlanner = roadPlanner;
@@ -34,7 +34,9 @@ export default class JourneyExtractor {
 
           for (let transfers = 0; transfers < profile.arrivalTimes.length; transfers++) {
             for (const arrivalStop of query.to) {
-              if (profile.arrivalTimes[transfers] < this.bestArrivalTime) { // TODO check for all from - to pairs
+              if (this.checkBestArrivalTime(profile, transfers, departureStop, arrivalStop)) {
+                this.setBestArrivalTime(departureStop, arrivalStop, profile.arrivalTimes[transfers]);
+
                 const journey = await this.extractJourney(
                   arrivalStop,
                   profile,
@@ -55,6 +57,19 @@ export default class JourneyExtractor {
     return journeys;
   }
 
+  private checkBestArrivalTime(profile: Profile, transfers: number, departureStop: ILocation, arrivalStop: ILocation) {
+    return profile.arrivalTimes[transfers] < Infinity &&
+      (!this.bestArrivalTime[departureStop.id] || !this.bestArrivalTime[departureStop.id][arrivalStop.id] ||
+      profile.arrivalTimes[transfers] < this.bestArrivalTime[departureStop.id][arrivalStop.id]);
+  }
+
+  private setBestArrivalTime(departureStop: ILocation, arrivalStop: ILocation, arrivalTime: number) {
+    if (!this.bestArrivalTime[departureStop.id]) {
+      this.bestArrivalTime[departureStop.id] = [];
+    }
+    this.bestArrivalTime[departureStop.id][arrivalStop.id] = arrivalTime;
+  }
+
   private async extractJourney(
     arrivalStop: ILocation,
     profile: Profile,
@@ -64,7 +79,6 @@ export default class JourneyExtractor {
   ): Promise<IPath> {
     // Extract journey for amount of transfers
     const journey: IPath = this.createJourney(profile, transfers);
-    this.bestArrivalTime = profile.arrivalTimes[transfers];
 
     let currentEntry = profile;
     let remainingTransfers = transfers;
