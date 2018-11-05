@@ -7,7 +7,7 @@ import IResolvedQuery from "../../../query-runner/IResolvedQuery";
 import IRoadPlanner from "../../road/IRoadPlanner";
 import IProfilesByStop from "./data-structure/IProfilesByStop";
 import Profile from "./data-structure/Profile";
-import { filterInfinity } from "./utils";
+import { filterInfinity } from "./util/vectors";
 
 export default class JourneyExtractor {
   public readonly roadPlanner: IRoadPlanner;
@@ -93,8 +93,8 @@ export default class JourneyExtractor {
           const walkingResult = await this.roadPlanner.plan({
             from: [from],
             to: [to],
-            minimumWalkingSpeed: query.minimumWalkingSpeed || 3,
-            maximumWalkingSpeed: query.maximumWalkingSpeed || 6,
+            minimumWalkingSpeed: query.minimumWalkingSpeed,
+            maximumWalkingSpeed: query.maximumWalkingSpeed,
           });
 
           if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
@@ -154,8 +154,8 @@ export default class JourneyExtractor {
     const walkingResult = await this.roadPlanner.plan({
       from: [fromLocation],
       to: [toLocation],
-      minimumWalkingSpeed: query.minimumWalkingSpeed || 3,
-      maximumWalkingSpeed: query.maximumWalkingSpeed || 6,
+      minimumWalkingSpeed: query.minimumWalkingSpeed,
+      maximumWalkingSpeed: query.maximumWalkingSpeed,
     });
 
     if (walkingResult && walkingResult[0] && walkingResult[0].steps[0]) {

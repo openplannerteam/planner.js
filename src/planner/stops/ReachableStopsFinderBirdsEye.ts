@@ -1,10 +1,11 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsFetcherMediator from "../../fetcher/stops/IStopsFetcherMediator";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
+@injectable()
 export default class ReachableStopsFinderBirdsEye implements IReachableStopsFinder {
   private readonly stopsFetcherMediator: IStopsFetcherMediator;
 

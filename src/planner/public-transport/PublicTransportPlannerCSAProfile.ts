@@ -1,34 +1,38 @@
 import { inject, injectable } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsFetcher from "../../fetcher/connections/IConnectionsFetcher";
+import IStop from "../../fetcher/stops/IStop";
 import IPath from "../../interfaces/IPath";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import IRoadPlanner from "../road/IRoadPlanner";
-import IEarliestArrival from "./CSA/data-structure/EarliestArrival";
+import IReachableStopsFinder from "../stops/IReachableStopsFinder";
 import EarliestArrival from "./CSA/data-structure/EarliestArrival";
+import IEarliestArrival from "./CSA/data-structure/EarliestArrival";
 import IArrivalTimeByTransfers from "./CSA/data-structure/IArrivalTimeByTransfers";
 import IEarliestArrivalByTrip from "./CSA/data-structure/IEarliestArrivalByTrip";
 import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
 import Profile from "./CSA/data-structure/Profile";
 import JourneyExtractor from "./CSA/JourneyExtractor";
-import { evalProfile, minVector, shiftVector } from "./CSA/utils";
+import { evalProfile, minVector, shiftVector } from "./CSA/util/vectors";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 @injectable()
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
-  public readonly connectionsFetcher: IConnectionsFetcher;
-  public readonly roadPlanner: IRoadPlanner;
-  public readonly locationResolver: ILocationResolver;
+  private readonly connectionsFetcher: IConnectionsFetcher;
+  private readonly roadPlanner: IRoadPlanner;
+  private readonly locationResolver: ILocationResolver;
+  private readonly reachableStopsFinder: IReachableStopsFinder;
 
   private readonly journeyExtractor: JourneyExtractor;
 
   private profilesByStop: IProfilesByStop = {}; // S
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
+  private durationToTargetByStop: number[] = [];
 
-  private D: number[] = [];
-  private maxLegs: number = 8;
+  private maxLegs: number = 8; // TODO define max legs on query?
+  private maximumDuration: number = 0.4; // TODO define maximum duration (radius) on query?
 
   private query: IResolvedQuery;
 
@@ -36,10 +40,12 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     @inject(TYPES.ConnectionsFetcher) connectionsFetcher: IConnectionsFetcher,
     @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
+    @inject(TYPES.ReachableStopsFinder) reachableStopsFinder: IReachableStopsFinder,
   ) {
     this.connectionsFetcher = connectionsFetcher;
     this.roadPlanner = roadPlanner;
     this.locationResolver = locationResolver;
+    this.reachableStopsFinder = reachableStopsFinder;
 
     this.journeyExtractor = new JourneyExtractor(roadPlanner, locationResolver);
   }
@@ -47,12 +53,16 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   public async plan(query: IResolvedQuery): Promise<IPath[]> {
     this.query = query;
 
-    this.setConnectionsFetcherConfig();
+    query.minimumWalkingSpeed = query.minimumWalkingSpeed || 3;
+    query.maximumWalkingSpeed = query.maximumWalkingSpeed || 6;
+    this.maximumDuration = 1;
+
+    this.setBounds();
 
     return await this.calculateJourneys();
   }
 
-  private setConnectionsFetcherConfig() {
+  private setBounds() {
     let upperBoundDate;
     let lowerBoundDate;
 
@@ -80,6 +90,8 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private async calculateJourneys(): Promise<IPath[]> {
+    await this.initDurationToTargetByStop();
+
     for await (const connection of this.connectionsFetcher) {
       if (connection.departureTime < this.query.minimumDepartureTime) {
         break;
@@ -91,7 +103,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       this.updateEarliestArrivalByTrip(connection, earliestArrivalTime);
 
       if (!this.isDominated(connection, earliestArrivalTime)) {
-        this.getFootpathsForDepartureStop(connection, earliestArrivalTime);
+        await this.getFootpathsForDepartureStop(connection, earliestArrivalTime);
       }
     }
 
@@ -121,12 +133,22 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     return minVector(t1, t2, t3);
   }
 
-  private walkToTarget(connection: IConnection): IArrivalTimeByTransfers {
-    let walkingTimeToTarget = this.D[connection.arrivalStop]; // TODO get duration.
+  private async initDurationToTargetByStop(): Promise<void> {
+    for (const arrivalStop of this.query.to) {
+      const reachableStops = await this.reachableStopsFinder.findReachableStops(
+        arrivalStop as IStop,
+        this.maximumDuration,
+        this.query.minimumWalkingSpeed,
+      );
 
-    if (connection.arrivalStop === this.query.to[0].id) { // not needed.
-      walkingTimeToTarget = 0;
+      for (const stop of reachableStops) {
+        this.durationToTargetByStop[stop[0].id] = stop[1] * 3600000;
+      }
     }
+  }
+
+  private walkToTarget(connection: IConnection): IArrivalTimeByTransfers {
+    const walkingTimeToTarget = this.durationToTargetByStop[connection.arrivalStop];
 
     if (walkingTimeToTarget === undefined) {
       return Array(this.maxLegs).fill(Infinity);
@@ -164,39 +186,38 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       memo && arrivalTime <= currentArrivalTimeByTransfers[transfer], true);
   }
 
-  private getFootpathsForDepartureStop(
+  private async getFootpathsForDepartureStop(
     connection: IConnection,
     currentArrivalTimeByTransfers: IArrivalTimeByTransfers,
-  ): void {
+  ): Promise<void> {
     const depProfile: Profile[] = this.profilesByStop[connection.departureStop];
     const earliestProfileEntry = depProfile[depProfile.length - 1];
     const minVectorTimes = minVector(currentArrivalTimeByTransfers, earliestProfileEntry.arrivalTimes);
 
-    // For all footpaths with f_arr_stop = c_dep_stop
-    // TODO getInterstopDistance
-    const ISDs = [{ stop1: connection.departureStop, stop2: connection.departureStop, duration: 60000 }];
-    ISDs.forEach((ISD) => {
-      // stop is f_dep_stop, the stop of the ISD that is _not_ connection.dep.stop
-      let stop = ISD.stop1;
-      if (stop === connection.departureStop) {
-        stop = ISD.stop2;
-      }
+    const departureStop = await this.locationResolver.resolve(connection.departureStop);
+    const reachableStops = await this.reachableStopsFinder.findReachableStops(
+      departureStop as IStop,
+      this.maximumDuration,
+      this.query.minimumWalkingSpeed,
+    );
 
+    reachableStops.forEach((reachableStop) => {
+      const duration = reachableStop[1] * 3600000; // TODO use util function
       // Incorporate (c_dep_time - f_dur, t_c) into profile of S[f_dep_stop]
-      this.incorporateInProfile(connection, ISD.duration, stop, minVectorTimes);
+      this.incorporateInProfile(connection, duration, reachableStop[0], minVectorTimes);
     });
   }
 
   private incorporateInProfile(
     connection: IConnection,
     duration: number,
-    stop: string,
+    stop: IStop,
     minVectorTimes: IArrivalTimeByTransfers,
   ) {
-    let profilesByDepartureStop = this.profilesByStop[stop];
+    let profilesByDepartureStop = this.profilesByStop[stop.id];
 
     if (profilesByDepartureStop === undefined) {
-      profilesByDepartureStop = this.profilesByStop[stop] = [new Profile(this.maxLegs)];
+      profilesByDepartureStop = this.profilesByStop[stop.id] = [new Profile(this.maxLegs)];
     }
     const earliestDepTimeProfile = profilesByDepartureStop[profilesByDepartureStop.length - 1];
 

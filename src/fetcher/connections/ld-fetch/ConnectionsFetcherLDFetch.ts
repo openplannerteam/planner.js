@@ -4,7 +4,6 @@ import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 
-(Symbol as any).asyncIterator = Symbol.asyncIterator || Symbol.for("Symbol.asyncIterator");
 @injectable()
 export default abstract class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
 

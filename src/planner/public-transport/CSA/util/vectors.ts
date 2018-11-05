@@ -1,6 +1,6 @@
-import IConnection from "../../../fetcher/connections/IConnection";
-import IProfilesByStop from "./data-structure/IProfilesByStop";
-import IArrivalTimeByTransfers from "./data-structure/IArrivalTimeByTransfers";
+import IConnection from "../../../../fetcher/connections/IConnection";
+import IProfilesByStop from "../data-structure/IProfilesByStop";
+import IArrivalTimeByTransfers from "../data-structure/IArrivalTimeByTransfers";
 
 /**
  * Shift a number vector to the right,
