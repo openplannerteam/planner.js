@@ -3,9 +3,10 @@ import ILocation from "../../../interfaces/ILocation";
 import IPath from "../../../interfaces/IPath";
 import IStep from "../../../interfaces/IStep";
 import ILocationResolver from "../../../query-runner/ILocationResolver";
+import IResolvedQuery from "../../../query-runner/IResolvedQuery";
 import IRoadPlanner from "../../road/IRoadPlanner";
-import IProfilesByStop from "./dataStructure/IProfilesByStop";
-import Profile from "./dataStructure/Profile";
+import IProfilesByStop from "./data-structure/IProfilesByStop";
+import Profile from "./data-structure/Profile";
 import { filterInfinity } from "./utils";
 
 export default class JourneyExtractor {
@@ -21,37 +22,51 @@ export default class JourneyExtractor {
 
   public async extractJourneys(
     profilesByStop: IProfilesByStop,
-    from: ILocation,
-    to: ILocation,
-    departureTime: Date,
+    query: IResolvedQuery,
   ): Promise<IPath[]> {
-    const profile: IProfilesByStop = filterInfinity(profilesByStop);
+    const filteredProfilesByStop: IProfilesByStop = filterInfinity(profilesByStop);
 
     const journeys = [];
-    for (const entry of profile[from.id]) {
-      if (entry.departureTime >= departureTime.getTime()) {
-        for (let transfers = 0; transfers < entry.arrivalTimes.length; transfers++) {
-          if (entry.arrivalTimes[transfers] < this.bestArrivalTime) {
-            const journey = await this.extractJourney(to, entry, transfers, profile);
-            journeys.push(journey);
+    for (const departureStop of query.from) {
+
+      for (const profile of filteredProfilesByStop[departureStop.id]) {
+        if (profile.departureTime >= query.minimumDepartureTime.getTime()) {
+
+          for (let transfers = 0; transfers < profile.arrivalTimes.length; transfers++) {
+            for (const arrivalStop of query.to) {
+              if (profile.arrivalTimes[transfers] < this.bestArrivalTime) { // TODO check for all from - to pairs
+                const journey = await this.extractJourney(
+                  arrivalStop,
+                  profile,
+                  transfers,
+                  filteredProfilesByStop,
+                  query,
+                );
+
+                journeys.push(journey);
+              }
+            }
           }
         }
+
       }
     }
+
     return journeys;
   }
 
   private async extractJourney(
-    target: ILocation,
-    entry: Profile,
+    arrivalStop: ILocation,
+    profile: Profile,
     transfers: number,
-    profile: IProfilesByStop,
+    profilesByStop: IProfilesByStop,
+    query: IResolvedQuery,
   ): Promise<IPath> {
     // Extract journey for amount of transfers
-    const journey: IPath = this.createJourney(entry, transfers);
-    this.bestArrivalTime = entry.arrivalTimes[transfers];
+    const journey: IPath = this.createJourney(profile, transfers);
+    this.bestArrivalTime = profile.arrivalTimes[transfers];
 
-    let currentEntry = entry;
+    let currentEntry = profile;
     let remainingTransfers = transfers;
 
     while (remainingTransfers >= 0) {
@@ -64,7 +79,7 @@ export default class JourneyExtractor {
 
       remainingTransfers--;
       if (remainingTransfers >= 0) {
-        const nextProfile = profile[step.stopLocation.id];
+        const nextProfile = profilesByStop[step.stopLocation.id];
 
         let i = nextProfile.length - 1;
         let found = false;
@@ -72,14 +87,14 @@ export default class JourneyExtractor {
         while (!found) {
           const connection = nextProfile[i].enterConnections[remainingTransfers];
 
-          const from = await this.locationResolver.resolve({id: step.stopLocation.id });
-          const to = await this.locationResolver.resolve({id: connection.departureStop});
+          const from = await this.locationResolver.resolve(step.stopLocation.id);
+          const to = await this.locationResolver.resolve(connection.departureStop);
 
           const walkingResult = await this.roadPlanner.plan({
             from: [from],
             to: [to],
-            minimumWalkingSpeed: 3,
-            maximumWalkingSpeed: 6,
+            minimumWalkingSpeed: query.minimumWalkingSpeed || 3,
+            maximumWalkingSpeed: query.maximumWalkingSpeed || 6,
           });
 
           if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
@@ -95,17 +110,17 @@ export default class JourneyExtractor {
       }
     }
 
-    if (journey.steps[journey.steps.length - 1].stopLocation.id !== target.id) {
-      await this.addFinalFootpath(journey, target);
+    if (journey.steps[journey.steps.length - 1].stopLocation.id !== arrivalStop.id) {
+      await this.addFinalFootpath(journey, arrivalStop, query);
     }
 
     return journey;
   }
 
-  private createJourney(entry: Profile, transfers: number): IPath {
+  private createJourney(profile: Profile, transfers: number): IPath {
     return {
-      departureTime: new Date(entry.departureTime),
-      arrivalTime: new Date(entry.arrivalTimes[transfers]),
+      departureTime: new Date(profile.departureTime),
+      arrivalTime: new Date(profile.arrivalTimes[transfers]),
       transfers,
       steps: [],
     };
@@ -130,17 +145,17 @@ export default class JourneyExtractor {
     };
   }
 
-  private async addFinalFootpath(journey: IPath, to: ILocation): Promise<void> {
+  private async addFinalFootpath(journey: IPath, arrivalStop: ILocation, query: IResolvedQuery): Promise<void> {
     const lastStep = journey.steps[journey.steps.length - 1];
 
-    const fromLocation = await this.locationResolver.resolve({id: lastStep.stopLocation.id });
-    const toLocation = await this.locationResolver.resolve(to);
+    const fromLocation = await this.locationResolver.resolve(lastStep.stopLocation.id );
+    const toLocation = await this.locationResolver.resolve(arrivalStop);
 
     const walkingResult = await this.roadPlanner.plan({
       from: [fromLocation],
       to: [toLocation],
-      minimumWalkingSpeed: 3,
-      maximumWalkingSpeed: 6,
+      minimumWalkingSpeed: query.minimumWalkingSpeed || 3,
+      maximumWalkingSpeed: query.maximumWalkingSpeed || 6,
     });
 
     if (walkingResult && walkingResult[0] && walkingResult[0].steps[0]) {
