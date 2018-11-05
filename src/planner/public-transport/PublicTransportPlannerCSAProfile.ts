@@ -3,9 +3,11 @@ import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsFetcher from "../../fetcher/connections/IConnectionsFetcher";
 import IStop from "../../fetcher/stops/IStop";
 import IPath from "../../interfaces/IPath";
+import { DurationMs } from "../../interfaces/units";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Units from "../../util/Units";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder from "../stops/IReachableStopsFinder";
 import EarliestArrival from "./CSA/data-structure/EarliestArrival";
@@ -29,10 +31,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   private profilesByStop: IProfilesByStop = {}; // S
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
-  private durationToTargetByStop: number[] = [];
+  private durationToTargetByStop: DurationMs[] = [];
 
   private maxLegs: number = 8; // TODO define max legs on query?
-  private maximumDuration: number = 0.4; // TODO define maximum duration (radius) on query?
+  private maximumDuration: DurationMs = Units.fromHours(0.4); // TODO define maximum duration (radius) on query?
 
   private query: IResolvedQuery;
 
@@ -141,8 +143,8 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
         this.query.minimumWalkingSpeed,
       );
 
-      for (const stop of reachableStops) {
-        this.durationToTargetByStop[stop[0].id] = stop[1] * 3600000;
+      for (const reachableStop of reachableStops) {
+        this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration * 3600000;
       }
     }
   }
@@ -202,15 +204,14 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     );
 
     reachableStops.forEach((reachableStop) => {
-      const duration = reachableStop[1] * 3600000; // TODO use util function
       // Incorporate (c_dep_time - f_dur, t_c) into profile of S[f_dep_stop]
-      this.incorporateInProfile(connection, duration, reachableStop[0], minVectorTimes);
+      this.incorporateInProfile(connection, reachableStop.duration, reachableStop.stop, minVectorTimes);
     });
   }
 
   private incorporateInProfile(
     connection: IConnection,
-    duration: number,
+    duration: DurationMs,
     stop: IStop,
     minVectorTimes: IArrivalTimeByTransfers,
   ) {
@@ -259,7 +260,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
         exitConnections,
       };
 
-      if (earliestDepTimeProfile.departureTime !== departureTime) {
+      if (earliestDepTimeProfile.departureTime !== departureTime) { // TODO check order before inserting.
         profilesByDepartureStop.push(newProfile);
       } else {
         profilesByDepartureStop[profilesByDepartureStop.length - 1] = newProfile;

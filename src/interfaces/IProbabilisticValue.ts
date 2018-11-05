@@ -1,7 +1,7 @@
-export default interface IProbabilisticValue {
-  median?: number;
-  average?: number;
-  minimum?: number;
-  maximum?: number;
-  percentiles?: {[percentile: string]: number};
+export default interface IProbabilisticValue<T> {
+  median?: T;
+  average?: T;
+  minimum?: T;
+  maximum?: T;
+  percentiles?: {[percentile: string]: T};
 }

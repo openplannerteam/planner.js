@@ -4,7 +4,9 @@ import IPath from "../../../interfaces/IPath";
 import IStep from "../../../interfaces/IStep";
 import ILocationResolver from "../../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../../query-runner/IResolvedQuery";
+import Path from "../../Path";
 import IRoadPlanner from "../../road/IRoadPlanner";
+import Step from "../../Step";
 import IProfilesByStop from "./data-structure/IProfilesByStop";
 import Profile from "./data-structure/Profile";
 import { filterInfinity } from "./util/vectors";
@@ -78,7 +80,7 @@ export default class JourneyExtractor {
     query: IResolvedQuery,
   ): Promise<IPath> {
     // Extract journey for amount of transfers
-    const journey: IPath = this.createJourney(profile, transfers);
+    const path: Path = Path.createFromProfile(profile, transfers);
 
     let currentEntry = profile;
     let remainingTransfers = transfers;
@@ -88,8 +90,8 @@ export default class JourneyExtractor {
       const enterConnection: IConnection = currentEntry.enterConnections[remainingTransfers];
       const exitConnection: IConnection = currentEntry.exitConnections[remainingTransfers];
 
-      const step: IStep = this.createStep(enterConnection, exitConnection);
-      journey.steps.push(step);
+      const step: IStep = Step.createFromConnections(enterConnection, exitConnection);
+      path.addStep(step);
 
       remainingTransfers--;
       if (remainingTransfers >= 0) {
@@ -113,10 +115,10 @@ export default class JourneyExtractor {
 
           if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
             connection.departureTime.getTime() >= step.stopTime.getTime() +
-            walkingResult[0].steps[0].duration.average
+            walkingResult[0].steps[0].duration.minimum
           ) {
             found = true;
-            journey.steps.push(walkingResult[0].steps[0]);
+            path.addStep(walkingResult[0].steps[0]);
             currentEntry = nextProfile[i];
           }
           i--;
@@ -124,43 +126,15 @@ export default class JourneyExtractor {
       }
     }
 
-    if (journey.steps[journey.steps.length - 1].stopLocation.id !== arrivalStop.id) {
-      await this.addFinalFootpath(journey, arrivalStop, query);
+    if (path.steps[path.steps.length - 1].stopLocation.id !== arrivalStop.id) {
+      await this.addFinalFootpath(path, arrivalStop, query);
     }
 
-    return journey;
+    return path as IPath;
   }
 
-  private createJourney(profile: Profile, transfers: number): IPath {
-    return {
-      departureTime: new Date(profile.departureTime),
-      arrivalTime: new Date(profile.arrivalTimes[transfers]),
-      transfers,
-      steps: [],
-    };
-  }
-
-  private createStep(enterConnection: IConnection, exitConnection: IConnection): IStep {
-    return {
-      startLocation: {
-        id: enterConnection.departureStop,
-      },
-      stopLocation: {
-        id: exitConnection.arrivalStop,
-      },
-      startTime: exitConnection.departureTime,
-      stopTime: exitConnection.arrivalTime,
-      duration: {
-        average: (
-          exitConnection.arrivalTime.getTime() -
-          enterConnection.departureTime.getTime()
-        ),
-      },
-    };
-  }
-
-  private async addFinalFootpath(journey: IPath, arrivalStop: ILocation, query: IResolvedQuery): Promise<void> {
-    const lastStep = journey.steps[journey.steps.length - 1];
+  private async addFinalFootpath(path: Path, arrivalStop: ILocation, query: IResolvedQuery): Promise<void> {
+    const lastStep = path.steps[path.steps.length - 1];
 
     const fromLocation = await this.locationResolver.resolve(lastStep.stopLocation.id );
     const toLocation = await this.locationResolver.resolve(arrivalStop);
@@ -173,7 +147,7 @@ export default class JourneyExtractor {
     });
 
     if (walkingResult && walkingResult[0] && walkingResult[0].steps[0]) {
-      journey.steps.push(walkingResult[0].steps[0]);
+      path.addStep(walkingResult[0].steps[0]);
     }
   }
 }

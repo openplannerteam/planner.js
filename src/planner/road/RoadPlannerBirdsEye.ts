@@ -5,6 +5,8 @@ import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import Geo from "../../util/Geo";
 import IRoadPlanner from "./IRoadPlanner";
+import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import Units from "../../util/Units";
 
 @injectable()
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
@@ -29,15 +31,15 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
   private getPathBetweenLocations(
     from: ILocation,
     to: ILocation,
-    minWalkingSpeed: number,
-    maxWalkingSpeed: number,
+    minWalkingSpeed: SpeedkmH,
+    maxWalkingSpeed: SpeedkmH,
   ): IPath {
 
     const distance = Geo.getDistanceBetweenLocations(from, to);
-    const minDuration = distance / maxWalkingSpeed;
-    const maxDuration = distance / minWalkingSpeed;
+    const minDuration = Units.toDuration(distance, maxWalkingSpeed);
+    const maxDuration = Units.toDuration(distance, minWalkingSpeed);
 
-    const duration: IProbabilisticValue = {
+    const duration: IProbabilisticValue<DurationMs> = {
       minimum: minDuration,
       maximum: maxDuration,
       average: (minDuration + maxDuration) / 2,

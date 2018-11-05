@@ -1,8 +1,10 @@
 import { inject, injectable } from "inversify";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsFetcherMediator from "../../fetcher/stops/IStopsFetcherMediator";
+import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
+import Units from "../../util/Units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
 @injectable()
@@ -17,21 +19,22 @@ export default class ReachableStopsFinderBirdsEye implements IReachableStopsFind
 
   public async findReachableStops(
     source: IStop,
-    maximumDuration: number,
-    minimumSpeed: number): Promise<IReachableStop[]> {
+    maximumDuration: DurationMs,
+    minimumSpeed: SpeedkmH,
+  ): Promise<IReachableStop[]> {
 
     const allStops = await this.stopsFetcherMediator.getAllStops();
 
     return allStops.map((possibleTarget: IStop): IReachableStop => {
       if (possibleTarget.id === source.id) {
-        return [source, 0];
+        return {stop: source, duration: 0};
       }
 
       const distance = Geo.getDistanceBetweenStops(source, possibleTarget);
-      const duration = distance / minimumSpeed;
+      const duration = Units.toDuration(distance, minimumSpeed);
 
       if (duration <= maximumDuration) {
-        return [possibleTarget, duration];
+        return {stop: possibleTarget, duration};
       }
     }).filter((reachableStop) => !!reachableStop);
   }
