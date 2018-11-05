@@ -15,7 +15,7 @@ export default class LocationResolverDefault implements ILocationResolver {
     this.stopsFetcherMediator = stopsFetcherMediator;
   }
 
-  public async resolve(input: ILocation | string): Promise<ILocation> {
+  public async resolve(input: ILocation | IStop | string): Promise<ILocation> {
 
     if (typeof input === "string") {
 

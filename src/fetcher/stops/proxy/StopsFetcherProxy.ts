@@ -24,9 +24,7 @@ export default class StopsFetcherProxy implements IStopsFetcherMediator {
 
   public async getAllStops(): Promise<IStop[]> {
     return Promise.all(this.stopsFetchers
-      .map((stopsFetcher: IStopsFetcher) =>
-        stopsFetcher.getAllStops(),
-      ),
+      .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getAllStops()),
     ).then((results: IStop[][]) => results.flat());
   }
 
@@ -35,10 +33,7 @@ export default class StopsFetcherProxy implements IStopsFetcherMediator {
       return null;
     }
 
-    for (const fetcher of this.stopsFetchers) {
-      if (stopId.indexOf(fetcher.prefix) === 0) {
-        return fetcher;
-      }
-    }
+    return this.stopsFetchers
+      .find((fetcher) => stopId.indexOf(fetcher.prefix) === 0);
   }
 }
