@@ -5,7 +5,10 @@ import ConnectionsFetcherDeLijn from "./fetcher/connections/ld-fetch/Connections
 import ConnectionsFetcherNMBS from "./fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
 import ConnectionsFetcherMerge from "./fetcher/connections/merge/ConnectionsFetcherMerge";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
-import StopsFetcherNMBS from "./fetcher/stops/StopsFetcherNMBS";
+import IStopsFetcherMediator from "./fetcher/stops/IStopsFetcherMediator";
+import StopsFetcherDeLijn from "./fetcher/stops/ld-fetch/StopsFetcherDeLijn";
+import StopsFetcherNMBS from "./fetcher/stops/ld-fetch/StopsFetcherNMBS";
+import StopsFetcherProxy from "./fetcher/stops/proxy/StopsFetcherProxy";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
 import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
@@ -34,5 +37,7 @@ container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
   .to(ConnectionsFetcherMerge).whenTargetTagged("type", "merge");*/
 
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn);
+container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy);
 
 export default container;

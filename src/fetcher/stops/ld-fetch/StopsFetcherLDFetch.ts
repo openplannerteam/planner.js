@@ -1,9 +1,9 @@
 import { injectable, unmanaged } from "inversify";
 import LDFetch from "ldfetch";
 import { Triple } from "rdf-js";
-import { transformPredicate } from "../helpers";
-import IStop from "./IStop";
-import IStopsFetcher from "./IStopsFetcher";
+import { transformPredicate } from "../../helpers";
+import IStop from "../IStop";
+import IStopsFetcher from "../IStopsFetcher";
 
 interface IPartialStopMap {
   [stopId: string]: Partial<IStop>;
@@ -36,6 +36,14 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
     }
 
     return this.stops[stopId];
+  }
+
+  public async getAllStops(): Promise<IStop[]> {
+    if (this.loadPromise) {
+      await this.loadPromise;
+    }
+
+    return Object.values(this.stops);
   }
 
   private loadStops() {

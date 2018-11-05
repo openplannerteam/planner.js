@@ -1,20 +1,18 @@
 import { inject, injectable } from "inversify";
-import Context from "../Context";
 import IStop from "../fetcher/stops/IStop";
-import IStopsFetcher from "../fetcher/stops/IStopsFetcher";
+import IStopsFetcherMediator from "../fetcher/stops/IStopsFetcherMediator";
 import ILocation from "../interfaces/ILocation";
 import TYPES from "../types";
 import ILocationResolver from "./ILocationResolver";
 
 @injectable()
 export default class LocationResolverDefault implements ILocationResolver {
-  private readonly stopsFetchers: IStopsFetcher[];
+  private readonly stopsFetcherMediator: IStopsFetcherMediator;
 
   constructor(
-    @inject(TYPES.Context) context: Context,
+    @inject(TYPES.StopsFetcherMediator) stopsFetcherMediator: IStopsFetcherMediator,
   ) {
-    this.stopsFetchers = context.getContainer()
-      .getAll<IStopsFetcher>(TYPES.StopsFetcher);
+    this.stopsFetcherMediator = stopsFetcherMediator;
   }
 
   public async resolve(input: ILocation | string): Promise<ILocation> {
@@ -46,33 +44,17 @@ export default class LocationResolverDefault implements ILocationResolver {
   }
 
   private async resolveById(id: string): Promise<ILocation> {
-    const fetcher = this.determineStopFetcher(id);
+    const stop: IStop = await this.stopsFetcherMediator.getStopById(id);
 
-    if (fetcher) {
-      const stop: IStop = await fetcher.getStopById(id);
-
-      if (stop) {
-        return {
-          id,
-          latitude: stop.latitude,
-          longitude: stop.longitude,
-        };
-      }
+    if (stop) {
+      return {
+        id,
+        latitude: stop.latitude,
+        longitude: stop.longitude,
+      };
     }
 
     throw new Error(`No fetcher for id ${id}`);
-  }
-
-  private determineStopFetcher(id: string): IStopsFetcher {
-    if (!this.stopsFetchers || !this.stopsFetchers.length) {
-      return null;
-    }
-
-    for (const fetcher of this.stopsFetchers) {
-      if (id.indexOf(fetcher.prefix) === 0) {
-        return fetcher;
-      }
-    }
   }
 
   private isId(testString: string): boolean {

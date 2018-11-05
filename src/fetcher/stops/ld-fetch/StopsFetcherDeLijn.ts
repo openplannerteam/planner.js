@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import IStopsFetcher from "./IStopsFetcher";
+import IStopsFetcher from "../IStopsFetcher";
 import StopsFetcherLDFetch from "./StopsFetcherLDFetch";
 
 const STOPS_URLS = [
