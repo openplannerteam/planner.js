@@ -1,5 +1,6 @@
 import IConnection from "../../../fetcher/connections/IConnection";
-import IProfilesByStop from "./dataStructure/IProfilesByStop";
+import IProfilesByStop from "./data-structure/IProfilesByStop";
+import IArrivalTimeByTransfers from "./data-structure/IArrivalTimeByTransfers";
 
 /**
  * Shift a number vector to the right,
@@ -8,7 +9,7 @@ import IProfilesByStop from "./dataStructure/IProfilesByStop";
  * @param vector: [int]
  */
 
-export function shiftVector(vector: number[]): number[] {
+export function shiftVector(vector: IArrivalTimeByTransfers): IArrivalTimeByTransfers {
   vector.unshift(Infinity);
   vector.pop();
   return vector;
@@ -20,12 +21,12 @@ export function shiftVector(vector: number[]): number[] {
  * @param vectors: [[int]]
  * @returns {Array}
  */
-export function minVector(...vectors: number[][]): number[] {
+export function minVector(...vectors: IArrivalTimeByTransfers[]): IArrivalTimeByTransfers {
   if (!vectors || !vectors[0]) {
     return [];
   }
 
-  const result: number[] = vectors[0];
+  const result: IArrivalTimeByTransfers = vectors[0];
   for (let vectorIndex = 1 ; vectorIndex < vectors.length ; vectorIndex++) {
     for (let numberIndex = 0 ; numberIndex < vectors[vectorIndex].length ; numberIndex++) {
       if (vectors[vectorIndex][numberIndex] < result[numberIndex]) {
