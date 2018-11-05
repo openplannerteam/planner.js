@@ -3,7 +3,7 @@ import IConnection from "../IConnection";
 import ConnectionsFetcherLDFetch from "./ConnectionsFetcherLDFetch";
 import ConnectionsIteratorLDFetch from "./ConnectionsIteratorLDFetch";
 
-const DE_LIJN_BASE_URL = "https://belgium.linkedconnections.org/delijn/West-Vlaanderen/connections";
+const DE_LIJN_BASE_URL = "http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections";
 
 @injectable()
 export default class ConnectionsFetcherDeLijn extends ConnectionsFetcherLDFetch {

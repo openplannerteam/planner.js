@@ -3,11 +3,11 @@ import IStopsFetcher from "./IStopsFetcher";
 import StopsFetcherLDFetch from "./StopsFetcherLDFetch";
 
 const STOPS_URLS = [
-  "https://belgium.linkedconnections.org/delijn/Antwerpen/stops",
-  "https://belgium.linkedconnections.org/delijn/Oost-Vlaanderen/stops",
-  "https://belgium.linkedconnections.org/delijn/West-Vlaanderen/stops",
-  "https://belgium.linkedconnections.org/delijn/Vlaams-Brabant/stops",
-  "https://belgium.linkedconnections.org/delijn/Limburg/stops",
+  "http://openplanner.ilabt.imec.be/delijn/Antwerpen/stops",
+  "http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops",
+  "http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops",
+  "http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops",
+  "http://openplanner.ilabt.imec.be/delijn/Limburg/stops",
 ];
 
 @injectable()
