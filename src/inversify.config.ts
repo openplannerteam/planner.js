@@ -13,6 +13,8 @@ import IPublicTransportPlanner from "./planner/public-transport/IPublicTransport
 import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
+import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
+import ReachableStopsFinderBirdsEye from "./planner/stops/ReachableStopsFinderBirdsEye";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import LocationResolverDefault from "./query-runner/LocationResolverDefault";
@@ -39,5 +41,7 @@ container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn);
 container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy);
+
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder).to(ReachableStopsFinderBirdsEye);
 
 export default container;

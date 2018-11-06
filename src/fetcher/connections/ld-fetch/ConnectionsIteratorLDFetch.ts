@@ -5,6 +5,7 @@ import UriTemplate from "uritemplate";
 import { matchesTriple, transformPredicate } from "../../helpers";
 import IConnection from "../IConnection";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import Units from "../../../util/Units";
 
 interface IEntity {
 }
@@ -121,6 +122,10 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
 
       if (triple.predicate.value === "departureTime" || triple.predicate.value === "arrivalTime") {
         newObject = new Date(triple.object.value);
+      }
+
+      if (triple.predicate.value === "departureDelay" || triple.predicate.value === "arrivalDelay") {
+        newObject = Units.fromSeconds(parseInt(triple.object.value, 10));
       }
 
       if (!entities[subject]) {

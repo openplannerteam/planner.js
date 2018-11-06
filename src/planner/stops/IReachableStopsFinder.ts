@@ -1,7 +1,15 @@
 import IStop from "../../fetcher/stops/IStop";
+import { DurationMs, SpeedkmH } from "../../interfaces/units";
 
 export default interface IReachableStopsFinder {
-  findReachableStops: (sourceStop: IStop, maximumDuration: number, minimumSpeed: number) => Promise<IReachableStop[]>;
+  findReachableStops: (
+    sourceStop: IStop,
+    maximumDuration: DurationMs,
+    minimumSpeed: SpeedkmH,
+  ) => Promise<IReachableStop[]>;
 }
 
-export type IReachableStop = [IStop, number];
+export interface IReachableStop {
+  stop: IStop;
+  duration: DurationMs;
+}

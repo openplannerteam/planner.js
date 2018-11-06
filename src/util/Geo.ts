@@ -1,9 +1,10 @@
 import haversine from "haversine";
 import IStop from "../fetcher/stops/IStop";
 import ILocation from "../interfaces/ILocation";
+import { DistanceM } from "../interfaces/units";
 
 export default class Geo {
-  public static getDistanceBetweenLocations(start: ILocation, stop: ILocation): number {
+  public static getDistanceBetweenLocations(start: ILocation, stop: ILocation): DistanceM {
     const { longitude: depLongitude, latitude: depLatitude } = start;
     const { longitude: arrLongitude, latitude: arrLatitude } = stop;
 
@@ -18,6 +19,8 @@ export default class Geo {
     }, {
       latitude: arrLatitude,
       longitude: arrLongitude,
+    }, {
+      unit: "meter",
     });
   }
 

@@ -1,9 +1,10 @@
-import { multiInject } from "inversify";
+import { injectable, multiInject } from "inversify";
 import TYPES from "../../../types";
 import IStop from "../IStop";
 import IStopsFetcher from "../IStopsFetcher";
 import IStopsFetcherMediator from "../IStopsFetcherMediator";
 
+@injectable()
 export default class StopsFetcherProxy implements IStopsFetcherMediator {
 
   private readonly stopsFetchers: IStopsFetcher[];
