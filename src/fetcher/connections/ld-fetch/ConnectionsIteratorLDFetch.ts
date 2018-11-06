@@ -2,10 +2,11 @@ import LdFetch from "ldfetch";
 import { Util } from "n3";
 import { Triple } from "rdf-js";
 import UriTemplate from "uritemplate";
+import TravelMode from "../../../TravelMode";
+import Units from "../../../util/Units";
 import { matchesTriple, transformPredicate } from "../../helpers";
 import IConnection from "../IConnection";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
-import Units from "../../../util/Units";
 
 interface IEntity {
 }
@@ -16,6 +17,7 @@ interface IEntityMap {
 
 export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnection> {
   public readonly baseUrl: string;
+  private travelMode: TravelMode;
   private ldFetch: LdFetch;
 
   private connections: IConnection[];
@@ -26,10 +28,12 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
 
   constructor(
     baseUrl: string,
+    travelMode: TravelMode,
     ldFetch: LdFetch,
     config: IConnectionsFetcherConfig,
     ) {
     this.baseUrl = baseUrl;
+    this.travelMode = travelMode;
     this.ldFetch = ldFetch;
     this.config = config;
   }
@@ -93,6 +97,12 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
 
     // Find all Connections
     const connections = this.filterConnectionsFromEntities(entities);
+
+    // Add travel mode
+    connections.map((connection: IConnection) => {
+      connection.travelMode = this.travelMode;
+      return connection;
+    });
 
     // Sort connections by departure time
     this.connections = connections.sort((connectionA, connectionB) => {
