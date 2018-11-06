@@ -4,7 +4,6 @@ import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 
-
 @injectable()
 export default abstract class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
 

@@ -7,6 +7,7 @@ const TYPES = {
   StopsFetcherMediator: Symbol("StopsFetcherMediator"),
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
   RoadPlanner: Symbol("RoadPlanner"),
+  ReachableStopsFinder: Symbol("ReachableStopsFinder"),
 };
 
 export default TYPES;
