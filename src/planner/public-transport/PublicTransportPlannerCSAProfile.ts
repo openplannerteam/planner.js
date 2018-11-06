@@ -8,16 +8,17 @@ import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Units from "../../util/Units";
+import Vectors from "../../util/Vectors";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder from "../stops/IReachableStopsFinder";
-import EarliestArrival from "./CSA/data-structure/EarliestArrival";
 import IEarliestArrival from "./CSA/data-structure/EarliestArrival";
+import EarliestArrival from "./CSA/data-structure/EarliestArrival";
 import IArrivalTimeByTransfers from "./CSA/data-structure/IArrivalTimeByTransfers";
 import IEarliestArrivalByTrip from "./CSA/data-structure/IEarliestArrivalByTrip";
 import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
 import Profile from "./CSA/data-structure/Profile";
 import JourneyExtractor from "./CSA/JourneyExtractor";
-import { evalProfile, minVector, shiftVector } from "./CSA/util/vectors";
+import ProfileUtil from "./CSA/util/ProfileUtil";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 @injectable()
@@ -132,7 +133,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const t2 = this.remainSeated(connection);
     const t3 = this.takeTransfer(connection);
 
-    return minVector(t1, t2, t3);
+    return Vectors.minVector(t1, t2, t3);
   }
 
   private async initDurationToTargetByStop(): Promise<void> {
@@ -164,7 +165,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
-    return shiftVector(evalProfile(this.profilesByStop, connection, this.maxLegs));
+    return Vectors.shiftVector<IArrivalTimeByTransfers>(ProfileUtil.evalProfile(this.profilesByStop, connection, this.maxLegs));
   }
 
   private updateEarliestArrivalByTrip(
@@ -194,7 +195,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   ): Promise<void> {
     const depProfile: Profile[] = this.profilesByStop[connection.departureStop];
     const earliestProfileEntry = depProfile[depProfile.length - 1];
-    const minVectorTimes = minVector(currentArrivalTimeByTransfers, earliestProfileEntry.arrivalTimes);
+    const minVectorTimes = Vectors.minVector(currentArrivalTimeByTransfers, earliestProfileEntry.arrivalTimes);
 
     const departureStop = await this.locationResolver.resolve(connection.departureStop);
     const reachableStops = await this.reachableStopsFinder.findReachableStops(

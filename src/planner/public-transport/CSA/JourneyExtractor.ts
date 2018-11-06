@@ -9,7 +9,7 @@ import IRoadPlanner from "../../road/IRoadPlanner";
 import Step from "../../Step";
 import IProfilesByStop from "./data-structure/IProfilesByStop";
 import Profile from "./data-structure/Profile";
-import { filterInfinity } from "./util/vectors";
+import ProfileUtil from "./util/ProfileUtil";
 
 export default class JourneyExtractor {
   private readonly roadPlanner: IRoadPlanner;
@@ -26,7 +26,7 @@ export default class JourneyExtractor {
     profilesByStop: IProfilesByStop,
     query: IResolvedQuery,
   ): Promise<IPath[]> {
-    const filteredProfilesByStop: IProfilesByStop = filterInfinity(profilesByStop);
+    const filteredProfilesByStop: IProfilesByStop = ProfileUtil.filterInfinity(profilesByStop);
 
     const journeys = [];
     for (const departureStop of query.from) {
