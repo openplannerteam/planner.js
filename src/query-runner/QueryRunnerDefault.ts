@@ -9,6 +9,7 @@ import TYPES from "../types";
 import ILocationResolver from "./ILocationResolver";
 import IQueryRunner from "./IQueryRunner";
 import IResolvedQuery from "./IResolvedQuery";
+import Constants from "../Constants";
 
 @injectable()
 export default class QueryRunnerDefault implements IQueryRunner {
@@ -61,8 +62,8 @@ export default class QueryRunnerDefault implements IQueryRunner {
 
     resolvedQuery.from = await this.resolveEndpoint(from);
     resolvedQuery.to = await this.resolveEndpoint(to);
-    resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || maximumWalkingSpeed;
-    resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || minimumWalkingSpeed;
+    resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Constants.defaultMinimumWalkingSpeed;
+    resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Constants.defaultMaximumWalkingSpeed;
 
     return resolvedQuery;
   }

@@ -56,8 +56,6 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   public async plan(query: IResolvedQuery): Promise<IPath[]> {
     this.query = query;
 
-    query.minimumWalkingSpeed = query.minimumWalkingSpeed || 3;
-    query.maximumWalkingSpeed = query.maximumWalkingSpeed || 6;
     this.maximumDuration = 1;
 
     this.setBounds();
@@ -69,17 +67,17 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     let upperBoundDate;
     let lowerBoundDate;
 
-    if (this.query.maximumArrivalTime) {
-      upperBoundDate = this.query.maximumArrivalTime;
-    } else {
-      upperBoundDate = new Date();
-      upperBoundDate.setHours(upperBoundDate.getHours() + 2);
-    }
-
     if (this.query.minimumDepartureTime) {
       lowerBoundDate = this.query.minimumDepartureTime;
     } else {
       lowerBoundDate = new Date();
+    }
+
+    if (this.query.maximumArrivalTime) {
+      upperBoundDate = this.query.maximumArrivalTime;
+    } else {
+      upperBoundDate = lowerBoundDate;
+      upperBoundDate.setHours(upperBoundDate.getHours() + 2);
     }
 
     this.query.maximumArrivalTime = upperBoundDate;
@@ -145,7 +143,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       );
 
       for (const reachableStop of reachableStops) {
-        this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration * 3600000;
+        this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration;
       }
     }
   }
@@ -165,7 +163,9 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
-    return Vectors.shiftVector<IArrivalTimeByTransfers>(ProfileUtil.evalProfile(this.profilesByStop, connection, this.maxLegs));
+    return Vectors.shiftVector<IArrivalTimeByTransfers>(
+      ProfileUtil.evalProfile(this.profilesByStop, connection, this.maxLegs),
+    );
   }
 
   private updateEarliestArrivalByTrip(
@@ -253,7 +253,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
       // If the new departure time is equal, update the profile entry
       // Else, insert a new entry
-      const departureTime = connection.departureTime.getTime() - duration; // Calculate c_dep_time - f_dur
+      const departureTime = connection.departureTime.getTime() - duration;
       const newProfile = {
         departureTime,
         arrivalTimes: minVectorTimes,
@@ -261,11 +261,14 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
         exitConnections,
       };
 
-      if (earliestDepTimeProfile.departureTime !== departureTime) { // TODO check order before inserting.
-        profilesByDepartureStop.push(newProfile);
-      } else {
-        profilesByDepartureStop[profilesByDepartureStop.length - 1] = newProfile;
+      let i = profilesByDepartureStop.length - 1;
+      let earliestProfile = profilesByDepartureStop[i];
+      while (i > 0 && earliestProfile.departureTime < departureTime) {
+        profilesByDepartureStop[i + 1] = earliestProfile;
+        i--;
+        earliestProfile = profilesByDepartureStop[i];
       }
+      profilesByDepartureStop[i + 1] = newProfile;
     }
   }
 

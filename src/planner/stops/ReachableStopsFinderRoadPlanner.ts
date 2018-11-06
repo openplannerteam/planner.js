@@ -36,7 +36,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
     };
 
     const allStops = await this.stopsFetcherMediator.getAllStops();
-    const reachableStops: IReachableStop[] = [[source, 0]];
+    const reachableStops: IReachableStop[] = [{stop: source, duration: 0}];
 
     await Promise.all(allStops.map(async (possibleTarget: IStop) => {
       if (possibleTarget.id !== source.id) {
@@ -60,7 +60,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
           }, Number.POSITIVE_INFINITY);
 
           if (shortestDuration < maximumDuration) {
-            reachableStops.push([possibleTarget, shortestDuration]);
+            reachableStops.push({stop: possibleTarget, duration: shortestDuration});
           }
         }
       }

@@ -2,11 +2,11 @@ import { injectable } from "inversify";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
+import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import Geo from "../../util/Geo";
-import IRoadPlanner from "./IRoadPlanner";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import Units from "../../util/Units";
+import IRoadPlanner from "./IRoadPlanner";
 
 @injectable()
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
@@ -38,6 +38,8 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
     const distance = Geo.getDistanceBetweenLocations(from, to);
     const minDuration = Units.toDuration(distance, maxWalkingSpeed);
     const maxDuration = Units.toDuration(distance, minWalkingSpeed);
+
+    console.log(distance, minDuration, maxDuration);
 
     const duration: IProbabilisticValue<DurationMs> = {
       minimum: minDuration,

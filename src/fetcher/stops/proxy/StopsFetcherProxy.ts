@@ -26,7 +26,7 @@ export default class StopsFetcherProxy implements IStopsFetcherMediator {
   public async getAllStops(): Promise<IStop[]> {
     return Promise.all(this.stopsFetchers
       .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getAllStops()),
-    ).then((results: IStop[][]) => results.flat());
+    ).then((results: IStop[][]) => [].concat(...results));
   }
 
   private determineStopFetcher(stopId: string): IStopsFetcher {

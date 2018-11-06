@@ -10,7 +10,8 @@ export default class Units {
   }
 
   public static toDuration(distance: DistanceM, speed: SpeedkmH): DurationMs {
-    return (distance / speed) * 3600;
+    // tslint:disable-next-line:no-bitwise
+    return ((distance / speed) * 3600 | 0);
   }
 
   public static fromHours(hours: number): DurationMs {
