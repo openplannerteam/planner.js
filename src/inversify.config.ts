@@ -15,6 +15,9 @@ import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEye from "./planner/stops/ReachableStopsFinderBirdsEye";
+import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
+import ReachableStopsFinderRoadPlanner from "./planner/stops/ReachableStopsFinderRoadPlanner";
+import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStopsFinderRoadPlannerCached";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import LocationResolverDefault from "./query-runner/LocationResolverDefault";
@@ -42,6 +45,6 @@ container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn);
 container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy);
 
-container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder).to(ReachableStopsFinderBirdsEye);
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder).to(ReachableStopsFinderBirdsEyeCached);
 
 export default container;

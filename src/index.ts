@@ -20,6 +20,8 @@ const planner = new Planner();
 
   console.log(JSON.stringify(roadOnlyResult, null, "  "));
 
+  console.time("Public transport planner");
+
   const publicTransportResult = await planner.query({
     publicTransportOnly: true,
     from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
@@ -28,6 +30,7 @@ const planner = new Planner();
     maximumTransferDuration: Units.fromHours(.5),
   });
 
+  console.timeEnd("Public transport planner");
   console.log(publicTransportResult.paths.length);
   console.log(publicTransportResult);
 })();
