@@ -39,8 +39,6 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
     const minDuration = Units.toDuration(distance, maxWalkingSpeed);
     const maxDuration = Units.toDuration(distance, minWalkingSpeed);
 
-    console.log(distance, minDuration, maxDuration);
-
     const duration: IProbabilisticValue<DurationMs> = {
       minimum: minDuration,
       maximum: maxDuration,
