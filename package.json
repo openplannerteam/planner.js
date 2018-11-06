@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "debug": "ndb node dist/index.js --debug"
   },
   "dependencies": {
     "haversine": "^1.1.0",

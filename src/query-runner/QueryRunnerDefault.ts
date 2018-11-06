@@ -74,7 +74,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Constants.defaultMaximumWalkingSpeed;
 
     resolvedQuery.maximumTransferDuration = maximumTransferDuration || Constants.defaultMaximumTransferDuration;
-    resolvedQuery.maximumLegs = maximumLegs || Constants.defaultMaximumTransferDuration;
+    resolvedQuery.maximumLegs = maximumLegs || Constants.defaultMaximumLegs;
 
     return resolvedQuery;
   }
