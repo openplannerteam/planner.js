@@ -78,7 +78,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     if (this.query.maximumArrivalTime) {
       upperBoundDate = this.query.maximumArrivalTime;
     } else {
-      upperBoundDate = lowerBoundDate;
+      upperBoundDate = new Date(lowerBoundDate);
       upperBoundDate.setHours(upperBoundDate.getHours() + 2);
     }
 
