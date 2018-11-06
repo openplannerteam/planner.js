@@ -7,7 +7,6 @@ import { DurationMs } from "../../interfaces/units";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
-import Units from "../../util/Units";
 import Vectors from "../../util/Vectors";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder from "../stops/IReachableStopsFinder";
@@ -34,9 +33,6 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
   private durationToTargetByStop: DurationMs[] = [];
 
-  private maxLegs: number = 8; // TODO define max legs on query?
-  private maximumDuration: DurationMs = Units.fromHours(0.4); // TODO define maximum duration (radius) on query?
-
   private query: IResolvedQuery;
 
   constructor(
@@ -55,11 +51,6 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   public async plan(query: IResolvedQuery): Promise<IPath[]> {
     this.query = query;
-
-    query.minimumWalkingSpeed = query.minimumWalkingSpeed || 3;
-    query.maximumWalkingSpeed = query.maximumWalkingSpeed || 6;
-    this.maximumDuration = 1;
-
     this.setBounds();
 
     return await this.calculateJourneys();
@@ -119,12 +110,12 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private discoverConnection(connection: IConnection) {
     [connection.departureStop, connection.arrivalStop].forEach((stop) => {
       if (!this.profilesByStop[stop]) {
-        this.profilesByStop[stop] = [new Profile(this.maxLegs)];
+        this.profilesByStop[stop] = [new Profile(this.query.maximumLegs)];
       }
     });
 
     if (!this.earliestArrivalByTrip[connection["gtfs:trip"]]) {
-      this.earliestArrivalByTrip[connection["gtfs:trip"]] = Array(this.maxLegs).fill(new EarliestArrival());
+      this.earliestArrivalByTrip[connection["gtfs:trip"]] = Array(this.query.maximumLegs).fill(new EarliestArrival());
     }
   }
 
@@ -140,7 +131,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     for (const arrivalStop of this.query.to) {
       const reachableStops = await this.reachableStopsFinder.findReachableStops(
         arrivalStop as IStop,
-        this.maximumDuration,
+        this.query.maximumTransferDuration,
         this.query.minimumWalkingSpeed,
       );
 
@@ -154,10 +145,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const walkingTimeToTarget = this.durationToTargetByStop[connection.arrivalStop];
 
     if (walkingTimeToTarget === undefined) {
-      return Array(this.maxLegs).fill(Infinity);
+      return Array(this.query.maximumLegs).fill(Infinity);
     }
 
-    return Array(this.maxLegs).fill(connection.arrivalTime.getTime() + walkingTimeToTarget);
+    return Array(this.query.maximumLegs).fill(connection.arrivalTime.getTime() + walkingTimeToTarget);
   }
 
   private remainSeated(connection: IConnection): IArrivalTimeByTransfers {
@@ -166,7 +157,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
     return Vectors.shiftVector<IArrivalTimeByTransfers>(
-      ProfileUtil.evalProfile(this.profilesByStop, connection, this.maxLegs),
+      ProfileUtil.evalProfile(this.profilesByStop, connection, this.query.maximumLegs),
     );
   }
 
@@ -202,7 +193,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const departureStop = await this.locationResolver.resolve(connection.departureStop);
     const reachableStops = await this.reachableStopsFinder.findReachableStops(
       departureStop as IStop,
-      this.maximumDuration,
+      this.query.maximumTransferDuration,
       this.query.minimumWalkingSpeed,
     );
 
@@ -221,14 +212,14 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     let profilesByDepartureStop = this.profilesByStop[stop.id];
 
     if (profilesByDepartureStop === undefined) {
-      profilesByDepartureStop = this.profilesByStop[stop.id] = [new Profile(this.maxLegs)];
+      profilesByDepartureStop = this.profilesByStop[stop.id] = [new Profile(this.query.maximumLegs)];
     }
     const earliestDepTimeProfile = profilesByDepartureStop[profilesByDepartureStop.length - 1];
 
     // If arrival times for all numbers of legs are equal to the earliest entry, this
     // entry is redundant
     let redundant = true;
-    for (let i = 0; i < this.maxLegs; i++) {
+    for (let i = 0; i < this.query.maximumLegs; i++) {
       redundant = redundant && minVectorTimes[i] >= earliestDepTimeProfile.arrivalTimes[i];
     }
 
@@ -236,7 +227,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       const enterConnections = [];
       const exitConnections = [];
 
-      for (let transfers = 0; transfers < this.maxLegs; transfers++) {
+      for (let transfers = 0; transfers < this.query.maximumLegs; transfers++) {
         // If the new arrival time is better, update journey pointers
         // Else, keep old journey pointers
         if (minVectorTimes[transfers] < earliestDepTimeProfile.arrivalTimes[transfers]) {

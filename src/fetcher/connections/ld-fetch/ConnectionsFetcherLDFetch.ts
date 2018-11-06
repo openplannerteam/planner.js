@@ -39,7 +39,7 @@ export default abstract class ConnectionsFetcherLDFetch implements IConnectionsF
 
     this.ldFetch.on("response", (url) => {
       httpResponseTimes[url] = (new Date()).getTime() - httpStartTimes[url].getTime();
-      console.error(`HTTP GET - ${url} (${httpResponseTimes[url]}ms)`);
+      console.log(`HTTP GET - ${url} (${httpResponseTimes[url]}ms)`);
     });
   }
 }

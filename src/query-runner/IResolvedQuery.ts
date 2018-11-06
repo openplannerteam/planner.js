@@ -1,5 +1,5 @@
 import ILocation from "../interfaces/ILocation";
-import { SpeedkmH } from "../interfaces/units";
+import { DurationMs, SpeedkmH } from "../interfaces/units";
 
 export default interface IResolvedQuery {
   from?: ILocation[];
@@ -10,4 +10,6 @@ export default interface IResolvedQuery {
   publicTransportOnly?: boolean;
   minimumWalkingSpeed?: SpeedkmH;
   maximumWalkingSpeed?: SpeedkmH;
+  maximumTransferDuration?: DurationMs;
+  maximumLegs?: number;
 }

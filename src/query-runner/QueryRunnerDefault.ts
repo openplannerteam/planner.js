@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import Constants from "../Constants";
 import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
@@ -56,13 +57,24 @@ export default class QueryRunnerDefault implements IQueryRunner {
   }
 
   private async resolveQuery(query: IQuery): Promise<IResolvedQuery> {
-    const { from, to, minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed, ...other} = query;
+    // tslint:disable:trailing-comma
+    const {
+      from, to,
+      minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
+      maximumTransferDuration, maximumLegs,
+      ...other
+    } = query;
+    // tslint:enable:trailing-comma
+
     const resolvedQuery: IResolvedQuery = Object.assign({}, other);
 
     resolvedQuery.from = await this.resolveEndpoint(from);
     resolvedQuery.to = await this.resolveEndpoint(to);
-    resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || maximumWalkingSpeed;
-    resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || minimumWalkingSpeed;
+    resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Constants.defaultMinimumWalkingSpeed;
+    resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Constants.defaultMaximumWalkingSpeed;
+
+    resolvedQuery.maximumTransferDuration = maximumTransferDuration || Constants.defaultMaximumTransferDuration;
+    resolvedQuery.maximumLegs = maximumLegs || Constants.defaultMaximumLegs;
 
     return resolvedQuery;
   }

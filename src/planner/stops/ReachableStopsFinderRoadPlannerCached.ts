@@ -9,9 +9,12 @@ import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
 @injectable()
-export default class ReachableStopsFinderRoadPlanner implements IReachableStopsFinder {
+export default class ReachableStopsFinderRoadPlannerCached implements IReachableStopsFinder {
   private readonly stopsFetcherMediator: IStopsFetcherMediator;
   private readonly roadPlanner: IRoadPlanner;
+
+  private allStops: IStop[];
+  private reachableStopsCache: {[cacheKey: string]: IReachableStop[]};
 
   constructor(
     @inject(TYPES.StopsFetcherMediator) stopsFetcherMediator: IStopsFetcherMediator,
@@ -19,12 +22,20 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
   ) {
     this.stopsFetcherMediator = stopsFetcherMediator;
     this.roadPlanner = roadPlanner;
+    this.reachableStopsCache = {};
   }
 
   public async findReachableStops(
     source: IStop,
     maximumDuration: number,
     minimumSpeed: number): Promise<IReachableStop[]> {
+
+    const cacheKey = `${source.id} ${maximumDuration} ${minimumSpeed}`;
+    const cacheItem = this.reachableStopsCache[cacheKey];
+
+    if (cacheItem) {
+      return cacheItem;
+    }
 
     const minimumDepartureTime = new Date();
     const maximumArrivalTime = new Date(minimumDepartureTime.getTime() + maximumDuration);
@@ -36,7 +47,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
       minimumWalkingSpeed: minimumSpeed,
     };
 
-    const allStops = await this.stopsFetcherMediator.getAllStops();
+    const allStops = await this.getAllStops();
     const reachableStops: IReachableStop[] = [{stop: source, duration: 0}];
 
     await Promise.all(allStops.map(async (possibleTarget: IStop) => {
@@ -68,6 +79,16 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
 
     }));
 
+    this.reachableStopsCache[cacheKey] = reachableStops;
     return reachableStops;
+  }
+
+  private async getAllStops() {
+    if (!this.allStops) {
+      this.allStops = await this.stopsFetcherMediator.getAllStops();
+    }
+
+    return this.allStops;
+
   }
 }

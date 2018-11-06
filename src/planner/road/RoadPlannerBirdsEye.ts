@@ -2,11 +2,11 @@ import { injectable } from "inversify";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
+import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import Geo from "../../util/Geo";
-import IRoadPlanner from "./IRoadPlanner";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import Units from "../../util/Units";
+import IRoadPlanner from "./IRoadPlanner";
 
 @injectable()
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
