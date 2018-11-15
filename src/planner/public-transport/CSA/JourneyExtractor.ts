@@ -44,15 +44,19 @@ export default class JourneyExtractor {
               if (this.checkBestArrivalTime(profile, transfers, departureStop, arrivalStop)) {
                 this.setBestArrivalTime(departureStop, arrivalStop, profile.arrivalTimes[transfers]);
 
-                const journey = await this.extractJourney(
-                  arrivalStop,
-                  profile,
-                  transfers,
-                  filteredProfilesByStop,
-                  query,
-                );
+                try {
+                  const journey = await this.extractJourney(
+                    arrivalStop,
+                    profile,
+                    transfers,
+                    filteredProfilesByStop,
+                    query,
+                  );
 
-                journeys.push(journey);
+                  journeys.push(journey);
+                } catch (e) {
+                  console.warn(e);
+                }
               }
             }
           }
