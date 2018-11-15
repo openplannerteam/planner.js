@@ -1,5 +1,6 @@
 import "jest";
 import LdFetch from "ldfetch";
+import TravelMode from "../../../TravelMode";
 import ConnectionsIteratorLDFetch from "./ConnectionsIteratorLDFetch";
 
 const CONNECTIONS_TO_LOAD = 200; // Should be more than contained on first page
@@ -10,7 +11,12 @@ test("[ConnectionsIteratorLDFetch] iterate forwards", async () => {
     backward: false,
     lowerBoundDate: new Date(2018, 10, 2, 10),
   };
-  const iterator = new ConnectionsIteratorLDFetch("https://graph.irail.be/sncb/connections", new LdFetch(), config);
+  const iterator = new ConnectionsIteratorLDFetch(
+    "https://graph.irail.be/sncb/connections",
+    TravelMode.Train,
+    new LdFetch(),
+    config,
+  );
 
   const dummyIterable = {
     [Symbol.asyncIterator]: () => iterator,
