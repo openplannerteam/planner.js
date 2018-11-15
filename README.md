@@ -1,6 +1,6 @@
 # 🛸 Planner.js
 
-[![Build Status](https://travis-ci.org/openplannerteam/planner.js.svg?branch=dev)](https://travis-ci.org/openplannerteam/planner.js) [![MIT License](https://img.shields.io/github/license/openplannerteam/planner.js.svg?maxAge=2592000)] _TODO: NPM badge, gitter channel_
+[![Build Status](https://travis-ci.org/openplannerteam/planner.js.svg?branch=dev)](https://travis-ci.org/openplannerteam/planner.js) [![MIT License](https://img.shields.io/github/license/openplannerteam/planner.js.svg?maxAge=2592000)](https://github.com/openplannerteam/planner.js/blob/master/LICENSE)
 
 The JavaScript library for journey planning.
 
