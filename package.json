@@ -6,11 +6,14 @@
   "browser": "dist/bundle.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "test": "jest",
+    "debug": "ndb node lib/demo.js --debug",
     "build": "tsc",
+    "browser": "npm run webpack",
+    "lint": "./node_modules/tslint/bin/tslint --project .",
     "webpack": "webpack --config webpack.config.js --mode=production",
     "webpack-stats": "npm run webpack -- --display-modules --json > stats.json",
-    "test": "jest",
-    "debug": "ndb node lib/demo.js --debug"
+    "doc": "./node_modules/typedoc/bin/typedoc --out docs/code src/ --exclude \"**/*+(config|test).ts\" --theme minimal & npm run browser && cp dist/bundle.js docs/js/planner-latest.js && cp dist/bundle.js.map docs/js/planner-latest.js.map"
   },
   "dependencies": {
     "haversine": "^1.1.0",
@@ -21,15 +24,20 @@
     "reflect-metadata": "^0.1.12",
     "uritemplate": "^0.3.4"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "devDependencies": {
     "@types/haversine": "^1.1.0",
     "@types/jest": "^23.3.7",
     "@types/rdf-js": "^1.0.1",
     "jest": "^23.6.0",
+    "pre-commit": "^1.2.2",
     "prettier": "1.14.3",
     "ts-jest": "^23.10.4",
     "ts-loader": "^5.3.0",
     "tslint": "^5.11.0",
+    "typedoc": "^0.13.0",
     "typescript": "^3.1.6",
     "webpack": "^4.25.1",
     "webpack-cli": "^3.1.2"

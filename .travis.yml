@@ -1,0 +1,29 @@
+language: node_js
+node_js:
+ - "node"
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
+install:
+  - CC=gcc-4.9 CXX=g++-4.9 npm install
+script:
+  - npm test
+  - npm run doc
+cache:
+  npm: true
+  apt: true
+  directories:
+    - node_modules
+deploy:
+  - provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+    keep-history: true
+    local-dir: docs
+    on:
+      tags: false
+      branch: dev
+      node_js: "node"

@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
+import TravelMode from "../../../TravelMode";
 import IConnection from "../IConnection";
 import ConnectionsFetcherLDFetch from "./ConnectionsFetcherLDFetch";
 import ConnectionsIteratorLDFetch from "./ConnectionsIteratorLDFetch";
-import TravelMode from "../../../TravelMode";
 
 const IRAIL_CONNECTIONS_BASE_URL = "https://graph.irail.be/sncb/connections";
 
