@@ -114,8 +114,8 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       }
     });
 
-    if (!this.earliestArrivalByTrip[connection["gtfs:trip"]]) {
-      this.earliestArrivalByTrip[connection["gtfs:trip"]] = Array(this.query.maximumLegs).fill(new EarliestArrival());
+    if (!this.earliestArrivalByTrip[connection.gtfsTripId]) {
+      this.earliestArrivalByTrip[connection.gtfsTripId] = Array(this.query.maximumLegs).fill(new EarliestArrival());
     }
   }
 
@@ -152,7 +152,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private remainSeated(connection: IConnection): IArrivalTimeByTransfers {
-    return this.earliestArrivalByTrip[connection["gtfs:trip"]].map((trip) => trip.arrivalTime);
+    return this.earliestArrivalByTrip[connection.gtfsTripId].map((trip) => trip.arrivalTime);
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
@@ -165,9 +165,9 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     connection: IConnection,
     currentArrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): void {
-    const earliestArrivalByTransfers: IEarliestArrival[] = this.earliestArrivalByTrip[connection["gtfs:trip"]];
+    const earliestArrivalByTransfers: IEarliestArrival[] = this.earliestArrivalByTrip[connection.gtfsTripId];
 
-    this.earliestArrivalByTrip[connection["gtfs:trip"]] = earliestArrivalByTransfers.map((earliestArrival, transfer) =>
+    this.earliestArrivalByTrip[connection.gtfsTripId] = earliestArrivalByTransfers.map((earliestArrival, transfer) =>
       currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
         { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
         earliestArrival,
@@ -232,7 +232,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
         // Else, keep old journey pointers
         if (minVectorTimes[transfers] < earliestDepTimeProfile.arrivalTimes[transfers]) {
           enterConnections[transfers] = connection;
-          exitConnections[transfers] = this.earliestArrivalByTrip[connection["gtfs:trip"]][transfers].connection;
+          exitConnections[transfers] = this.earliestArrivalByTrip[connection.gtfsTripId][transfers].connection;
           if (exitConnections[transfers] === null) {
             // This means the exit connection is the enter connection,
             // and tripStructure[connection.tripId] hasn't been initialized properly yet.

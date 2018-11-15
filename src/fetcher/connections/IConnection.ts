@@ -13,5 +13,5 @@ export default interface IConnection {
   departureStop: string;
   departureDelay: DurationMs;
 
-  "gtfs:trip": string;
+  gtfsTripId: string;
 }
