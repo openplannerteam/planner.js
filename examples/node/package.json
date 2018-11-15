@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "plannerjs": "file:../.."
+  },
+  "scripts": {
+    "example": "node index.js"
   }
 }
