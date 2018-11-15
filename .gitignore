@@ -6,3 +6,4 @@ bundle.js.map
 stats.json
 lib
 docs/code/*
+docs/js/planner*
