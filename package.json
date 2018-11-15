@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
+  "browser": "dist/bundle.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
