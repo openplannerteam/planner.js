@@ -7,7 +7,11 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.9
-after_success:
+install:
+  - CC=gcc-4.9 CXX=g++-4.9 npm install
+script:
+  npm test
+after_script:
  - npm run doc
 cache:
   npm: true
