@@ -31,6 +31,11 @@ export default class JourneyExtractor {
     const journeys = [];
     for (const departureStop of query.from) {
 
+      if (!filteredProfilesByStop[departureStop.id]) {
+        console.warn("Can't find departure stop: " + departureStop.id);
+        continue;
+      }
+
       for (const profile of filteredProfilesByStop[departureStop.id]) {
         if (profile.departureTime >= query.minimumDepartureTime.getTime()) {
 
@@ -39,15 +44,19 @@ export default class JourneyExtractor {
               if (this.checkBestArrivalTime(profile, transfers, departureStop, arrivalStop)) {
                 this.setBestArrivalTime(departureStop, arrivalStop, profile.arrivalTimes[transfers]);
 
-                const journey = await this.extractJourney(
-                  arrivalStop,
-                  profile,
-                  transfers,
-                  filteredProfilesByStop,
-                  query,
-                );
+                try {
+                  const journey = await this.extractJourney(
+                    arrivalStop,
+                    profile,
+                    transfers,
+                    filteredProfilesByStop,
+                    query,
+                  );
 
-                journeys.push(journey);
+                  journeys.push(journey);
+                } catch (e) {
+                  console.warn(e);
+                }
               }
             }
           }
@@ -59,13 +68,18 @@ export default class JourneyExtractor {
     return journeys;
   }
 
-  private checkBestArrivalTime(profile: Profile, transfers: number, departureStop: ILocation, arrivalStop: ILocation) {
+  private checkBestArrivalTime(
+    profile: Profile,
+    transfers: number,
+    departureStop: ILocation,
+    arrivalStop: ILocation,
+  ): boolean {
     return profile.arrivalTimes[transfers] < Infinity &&
       (!this.bestArrivalTime[departureStop.id] || !this.bestArrivalTime[departureStop.id][arrivalStop.id] ||
       profile.arrivalTimes[transfers] < this.bestArrivalTime[departureStop.id][arrivalStop.id]);
   }
 
-  private setBestArrivalTime(departureStop: ILocation, arrivalStop: ILocation, arrivalTime: number) {
+  private setBestArrivalTime(departureStop: ILocation, arrivalStop: ILocation, arrivalTime: number): void {
     if (!this.bestArrivalTime[departureStop.id]) {
       this.bestArrivalTime[departureStop.id] = [];
     }
@@ -79,8 +93,10 @@ export default class JourneyExtractor {
     profilesByStop: IProfilesByStop,
     query: IResolvedQuery,
   ): Promise<IPath> {
+    let shouldReturn = true;
+
     // Extract journey for amount of transfers
-    const path: Path = Path.createFromProfile(profile, transfers);
+    const path: Path = Path.create();
 
     let currentEntry = profile;
     let remainingTransfers = transfers;
@@ -127,13 +143,17 @@ export default class JourneyExtractor {
     }
 
     if (path.steps[path.steps.length - 1].stopLocation.id !== arrivalStop.id) {
-      await this.addFinalFootpath(path, arrivalStop, query);
+      shouldReturn = await this.addFinalFootpath(path, arrivalStop, query);
+    }
+
+    if (!shouldReturn) {
+      return Promise.reject("Can't reach arrival stop.");
     }
 
     return path as IPath;
   }
 
-  private async addFinalFootpath(path: Path, arrivalStop: ILocation, query: IResolvedQuery): Promise<void> {
+  private async addFinalFootpath(path: Path, arrivalStop: ILocation, query: IResolvedQuery): Promise<boolean> {
     const lastStep = path.steps[path.steps.length - 1];
 
     const fromLocation = await this.locationResolver.resolve(lastStep.stopLocation.id );
@@ -146,8 +166,12 @@ export default class JourneyExtractor {
       maximumWalkingSpeed: query.maximumWalkingSpeed,
     });
 
-    if (walkingResult && walkingResult[0] && walkingResult[0].steps[0]) {
+    if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
+      query.maximumArrivalTime.getTime() >= lastStep.stopTime.getTime() +
+      walkingResult[0].steps[0].duration.minimum) {
       path.addStep(walkingResult[0].steps[0]);
+      return true;
     }
+    return false;
   }
 }
