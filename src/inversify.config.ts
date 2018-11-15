@@ -13,6 +13,7 @@ import JourneyExtractorDefault from "./planner/public-transport/JourneyExtractor
 import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
+import RoadPlannerPhase from "./planner/road/RoadPlannerPhase";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
 import ILocationResolver from "./query-runner/ILocationResolver";
@@ -29,6 +30,20 @@ container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDef
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner).to(PublicTransportPlannerCSAProfile);
 
 container.bind<IRoadPlanner>(TYPES.RoadPlanner).to(RoadPlannerBirdsEye);
+
+// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.ReachableStopsSearchInitial);
+// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.ReachableStopsSearchTransfer);
+// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.ReachableStopsSearchFinal);
+//
+// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.JourneyExtractionInitial);
+// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.JourneyExtractionTransfer);
+// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.JourneyExtractionFinal);
 
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherNMBS);
 

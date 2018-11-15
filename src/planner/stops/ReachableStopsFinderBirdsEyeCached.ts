@@ -6,6 +6,7 @@ import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
+import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 @injectable()
 export default class ReachableStopsFinderBirdsEyeCached implements IReachableStopsFinder {
@@ -23,9 +24,12 @@ export default class ReachableStopsFinderBirdsEyeCached implements IReachableSto
 
   public async findReachableStops(
     source: IStop,
+    mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedkmH,
   ): Promise<IReachableStop[]> {
+
+    // Mode can be ignored since birds eye view distance is identical
 
     const cacheKey = `${source.id} ${maximumDuration} ${minimumSpeed}`;
     const cacheItem = this.reachableStopsCache[cacheKey];

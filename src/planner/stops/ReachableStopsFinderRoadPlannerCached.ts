@@ -7,6 +7,7 @@ import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
+import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 @injectable()
 export default class ReachableStopsFinderRoadPlannerCached implements IReachableStopsFinder {
@@ -27,6 +28,7 @@ export default class ReachableStopsFinderRoadPlannerCached implements IReachable
 
   public async findReachableStops(
     source: IStop,
+    mode: ReachableStopsFinderMode,
     maximumDuration: number,
     minimumSpeed: number): Promise<IReachableStop[]> {
 

@@ -9,6 +9,7 @@ import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Vectors from "../../util/Vectors";
 import IReachableStopsFinder from "../stops/IReachableStopsFinder";
+import ReachableStopsFinderMode from "../stops/ReachableStopsFinderMode";
 import IEarliestArrival from "./CSA/data-structure/EarliestArrival";
 import EarliestArrival from "./CSA/data-structure/EarliestArrival";
 import IArrivalTimeByTransfers from "./CSA/data-structure/IArrivalTimeByTransfers";
@@ -126,6 +127,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     for (const arrivalStop of this.query.to) {
       const reachableStops = await this.reachableStopsFinder.findReachableStops(
         arrivalStop as IStop,
+        ReachableStopsFinderMode.Target,
         this.query.maximumTransferDuration,
         this.query.minimumWalkingSpeed,
       );
@@ -191,6 +193,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const departureStop = await this.locationResolver.resolve(connection.departureStop);
     const reachableStops = await this.reachableStopsFinder.findReachableStops(
       departureStop as IStop,
+      ReachableStopsFinderMode.Source,
       this.query.maximumTransferDuration,
       this.query.minimumWalkingSpeed,
     );

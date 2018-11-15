@@ -1,4 +1,4 @@
-import { inject, injectable } from "inversify";
+import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -8,6 +8,7 @@ import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Path from "../Path";
 import IRoadPlanner from "../road/IRoadPlanner";
+import RoadPlannerPhase from "../road/RoadPlannerPhase";
 import Step from "../Step";
 import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
 import Profile from "./CSA/data-structure/Profile";
@@ -16,16 +17,23 @@ import IJourneyExtractor from "./IJourneyExtractor";
 
 @injectable()
 export default class JourneyExtractorDefault implements IJourneyExtractor {
-  private readonly roadPlanner: IRoadPlanner;
+  private readonly transferRoadPlanner: IRoadPlanner;
+  private readonly finalRoadPlanner: IRoadPlanner;
   private readonly locationResolver: ILocationResolver;
 
   private bestArrivalTime: number[][] = [];
 
   constructor(
-    @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
-    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver
+    @inject(TYPES.RoadPlanner)
+    @tagged("phase", RoadPlannerPhase.JourneyExtractionTransfer)
+      transferRoadPlanner: IRoadPlanner,
+    @inject(TYPES.RoadPlanner)
+    @tagged("phase", RoadPlannerPhase.JourneyExtractionFinal)
+      finalRoadPlanner: IRoadPlanner,
+    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
   ) {
-    this.roadPlanner = roadPlanner;
+    this.transferRoadPlanner = transferRoadPlanner;
+    this.finalRoadPlanner = finalRoadPlanner;
     this.locationResolver = locationResolver;
   }
 
@@ -83,7 +91,7 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
   ): boolean {
     return profile.arrivalTimes[transfers] < Infinity &&
       (!this.bestArrivalTime[departureStop.id] || !this.bestArrivalTime[departureStop.id][arrivalStop.id] ||
-      profile.arrivalTimes[transfers] < this.bestArrivalTime[departureStop.id][arrivalStop.id]);
+        profile.arrivalTimes[transfers] < this.bestArrivalTime[departureStop.id][arrivalStop.id]);
   }
 
   private setBestArrivalTime(departureStop: ILocation, arrivalStop: ILocation, arrivalTime: number): void {
@@ -129,7 +137,7 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
           const from = await this.locationResolver.resolve(step.stopLocation.id);
           const to = await this.locationResolver.resolve(connection.departureStop);
 
-          const walkingResult = await this.roadPlanner.plan({
+          const walkingResult = await this.transferRoadPlanner.plan({
             from: [from],
             to: [to],
             minimumWalkingSpeed: query.minimumWalkingSpeed,
@@ -163,10 +171,10 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
   private async addFinalFootpath(path: Path, arrivalStop: ILocation, query: IResolvedQuery): Promise<boolean> {
     const lastStep = path.steps[path.steps.length - 1];
 
-    const fromLocation = await this.locationResolver.resolve(lastStep.stopLocation.id );
+    const fromLocation = await this.locationResolver.resolve(lastStep.stopLocation.id);
     const toLocation = await this.locationResolver.resolve(arrivalStop);
 
-    const walkingResult = await this.roadPlanner.plan({
+    const walkingResult = await this.finalRoadPlanner.plan({
       from: [fromLocation],
       to: [toLocation],
       minimumWalkingSpeed: query.minimumWalkingSpeed,
