@@ -10,9 +10,8 @@ addons:
 install:
   - CC=gcc-4.9 CXX=g++-4.9 npm install
 script:
-  npm test
-after_script:
- - npm run doc
+  - npm test
+  - npm run doc
 cache:
   npm: true
   apt: true
