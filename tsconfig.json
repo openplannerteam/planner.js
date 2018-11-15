@@ -9,7 +9,7 @@
     "emitDecoratorMetadata": true,
     "sourceMap": true,
     "declaration": true,
-    "outDir": "dist",
+    "outDir": "lib",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },

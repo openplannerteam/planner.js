@@ -2,3 +2,7 @@ node_modules/*
 .idea/*
 dist
 docs
+bundle.js
+bundle.js.map
+stats.json
+lib
