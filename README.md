@@ -1,10 +1,10 @@
 # 🛸 Planner.js
 
-_TODO: Travis CI, NPM badge, gitter channel, license badge_
+[![Build Status](https://travis-ci.org/openplannerteam/planner.js.svg?branch=dev)](https://travis-ci.org/openplannerteam/planner.js) [![MIT License](https://img.shields.io/github/license/openplannerteam/planner.js.svg?maxAge=2592000)] _TODO: NPM badge, gitter channel_
 
 The JavaScript library for journey planning.
 
-CDN versions: _coming in February_
+Current status: _to be launched in February_
 
 For now: clone the repository, run `npm install` and use your [typescript compiler](https://www.typescriptlang.org/) (`tsc`) to create the files.
 

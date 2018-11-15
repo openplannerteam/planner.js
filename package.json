@@ -1,8 +1,16 @@
 {
   "name": "plannerjs",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "The JavaScript framework for journey planning.",
   "main": "lib/index.js",
+  "license":"MIT",
+  "repository": {
+    "type": "git",
+    "url":"git://github.com/openplannerteam/planner.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/openplannerteam/planner.js/issues"
+  },
   "browser": "dist/bundle.js",
   "types": "lib/index.d.ts",
   "scripts": {
