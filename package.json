@@ -2,13 +2,17 @@
   "name": "plannerjs",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "browser": "dist/bundle.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc & ./node_modules/typedoc/bin/typedoc --out docs/code src/",
     "test": "jest",
     "debug": "ndb node dist/index.js --debug",
-    "doc": "./node_modules/typedoc/bin/typedoc --out docs/code src/ --exclude \"**/+(lib|node_modules|test|mocks)/*.ts\""
+    "build": "tsc",
+    "webpack": "webpack --config webpack.config.js --mode=production",
+    "webpack-stats": "npm run webpack -- --display-modules --json > stats.json",
+    "debug": "ndb node lib/demo.js --debug",
+    "doc": "./node_modules/typedoc/bin/typedoc --out docs/code src/ --exclude \"**/*+(config|test).ts\" --theme minimal"
   },
   "dependencies": {
     "haversine": "^1.1.0",
@@ -17,7 +21,6 @@
     "ldfetch": "^1.1.1-alpha",
     "n3": "0.11.2",
     "reflect-metadata": "^0.1.12",
-    "typescript": "^3.1.3",
     "uritemplate": "^0.3.4"
   },
   "devDependencies": {
@@ -28,6 +31,10 @@
     "prettier": "1.14.3",
     "ts-jest": "^23.10.4",
     "tslint": "^5.11.0",
-    "typedoc": "^0.13.0"
+    "typedoc": "^0.13.0",
+    "ts-loader": "^5.3.0",
+    "typescript": "^3.1.6",
+    "webpack": "^4.25.1",
+    "webpack-cli": "^3.1.2"
   }
 }
