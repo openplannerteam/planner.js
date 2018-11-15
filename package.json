@@ -5,9 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc & ./node_modules/typedoc/bin/typedoc --out docs/code src/",
     "test": "jest",
-    "debug": "ndb node dist/index.js --debug"
+    "debug": "ndb node dist/index.js --debug",
+    "doc": "./node_modules/typedoc/bin/typedoc --out docs/code src/ --exclude \"**/+(lib|node_modules|test|mocks)/*.ts\""
   },
   "dependencies": {
     "haversine": "^1.1.0",
@@ -26,6 +27,7 @@
     "jest": "^23.6.0",
     "prettier": "1.14.3",
     "ts-jest": "^23.10.4",
-    "tslint": "^5.11.0"
+    "tslint": "^5.11.0",
+    "typedoc": "^0.13.0"
   }
 }
