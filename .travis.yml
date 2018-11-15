@@ -1,10 +1,17 @@
 language: node_js
 node_js:
  - "node"
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
 after_success:
  - npm run doc
 cache:
   npm: true
+  apt: true
   directories:
     - node_modules
 deploy:
