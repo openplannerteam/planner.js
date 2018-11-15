@@ -1,23 +1,30 @@
-import IConnection from "../../../fetcher/connections/IConnection";
-import ILocation from "../../../interfaces/ILocation";
-import IPath from "../../../interfaces/IPath";
-import IStep from "../../../interfaces/IStep";
-import ILocationResolver from "../../../query-runner/ILocationResolver";
-import IResolvedQuery from "../../../query-runner/IResolvedQuery";
-import Path from "../../Path";
-import IRoadPlanner from "../../road/IRoadPlanner";
-import Step from "../../Step";
-import IProfilesByStop from "./data-structure/IProfilesByStop";
-import Profile from "./data-structure/Profile";
-import ProfileUtil from "./util/ProfileUtil";
+import { inject, injectable } from "inversify";
+import IConnection from "../../fetcher/connections/IConnection";
+import ILocation from "../../interfaces/ILocation";
+import IPath from "../../interfaces/IPath";
+import IStep from "../../interfaces/IStep";
+import ILocationResolver from "../../query-runner/ILocationResolver";
+import IResolvedQuery from "../../query-runner/IResolvedQuery";
+import TYPES from "../../types";
+import Path from "../Path";
+import IRoadPlanner from "../road/IRoadPlanner";
+import Step from "../Step";
+import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
+import Profile from "./CSA/data-structure/Profile";
+import ProfileUtil from "./CSA/util/ProfileUtil";
+import IJourneyExtractor from "./IJourneyExtractor";
 
-export default class JourneyExtractor {
+@injectable()
+export default class JourneyExtractorDefault implements IJourneyExtractor {
   private readonly roadPlanner: IRoadPlanner;
   private readonly locationResolver: ILocationResolver;
 
   private bestArrivalTime: number[][] = [];
 
-  constructor(roadPlanner: IRoadPlanner, locationResolver: ILocationResolver) {
+  constructor(
+    @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
+    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver
+  ) {
     this.roadPlanner = roadPlanner;
     this.locationResolver = locationResolver;
   }

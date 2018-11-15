@@ -8,7 +8,6 @@ import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Vectors from "../../util/Vectors";
-import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder from "../stops/IReachableStopsFinder";
 import IEarliestArrival from "./CSA/data-structure/EarliestArrival";
 import EarliestArrival from "./CSA/data-structure/EarliestArrival";
@@ -16,18 +15,16 @@ import IArrivalTimeByTransfers from "./CSA/data-structure/IArrivalTimeByTransfer
 import IEarliestArrivalByTrip from "./CSA/data-structure/IEarliestArrivalByTrip";
 import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
 import Profile from "./CSA/data-structure/Profile";
-import JourneyExtractor from "./CSA/JourneyExtractor";
 import ProfileUtil from "./CSA/util/ProfileUtil";
+import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 @injectable()
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
   private readonly connectionsFetcher: IConnectionsFetcher;
-  private readonly roadPlanner: IRoadPlanner;
   private readonly locationResolver: ILocationResolver;
   private readonly reachableStopsFinder: IReachableStopsFinder;
-
-  private readonly journeyExtractor: JourneyExtractor;
+  private readonly journeyExtractor: IJourneyExtractor;
 
   private profilesByStop: IProfilesByStop = {}; // S
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
@@ -37,16 +34,14 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   constructor(
     @inject(TYPES.ConnectionsFetcher) connectionsFetcher: IConnectionsFetcher,
-    @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     @inject(TYPES.ReachableStopsFinder) reachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.JourneyExtractor) journeyExtractor: IJourneyExtractor,
   ) {
     this.connectionsFetcher = connectionsFetcher;
-    this.roadPlanner = roadPlanner;
     this.locationResolver = locationResolver;
     this.reachableStopsFinder = reachableStopsFinder;
-
-    this.journeyExtractor = new JourneyExtractor(roadPlanner, locationResolver);
+    this.journeyExtractor = journeyExtractor;
   }
 
   public async plan(query: IResolvedQuery): Promise<IPath[]> {
@@ -148,11 +143,13 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       return Array(this.query.maximumLegs).fill(Infinity);
     }
 
-    return Array(this.query.maximumLegs).fill(connection.arrivalTime.getTime() + walkingTimeToTarget);
+    return Array(this.query.maximumLegs)
+      .fill(connection.arrivalTime.getTime() + walkingTimeToTarget);
   }
 
   private remainSeated(connection: IConnection): IArrivalTimeByTransfers {
-    return this.earliestArrivalByTrip[connection.gtfsTripId].map((trip) => trip.arrivalTime);
+    return this.earliestArrivalByTrip[connection.gtfsTripId]
+      .map((trip) => trip.arrivalTime);
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
@@ -167,11 +164,12 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   ): void {
     const earliestArrivalByTransfers: IEarliestArrival[] = this.earliestArrivalByTrip[connection.gtfsTripId];
 
-    this.earliestArrivalByTrip[connection.gtfsTripId] = earliestArrivalByTransfers.map((earliestArrival, transfer) =>
-      currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
-        { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
-        earliestArrival,
-    );
+    this.earliestArrivalByTrip[connection.gtfsTripId] = earliestArrivalByTransfers
+      .map((earliestArrival, transfer) =>
+        currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
+          { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
+          earliestArrival,
+      );
   }
 
   private isDominated(connection: IConnection, currentArrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
