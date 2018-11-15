@@ -4,6 +4,7 @@ import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
+import TravelMode from "../../TravelMode";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
 import IRoadPlanner from "./IRoadPlanner";
@@ -51,6 +52,7 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
         stopLocation: to,
         duration,
         distance,
+        travelMode: TravelMode.Walking,
       }],
     };
   }

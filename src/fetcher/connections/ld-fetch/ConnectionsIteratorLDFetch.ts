@@ -61,9 +61,25 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
       await this.loadPage(pageIri);
     }
 
-    const value = this.config.backward ?
-      this.connections.pop() :
-      this.connections.shift();
+    let value;
+    if (this.config.backward) {
+      value = this.connections.pop();
+      while (this.connections.length > 0 && value.arrivalTime > this.config.upperBoundDate) {
+        value = this.connections.pop();
+
+        if (!value) {
+          await this.loadPage(this.previousPageIri);
+          value = this.connections.pop();
+        }
+      }
+
+      if (!value) {
+        return {value, done: true};
+      }
+
+    } else {
+      value = this.connections.shift();
+    }
 
     return { value, done: false };
 

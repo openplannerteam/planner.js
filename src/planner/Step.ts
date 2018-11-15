@@ -3,6 +3,7 @@ import ILocation from "../interfaces/ILocation";
 import IProbabilisticValue from "../interfaces/IProbabilisticValue";
 import IStep from "../interfaces/IStep";
 import { DistanceM, DurationMs } from "../interfaces/units";
+import TravelMode from "../TravelMode";
 
 export default class Step implements IStep {
 
@@ -10,6 +11,7 @@ export default class Step implements IStep {
     return new Step(
       {id: enterConnection.departureStop},
       {id: exitConnection.arrivalStop},
+      enterConnection.travelMode,
       {
         minimum: (
           exitConnection.arrivalTime.getTime() -
@@ -27,10 +29,12 @@ export default class Step implements IStep {
   public startTime: Date;
   public stopLocation: ILocation;
   public stopTime: Date;
+  public travelMode: TravelMode;
 
   constructor(
     startLocation: ILocation,
     stopLocation: ILocation,
+    travelMode: TravelMode,
     duration: IProbabilisticValue<DurationMs>,
     startTime?: Date,
     stopTime?: Date,
@@ -38,6 +42,7 @@ export default class Step implements IStep {
   ) {
     this.distance = distance;
     this.duration = duration;
+    this.travelMode = travelMode;
     this.startLocation = startLocation;
     this.startTime = startTime;
     this.stopLocation = stopLocation;
