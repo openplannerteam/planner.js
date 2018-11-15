@@ -9,6 +9,8 @@
     "test": "jest",
     "debug": "ndb node lib/demo.js --debug",
     "build": "tsc",
+    "browser": "npm run webpack",
+    "lint": "./node_modules/tslint/bin/tslint --project .",
     "webpack": "webpack --config webpack.config.js --mode=production",
     "webpack-stats": "npm run webpack -- --display-modules --json > stats.json",
     "doc": "./node_modules/typedoc/bin/typedoc --out docs/code src/ --exclude \"**/*+(config|test).ts\" --theme minimal"
@@ -23,7 +25,7 @@
     "uritemplate": "^0.3.4"
   },
   "pre-commit": [
-    "test"
+    "lint"
   ],
   "devDependencies": {
     "@types/haversine": "^1.1.0",
