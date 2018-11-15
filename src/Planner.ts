@@ -31,7 +31,7 @@ export default class Planner {
   /**
    * Given an [[IQuery]], it will evaluate the query and eventually produce an [[IQueryResult]]
    * @todo Should return an AsyncIterator
-   * @param query 
+   * @param query An [[IQuery]] specifying a route planning query
    * @returns A promise of an [[IQueryResult]]
    */
   public async query(query: IQuery): Promise<IQueryResult> {
