@@ -3,6 +3,7 @@ import IStop from "../../fetcher/stops/IStop";
 import IStopsFetcherMediator from "../../fetcher/stops/IStopsFetcherMediator";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
+import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import IRoadPlanner from "../road/IRoadPlanner";
@@ -23,8 +24,11 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
 
   public async findReachableStops(
     source: IStop,
-    maximumDuration: number,
-    minimumSpeed: number): Promise<IReachableStop[]> {
+    maximumDuration: DurationMs,
+    minimumSpeed: SpeedkmH,
+  ): Promise<IReachableStop[]> {
+
+    console.log("findReachableStops", source.id, maximumDuration, minimumSpeed);
 
     const minimumDepartureTime = new Date();
     const maximumArrivalTime = new Date(minimumDepartureTime.getTime() + maximumDuration);
@@ -48,10 +52,10 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
         if (paths.length) {
 
           // tslint:disable-next-line:no-shadowed-variable
-          const shortestDuration = paths.reduce((shortestDuration: number, path: IPath) => {
+          const shortestDuration = paths.reduce((shortestDuration: DurationMs, path: IPath) => {
             // Minimum speed is passed so sum max duration over all steps
             const duration = path.steps
-              .reduce((totalDuration: number, step) => totalDuration + step.duration.maximum, 0);
+              .reduce((totalDuration: DurationMs, step) => totalDuration + step.duration.maximum, 0);
 
             if (duration < shortestDuration) {
               return duration;

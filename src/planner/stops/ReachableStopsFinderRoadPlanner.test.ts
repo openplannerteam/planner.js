@@ -1,5 +1,6 @@
 import "jest";
 import StopsFetcherNMBS from "../../fetcher/stops/ld-fetch/StopsFetcherNMBS";
+import Units from "../../util/Units";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
@@ -14,9 +15,7 @@ test("[ReachableStopsFinderRoadPlanner] reachable stops", async () => {
   expect(sourceStop).toBeDefined();
 
   // Get reachable stops in 50 km (10h at 5km/h)
-  const reachableStops = await reachableStopsFinder.findReachableStops(sourceStop, 10, 5);
-
-  console.log(reachableStops);
+  const reachableStops = await reachableStopsFinder.findReachableStops(sourceStop, Units.fromHours(1), 5);
 
   expect(reachableStops.length).toBeGreaterThan(1);
 });
