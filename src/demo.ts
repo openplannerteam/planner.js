@@ -1,4 +1,4 @@
-import Planner from "./Planner";
+import Planner from "./index";
 import Units from "./util/Units";
 
 const isDebugging = process && process.argv.includes("--debug");

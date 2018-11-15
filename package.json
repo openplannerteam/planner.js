@@ -2,14 +2,14 @@
   "name": "plannerjs",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "webpack": "webpack --config webpack.config.js --mode=production",
     "webpack-stats": "npm run webpack -- --display-modules --json > stats.json",
     "test": "jest",
-    "debug": "ndb node dist/demo.js --debug",
+    "debug": "ndb node lib/demo.js --debug"
   },
   "dependencies": {
     "haversine": "^1.1.0",
