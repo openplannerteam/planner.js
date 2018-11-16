@@ -4,7 +4,7 @@ import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 export default interface IReachableStopsFinder {
   findReachableStops: (
-    sourceStop: IStop,
+    sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedkmH,

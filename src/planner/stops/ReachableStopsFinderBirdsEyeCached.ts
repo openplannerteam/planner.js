@@ -3,27 +3,24 @@ import IStop from "../../fetcher/stops/IStop";
 import IStopsFetcherMediator from "../../fetcher/stops/IStopsFetcherMediator";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import TYPES from "../../types";
-import Geo from "../../util/Geo";
-import Units from "../../util/Units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
+import ReachableStopsFinderBirdsEye from "./ReachableStopsFinderBirdsEye";
 import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 @injectable()
 export default class ReachableStopsFinderBirdsEyeCached implements IReachableStopsFinder {
-  private readonly stopsFetcherMediator: IStopsFetcherMediator;
-
-  private allStops: IStop[];
-  private reachableStopsCache: {[cacheKey: string]: IReachableStop[]};
+  private readonly reachableStopsFinder: ReachableStopsFinderBirdsEye;
+  private readonly reachableStopsCache: {[cacheKey: string]: IReachableStop[]};
 
   constructor(
     @inject(TYPES.StopsFetcherMediator) stopsFetcherMediator: IStopsFetcherMediator,
   ) {
-    this.stopsFetcherMediator = stopsFetcherMediator;
+    this.reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcherMediator);
     this.reachableStopsCache = {};
   }
 
   public async findReachableStops(
-    source: IStop,
+    sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedkmH,
@@ -31,38 +28,17 @@ export default class ReachableStopsFinderBirdsEyeCached implements IReachableSto
 
     // Mode can be ignored since birds eye view distance is identical
 
-    const cacheKey = `${source.id} ${maximumDuration} ${minimumSpeed}`;
+    const cacheKey = `${sourceOrTargetStop.id} ${maximumDuration} ${minimumSpeed}`;
     const cacheItem = this.reachableStopsCache[cacheKey];
 
     if (cacheItem) {
       return cacheItem;
     }
 
-    const allStops = await this.getAllStops();
-
-    const reachableStops = allStops.map((possibleTarget: IStop): IReachableStop => {
-      if (possibleTarget.id === source.id) {
-        return {stop: source, duration: 0};
-      }
-
-      const distance = Geo.getDistanceBetweenStops(source, possibleTarget);
-      const duration = Units.toDuration(distance, minimumSpeed);
-
-      if (duration <= maximumDuration) {
-        return {stop: possibleTarget, duration};
-      }
-    }).filter((reachableStop) => !!reachableStop);
+    const reachableStops = await this.reachableStopsFinder
+      .findReachableStops(sourceOrTargetStop, mode, maximumDuration, minimumSpeed);
 
     this.reachableStopsCache[cacheKey] = reachableStops;
     return reachableStops;
-  }
-
-  private async getAllStops() {
-    if (!this.allStops) {
-      this.allStops = await this.stopsFetcherMediator.getAllStops();
-    }
-
-    return this.allStops;
-
   }
 }
