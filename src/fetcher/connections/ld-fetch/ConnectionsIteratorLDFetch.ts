@@ -134,7 +134,7 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
       "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime": "arrivalTime",
       "http://semweb.mmlab.be/ns/linkedconnections#departureStop": "departureStop",
       "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop": "arrivalStop",
-      "http://vocab.gtfs.org/terms#trip": "gtfsTripId",
+      "http://vocab.gtfs.org/terms#trip": "gtfs:trip",
     }, triple);
   }
 

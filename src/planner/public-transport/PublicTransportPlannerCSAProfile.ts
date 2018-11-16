@@ -110,8 +110,8 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       }
     });
 
-    if (!this.earliestArrivalByTrip[connection.gtfsTripId]) {
-      this.earliestArrivalByTrip[connection.gtfsTripId] = Array(this.query.maximumLegs).fill(new EarliestArrival());
+    if (!this.earliestArrivalByTrip[connection["gtfs:trip"]]) {
+      this.earliestArrivalByTrip[connection["gtfs:trip"]] = Array(this.query.maximumLegs).fill(new EarliestArrival());
     }
   }
 
@@ -150,7 +150,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private remainSeated(connection: IConnection): IArrivalTimeByTransfers {
-    return this.earliestArrivalByTrip[connection.gtfsTripId]
+    return this.earliestArrivalByTrip[connection["gtfs:trip"]]
       .map((trip) => trip.arrivalTime);
   }
 
@@ -164,14 +164,14 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     connection: IConnection,
     currentArrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): void {
-    const earliestArrivalByTransfers: IEarliestArrival[] = this.earliestArrivalByTrip[connection.gtfsTripId];
+    const earliestArrivalByTransfers: IEarliestArrival[] = this.earliestArrivalByTrip[connection["gtfs:trip"]];
 
-    this.earliestArrivalByTrip[connection.gtfsTripId] = earliestArrivalByTransfers
+    this.earliestArrivalByTrip[connection["gtfs:trip"]] = earliestArrivalByTransfers
       .map((earliestArrival, transfer) =>
-        currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
-          { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
-          earliestArrival,
-      );
+      currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
+        { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
+        earliestArrival,
+    );
   }
 
   private isDominated(connection: IConnection, currentArrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
@@ -233,7 +233,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
         // Else, keep old journey pointers
         if (minVectorTimes[transfers] < earliestDepTimeProfile.arrivalTimes[transfers]) {
           enterConnections[transfers] = connection;
-          exitConnections[transfers] = this.earliestArrivalByTrip[connection.gtfsTripId][transfers].connection;
+          exitConnections[transfers] = this.earliestArrivalByTrip[connection["gtfs:trip"]][transfers].connection;
           if (exitConnections[transfers] === null) {
             // This means the exit connection is the enter connection,
             // and tripStructure[connection.tripId] hasn't been initialized properly yet.
