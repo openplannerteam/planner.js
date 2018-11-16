@@ -937,6 +937,9 @@ img { max-width: 100%; }
 					<a href="_fetcher_connections_iconnection_.iconnection.html#id" class="tsd-kind-icon">id</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_fetcher_connections_iconnection_.iconnection.html#nextconnection" class="tsd-kind-icon">next<wbr>Connection</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="_fetcher_connections_iconnection_.iconnection.html#travelmode" class="tsd-kind-icon">travel<wbr>Mode</a>
 				</li>
 			</ul>
@@ -945,6 +948,30 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Interface for a Connection. This describes an actual transport vehicle going from its
+						departureStop to its arrivalStop at a certain departureTime, arriving at the arrivalTime.
+						The arrivalTime and departureTime already include the delay and are the actual real-time values
+						for the actual arrival and departureTime.
+						The arrivalDelay and departureDelay then again contain the duration in which these times deviate
+					from the planned time.</p>
+				</div>
+				<dl class="tsd-comment-tags">
+					<dt>property</dt>
+					<dd><p>&quot;gtfs:trip&quot; (optional) an identifier for the trip this vehicle is making with this connection</p>
+					</dd>
+					<dt>property</dt>
+					<dd><p>nextConnection (optional) an identifier for the next connection the vehicle is going to make</p>
+					</dd>
+					<dt>property</dt>
+					<dd><p>TravelMode The type of vehicle that is used, chosen from an enum <a href="../enums/_travelmode_.travelmode.html">TravelMode</a>
+						Currently missing properties: gtfs:dropOffType and gtfs:pickupType</p>
+					</dd>
+				</dl>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -968,6 +995,7 @@ img { max-width: 100%; }
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnection_.iconnection.html#departuretime" class="tsd-kind-icon">departure<wbr>Time</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnection_.iconnection.html#gtfs_trip" class="tsd-kind-icon">gtfs:trip</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnection_.iconnection.html#id" class="tsd-kind-icon">id</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnection_.iconnection.html#nextconnection" class="tsd-kind-icon">next<wbr>Connection</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnection_.iconnection.html#travelmode" class="tsd-kind-icon">travel<wbr>Mode</a></li>
 						</ul>
 					</section>
@@ -978,11 +1006,11 @@ img { max-width: 100%; }
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="arrivaldelay" class="tsd-anchor"></a>
-				<h3>arrival<wbr>Delay</h3>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> arrival<wbr>Delay</h3>
 				<div class="tsd-signature tsd-kind-icon">arrival<wbr>Delay<span class="tsd-signature-symbol">:</span> <a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L10">fetcher/connections/IConnection.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L22">fetcher/connections/IConnection.ts:22</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -992,7 +1020,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">arrival<wbr>Stop<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L9">fetcher/connections/IConnection.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L21">fetcher/connections/IConnection.ts:21</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1002,17 +1030,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">arrival<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L8">fetcher/connections/IConnection.ts:8</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L20">fetcher/connections/IConnection.ts:20</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="departuredelay" class="tsd-anchor"></a>
-				<h3>departure<wbr>Delay</h3>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> departure<wbr>Delay</h3>
 				<div class="tsd-signature tsd-kind-icon">departure<wbr>Delay<span class="tsd-signature-symbol">:</span> <a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L14">fetcher/connections/IConnection.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L26">fetcher/connections/IConnection.ts:26</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1022,7 +1050,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">departure<wbr>Stop<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L13">fetcher/connections/IConnection.ts:13</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L25">fetcher/connections/IConnection.ts:25</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1032,17 +1060,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">departure<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L12">fetcher/connections/IConnection.ts:12</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L24">fetcher/connections/IConnection.ts:24</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="gtfs_trip" class="tsd-anchor"></a>
-				<h3>gtfs:trip</h3>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> gtfs:trip</h3>
 				<div class="tsd-signature tsd-kind-icon">gtfs:trip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L16">fetcher/connections/IConnection.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L28">fetcher/connections/IConnection.ts:28</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1052,7 +1080,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L5">fetcher/connections/IConnection.ts:5</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L17">fetcher/connections/IConnection.ts:17</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="nextconnection" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> next<wbr>Connection</h3>
+				<div class="tsd-signature tsd-kind-icon">next<wbr>Connection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L29">fetcher/connections/IConnection.ts:29</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1062,7 +1100,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">travel<wbr>Mode<span class="tsd-signature-symbol">:</span> <a href="../enums/_travelmode_.travelmode.html" class="tsd-signature-type">TravelMode</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/7f7b878/src/fetcher/connections/IConnection.ts#L6">fetcher/connections/IConnection.ts:6</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/d4591bc/src/fetcher/connections/IConnection.ts#L18">fetcher/connections/IConnection.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
