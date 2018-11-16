@@ -28,6 +28,8 @@ container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDefault);
 
+container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+  .to(RoadPlannerBirdsEye).whenTargetNamed("base");
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
   .to(PublicTransportPlannerCSAProfile);
 

@@ -1,4 +1,4 @@
-import { inject, injectable } from "inversify";
+import { inject, injectable, named } from "inversify";
 import Constants from "../Constants";
 import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
@@ -20,7 +20,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlanner) publicTransportPlanner: IPublicTransportPlanner,
-    @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
+    @inject(TYPES.RoadPlanner) @named("base") roadPlanner: IRoadPlanner,
   ) {
     this.locationResolver = locationResolver;
     this.publicTransportPlanner = publicTransportPlanner;
