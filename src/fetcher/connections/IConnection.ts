@@ -1,5 +1,7 @@
 import { DurationMs } from "../../interfaces/units";
 import TravelMode from "../../TravelMode";
+import DropOffType from "./DropOffType";
+import PickupType from "./PickupType";
 
 /**
  * Interface for a Connection. This describes an actual transport vehicle going from its
@@ -25,6 +27,10 @@ export default interface IConnection {
   departureStop: string;
   departureDelay?: DurationMs;
 
+  "gtfs:route"?: string;
   "gtfs:trip"?: string;
+  "gtfs:dropOffType"?: DropOffType;
+  "gtfs:pickupType"?: PickupType;
+  "gtfs:headsign"?: string;
   nextConnection?: string;
 }
