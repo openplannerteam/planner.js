@@ -1,8 +1,8 @@
 enum DropOffType {
-  Regular = "Regular",
-  NotAvailable = "NotAvailable",
-  MustPhone = "MustPhone",
-  MustCoordinateWithDriver = "MustCoordinateWithDriver",
+  Regular = "gtfs:Regular",
+  NotAvailable = "gtfs:NotAvailable",
+  MustPhone = "gtfs:MustPhone",
+  MustCoordinateWithDriver = "gtfs:MustCoordinateWithDriver",
 }
 
 export default DropOffType;
