@@ -1,12 +1,15 @@
 import IConnection from "../../../fetcher/connections/IConnection";
+import IStop from "../../../fetcher/stops/IStop";
 import ILocation from "../../../interfaces/ILocation";
 import IPath from "../../../interfaces/IPath";
 import IStep from "../../../interfaces/IStep";
 import ILocationResolver from "../../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../../query-runner/IResolvedQuery";
+import TravelMode from "../../../TravelMode";
 import Path from "../../Path";
 import IRoadPlanner from "../../road/IRoadPlanner";
 import Step from "../../Step";
+import IReachableStopsFinder, { IReachableStop } from "../../stops/IReachableStopsFinder";
 import IProfilesByStop from "./data-structure/stops/IProfilesByStop";
 import ITransferProfile from "./data-structure/stops/ITransferProfile";
 import Profile from "./data-structure/stops/Profile";
@@ -15,12 +18,18 @@ import ProfileUtil from "./util/ProfileUtil";
 export default class JourneyExtractor {
   private readonly roadPlanner: IRoadPlanner;
   private readonly locationResolver: ILocationResolver;
+  private readonly reachableStopsFinder: IReachableStopsFinder;
 
   private bestArrivalTime: number[][] = [];
 
-  constructor(roadPlanner: IRoadPlanner, locationResolver: ILocationResolver) {
+  constructor(
+    roadPlanner: IRoadPlanner,
+    locationResolver: ILocationResolver,
+    reachableStopsFinder: IReachableStopsFinder,
+  ) {
     this.roadPlanner = roadPlanner;
     this.locationResolver = locationResolver;
+    this.reachableStopsFinder = reachableStopsFinder;
   }
 
   public async extractJourneys(
@@ -30,7 +39,16 @@ export default class JourneyExtractor {
     const filteredProfilesByStop: IProfilesByStop = ProfileUtil.filterInfinity(profilesByStop);
 
     const journeys = [];
-    for (const departureStop of query.from) {
+    const departureLocation: IStop = query.from[0] as IStop;
+
+    const reachableStops = await this.reachableStopsFinder.findReachableStops(
+      departureLocation,
+      query.maximumTransferDuration,
+      query.minimumWalkingSpeed,
+    );
+
+    for (const reachableStop of reachableStops) {
+      const departureStop: IStop = reachableStop.stop;
 
       if (!filteredProfilesByStop[departureStop.id]) {
         console.warn("Can't find departure stop: " + departureStop.id);
@@ -39,30 +57,30 @@ export default class JourneyExtractor {
 
       for (const profile of filteredProfilesByStop[departureStop.id]) {
         if (profile.departureTime >= query.minimumDepartureTime.getTime()) {
+          const arrivalStop = query.to[0];
 
-          for (const arrivalStop of query.to) {
-            for (let amountOfTransfers = 0; amountOfTransfers < profile.transferProfiles.length; amountOfTransfers++) {
-              const transferProfile = profile.transferProfiles[amountOfTransfers];
+          for (let amountOfTransfers = 0; amountOfTransfers < profile.transferProfiles.length; amountOfTransfers++) {
+            const transferProfile = profile.transferProfiles[amountOfTransfers];
 
-              if (this.checkBestArrivalTime(transferProfile, departureStop, arrivalStop)) {
-                try {
-                  const journey = await this.extractJourney(
-                    arrivalStop,
-                    profile,
-                    amountOfTransfers,
-                    filteredProfilesByStop,
-                    query,
-                  );
+            if (this.checkBestArrivalTime(transferProfile, departureStop, arrivalStop)) {
+              try {
+                const journey = await this.extractJourney(
+                  arrivalStop,
+                  reachableStop,
+                  profile,
+                  amountOfTransfers,
+                  filteredProfilesByStop,
+                  query,
+                );
 
-                  journeys.push(journey);
+                journeys.push(journey);
 
-                  this.setBestArrivalTime(departureStop, arrivalStop, transferProfile.arrivalTime);
-                } catch (e) {
-                  console.warn(e);
-                }
+                this.setBestArrivalTime(departureStop, arrivalStop, transferProfile.arrivalTime);
+              } catch (e) {
+                console.warn(e);
               }
-
             }
+
           }
 
         }
@@ -91,6 +109,7 @@ export default class JourneyExtractor {
 
   private async extractJourney(
     arrivalStop: ILocation,
+    reachableStop: IReachableStop,
     profile: Profile,
     transfers: number,
     profilesByStop: IProfilesByStop,
@@ -103,6 +122,17 @@ export default class JourneyExtractor {
 
     let currentProfile = profile;
     let remainingTransfers = transfers;
+
+    if (reachableStop.duration > 0) {
+      const currentTransferProfile = profile.transferProfiles[remainingTransfers];
+
+      this.addInitialFootpath(
+        path,
+        currentTransferProfile,
+        reachableStop,
+        query.from[0],
+      );
+    }
 
     while (remainingTransfers >= 0) {
       // Construct and push step
@@ -164,6 +194,29 @@ export default class JourneyExtractor {
     }
 
     return path as IPath;
+  }
+
+  private addInitialFootpath(
+    path: Path,
+    transferProfile: ITransferProfile,
+    reachableStop: IReachableStop,
+    startLocation: ILocation,
+  ): void {
+    const enterConnection: IConnection = transferProfile.enterConnection;
+    const stopTime = enterConnection.departureTime;
+    const startTime = new Date(stopTime.valueOf() - reachableStop.duration);
+
+    const step = Step.create(
+      startLocation,
+      reachableStop.stop as ILocation,
+      TravelMode.Walking,
+      { minimum: reachableStop.duration },
+      startTime,
+      enterConnection.departureTime,
+      undefined,
+    );
+
+    path.addStep(step);
   }
 
   private async addFinalFootpath(path: Path, arrivalStop: ILocation, query: IResolvedQuery): Promise<boolean> {

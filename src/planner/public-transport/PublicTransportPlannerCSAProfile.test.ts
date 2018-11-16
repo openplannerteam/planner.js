@@ -20,8 +20,8 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
     const query: IResolvedQuery = {
       publicTransportOnly: true,
-      from: [{id: "http://irail.be/stations/NMBS/008896925", latitude: 50.914326, longitude: 3.255416}],
-      to: [{id: "http://irail.be/stations/NMBS/008892007", latitude: 51.035896, longitude: 3.710675}],
+      from: [{ id: "http://irail.be/stations/NMBS/008896925", latitude: 50.914326, longitude: 3.255416 }],
+      to: [{ id: "http://irail.be/stations/NMBS/008892007", latitude: 51.035896, longitude: 3.710675 }],
       minimumDepartureTime: new Date("2018-11-06T09:00:00.000Z"),
       maximumArrivalTime: new Date("2018-11-06T19:00:00.000Z"),
       maximumTransfers: 8,
@@ -29,7 +29,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
     beforeAll(async () => {
       const connectionFetcher = new ConnectionsFetcherNMBSTest(connections);
-      connectionFetcher.setConfig({backward: true});
+      connectionFetcher.setConfig({ backward: true });
 
       const roadPlanner = new RoadPlannerBirdsEye();
       const stopsFetcher = new StopsFetcherNMBS();
@@ -69,8 +69,8 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     const query: IQuery = {
       publicTransportOnly: true,
       from: [
-        "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-      ],
+         "http://irail.be/stations/NMBS/008896925", // Ingelmunster
+       ],
       to: [
         "http://irail.be/stations/NMBS/008821006", // Antwerpen
       ],
@@ -132,7 +132,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         }
 
         let arrivalTime = path.steps[i].stopTime.getTime();
-        for (let j = i + 1 ; j < path.steps.length ; j++) {
+        for (let j = i + 1; j < path.steps.length; j++) {
           arrivalTime += path.steps[j].duration.minimum;
         }
 
@@ -141,5 +141,4 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       }
     });
   });
-
 });

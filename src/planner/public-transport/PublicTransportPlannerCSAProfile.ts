@@ -47,7 +47,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     this.locationResolver = locationResolver;
     this.reachableStopsFinder = reachableStopsFinder;
 
-    this.journeyExtractor = new JourneyExtractor(roadPlanner, locationResolver);
+    this.journeyExtractor = new JourneyExtractor(roadPlanner, locationResolver, reachableStopsFinder);
   }
 
   public async plan(query: IResolvedQuery): Promise<IPath[]> {
@@ -131,16 +131,16 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private async initDurationToTargetByStop(): Promise<void> {
-    for (const arrivalStop of this.query.to) {
-      const reachableStops = await this.reachableStopsFinder.findReachableStops(
-        arrivalStop as IStop,
-        this.query.maximumTransferDuration,
-        this.query.minimumWalkingSpeed,
-      );
+    const arrivalStop: IStop = this.query.to[0] as IStop;
 
-      for (const reachableStop of reachableStops) {
-        this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration;
-      }
+    const reachableStops = await this.reachableStopsFinder.findReachableStops(
+      arrivalStop,
+      this.query.maximumTransferDuration,
+      this.query.minimumWalkingSpeed,
+    );
+
+    for (const reachableStop of reachableStops) {
+      this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration;
     }
   }
 
