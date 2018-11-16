@@ -61,7 +61,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     jest.setTimeout(90000);
 
     const minimumDepartureTime = new Date();
-    minimumDepartureTime.setHours(minimumDepartureTime.getHours() - 2);
+    minimumDepartureTime.setHours(minimumDepartureTime.getHours() - 4);
 
     const maximumArrivalTime = new Date();
     maximumArrivalTime.setHours(maximumArrivalTime.getHours() + 0);
@@ -72,7 +72,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         "http://irail.be/stations/NMBS/008896925", // Ingelmunster
       ],
       to: [
-        "http://irail.be/stations/NMBS/008896008", // Kortrijk
+        "http://irail.be/stations/NMBS/008821006", // Antwerpen
       ],
       maximumArrivalTime,
       minimumDepartureTime,

@@ -9,11 +9,11 @@ export default class EarliestArrivalByTransfers extends Array<IEarliestArrival> 
   }
 
   public static createByConnection(
-    connection: IConnection,
     currentArrivalTimeByTransfers: EarliestArrivalByTransfers,
+    connection: IConnection,
     arrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): EarliestArrivalByTransfers {
-    return currentArrivalTimeByTransfers.map((earliestArrival, transfer) => {
+    return currentArrivalTimeByTransfers.map((earliestArrival: IEarliestArrival, transfer: number) => {
       if (arrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime) {
         return {
           connection,

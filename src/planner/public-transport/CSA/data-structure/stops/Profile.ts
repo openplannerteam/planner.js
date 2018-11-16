@@ -42,13 +42,13 @@ export default class Profile implements IProfile {
     }
   }
 
-  public isDominatedBy(arrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
+  public isDominated(arrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
     return this.transferProfiles.reduce((
       memo: boolean,
       transferProfile: ITransferProfile,
       amountOfTransfers: number,
       ) =>
-      memo && transferProfile.arrivalTime > arrivalTimeByTransfers[amountOfTransfers]
+      memo && transferProfile.arrivalTime <= arrivalTimeByTransfers[amountOfTransfers]
       , true);
   }
 
