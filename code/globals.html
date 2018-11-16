@@ -914,17 +914,39 @@ img { max-width: 100%; }
 <div class="container container-main">
 	<div class="content-wrap">
 		<div class="tsd-panel tsd-typography">
-			<h1 id="-planner-js">🛸 Planner.js</h1>
-			<p><a href="https://travis-ci.org/openplannerteam/planner.js"><img src="https://travis-ci.org/openplannerteam/planner.js.svg?branch=dev" alt="Build Status"></a> <a href="https://github.com/openplannerteam/planner.js/blob/master/LICENSE"><img src="https://img.shields.io/github/license/openplannerteam/planner.js.svg?maxAge=2592000" alt="MIT License"></a></p>
-			<p>The JavaScript library for journey planning.</p>
-			<p>Current status: <em>to be launched in February</em></p>
-			<p>For now: clone the repository, run <code>npm install</code> and use your <a href="https://www.typescriptlang.org/">typescript compiler</a> (<code>tsc</code>) to create the files.</p>
+			<h1 id="planner-js-a-js-library-for-route-planning">Planner.js: A JS library for route planning</h1>
+			<p>🛸 <a href="https://travis-ci.org/openplannerteam/planner.js"><img src="https://travis-ci.org/openplannerteam/planner.js.svg?branch=dev" alt="Build Status"></a> <a href="https://github.com/openplannerteam/planner.js/blob/master/LICENSE">![MIT License]  🚴‍♂️(https://img.shields.io/github/license/openplannerteam/planner.js.svg?maxAge=2592000)</a> 🚉</p>
+			<p>Current status: <em>to be launched in February</em> 🚀</p>
+			<p>For now: clone the repository, run <code>npm install</code> and <code>npm build</code>. Afterwards you can use it as follows:</p>
+			<p>Include it in the browser:</p>
+			<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://openplannerteam.github.io/planner.js/js/planner-latest.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+			<p>Include it in your JavaScript project:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Not yet published on NPM...</span>
+<span class="hljs-keyword">const</span> Planner = <span class="hljs-built_in">require</span>(<span class="hljs-string">'plannerjs'</span>).default;</code></pre>
+			<p>Use it in both environments:</p>
+			<pre><code class="language-javascript"><span class="hljs-keyword">const</span> planner = <span class="hljs-keyword">new</span> Planner();
+  planner.query({
+    <span class="hljs-attr">publicTransportOnly</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">from</span>: <span class="hljs-string">"http://irail.be/stations/NMBS/008896925"</span>, <span class="hljs-comment">// Ingelmunster</span>
+    to: <span class="hljs-string">"http://irail.be/stations/NMBS/008892007"</span>, <span class="hljs-comment">// Ghent-Sint-Pieters</span>
+    minimumDepartureTime: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(),
+    <span class="hljs-attr">maximumTransferDuration</span>: <span class="hljs-number">30</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 30 minutes</span>
+  }).then(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+      <span class="hljs-built_in">console</span>.log(result);
+      <span class="hljs-keyword">if</span>(result &amp;&amp; result.paths) {
+        alert(<span class="hljs-string">'Found '</span> + result.paths.length + <span class="hljs-string">' paths'</span>);
+      }
+    })
+    .catch(<span class="hljs-function">(<span class="hljs-params">reason</span>) =&gt;</span> {
+      <span class="hljs-built_in">console</span>.error(reason);
+    });</code></pre>
 			<h2 id="documentation">Documentation</h2>
-			<p>Follow the documentation at <a href="https://openplannerteam.github.io/planner.js/">https://openplannerteam.github.io/planner.js/</a></p>
+			<p>For further instructions, follow the documentation at <a href="https://openplannerteam.github.io/planner.js/">https://openplannerteam.github.io/planner.js/</a></p>
 			<h2 id="developing">Developing</h2>
 			<ul>
 				<li>Building the docs with typedoc: <code>npm run doc</code></li>
 				<li>Testing with jest: <code>npm test</code></li>
+				<li>Create a new browser version with <code>npm run browser</code></li>
 			</ul>
 		</div>
 		<section class="tsd-panel-group tsd-index-group">
