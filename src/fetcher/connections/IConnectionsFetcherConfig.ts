@@ -1,5 +1,5 @@
 export default interface IConnectionsFetcherConfig {
-  upperBoundDate?: Date,
-  lowerBoundDate?: Date,
+  upperBoundDate?: Date;
+  lowerBoundDate?: Date;
   backward?: boolean;
 }
