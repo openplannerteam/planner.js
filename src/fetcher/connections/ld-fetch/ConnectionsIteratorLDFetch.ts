@@ -22,7 +22,7 @@ interface IEntityMap {
  * through implementing the AsyncIterator protocol.
  * LDFetch returns documents as an array of RDF triples.
  * The meta Hydra triples are used for paginating to the next or previous page.
- * The triples that describe linked connections get deserialized to instances of IConnection
+ * The triples that describe linked connections get deserialized to instances of [[IConnection]]
  */
 export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnection> {
   public readonly baseUrl: string;

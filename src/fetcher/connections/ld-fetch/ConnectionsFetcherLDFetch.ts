@@ -5,7 +5,7 @@ import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 
 /**
- * Wraps the ConnectionsIteratorLDFetch for use in a for-await-of statement
+ * Wraps the [[ConnectionsIteratorLDFetch]] for use in a for-await-of statement
  * @implements IConnectionsFetcher
  */
 @injectable()
