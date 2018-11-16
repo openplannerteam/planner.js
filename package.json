@@ -15,7 +15,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "test": "jest",
-    "debug": "ndb node lib/demo.js --debug",
+    "debug": "ndb node lib/demo.cli.js --debug",
     "build": "tsc",
     "browser": "npm run webpack",
     "lint": "./node_modules/tslint/bin/tslint --project .",
