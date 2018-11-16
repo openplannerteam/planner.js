@@ -24,7 +24,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       to: [{id: "http://irail.be/stations/NMBS/008892007", latitude: 51.035896, longitude: 3.710675}],
       minimumDepartureTime: new Date("2018-11-06T09:00:00.000Z"),
       maximumArrivalTime: new Date("2018-11-06T19:00:00.000Z"),
-      maximumLegs: 8,
+      maximumTransfers: 8,
     };
 
     beforeAll(async () => {
@@ -60,9 +60,11 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
   describe("real-time data", () => {
     jest.setTimeout(90000);
 
-    const now = new Date();
-    const nowPlusTwoHours = new Date();
-    nowPlusTwoHours.setHours(nowPlusTwoHours.getHours() + 4);
+    const minimumDepartureTime = new Date();
+    minimumDepartureTime.setHours(minimumDepartureTime.getHours() - 2);
+
+    const maximumArrivalTime = new Date();
+    maximumArrivalTime.setHours(maximumArrivalTime.getHours() + 0);
 
     const query: IQuery = {
       publicTransportOnly: true,
@@ -70,9 +72,10 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         "http://irail.be/stations/NMBS/008896925", // Ingelmunster
       ],
       to: [
-        "http://irail.be/stations/NMBS/008821006", // Antwerpen-Centraal
+        "http://irail.be/stations/NMBS/008896008", // Kortrijk
       ],
-      maximumArrivalTime: nowPlusTwoHours,
+      maximumArrivalTime,
+      minimumDepartureTime,
     };
     let result: IQueryResult;
 
@@ -91,16 +94,18 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const queryRunner = new QueryRunnerDefault(locationResolver, CSA, roadPlanner);
       result = await queryRunner.run(query);
+      console.log(result);
     });
 
     it("Correct departure and arrival stop", () => {
       expect(result).toBeDefined();
       expect(result.paths).toBeDefined();
+      expect(result.paths.length).toBeGreaterThanOrEqual(1);
 
       for (const path of result.paths) {
         expect(path.steps).toBeDefined();
 
-        expect(path.steps.length).toBeGreaterThanOrEqual(0);
+        expect(path.steps.length).toBeGreaterThanOrEqual(1);
         expect(path.steps[0]).toBeDefined();
         expect(path.steps[path.steps.length - 1]).toBeDefined();
 
@@ -112,11 +117,12 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     it("Correct departure and arrival time", () => {
       expect(result).toBeDefined();
       expect(result.paths).toBeDefined();
+      expect(result.paths.length).toBeGreaterThanOrEqual(1);
 
       for (const path of result.paths) {
         expect(path.steps).toBeDefined();
 
-        expect(path.steps.length).toBeGreaterThanOrEqual(0);
+        expect(path.steps.length).toBeGreaterThanOrEqual(1);
         expect(path.steps[0]).toBeDefined();
         expect(path.steps[path.steps.length - 1]).toBeDefined();
 
@@ -130,8 +136,8 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
           arrivalTime += path.steps[j].duration.minimum;
         }
 
-        expect(path.steps[0].startTime.getTime()).toBeGreaterThanOrEqual(now.getTime());
-        expect(arrivalTime).toBeLessThanOrEqual(nowPlusTwoHours.getTime());
+        expect(path.steps[0].startTime.getTime()).toBeGreaterThanOrEqual(minimumDepartureTime.getTime());
+        expect(arrivalTime).toBeLessThanOrEqual(maximumArrivalTime.getTime());
       }
     });
   });

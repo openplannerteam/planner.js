@@ -1,5 +1,5 @@
 import IConnection from "../../../../fetcher/connections/IConnection";
-import IProfilesByStop from "../data-structure/IProfilesByStop";
+import IProfilesByStop from "../data-structure/stops/IProfilesByStop";
 
 export default class ProfileUtil {
 
@@ -21,7 +21,7 @@ export default class ProfileUtil {
     let i = profilesByStop[arrivalStop].length - 1;
     while (i >= 0) {
       if (profilesByStop[arrivalStop][i].departureTime >= arrivalTime.getTime()) {
-        return profilesByStop[arrivalStop][i].arrivalTimes.slice(); // Return a copy of the array
+        return profilesByStop[arrivalStop][i].getArrivalTimeByTransfers().slice(); // Return a copy of the array
       }
       i--;
     }

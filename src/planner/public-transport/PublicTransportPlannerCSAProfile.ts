@@ -10,12 +10,13 @@ import TYPES from "../../types";
 import Vectors from "../../util/Vectors";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder from "../stops/IReachableStopsFinder";
-import IEarliestArrival from "./CSA/data-structure/EarliestArrival";
-import EarliestArrival from "./CSA/data-structure/EarliestArrival";
 import IArrivalTimeByTransfers from "./CSA/data-structure/IArrivalTimeByTransfers";
-import IEarliestArrivalByTrip from "./CSA/data-structure/IEarliestArrivalByTrip";
-import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
-import Profile from "./CSA/data-structure/Profile";
+import IProfilesByStop from "./CSA/data-structure/stops/IProfilesByStop";
+import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
+import Profile from "./CSA/data-structure/stops/Profile";
+import EarliestArrivalByTransfers from "./CSA/data-structure/trips/EarliestArrivalByTransfers";
+import IEarliestArrivalByTransfers from "./CSA/data-structure/trips/IEarliestArrivalByTransfers";
+import IEarliestArrivalByTrip from "./CSA/data-structure/trips/IEarliestArrivalByTrip";
 import JourneyExtractor from "./CSA/JourneyExtractor";
 import ProfileUtil from "./CSA/util/ProfileUtil";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
@@ -96,7 +97,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
       this.updateEarliestArrivalByTrip(connection, earliestArrivalTime);
 
-      if (!this.isDominated(connection, earliestArrivalTime)) {
+      if (this.isDominated(connection, earliestArrivalTime)) {
         await this.getFootpathsForDepartureStop(connection, earliestArrivalTime);
       }
     }
@@ -110,12 +111,12 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private discoverConnection(connection: IConnection) {
     [connection.departureStop, connection.arrivalStop].forEach((stop) => {
       if (!this.profilesByStop[stop]) {
-        this.profilesByStop[stop] = [new Profile(this.query.maximumLegs)];
+        this.profilesByStop[stop] = [Profile.create(this.query.maximumTransfers)];
       }
     });
 
     if (!this.earliestArrivalByTrip[connection["gtfs:trip"]]) {
-      this.earliestArrivalByTrip[connection["gtfs:trip"]] = Array(this.query.maximumLegs).fill(new EarliestArrival());
+      this.earliestArrivalByTrip[connection["gtfs:trip"]] = EarliestArrivalByTransfers.create(this.query.maximumTransfers);
     }
   }
 
@@ -145,41 +146,42 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const walkingTimeToTarget = this.durationToTargetByStop[connection.arrivalStop];
 
     if (walkingTimeToTarget === undefined) {
-      return Array(this.query.maximumLegs).fill(Infinity);
+      return Array(this.query.maximumTransfers).fill(Infinity);
     }
 
-    return Array(this.query.maximumLegs).fill(connection.arrivalTime.getTime() + walkingTimeToTarget);
+    return Array(this.query.maximumTransfers).fill(connection.arrivalTime.getTime() + walkingTimeToTarget);
   }
 
   private remainSeated(connection: IConnection): IArrivalTimeByTransfers {
-    return this.earliestArrivalByTrip[connection["gtfs:trip"]].map((trip) => trip.arrivalTime);
+    return this.earliestArrivalByTrip[connection["gtfs:trip"]].map((earliestArrivalByTransfer) =>
+      earliestArrivalByTransfer.arrivalTime,
+    );
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
     return Vectors.shiftVector<IArrivalTimeByTransfers>(
-      ProfileUtil.evalProfile(this.profilesByStop, connection, this.query.maximumLegs),
+      ProfileUtil.evalProfile(this.profilesByStop, connection, this.query.maximumTransfers),
     );
   }
 
   private updateEarliestArrivalByTrip(
     connection: IConnection,
-    currentArrivalTimeByTransfers: IArrivalTimeByTransfers,
+    arrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): void {
-    const earliestArrivalByTransfers: IEarliestArrival[] = this.earliestArrivalByTrip[connection["gtfs:trip"]];
+    const earliestArrivalByTransfers: IEarliestArrivalByTransfers = this.earliestArrivalByTrip[connection["gtfs:trip"]];
 
-    this.earliestArrivalByTrip[connection["gtfs:trip"]] = earliestArrivalByTransfers.map((earliestArrival, transfer) =>
-      currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
-        { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
-        earliestArrival,
+    this.earliestArrivalByTrip[connection["gtfs:trip"]] = EarliestArrivalByTransfers.createByConnection(
+      connection,
+      earliestArrivalByTransfers,
+      arrivalTimeByTransfers,
     );
   }
 
-  private isDominated(connection: IConnection, currentArrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
-    const depProfile = this.profilesByStop[connection.departureStop];
-    const earliestProfileEntry = depProfile[depProfile.length - 1];
+  private isDominated(connection: IConnection, arrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
+    const departureProfile = this.profilesByStop[connection.departureStop];
+    const earliestProfileEntry = departureProfile[departureProfile.length - 1];
 
-    return earliestProfileEntry.arrivalTimes.reduce((memo, arrivalTime, transfer) =>
-      memo && arrivalTime <= currentArrivalTimeByTransfers[transfer], true);
+    return earliestProfileEntry.isDominatedBy(arrivalTimeByTransfers);
   }
 
   private async getFootpathsForDepartureStop(
@@ -188,7 +190,11 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   ): Promise<void> {
     const depProfile: Profile[] = this.profilesByStop[connection.departureStop];
     const earliestProfileEntry = depProfile[depProfile.length - 1];
-    const minVectorTimes = Vectors.minVector(currentArrivalTimeByTransfers, earliestProfileEntry.arrivalTimes);
+
+    const earliestArrivalTimeByTransfers = Vectors.minVector(
+      currentArrivalTimeByTransfers,
+      earliestProfileEntry.getArrivalTimeByTransfers(),
+    );
 
     const departureStop = await this.locationResolver.resolve(connection.departureStop);
     const reachableStops = await this.reachableStopsFinder.findReachableStops(
@@ -199,7 +205,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
     reachableStops.forEach((reachableStop) => {
       // Incorporate (c_dep_time - f_dur, t_c) into profile of S[f_dep_stop]
-      this.incorporateInProfile(connection, reachableStop.duration, reachableStop.stop, minVectorTimes);
+      this.incorporateInProfile(connection, reachableStop.duration, reachableStop.stop, earliestArrivalTimeByTransfers);
     });
   }
 
@@ -207,61 +213,53 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     connection: IConnection,
     duration: DurationMs,
     stop: IStop,
-    minVectorTimes: IArrivalTimeByTransfers,
+    arrivalTimeByTransfers: IArrivalTimeByTransfers,
   ) {
     let profilesByDepartureStop = this.profilesByStop[stop.id];
 
-    if (profilesByDepartureStop === undefined) {
-      profilesByDepartureStop = this.profilesByStop[stop.id] = [new Profile(this.query.maximumLegs)];
+    if (!profilesByDepartureStop) {
+      profilesByDepartureStop = this.profilesByStop[stop.id] = [Profile.create(this.query.maximumTransfers)];
     }
     const earliestDepTimeProfile = profilesByDepartureStop[profilesByDepartureStop.length - 1];
 
     // If arrival times for all numbers of legs are equal to the earliest entry, this
     // entry is redundant
-    let redundant = true;
-    for (let i = 0; i < this.query.maximumLegs; i++) {
-      redundant = redundant && minVectorTimes[i] >= earliestDepTimeProfile.arrivalTimes[i];
-    }
+    if (earliestDepTimeProfile.isDominatedBy(arrivalTimeByTransfers)) {
+      const currentTransferProfiles = earliestDepTimeProfile.transferProfiles;
+      const transferProfiles = [];
 
-    if (!redundant) {
-      const enterConnections = [];
-      const exitConnections = [];
+      for (let amountOfTransfers = 0; amountOfTransfers < currentTransferProfiles.length; amountOfTransfers++) {
+        const transferProfile: ITransferProfile = currentTransferProfiles[amountOfTransfers];
 
-      for (let transfers = 0; transfers < this.query.maximumLegs; transfers++) {
-        // If the new arrival time is better, update journey pointers
-        // Else, keep old journey pointers
-        if (minVectorTimes[transfers] < earliestDepTimeProfile.arrivalTimes[transfers]) {
-          enterConnections[transfers] = connection;
-          exitConnections[transfers] = this.earliestArrivalByTrip[connection["gtfs:trip"]][transfers].connection;
-          if (exitConnections[transfers] === null) {
-            // This means the exit connection is the enter connection,
-            // and tripStructure[connection.tripId] hasn't been initialized properly yet.
-            exitConnections[transfers] = connection;
-          }
-        } else {
-          enterConnections[transfers] = earliestDepTimeProfile.enterConnections[transfers];
-          exitConnections[transfers] = earliestDepTimeProfile.exitConnections[transfers];
+        const newTransferProfile: ITransferProfile = transferProfile;
+
+        if (arrivalTimeByTransfers[amountOfTransfers] < transferProfile.arrivalTime) {
+          newTransferProfile.enterConnection = connection;
+          newTransferProfile.exitConnection = this.earliestArrivalByTrip[connection["gtfs:trip"]][amountOfTransfers].connection || connection;
         }
+
+        newTransferProfile.arrivalTime = arrivalTimeByTransfers[amountOfTransfers];
+        transferProfiles.push(newTransferProfile);
       }
 
       // If the new departure time is equal, update the profile entry
       // Else, insert a new entry
       const departureTime = connection.departureTime.getTime() - duration;
-      const newProfile = {
-        departureTime,
-        arrivalTimes: minVectorTimes,
-        enterConnections,
-        exitConnections,
-      };
+      const newProfile: Profile = Profile.createFromTransfers(departureTime, transferProfiles);
 
       let i = profilesByDepartureStop.length - 1;
       let earliestProfile = profilesByDepartureStop[i];
-      while (i > 0 && earliestProfile.departureTime < departureTime) {
-        profilesByDepartureStop[i + 1] = earliestProfile;
-        i--;
-        earliestProfile = profilesByDepartureStop[i];
+
+      if (earliestProfile.departureTime === Infinity) {
+        profilesByDepartureStop[i] = newProfile;
+      } else {
+        while (i > 0 && earliestProfile.departureTime < departureTime) {
+          profilesByDepartureStop[i + 1] = earliestProfile;
+          i--;
+          earliestProfile = profilesByDepartureStop[i];
+        }
+        profilesByDepartureStop[i + 1] = newProfile;
       }
-      profilesByDepartureStop[i + 1] = newProfile;
     }
   }
 
