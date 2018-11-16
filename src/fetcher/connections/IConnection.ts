@@ -13,7 +13,6 @@ import PickupType from "./PickupType";
  * @property "gtfs:trip" (optional) an identifier for the trip this vehicle is making with this connection
  * @property nextConnection (optional) an identifier for the next connection the vehicle is going to make
  * @property TravelMode The type of vehicle that is used, chosen from an enum [[TravelMode]]
- * Currently missing properties: gtfs:dropOffType and gtfs:pickupType
  */
 export default interface IConnection {
   id: string;
@@ -27,10 +26,11 @@ export default interface IConnection {
   departureStop: string;
   departureDelay?: DurationMs;
 
+  nextConnection?: string[];
+
   "gtfs:route"?: string;
   "gtfs:trip"?: string;
   "gtfs:dropOffType"?: DropOffType;
   "gtfs:pickupType"?: PickupType;
   "gtfs:headsign"?: string;
-  nextConnection?: string;
 }

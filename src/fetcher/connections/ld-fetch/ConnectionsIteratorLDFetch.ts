@@ -17,6 +17,13 @@ interface IEntityMap {
   [subject: string]: IEntity;
 }
 
+/**
+ * Base class for fetching linked connections with LDFetch and letting the caller iterate over them asynchronously
+ * through implementing the AsyncIterator protocol.
+ * LDFetch returns documents as an array of RDF triples.
+ * The meta Hydra triples are used for paginating to the next or previous page.
+ * The triples that describe linked connections get deserialized to instances of IConnection
+ */
 export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnection> {
   public readonly baseUrl: string;
   private travelMode: TravelMode;
@@ -136,6 +143,7 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
       "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime": "arrivalTime",
       "http://semweb.mmlab.be/ns/linkedconnections#departureStop": "departureStop",
       "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop": "arrivalStop",
+      "http://semweb.mmlab.be/ns/linkedconnections#nextConnection": "nextConnection",
 
       "http://vocab.gtfs.org/terms#route": "gtfs:route",
       "http://vocab.gtfs.org/terms#trip": "gtfs:trip",
@@ -190,7 +198,15 @@ export default class ConnectionsIteratorLDFetch implements AsyncIterator<IConnec
         };
       }
 
-      entities[subject][predicate] = newObject || object;
+      // nextConnection should be an array
+      // todo: test once nextConnection becomes available
+      if (predicate === "nextConnection") {
+        entities[subject][predicate] = entities[subject][predicate] || [];
+        entities[subject][predicate].push(object);
+
+      } else {
+        entities[subject][predicate] = newObject || object;
+      }
 
       return entities;
     }, {});
