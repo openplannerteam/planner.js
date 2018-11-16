@@ -8,12 +8,12 @@ import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Path from "../Path";
 import IRoadPlanner from "../road/IRoadPlanner";
-import RoadPlannerPhase from "../road/RoadPlannerPhase";
 import Step from "../Step";
 import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
 import Profile from "./CSA/data-structure/Profile";
 import ProfileUtil from "./CSA/util/ProfileUtil";
 import IJourneyExtractor from "./IJourneyExtractor";
+import JourneyExtractionPhase from "./JourneyExtractionPhase";
 
 @injectable()
 export default class JourneyExtractorDefault implements IJourneyExtractor {
@@ -25,10 +25,10 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
 
   constructor(
     @inject(TYPES.RoadPlanner)
-    @tagged("phase", RoadPlannerPhase.JourneyExtractionTransfer)
+    @tagged("phase", JourneyExtractionPhase.Transfer)
       transferRoadPlanner: IRoadPlanner,
     @inject(TYPES.RoadPlanner)
-    @tagged("phase", RoadPlannerPhase.JourneyExtractionFinal)
+    @tagged("phase", JourneyExtractionPhase.Final)
       finalRoadPlanner: IRoadPlanner,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
   ) {

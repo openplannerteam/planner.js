@@ -9,13 +9,14 @@ import StopsFetcherNMBS from "./fetcher/stops/ld-fetch/StopsFetcherNMBS";
 import StopsFetcherProxy from "./fetcher/stops/proxy/StopsFetcherProxy";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
+import JourneyExtractionPhase from "./planner/public-transport/JourneyExtractionPhase";
 import JourneyExtractorDefault from "./planner/public-transport/JourneyExtractorDefault";
 import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
-import RoadPlannerPhase from "./planner/road/RoadPlannerPhase";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
+import ReachableStopsSearchPhase from "./planner/stops/ReachableStopsSearchPhase";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import LocationResolverDefault from "./query-runner/LocationResolverDefault";
@@ -27,23 +28,22 @@ container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDefault);
 
-container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner).to(PublicTransportPlannerCSAProfile);
+container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
+  .to(PublicTransportPlannerCSAProfile);
 
-container.bind<IRoadPlanner>(TYPES.RoadPlanner).to(RoadPlannerBirdsEye);
+container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
+  .to(JourneyExtractorDefault);
+container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+  .to(RoadPlannerBirdsEye).whenTargetTagged("phase", JourneyExtractionPhase.Initial);
+container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+  .to(RoadPlannerBirdsEye).whenTargetTagged("phase", JourneyExtractionPhase.Transfer);
+container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+  .to(RoadPlannerBirdsEye).whenTargetTagged("phase", JourneyExtractionPhase.Final);
 
-// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.ReachableStopsSearchInitial);
-// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.ReachableStopsSearchTransfer);
-// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.ReachableStopsSearchFinal);
-//
-// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.JourneyExtractionInitial);
-// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.JourneyExtractionTransfer);
-// container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-//   .to(RoadPlannerBirdsEye).whenTargetTagged("phase", RoadPlannerPhase.JourneyExtractionFinal);
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
+  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
+  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherNMBS);
 
@@ -57,8 +57,5 @@ container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn);
 container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy);
-
-container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder).to(ReachableStopsFinderBirdsEyeCached);
-container.bind<IJourneyExtractor>(TYPES.JourneyExtractor).to(JourneyExtractorDefault);
 
 export default container;

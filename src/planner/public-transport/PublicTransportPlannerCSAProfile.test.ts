@@ -11,7 +11,7 @@ import LocationResolverDefault from "../../query-runner/LocationResolverDefault"
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import TravelMode from "../../TravelMode";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
-import ReachableStopsFinderBirdsEye from "../stops/ReachableStopsFinderBirdsEye";
+import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import JourneyExtractorDefault from "./JourneyExtractorDefault";
 import PublicTransportPlannerCSAProfile from "./PublicTransportPlannerCSAProfile";
 
@@ -34,13 +34,14 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const stopsFetcher = new StopsFetcherNMBS();
       const locationResolver = new LocationResolverDefault(stopsFetcher);
-      const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
+      const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const roadPlanner = new RoadPlannerBirdsEye();
       const journeyExtractor = new JourneyExtractorDefault(roadPlanner, roadPlanner, locationResolver);
 
       const CSA = new PublicTransportPlannerCSAProfile(
         connectionFetcher,
         locationResolver,
+        reachableStopsFinder,
         reachableStopsFinder,
         journeyExtractor,
       );
@@ -83,13 +84,14 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const connectionFetcher = new ConnectionsFetcherNMBS();
       const stopsFetcher = new StopsFetcherNMBS();
       const locationResolver = new LocationResolverDefault(stopsFetcher);
-      const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
+      const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const roadPlanner = new RoadPlannerBirdsEye();
       const journeyExtractor = new JourneyExtractorDefault(roadPlanner, roadPlanner, locationResolver);
 
       const CSA = new PublicTransportPlannerCSAProfile(
         connectionFetcher,
         locationResolver,
+        reachableStopsFinder,
         reachableStopsFinder,
         journeyExtractor,
       );

@@ -1,4 +1,4 @@
-import { inject, injectable } from "inversify";
+import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsFetcher from "../../fetcher/connections/IConnectionsFetcher";
 import IStop from "../../fetcher/stops/IStop";
@@ -10,6 +10,7 @@ import TYPES from "../../types";
 import Vectors from "../../util/Vectors";
 import IReachableStopsFinder from "../stops/IReachableStopsFinder";
 import ReachableStopsFinderMode from "../stops/ReachableStopsFinderMode";
+import ReachableStopsSearchPhase from "../stops/ReachableStopsSearchPhase";
 import IEarliestArrival from "./CSA/data-structure/EarliestArrival";
 import EarliestArrival from "./CSA/data-structure/EarliestArrival";
 import IArrivalTimeByTransfers from "./CSA/data-structure/IArrivalTimeByTransfers";
@@ -24,7 +25,8 @@ import IPublicTransportPlanner from "./IPublicTransportPlanner";
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
   private readonly connectionsFetcher: IConnectionsFetcher;
   private readonly locationResolver: ILocationResolver;
-  private readonly reachableStopsFinder: IReachableStopsFinder;
+  private readonly initialReachableStopsFinder: IReachableStopsFinder;
+  private readonly transferReachableStopsFinder: IReachableStopsFinder;
   private readonly journeyExtractor: IJourneyExtractor;
 
   private profilesByStop: IProfilesByStop = {}; // S
@@ -36,12 +38,18 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   constructor(
     @inject(TYPES.ConnectionsFetcher) connectionsFetcher: IConnectionsFetcher,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.ReachableStopsFinder) reachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Initial)
+      initialReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Transfer)
+      transferReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.JourneyExtractor) journeyExtractor: IJourneyExtractor,
   ) {
     this.connectionsFetcher = connectionsFetcher;
     this.locationResolver = locationResolver;
-    this.reachableStopsFinder = reachableStopsFinder;
+    this.initialReachableStopsFinder = initialReachableStopsFinder;
+    this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.journeyExtractor = journeyExtractor;
   }
 
@@ -125,12 +133,13 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   private async initDurationToTargetByStop(): Promise<void> {
     for (const arrivalStop of this.query.to) {
-      const reachableStops = await this.reachableStopsFinder.findReachableStops(
-        arrivalStop as IStop,
-        ReachableStopsFinderMode.Target,
-        this.query.maximumTransferDuration,
-        this.query.minimumWalkingSpeed,
-      );
+      const reachableStops = await this.initialReachableStopsFinder
+        .findReachableStops(
+          arrivalStop as IStop,
+          ReachableStopsFinderMode.Target,
+          this.query.maximumTransferDuration,
+          this.query.minimumWalkingSpeed,
+        );
 
       for (const reachableStop of reachableStops) {
         this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration;
@@ -168,10 +177,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
     this.earliestArrivalByTrip[connection["gtfs:trip"]] = earliestArrivalByTransfers
       .map((earliestArrival, transfer) =>
-      currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
-        { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
-        earliestArrival,
-    );
+        currentArrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime ?
+          { connection, arrivalTime: currentArrivalTimeByTransfers[transfer] } :
+          earliestArrival,
+      );
   }
 
   private isDominated(connection: IConnection, currentArrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
@@ -191,12 +200,13 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const minVectorTimes = Vectors.minVector(currentArrivalTimeByTransfers, earliestProfileEntry.arrivalTimes);
 
     const departureStop = await this.locationResolver.resolve(connection.departureStop);
-    const reachableStops = await this.reachableStopsFinder.findReachableStops(
-      departureStop as IStop,
-      ReachableStopsFinderMode.Source,
-      this.query.maximumTransferDuration,
-      this.query.minimumWalkingSpeed,
-    );
+    const reachableStops = await this.transferReachableStopsFinder
+      .findReachableStops(
+        departureStop as IStop,
+        ReachableStopsFinderMode.Source,
+        this.query.maximumTransferDuration,
+        this.query.minimumWalkingSpeed,
+      );
 
     reachableStops.forEach((reachableStop) => {
       // Incorporate (c_dep_time - f_dur, t_c) into profile of S[f_dep_stop]
