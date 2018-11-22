@@ -1,6 +1,9 @@
 import IConnection from "../../../../fetcher/connections/IConnection";
 import IProfilesByStop from "../data-structure/stops/IProfilesByStop";
 
+/**
+ * Utility functions that can be used on the CSA profiles [[IProfilesByStop]].
+ */
 export default class ProfileUtil {
 
   public static filterInfinity(profilesByStop: IProfilesByStop): IProfilesByStop {

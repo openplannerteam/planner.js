@@ -15,6 +15,13 @@ import ITransferProfile from "./data-structure/stops/ITransferProfile";
 import Profile from "./data-structure/stops/Profile";
 import ProfileUtil from "./util/ProfileUtil";
 
+/**
+ * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
+ * A journey is an [[IPath]] that consist of several [[IStep]]s.
+ * The [[JourneyExtractor]] takes care of initial, intermediate and final footpaths.
+ *
+ * @property bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.
+ */
 export default class JourneyExtractor {
   private readonly roadPlanner: IRoadPlanner;
   private readonly locationResolver: ILocationResolver;

@@ -21,6 +21,16 @@ import JourneyExtractor from "./CSA/JourneyExtractor";
 import ProfileUtil from "./CSA/util/ProfileUtil";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
+/**
+ * An implementation of the Connection Scan Algorithm (SCA).
+ *
+ * @implements [[IPublicTransportPlanner]]
+ * @property profilesByStop Describes the CSA profiles for each scanned stop.
+ * @property earliestArrivalByTrip Describes the earliest arrival time for each scanned trip.
+ * @property durationToTargetByStop Describes the walking duration to the target stop for a scanned stop.
+ *
+ * @returns multiple [[IPath]]s that consist of several [[IStep]]s.
+ */
 @injectable()
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
   private readonly connectionsFetcher: IConnectionsFetcher;

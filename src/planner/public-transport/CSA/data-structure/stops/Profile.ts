@@ -2,6 +2,11 @@ import IArrivalTimeByTransfers from "../IArrivalTimeByTransfers";
 import IProfile from "./IProfile";
 import ITransferProfile from "./ITransferProfile";
 
+/**
+ * A factory that create's an [[IProfile]] based on the maximum amount of transfers and/or [[ITransferProfile]]s.
+ *
+ * @implements [[IProfile]]
+ */
 export default class Profile implements IProfile {
 
   public static create(amountOfTransfers: number): Profile {

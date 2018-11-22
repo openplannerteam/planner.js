@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import Constants from "../Constants";
+import Defaults from "../Defaults";
 import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
@@ -70,11 +70,11 @@ export default class QueryRunnerDefault implements IQueryRunner {
 
     resolvedQuery.from = await this.resolveEndpoint(from);
     resolvedQuery.to = await this.resolveEndpoint(to);
-    resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Constants.defaultMinimumWalkingSpeed;
-    resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Constants.defaultMaximumWalkingSpeed;
+    resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
+    resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
 
-    resolvedQuery.maximumTransferDuration = maximumTransferDuration || Constants.defaultMaximumTransferDuration;
-    resolvedQuery.maximumTransfers = maximumTransfers || Constants.defaultMaximumTransfers;
+    resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
+    resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 
     return resolvedQuery;
   }
