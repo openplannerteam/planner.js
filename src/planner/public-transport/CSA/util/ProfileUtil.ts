@@ -19,7 +19,7 @@ export default class ProfileUtil {
     return result;
   }
 
-  public static evalProfile(profilesByStop: IProfilesByStop, connection: IConnection, maxLegs) {
+  public static getTransferTimes(profilesByStop: IProfilesByStop, connection: IConnection, maxLegs) {
     const { arrivalStop, arrivalTime } = connection;
     let i = profilesByStop[arrivalStop].length - 1;
     while (i >= 0) {

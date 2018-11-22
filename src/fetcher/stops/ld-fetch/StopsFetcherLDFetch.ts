@@ -60,6 +60,9 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
           }, {});
 
           this.loadPromise = null;
+        })
+        .catch((reason) => {
+          console.log(reason);
         });
     }
   }
