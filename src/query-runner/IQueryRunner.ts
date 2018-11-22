@@ -1,7 +1,7 @@
+import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
-import IQueryResult from "../interfaces/IQueryResult";
 
 export default interface IQueryRunner {
 
-  run(query: IQuery): Promise<IQueryResult>;
+  run(query: IQuery): AsyncIterableIterator<IPath>;
 }

@@ -60,11 +60,11 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     this.journeyExtractor = new JourneyExtractor(roadPlanner, locationResolver, reachableStopsFinder);
   }
 
-  public async plan(query: IResolvedQuery): Promise<IPath[]> {
+  public async* plan(query: IResolvedQuery): AsyncIterableIterator<IPath> {
     this.query = query;
     this.setBounds();
 
-    return await this.calculateJourneys();
+    yield* this.calculateJourneys();
   }
 
   private setBounds() {
@@ -94,7 +94,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     });
   }
 
-  private async calculateJourneys(): Promise<IPath[]> {
+  private async* calculateJourneys(): AsyncIterableIterator<IPath> {
     await this.initDurationToTargetByStop();
 
     for await (const connection of this.connectionsFetcher) {
@@ -112,7 +112,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       }
     }
 
-    return await this.journeyExtractor.extractJourneys(
+    yield* this.journeyExtractor.extractJourneys(
       this.profilesByStop,
       this.query,
     );

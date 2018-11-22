@@ -39,13 +39,12 @@ export default class JourneyExtractor {
     this.reachableStopsFinder = reachableStopsFinder;
   }
 
-  public async extractJourneys(
+  public async* extractJourneys(
     profilesByStop: IProfilesByStop,
     query: IResolvedQuery,
-  ): Promise<IPath[]> {
+  ): AsyncIterableIterator<IPath> {
     const filteredProfilesByStop: IProfilesByStop = ProfileUtil.filterInfinity(profilesByStop);
 
-    const journeys = [];
     const departureLocation: IStop = query.from[0] as IStop;
 
     const reachableStops = await this.reachableStopsFinder.findReachableStops(
@@ -71,7 +70,7 @@ export default class JourneyExtractor {
 
             if (this.checkBestArrivalTime(transferProfile, departureStop, arrivalStop)) {
               try {
-                const journey = await this.extractJourney(
+                yield this.extractJourney(
                   arrivalStop,
                   reachableStop,
                   profile,
@@ -79,8 +78,6 @@ export default class JourneyExtractor {
                   filteredProfilesByStop,
                   query,
                 );
-
-                journeys.push(journey);
 
                 this.setBestArrivalTime(departureStop, arrivalStop, transferProfile.arrivalTime);
               } catch (e) {
@@ -93,8 +90,6 @@ export default class JourneyExtractor {
         }
       }
     }
-
-    return journeys;
   }
 
   private checkBestArrivalTime(
@@ -171,14 +166,16 @@ export default class JourneyExtractor {
               to: [to],
               minimumWalkingSpeed: query.minimumWalkingSpeed,
               maximumWalkingSpeed: query.maximumWalkingSpeed,
-            });
+            }).next();
 
-            if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
+            const walkingPath = walkingResult.value;
+
+            if (walkingPath && walkingPath.steps[0] &&
               connection.departureTime.getTime() >= step.stopTime.getTime() +
-              walkingResult[0].steps[0].duration.minimum
+              walkingPath.steps[0].duration.minimum
             ) {
               found = true;
-              path.addStep(walkingResult[0].steps[0]);
+              path.addStep(walkingPath.steps[0]);
               currentProfile = nextProfile[i];
             }
           }

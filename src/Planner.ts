@@ -1,6 +1,6 @@
 import Context from "./Context";
+import IPath from "./interfaces/IPath";
 import IQuery from "./interfaces/IQuery";
-import IQueryResult from "./interfaces/IQueryResult";
 import defaultContainer from "./inversify.config";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
@@ -30,11 +30,10 @@ export default class Planner {
 
   /**
    * Given an [[IQuery]], it will evaluate the query and eventually produce an [[IQueryResult]]
-   * @todo Should return an AsyncIterator
    * @param query An [[IQuery]] specifying a route planning query
-   * @returns A promise of an [[IQueryResult]]
+   * @returns An AsyncIterableIterator of [[IPath]]s
    */
-  public async query(query: IQuery): Promise<IQueryResult> {
-    return this.queryRunner.run(query);
+  public async* query(query: IQuery): AsyncIterableIterator<IPath> {
+    yield* this.queryRunner.run(query);
   }
 }

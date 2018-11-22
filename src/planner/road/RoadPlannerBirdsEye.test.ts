@@ -13,12 +13,17 @@ test("[RoadPlannerBirdsEye] distance between stops", async () => {
   const kortrijkLocation = await locationResolver.resolve({ id: "http://irail.be/stations/NMBS/008896008" });
   const ghentLocation = await locationResolver.resolve({ id: "http://irail.be/stations/NMBS/008892007" });
 
-  const result: IPath[] = await planner.plan({
+  const iterator = planner.plan({
     from: [kortrijkLocation], // Kortrijk
     to: [ghentLocation], // Ghent-Sint-Pieters,
     minimumWalkingSpeed: 3,
     maximumWalkingSpeed: 6,
   });
+
+  const result = [];
+  for await (const path of iterator) {
+    result.push(path);
+  }
 
   expect(result).toHaveLength(1);
 

@@ -5,7 +5,6 @@ import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/Connecti
 import StopsFetcherNMBS from "../../fetcher/stops/ld-fetch/StopsFetcherNMBS";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
-import IQueryResult from "../../interfaces/IQueryResult";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
@@ -42,7 +41,10 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         reachableStopsFinder,
       );
 
-      result = await CSA.plan(query);
+      result = [];
+      for await (const path of CSA.plan(query)) {
+        result.push(path);
+      }
     });
 
     it("Correct departure and arrival stop", async () => {
@@ -77,7 +79,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       maximumArrivalTime,
       minimumDepartureTime,
     };
-    let result: IQueryResult;
+    let result: IPath[];
 
     beforeAll(async () => {
       const connectionFetcher = new ConnectionsFetcherNMBS();
@@ -93,15 +95,17 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       );
 
       const queryRunner = new QueryRunnerDefault(locationResolver, CSA, roadPlanner);
-      result = await queryRunner.run(query);
+      result = [];
+      for await (const path of queryRunner.run(query)) {
+        result.push(path);
+      }
     });
 
     it("Correct departure and arrival stop", () => {
       expect(result).toBeDefined();
-      expect(result.paths).toBeDefined();
-      expect(result.paths.length).toBeGreaterThanOrEqual(1);
+      expect(result.length).toBeGreaterThanOrEqual(1);
 
-      for (const path of result.paths) {
+      for (const path of result) {
         expect(path.steps).toBeDefined();
 
         expect(path.steps.length).toBeGreaterThanOrEqual(1);
@@ -115,10 +119,9 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
     it("Correct departure and arrival time", () => {
       expect(result).toBeDefined();
-      expect(result.paths).toBeDefined();
-      expect(result.paths.length).toBeGreaterThanOrEqual(1);
+      expect(result.length).toBeGreaterThanOrEqual(1);
 
-      for (const path of result.paths) {
+      for (const path of result) {
         expect(path.steps).toBeDefined();
 
         expect(path.steps.length).toBeGreaterThanOrEqual(1);
