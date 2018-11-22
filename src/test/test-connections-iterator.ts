@@ -1,10 +1,7 @@
 import "reflect-metadata";
-import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
-import ConnectionsFetcherDeLijn from "../fetcher/connections/ld-fetch/ConnectionsFetcherDeLijn";
-import container from "../inversify.config";
-import TYPES from "../types";
+import ConnectionsFetcherNMBS from "../fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
 
-const fetcher = new ConnectionsFetcherDeLijn();
+const fetcher = new ConnectionsFetcherNMBS();
 // const fetcher = container.getTagged<IConnectionsFetcher>(TYPES.ConnectionsFetcher, "type", "merge");
 fetcher.setConfig({
   lowerBoundDate: new Date(),

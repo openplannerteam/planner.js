@@ -11,5 +11,5 @@ export default interface IResolvedQuery {
   minimumWalkingSpeed?: SpeedkmH;
   maximumWalkingSpeed?: SpeedkmH;
   maximumTransferDuration?: DurationMs;
-  maximumLegs?: number;
+  maximumTransfers?: number;
 }
