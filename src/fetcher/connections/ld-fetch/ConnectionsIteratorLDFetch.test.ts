@@ -9,7 +9,7 @@ test("[ConnectionsIteratorLDFetch] iterate forwards", async () => {
 
   const config = {
     backward: false,
-    lowerBoundDate: new Date(2018, 10, 2, 10),
+    lowerBoundDate: new Date(2018, 10, 22, 10),
   };
   const iterator = new ConnectionsIteratorLDFetch(
     "https://graph.irail.be/sncb/connections",
