@@ -1,8 +1,10 @@
 import { Triple } from "rdf-js";
 import TravelMode from "../../../TravelMode";
 import Units from "../../../util/Units";
-import { transformPredicate } from "../../helpers";
+import { transformObject, transformPredicate } from "../../helpers";
+import DropOffType from "../DropOffType";
 import IConnection from "../IConnection";
+import PickupType from "../PickupType";
 
 interface IEntity {
 }
@@ -63,14 +65,43 @@ export default class ConnectionsPageParser {
       "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime": "arrivalTime",
       "http://semweb.mmlab.be/ns/linkedconnections#departureStop": "departureStop",
       "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop": "arrivalStop",
+      "http://semweb.mmlab.be/ns/linkedconnections#nextConnection": "nextConnection",
+
+      "http://vocab.gtfs.org/terms#route": "gtfs:route",
       "http://vocab.gtfs.org/terms#trip": "gtfs:trip",
+      "http://vocab.gtfs.org/terms#dropOffType": "gtfs:dropOffType",
+      "http://vocab.gtfs.org/terms#pickupType": "gtfs:pickupType",
+      "http://vocab.gtfs.org/terms#headsign": "gtfs:headsign",
     }, triple);
+  }
+
+  private transformObject(triple: Triple): Triple {
+
+    if (triple.predicate.value === "gtfs:dropOffType") {
+      return transformObject({
+        "http://vocab.gtfs.org/terms#Regular": DropOffType.Regular,
+        "http://vocab.gtfs.org/terms#NotAvailable": DropOffType.NotAvailable,
+        "http://vocab.gtfs.org/terms#MustPhone": DropOffType.MustPhone,
+        "http://vocab.gtfs.org/terms#MustCoordinateWithDriver": DropOffType.MustCoordinateWithDriver,
+      }, triple);
+    }
+
+    if (triple.predicate.value === "gtfs:pickupType") {
+      return transformObject({
+        "http://vocab.gtfs.org/terms#Regular": PickupType.Regular,
+        "http://vocab.gtfs.org/terms#NotAvailable": PickupType.NotAvailable,
+        "http://vocab.gtfs.org/terms#MustPhone": PickupType.MustPhone,
+        "http://vocab.gtfs.org/terms#MustCoordinateWithDriver": PickupType.MustCoordinateWithDriver,
+      }, triple);
+    }
+
+    return triple;
   }
 
   private getEntities(triples: Triple[]): IEntityMap {
 
     return triples.reduce((entities: IEntityMap, triple: Triple) => {
-      triple = this.transformPredicate(triple);
+      triple = this.transformObject(this.transformPredicate(triple));
 
       const { subject: { value: subject }, predicate: { value: predicate }, object: { value: object } } = triple;
       let newObject;
@@ -89,7 +120,15 @@ export default class ConnectionsPageParser {
         };
       }
 
-      entities[subject][predicate] = newObject || object;
+      // nextConnection should be an array
+      // todo: test once nextConnection becomes available
+      if (predicate === "nextConnection") {
+        entities[subject][predicate] = entities[subject][predicate] || [];
+        entities[subject][predicate].push(object);
+
+      } else {
+        entities[subject][predicate] = newObject || object;
+      }
 
       return entities;
     }, {});

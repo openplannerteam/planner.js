@@ -4,6 +4,10 @@ import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 
+/**
+ * Wraps the [[ConnectionsIteratorLDFetch]] for use in a for-await-of statement
+ * @implements IConnectionsFetcher
+ */
 @injectable()
 export default abstract class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
 
@@ -15,6 +19,9 @@ export default abstract class ConnectionsFetcherLDFetch implements IConnectionsF
     this.setupDebug();
   }
 
+  /**
+   * Called by the semantics of the for-await-of statement.
+   */
   public [Symbol.asyncIterator](): AsyncIterator<IConnection> {
     return this.fetch();
   }
