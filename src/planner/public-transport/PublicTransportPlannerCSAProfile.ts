@@ -171,8 +171,12 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
+    if (connection["gtfs:dropOffType"] === "gtfs:NotAvailable") {
+      return Array(this.query.maximumTransfers).fill(Infinity);
+    }
+
     return Vectors.shiftVector<IArrivalTimeByTransfers>(
-      ProfileUtil.evalProfile(this.profilesByStop, connection, this.query.maximumTransfers),
+      ProfileUtil.getTransferTimes(this.profilesByStop, connection, this.query.maximumTransfers),
     );
   }
 
@@ -250,16 +254,25 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
           arrivalTime: Infinity,
         };
 
-        if (arrivalTimeByTransfers[amountOfTransfers] < transferProfile.arrivalTime) {
-          newTransferProfile.enterConnection = connection;
-          newTransferProfile.exitConnection = this.earliestArrivalByTrip[connection["gtfs:trip"]]
-            [amountOfTransfers].connection || connection;
+        const possibleExitConnection = this.earliestArrivalByTrip[connection["gtfs:trip"]]
+          [amountOfTransfers].connection || connection;
+
+        if (
+          arrivalTimeByTransfers[amountOfTransfers] < transferProfile.arrivalTime &&
+          connection["gtfs:pickupType"] !== "gtfs:NotAvailable" &&
+          possibleExitConnection["gtfs:dropOfType"] !== "gtfs:NotAvailable"
+        ) {
+            newTransferProfile.enterConnection = connection;
+            newTransferProfile.exitConnection = possibleExitConnection;
         } else {
           newTransferProfile.enterConnection = transferProfile.enterConnection;
           newTransferProfile.exitConnection = transferProfile.exitConnection;
         }
 
-        newTransferProfile.arrivalTime = arrivalTimeByTransfers[amountOfTransfers];
+        if (newTransferProfile.exitConnection && newTransferProfile.enterConnection) {
+          newTransferProfile.arrivalTime = arrivalTimeByTransfers[amountOfTransfers];
+        }
+
         transferProfiles.push(newTransferProfile);
       }
 
