@@ -7,6 +7,26 @@ import TravelMode from "../TravelMode";
 
 export default class Step implements IStep {
 
+  public static create(
+    startLocation: ILocation,
+    stopLocation: ILocation,
+    travelMode: TravelMode,
+    duration: IProbabilisticValue<DurationMs>,
+    startTime?: Date,
+    stopTime?: Date,
+    distance?: DistanceM,
+  ): IStep {
+    return new Step(
+      startLocation,
+      stopLocation,
+      travelMode,
+      duration,
+      startTime,
+      stopTime,
+      distance,
+    );
+  }
+
   public static createFromConnections(enterConnection: IConnection, exitConnection: IConnection): IStep {
     return new Step(
       {id: enterConnection.departureStop},
