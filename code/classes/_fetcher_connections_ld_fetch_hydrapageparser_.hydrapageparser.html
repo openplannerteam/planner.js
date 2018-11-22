@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Planner | plannerjs</title>
+	<title>HydraPageParser | plannerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -910,19 +910,31 @@ img { max-width: 100%; }
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class="current tsd-kind-class tsd-parent-kind-external-module">
-			<a href="_planner_.planner.html" class="tsd-kind-icon">Planner</a>
+			<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html" class="tsd-kind-icon">Hydra<wbr>Page<wbr>Parser</a>
 			<ul>
 				<li class=" tsd-kind-constructor tsd-parent-kind-class">
-					<a href="_planner_.planner.html#constructor" class="tsd-kind-icon">constructor</a>
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a href="_planner_.planner.html#context" class="tsd-kind-icon">context</a>
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#documentiri" class="tsd-kind-icon">document<wbr>Iri</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a href="_planner_.planner.html#queryrunner" class="tsd-kind-icon">query<wbr>Runner</a>
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#triples" class="tsd-kind-icon">triples</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getdocumentiri" class="tsd-kind-icon">get<wbr>Document<wbr>Iri</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="_planner_.planner.html#query" class="tsd-kind-icon">query</a>
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getnextpageiri" class="tsd-kind-icon">get<wbr>Next<wbr>Page<wbr>Iri</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getpage" class="tsd-kind-icon">get<wbr>Page</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getpreviouspageiri" class="tsd-kind-icon">get<wbr>Previous<wbr>Page<wbr>Iri</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getsearchtemplate" class="tsd-kind-icon">get<wbr>Search<wbr>Template</a>
 				</li>
 			</ul>
 		</li>
@@ -933,7 +945,8 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
-					<p>Allows to ask route planning queries over our knowledge graphs</p>
+					<p>Searches the given array of triples for hydra meta data, like the search template and next/previous page iris
+					Also allows getting the contained <a href="../interfaces/_fetcher_connections_ld_fetch_ihydrapage_.ihydrapage.html">IHydraPage</a>, which holds an array of <a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html">IConnection</a>s</p>
 				</div>
 			</div>
 		</section>
@@ -941,7 +954,7 @@ img { max-width: 100%; }
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">Planner</span>
+					<span class="target">HydraPageParser</span>
 				</li>
 			</ul>
 		</section>
@@ -952,20 +965,24 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_planner_.planner.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#constructor" class="tsd-kind-icon">constructor</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_planner_.planner.html#context" class="tsd-kind-icon">context</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_planner_.planner.html#queryrunner" class="tsd-kind-icon">query<wbr>Runner</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#documentiri" class="tsd-kind-icon">document<wbr>Iri</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#triples" class="tsd-kind-icon">triples</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_planner_.planner.html#query" class="tsd-kind-icon">query</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getdocumentiri" class="tsd-kind-icon">get<wbr>Document<wbr>Iri</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getnextpageiri" class="tsd-kind-icon">get<wbr>Next<wbr>Page<wbr>Iri</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getpage" class="tsd-kind-icon">get<wbr>Page</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getpreviouspageiri" class="tsd-kind-icon">get<wbr>Previous<wbr>Page<wbr>Iri</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html#getsearchtemplate" class="tsd-kind-icon">get<wbr>Search<wbr>Template</a></li>
 						</ul>
 					</section>
 				</div>
@@ -977,32 +994,22 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Planner<span class="tsd-signature-symbol">(</span>container<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Container</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_planner_.planner.html" class="tsd-signature-type">Planner</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Hydra<wbr>Page<wbr>Parser<span class="tsd-signature-symbol">(</span>triples<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Triple</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html" class="tsd-signature-type">HydraPageParser</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/Planner.ts#L17">Planner.ts:17</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L14">fetcher/connections/ld-fetch/HydraPageParser.ts:14</a></li>
 							</ul>
 						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Initializes a new Planner</p>
-							</div>
-						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> container: <span class="tsd-signature-type">Container</span><span class="tsd-signature-symbol"> =&nbsp;defaultContainer</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>The container of dependencies we are working with</p>
-									</div>
-								</div>
+								<h5>triples: <span class="tsd-signature-type">Triple</span><span class="tsd-signature-symbol">[]</span></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="_planner_.planner.html" class="tsd-signature-type">Planner</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="_fetcher_connections_ld_fetch_hydrapageparser_.hydrapageparser.html" class="tsd-signature-type">HydraPageParser</a></h4>
 					</li>
 				</ul>
 			</section>
@@ -1010,62 +1017,119 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-				<a name="context" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagPrivate">Private</span> context</h3>
-				<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="_context_.context.html" class="tsd-signature-type">Context</a></div>
+				<a name="documentiri" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> document<wbr>Iri</h3>
+				<div class="tsd-signature tsd-kind-icon">document<wbr>Iri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/Planner.ts#L16">Planner.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L14">fetcher/connections/ld-fetch/HydraPageParser.ts:14</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-				<a name="queryrunner" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagPrivate">Private</span> query<wbr>Runner</h3>
-				<div class="tsd-signature tsd-kind-icon">query<wbr>Runner<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_query_runner_iqueryrunner_.iqueryrunner.html" class="tsd-signature-type">IQueryRunner</a></div>
+				<a name="triples" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> triples</h3>
+				<div class="tsd-signature tsd-kind-icon">triples<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Triple</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/Planner.ts#L17">Planner.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L13">fetcher/connections/ld-fetch/HydraPageParser.ts:13</a></li>
 					</ul>
 				</aside>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="query" class="tsd-anchor"></a>
-				<h3>query</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_iquery_.iquery.html" class="tsd-signature-type">IQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html" class="tsd-signature-type">IQueryResult</a><span class="tsd-signature-symbol">&gt;</span></li>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+				<a name="getdocumentiri" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Document<wbr>Iri</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Document<wbr>Iri<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/Planner.ts#L37">Planner.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L65">fetcher/connections/ld-fetch/HydraPageParser.ts:65</a></li>
 							</ul>
 						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Given an <a href="../interfaces/_interfaces_iquery_.iquery.html">IQuery</a>, it will evaluate the query and eventually produce an <a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html">IQueryResult</a></p>
-							</div>
-							<dl class="tsd-comment-tags">
-								<dt>todo</dt>
-								<dd><p>Should return an AsyncIterator</p>
-								</dd>
-							</dl>
-						</div>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getnextpageiri" class="tsd-anchor"></a>
+				<h3>get<wbr>Next<wbr>Page<wbr>Iri</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Next<wbr>Page<wbr>Iri<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L45">fetcher/connections/ld-fetch/HydraPageParser.ts:45</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getpage" class="tsd-anchor"></a>
+				<h3>get<wbr>Page</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Page<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, travelMode<span class="tsd-signature-symbol">: </span><a href="../enums/_travelmode_.travelmode.html" class="tsd-signature-type">TravelMode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_connections_ld_fetch_ihydrapage_.ihydrapage.html" class="tsd-signature-type">IHydraPage</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L21">fetcher/connections/ld-fetch/HydraPageParser.ts:21</a></li>
+							</ul>
+						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>query: <a href="../interfaces/_interfaces_iquery_.iquery.html" class="tsd-signature-type">IQuery</a></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>An <a href="../interfaces/_interfaces_iquery_.iquery.html">IQuery</a> specifying a route planning query</p>
-								</div>
+								<h5>index: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5>travelMode: <a href="../enums/_travelmode_.travelmode.html" class="tsd-signature-type">TravelMode</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html" class="tsd-signature-type">IQueryResult</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						<p>A promise of an <a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html">IQueryResult</a></p>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/_fetcher_connections_ld_fetch_ihydrapage_.ihydrapage.html" class="tsd-signature-type">IHydraPage</a></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getpreviouspageiri" class="tsd-anchor"></a>
+				<h3>get<wbr>Previous<wbr>Page<wbr>Iri</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Previous<wbr>Page<wbr>Iri<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L55">fetcher/connections/ld-fetch/HydraPageParser.ts:55</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getsearchtemplate" class="tsd-anchor"></a>
+				<h3>get<wbr>Search<wbr>Template</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Search<wbr>Template<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UriTemplate</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/fetcher/connections/ld-fetch/HydraPageParser.ts#L32">fetcher/connections/ld-fetch/HydraPageParser.ts:32</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">UriTemplate</span></h4>
 					</li>
 				</ul>
 			</section>
