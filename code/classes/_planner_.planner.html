@@ -983,7 +983,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/12d1552/src/Planner.ts#L17">Planner.ts:17</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/Planner.ts#L17">Planner.ts:17</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1015,7 +1015,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="_context_.context.html" class="tsd-signature-type">Context</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/12d1552/src/Planner.ts#L16">Planner.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/Planner.ts#L16">Planner.ts:16</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1025,7 +1025,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">query<wbr>Runner<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_query_runner_iqueryrunner_.iqueryrunner.html" class="tsd-signature-type">IQueryRunner</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/12d1552/src/Planner.ts#L17">Planner.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/Planner.ts#L17">Planner.ts:17</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1036,24 +1036,19 @@ img { max-width: 100%; }
 				<a name="query" class="tsd-anchor"></a>
 				<h3>query</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_iquery_.iquery.html" class="tsd-signature-type">IQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html" class="tsd-signature-type">IQueryResult</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_iquery_.iquery.html" class="tsd-signature-type">IQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterableIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_ipath_.ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/12d1552/src/Planner.ts#L37">Planner.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/Planner.ts#L36">Planner.ts:36</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Given an <a href="../interfaces/_interfaces_iquery_.iquery.html">IQuery</a>, it will evaluate the query and eventually produce an <a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html">IQueryResult</a></p>
+								<p>Given an <a href="../interfaces/_interfaces_iquery_.iquery.html">IQuery</a>, it will evaluate the query and eventually produce an [[IQueryResult]]</p>
 							</div>
-							<dl class="tsd-comment-tags">
-								<dt>todo</dt>
-								<dd><p>Should return an AsyncIterator</p>
-								</dd>
-							</dl>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
@@ -1064,8 +1059,8 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html" class="tsd-signature-type">IQueryResult</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						<p>A promise of an <a href="../interfaces/_interfaces_iqueryresult_.iqueryresult.html">IQueryResult</a></p>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterableIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_ipath_.ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>An AsyncIterableIterator of <a href="../interfaces/_interfaces_ipath_.ipath.html">IPath</a>s</p>
 					</li>
 				</ul>
 			</section>
