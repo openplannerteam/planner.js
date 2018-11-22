@@ -58,8 +58,8 @@ container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
   .to(ConnectionsFetcherMerge).whenTargetTagged("type", "merge");*/
 
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
-// container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn);
-container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy);
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS).inSingletonScope();
+// container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn).inSingletonScope();
+container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy).inSingletonScope();
 
 export default container;

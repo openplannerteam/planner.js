@@ -5,6 +5,5 @@ import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 @injectable()
 export default class PublicTransportPlannerEAT implements IPublicTransportPlanner {
-  public plan: (query: IResolvedQuery) => Promise<IPath[]>;
-
+  public plan: (query: IResolvedQuery) => AsyncIterableIterator<IPath>;
 }

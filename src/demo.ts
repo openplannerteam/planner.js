@@ -24,8 +24,9 @@ export default async () => {
   });
 
   console.timeEnd("Public transport planner");
-  console.log(publicTransportResult.paths.length);
-  console.log(publicTransportResult);
+  for await (const path of publicTransportResult) {
+    console.log(path);
+  }
 
   return true;
 };

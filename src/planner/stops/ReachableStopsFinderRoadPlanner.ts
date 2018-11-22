@@ -53,7 +53,10 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
           [otherProp]: [possibleTarget as ILocation],
         });
 
-        const paths: IPath[] = await this.roadPlanner.plan(query);
+        const paths = [];
+        for await (const path of this.roadPlanner.plan(query)) {
+          paths.push(path);
+        }
 
         if (paths.length) {
 

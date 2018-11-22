@@ -12,21 +12,17 @@ import IRoadPlanner from "./IRoadPlanner";
 @injectable()
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
 
-  public async plan(query: IResolvedQuery): Promise<IPath[]> {
+  public async* plan(query: IResolvedQuery): AsyncIterableIterator<IPath> {
     const { from: fromLocations, to: toLocations, minimumWalkingSpeed, maximumWalkingSpeed} = query;
-
-    const paths = [];
 
     if (fromLocations && toLocations && fromLocations.length && toLocations.length) {
 
       for (const from of fromLocations) {
         for (const to of toLocations) {
-          paths.push(this.getPathBetweenLocations(from, to, minimumWalkingSpeed, maximumWalkingSpeed));
+          yield this.getPathBetweenLocations(from, to, minimumWalkingSpeed, maximumWalkingSpeed);
         }
       }
     }
-
-    return paths;
   }
 
   private getPathBetweenLocations(

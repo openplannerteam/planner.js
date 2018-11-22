@@ -3,7 +3,6 @@ import Defaults from "../Defaults";
 import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
-import IQueryResult from "../interfaces/IQueryResult";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
 import IRoadPlanner from "../planner/road/IRoadPlanner";
 import TYPES from "../types";
@@ -27,18 +26,17 @@ export default class QueryRunnerDefault implements IQueryRunner {
     this.roadPlanner = roadPlanner;
   }
 
-  public async run(query: IQuery): Promise<IQueryResult> {
+  public async* run(query: IQuery): AsyncIterableIterator<IPath> {
     const resolvedQuery: IResolvedQuery = await this.resolveQuery(query);
 
     if (resolvedQuery.roadOnly) {
-      return this.runRoadOnlyQuery(resolvedQuery);
+      yield* this.roadPlanner.plan(resolvedQuery);
+    } else if (resolvedQuery.publicTransportOnly) {
+      yield* this.publicTransportPlanner.plan(resolvedQuery);
+    } else {
+      return Promise.reject("Query not supported");
     }
 
-    if (resolvedQuery.publicTransportOnly) {
-      return this.runPublicTransportOnlyQuery(resolvedQuery);
-    }
-
-    return Promise.reject("Query not supported");
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {
@@ -77,17 +75,5 @@ export default class QueryRunnerDefault implements IQueryRunner {
     resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 
     return resolvedQuery;
-  }
-
-  private async runRoadOnlyQuery(query: IResolvedQuery): Promise<IQueryResult> {
-
-    const result: IPath[] = await this.roadPlanner.plan(query);
-    return Promise.resolve({ paths: result });
-  }
-
-  private async runPublicTransportOnlyQuery(query: IResolvedQuery): Promise<IQueryResult> {
-
-    const result: IPath[] = await this.publicTransportPlanner.plan(query);
-    return Promise.resolve({ paths: result });
   }
 }
