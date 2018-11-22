@@ -58,10 +58,10 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
   });
 
   describe("real-time data", () => {
-    jest.setTimeout(90000);
+    jest.setTimeout(100000);
 
     const minimumDepartureTime = new Date();
-    minimumDepartureTime.setHours(minimumDepartureTime.getHours() - 4);
+    minimumDepartureTime.setHours(minimumDepartureTime.getHours() - 3);
 
     const maximumArrivalTime = new Date();
     maximumArrivalTime.setHours(maximumArrivalTime.getHours() + 0);
@@ -94,7 +94,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const queryRunner = new QueryRunnerDefault(locationResolver, CSA, roadPlanner);
       result = await queryRunner.run(query);
-      console.log(result);
     });
 
     it("Correct departure and arrival stop", () => {
