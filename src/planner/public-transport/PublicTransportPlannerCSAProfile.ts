@@ -133,11 +133,15 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private calculateEarliestArrivalTime(connection: IConnection): IArrivalTimeByTransfers {
-    const t1 = this.walkToTarget(connection);
-    const t2 = this.remainSeated(connection);
-    const t3 = this.takeTransfer(connection);
+    const remainSeatedTime = this.remainSeated(connection);
+    if (connection["gtfs:dropOffType"] === "gtfs:NotAvailable") {
+      return remainSeatedTime;
+    }
 
-    return Vectors.minVector(t1, t2, t3);
+    const walkToTargetTime = this.walkToTarget(connection);
+    const takeTransferTime = this.takeTransfer(connection);
+
+    return Vectors.minVector(walkToTargetTime, remainSeatedTime, takeTransferTime);
   }
 
   private async initDurationToTargetByStop(): Promise<void> {
@@ -171,10 +175,6 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
-    if (connection["gtfs:dropOffType"] === "gtfs:NotAvailable") {
-      return Array(this.query.maximumTransfers).fill(Infinity);
-    }
-
     return Vectors.shiftVector<IArrivalTimeByTransfers>(
       ProfileUtil.getTransferTimes(this.profilesByStop, connection, this.query.maximumTransfers),
     );
