@@ -962,7 +962,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">find<wbr>Reachable<wbr>Stops<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/407d13f/src/planner/stops/IReachableStopsFinder.ts#L5">planner/stops/IReachableStopsFinder.ts:5</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/f889872/src/planner/stops/IReachableStopsFinder.ts#L6">planner/stops/IReachableStopsFinder.ts:6</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -970,14 +970,17 @@ img { max-width: 100%; }
 					<ul class="tsd-parameters">
 						<li class="tsd-parameter-siganture">
 							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>sourceStop<span class="tsd-signature-symbol">: </span><a href="_fetcher_stops_istop_.istop.html" class="tsd-signature-type">IStop</a>, maximumDuration<span class="tsd-signature-symbol">: </span><a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a>, minimumSpeed<span class="tsd-signature-symbol">: </span><a href="../modules/_interfaces_units_.html#speedkmh" class="tsd-signature-type">SpeedkmH</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_planner_stops_ireachablestopsfinder_.ireachablestop.html" class="tsd-signature-type">IReachableStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>sourceOrTargetStop<span class="tsd-signature-symbol">: </span><a href="_fetcher_stops_istop_.istop.html" class="tsd-signature-type">IStop</a>, mode<span class="tsd-signature-symbol">: </span><a href="../enums/_planner_stops_reachablestopsfindermode_.reachablestopsfindermode.html" class="tsd-signature-type">ReachableStopsFinderMode</a>, maximumDuration<span class="tsd-signature-symbol">: </span><a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a>, minimumSpeed<span class="tsd-signature-symbol">: </span><a href="../modules/_interfaces_units_.html#speedkmh" class="tsd-signature-type">SpeedkmH</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_planner_stops_ireachablestopsfinder_.ireachablestop.html" class="tsd-signature-type">IReachableStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 							</ul>
 							<ul class="tsd-descriptions">
 								<li class="tsd-description">
 									<h4 class="tsd-parameters-title">Parameters</h4>
 									<ul class="tsd-parameters">
 										<li>
-											<h5>sourceStop: <a href="_fetcher_stops_istop_.istop.html" class="tsd-signature-type">IStop</a></h5>
+											<h5>sourceOrTargetStop: <a href="_fetcher_stops_istop_.istop.html" class="tsd-signature-type">IStop</a></h5>
+										</li>
+										<li>
+											<h5>mode: <a href="../enums/_planner_stops_reachablestopsfindermode_.reachablestopsfindermode.html" class="tsd-signature-type">ReachableStopsFinderMode</a></h5>
 										</li>
 										<li>
 											<h5>maximumDuration: <a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a></h5>
