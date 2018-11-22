@@ -1,14 +1,9 @@
 import Planner from "./index";
 import Units from "./util/Units";
 
-const isDebugging = process && process.argv.includes("--debug");
-
 const planner = new Planner();
 
-(async () => {
-  if (isDebugging) {    // tslint:disable-next-line:no-debugger
-    debugger;
-  }
+export default async () => {
 
   const roadOnlyResult = await planner.query({
     roadOnly: true,
@@ -31,4 +26,6 @@ const planner = new Planner();
   console.timeEnd("Public transport planner");
   console.log(publicTransportResult.paths.length);
   console.log(publicTransportResult);
-})();
+
+  return true;
+};

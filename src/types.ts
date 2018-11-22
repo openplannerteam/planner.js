@@ -8,6 +8,7 @@ const TYPES = {
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
   RoadPlanner: Symbol("RoadPlanner"),
   ReachableStopsFinder: Symbol("ReachableStopsFinder"),
+  JourneyExtractor: Symbol("JourneyExtractor"),
 };
 
 export default TYPES;

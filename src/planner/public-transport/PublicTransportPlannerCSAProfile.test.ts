@@ -11,7 +11,8 @@ import LocationResolverDefault from "../../query-runner/LocationResolverDefault"
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import TravelMode from "../../TravelMode";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
-import ReachableStopsFinderBirdsEye from "../stops/ReachableStopsFinderBirdsEye";
+import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
+import JourneyExtractorDefault from "./JourneyExtractorDefault";
 import PublicTransportPlannerCSAProfile from "./PublicTransportPlannerCSAProfile";
 
 describe("[PublicTransportPlannerCSAProfile]", () => {
@@ -31,15 +32,23 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const connectionFetcher = new ConnectionsFetcherNMBSTest(connections);
       connectionFetcher.setConfig({ backward: true });
 
-      const roadPlanner = new RoadPlannerBirdsEye();
       const stopsFetcher = new StopsFetcherNMBS();
       const locationResolver = new LocationResolverDefault(stopsFetcher);
-      const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
+      const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
+      const roadPlanner = new RoadPlannerBirdsEye();
+      const journeyExtractor = new JourneyExtractorDefault(
+        roadPlanner,
+        roadPlanner,
+        reachableStopsFinder,
+        locationResolver,
+      );
+
       const CSA = new PublicTransportPlannerCSAProfile(
         connectionFetcher,
-        roadPlanner,
         locationResolver,
         reachableStopsFinder,
+        reachableStopsFinder,
+        journeyExtractor,
       );
 
       result = await CSA.plan(query);
@@ -81,15 +90,23 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
     beforeAll(async () => {
       const connectionFetcher = new ConnectionsFetcherNMBS();
-      const roadPlanner = new RoadPlannerBirdsEye();
       const stopsFetcher = new StopsFetcherNMBS();
       const locationResolver = new LocationResolverDefault(stopsFetcher);
-      const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
+      const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
+      const roadPlanner = new RoadPlannerBirdsEye();
+      const journeyExtractor = new JourneyExtractorDefault(
+        roadPlanner,
+        roadPlanner,
+        reachableStopsFinder,
+        locationResolver,
+      );
+
       const CSA = new PublicTransportPlannerCSAProfile(
         connectionFetcher,
-        roadPlanner,
         locationResolver,
         reachableStopsFinder,
+        reachableStopsFinder,
+        journeyExtractor,
       );
 
       const queryRunner = new QueryRunnerDefault(locationResolver, CSA, roadPlanner);

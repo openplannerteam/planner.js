@@ -1,19 +1,25 @@
-import IConnection from "../../../fetcher/connections/IConnection";
-import IStop from "../../../fetcher/stops/IStop";
-import ILocation from "../../../interfaces/ILocation";
-import IPath from "../../../interfaces/IPath";
-import IStep from "../../../interfaces/IStep";
-import ILocationResolver from "../../../query-runner/ILocationResolver";
-import IResolvedQuery from "../../../query-runner/IResolvedQuery";
-import TravelMode from "../../../TravelMode";
-import Path from "../../Path";
-import IRoadPlanner from "../../road/IRoadPlanner";
-import Step from "../../Step";
-import IReachableStopsFinder, { IReachableStop } from "../../stops/IReachableStopsFinder";
-import IProfilesByStop from "./data-structure/stops/IProfilesByStop";
-import ITransferProfile from "./data-structure/stops/ITransferProfile";
-import Profile from "./data-structure/stops/Profile";
-import ProfileUtil from "./util/ProfileUtil";
+import { inject, injectable, tagged } from "inversify";
+import IConnection from "../../fetcher/connections/IConnection";
+import IStop from "../../fetcher/stops/IStop";
+import ILocation from "../../interfaces/ILocation";
+import IPath from "../../interfaces/IPath";
+import IStep from "../../interfaces/IStep";
+import ILocationResolver from "../../query-runner/ILocationResolver";
+import IResolvedQuery from "../../query-runner/IResolvedQuery";
+import TravelMode from "../../TravelMode";
+import TYPES from "../../types";
+import Path from "../Path";
+import IRoadPlanner from "../road/IRoadPlanner";
+import Step from "../Step";
+import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
+import ReachableStopsFinderMode from "../stops/ReachableStopsFinderMode";
+import ReachableStopsSearchPhase from "../stops/ReachableStopsSearchPhase";
+import IProfilesByStop from "./CSA/data-structure/stops/IProfilesByStop";
+import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
+import Profile from "./CSA/data-structure/stops/Profile";
+import ProfileUtil from "./CSA/util/ProfileUtil";
+import IJourneyExtractor from "./IJourneyExtractor";
+import JourneyExtractionPhase from "./JourneyExtractionPhase";
 
 /**
  * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
@@ -22,21 +28,32 @@ import ProfileUtil from "./util/ProfileUtil";
  *
  * @property bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.
  */
-export default class JourneyExtractor {
-  private readonly roadPlanner: IRoadPlanner;
+@injectable()
+export default class JourneyExtractorDefault implements IJourneyExtractor {
+  private readonly transferRoadPlanner: IRoadPlanner;
+  private readonly finalRoadPlanner: IRoadPlanner;
+  private readonly initialReachableStopsFinder: IReachableStopsFinder;
+
   private readonly locationResolver: ILocationResolver;
-  private readonly reachableStopsFinder: IReachableStopsFinder;
 
   private bestArrivalTime: number[][] = [];
 
   constructor(
-    roadPlanner: IRoadPlanner,
-    locationResolver: ILocationResolver,
-    reachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.RoadPlanner)
+    @tagged("phase", JourneyExtractionPhase.Transfer)
+      transferRoadPlanner: IRoadPlanner,
+    @inject(TYPES.RoadPlanner)
+    @tagged("phase", JourneyExtractionPhase.Final)
+      finalRoadPlanner: IRoadPlanner,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Initial)
+      initialReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
   ) {
-    this.roadPlanner = roadPlanner;
+    this.transferRoadPlanner = transferRoadPlanner;
+    this.finalRoadPlanner = finalRoadPlanner;
     this.locationResolver = locationResolver;
-    this.reachableStopsFinder = reachableStopsFinder;
+    this.initialReachableStopsFinder = initialReachableStopsFinder;
   }
 
   public async extractJourneys(
@@ -48,8 +65,9 @@ export default class JourneyExtractor {
     const journeys = [];
     const departureLocation: IStop = query.from[0] as IStop;
 
-    const reachableStops = await this.reachableStopsFinder.findReachableStops(
+    const reachableStops = await this.initialReachableStopsFinder.findReachableStops(
       departureLocation,
+      ReachableStopsFinderMode.Source,
       query.maximumTransferDuration,
       query.minimumWalkingSpeed,
     );
@@ -102,9 +120,26 @@ export default class JourneyExtractor {
     departureStop: ILocation,
     arrivalStop: ILocation,
   ): boolean {
-    return transferProfile.arrivalTime < Infinity &&
-      (!this.bestArrivalTime[departureStop.id] || !this.bestArrivalTime[departureStop.id][arrivalStop.id] ||
-        transferProfile.arrivalTime < this.bestArrivalTime[departureStop.id][arrivalStop.id]);
+
+    const canArrive = transferProfile.arrivalTime < Infinity;
+
+    if (!canArrive) {
+      return false;
+    }
+
+    const bestArrivalTimesOfDepartureStop = this.bestArrivalTime[departureStop.id];
+
+    if (!bestArrivalTimesOfDepartureStop) {
+      return true;
+    }
+
+    const bestArrivalTime = bestArrivalTimesOfDepartureStop[arrivalStop.id];
+
+    if (!bestArrivalTime) {
+      return true;
+    }
+
+    return transferProfile.arrivalTime < bestArrivalTime;
   }
 
   private setBestArrivalTime(departureStop: ILocation, arrivalStop: ILocation, arrivalTime: number): void {
@@ -166,7 +201,7 @@ export default class JourneyExtractor {
             const from = await this.locationResolver.resolve(step.stopLocation.id);
             const to = await this.locationResolver.resolve(connection.departureStop);
 
-            const walkingResult = await this.roadPlanner.plan({
+            const walkingResult = await this.transferRoadPlanner.plan({
               from: [from],
               to: [to],
               minimumWalkingSpeed: query.minimumWalkingSpeed,
@@ -232,7 +267,7 @@ export default class JourneyExtractor {
     const fromLocation = await this.locationResolver.resolve(lastStep.stopLocation.id);
     const toLocation = await this.locationResolver.resolve(arrivalStop);
 
-    const walkingResult = await this.roadPlanner.plan({
+    const walkingResult = await this.finalRoadPlanner.plan({
       from: [fromLocation],
       to: [toLocation],
       minimumWalkingSpeed: query.minimumWalkingSpeed,
