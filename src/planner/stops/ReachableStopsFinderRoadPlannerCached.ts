@@ -54,7 +54,11 @@ export default class ReachableStopsFinderRoadPlannerCached implements IReachable
       if (possibleTarget.id !== source.id) {
 
         const query = Object.assign({}, baseQuery, { to: [possibleTarget as ILocation] });
-        const paths: IPath[] = await this.roadPlanner.plan(query);
+
+        const paths = [];
+        for await (const path of this.roadPlanner.plan(query)) {
+          paths.push(path);
+        }
 
         if (paths.length) {
 
