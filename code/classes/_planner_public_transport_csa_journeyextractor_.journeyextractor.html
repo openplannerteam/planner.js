@@ -922,10 +922,16 @@ img { max-width: 100%; }
 					<a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#locationresolver" class="tsd-kind-icon">location<wbr>Resolver</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#reachablestopsfinder" class="tsd-kind-icon">reachable<wbr>Stops<wbr>Finder</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#roadplanner" class="tsd-kind-icon">road<wbr>Planner</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#addfinalfootpath" class="tsd-kind-icon">add<wbr>Final<wbr>Footpath</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#addinitialfootpath" class="tsd-kind-icon">add<wbr>Initial<wbr>Footpath</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#checkbestarrivaltime" class="tsd-kind-icon">check<wbr>Best<wbr>Arrival<wbr>Time</a>
@@ -945,6 +951,20 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Creates journeys based on the profiles and query from <a href="_planner_public_transport_publictransportplannercsaprofile_.publictransportplannercsaprofile.html">PublicTransportPlannerCSAProfile</a>.
+						A journey is an <a href="../interfaces/_interfaces_ipath_.ipath.html">IPath</a> that consist of several <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>s.
+					The <a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html">JourneyExtractor</a> takes care of initial, intermediate and final footpaths.</p>
+				</div>
+				<dl class="tsd-comment-tags">
+					<dt>property</dt>
+					<dd><p>bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.</p>
+					</dd>
+				</dl>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -968,6 +988,7 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#bestarrivaltime" class="tsd-kind-icon">best<wbr>Arrival<wbr>Time</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#locationresolver" class="tsd-kind-icon">location<wbr>Resolver</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#reachablestopsfinder" class="tsd-kind-icon">reachable<wbr>Stops<wbr>Finder</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#roadplanner" class="tsd-kind-icon">road<wbr>Planner</a></li>
 						</ul>
 					</section>
@@ -975,6 +996,7 @@ img { max-width: 100%; }
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#addfinalfootpath" class="tsd-kind-icon">add<wbr>Final<wbr>Footpath</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#addinitialfootpath" class="tsd-kind-icon">add<wbr>Initial<wbr>Footpath</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#checkbestarrivaltime" class="tsd-kind-icon">check<wbr>Best<wbr>Arrival<wbr>Time</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#extractjourney" class="tsd-kind-icon">extract<wbr>Journey</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html#extractjourneys" class="tsd-kind-icon">extract<wbr>Journeys</a></li>
@@ -990,13 +1012,13 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Journey<wbr>Extractor<span class="tsd-signature-symbol">(</span>roadPlanner<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_road_iroadplanner_.iroadplanner.html" class="tsd-signature-type">IRoadPlanner</a>, locationResolver<span class="tsd-signature-symbol">: </span><a href="../interfaces/_query_runner_ilocationresolver_.ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html" class="tsd-signature-type">JourneyExtractor</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Journey<wbr>Extractor<span class="tsd-signature-symbol">(</span>roadPlanner<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_road_iroadplanner_.iroadplanner.html" class="tsd-signature-type">IRoadPlanner</a>, locationResolver<span class="tsd-signature-symbol">: </span><a href="../interfaces/_query_runner_ilocationresolver_.ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a>, reachableStopsFinder<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html" class="tsd-signature-type">JourneyExtractor</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L18">planner/public-transport/CSA/JourneyExtractor.ts:18</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L30">planner/public-transport/CSA/JourneyExtractor.ts:30</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1006,6 +1028,9 @@ img { max-width: 100%; }
 							</li>
 							<li>
 								<h5>locationResolver: <a href="../interfaces/_query_runner_ilocationresolver_.ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a></h5>
+							</li>
+							<li>
+								<h5>reachableStopsFinder: <a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html" class="tsd-signature-type">JourneyExtractor</a></h4>
@@ -1021,7 +1046,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">best<wbr>Arrival<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L18">planner/public-transport/CSA/JourneyExtractor.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L30">planner/public-transport/CSA/JourneyExtractor.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1031,7 +1056,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">location<wbr>Resolver<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_query_runner_ilocationresolver_.ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L16">planner/public-transport/CSA/JourneyExtractor.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L27">planner/public-transport/CSA/JourneyExtractor.ts:27</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+				<a name="reachablestopsfinder" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> reachable<wbr>Stops<wbr>Finder</h3>
+				<div class="tsd-signature tsd-kind-icon">reachable<wbr>Stops<wbr>Finder<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L28">planner/public-transport/CSA/JourneyExtractor.ts:28</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1041,7 +1076,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">road<wbr>Planner<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_road_iroadplanner_.iroadplanner.html" class="tsd-signature-type">IRoadPlanner</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L15">planner/public-transport/CSA/JourneyExtractor.ts:15</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L26">planner/public-transport/CSA/JourneyExtractor.ts:26</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1058,7 +1093,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L156">planner/public-transport/CSA/JourneyExtractor.ts:156</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L229">planner/public-transport/CSA/JourneyExtractor.ts:229</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1078,25 +1113,54 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-				<a name="checkbestarrivaltime" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagPrivate">Private</span> check<wbr>Best<wbr>Arrival<wbr>Time</h3>
+				<a name="addinitialfootpath" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> add<wbr>Initial<wbr>Footpath</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">check<wbr>Best<wbr>Arrival<wbr>Time<span class="tsd-signature-symbol">(</span>profile<span class="tsd-signature-symbol">: </span><a href="_planner_public_transport_csa_data_structure_profile_.profile.html" class="tsd-signature-type">Profile</a>, transfers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, departureStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, arrivalStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					<li class="tsd-signature tsd-kind-icon">add<wbr>Initial<wbr>Footpath<span class="tsd-signature-symbol">(</span>path<span class="tsd-signature-symbol">: </span><a href="_planner_path_.path.html" class="tsd-signature-type">Path</a>, transferProfile<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html" class="tsd-signature-type">ITransferProfile</a>, reachableStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestop.html" class="tsd-signature-type">IReachableStop</a>, startLocation<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L71">planner/public-transport/CSA/JourneyExtractor.ts:71</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L206">planner/public-transport/CSA/JourneyExtractor.ts:206</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>profile: <a href="_planner_public_transport_csa_data_structure_profile_.profile.html" class="tsd-signature-type">Profile</a></h5>
+								<h5>path: <a href="_planner_path_.path.html" class="tsd-signature-type">Path</a></h5>
 							</li>
 							<li>
-								<h5>transfers: <span class="tsd-signature-type">number</span></h5>
+								<h5>transferProfile: <a href="../interfaces/_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html" class="tsd-signature-type">ITransferProfile</a></h5>
+							</li>
+							<li>
+								<h5>reachableStop: <a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestop.html" class="tsd-signature-type">IReachableStop</a></h5>
+							</li>
+							<li>
+								<h5>startLocation: <a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+				<a name="checkbestarrivaltime" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> check<wbr>Best<wbr>Arrival<wbr>Time</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<li class="tsd-signature tsd-kind-icon">check<wbr>Best<wbr>Arrival<wbr>Time<span class="tsd-signature-symbol">(</span>transferProfile<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html" class="tsd-signature-type">ITransferProfile</a>, departureStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, arrivalStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L100">planner/public-transport/CSA/JourneyExtractor.ts:100</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>transferProfile: <a href="../interfaces/_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html" class="tsd-signature-type">ITransferProfile</a></h5>
 							</li>
 							<li>
 								<h5>departureStop: <a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a></h5>
@@ -1113,13 +1177,13 @@ img { max-width: 100%; }
 				<a name="extractjourney" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> extract<wbr>Journey</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">extract<wbr>Journey<span class="tsd-signature-symbol">(</span>arrivalStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, profile<span class="tsd-signature-symbol">: </span><a href="_planner_public_transport_csa_data_structure_profile_.profile.html" class="tsd-signature-type">Profile</a>, transfers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, profilesByStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a>, query<span class="tsd-signature-symbol">: </span><a href="../interfaces/_query_runner_iresolvedquery_.iresolvedquery.html" class="tsd-signature-type">IResolvedQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_ipath_.ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">extract<wbr>Journey<span class="tsd-signature-symbol">(</span>arrivalStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, reachableStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestop.html" class="tsd-signature-type">IReachableStop</a>, profile<span class="tsd-signature-symbol">: </span><a href="_planner_public_transport_csa_data_structure_stops_profile_.profile.html" class="tsd-signature-type">Profile</a>, transfers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, profilesByStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_stops_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a>, query<span class="tsd-signature-symbol">: </span><a href="../interfaces/_query_runner_iresolvedquery_.iresolvedquery.html" class="tsd-signature-type">IResolvedQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_ipath_.ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L89">planner/public-transport/CSA/JourneyExtractor.ts:89</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L117">planner/public-transport/CSA/JourneyExtractor.ts:117</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1128,13 +1192,16 @@ img { max-width: 100%; }
 								<h5>arrivalStop: <a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a></h5>
 							</li>
 							<li>
-								<h5>profile: <a href="_planner_public_transport_csa_data_structure_profile_.profile.html" class="tsd-signature-type">Profile</a></h5>
+								<h5>reachableStop: <a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestop.html" class="tsd-signature-type">IReachableStop</a></h5>
+							</li>
+							<li>
+								<h5>profile: <a href="_planner_public_transport_csa_data_structure_stops_profile_.profile.html" class="tsd-signature-type">Profile</a></h5>
 							</li>
 							<li>
 								<h5>transfers: <span class="tsd-signature-type">number</span></h5>
 							</li>
 							<li>
-								<h5>profilesByStop: <a href="../interfaces/_planner_public_transport_csa_data_structure_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a></h5>
+								<h5>profilesByStop: <a href="../interfaces/_planner_public_transport_csa_data_structure_stops_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a></h5>
 							</li>
 							<li>
 								<h5>query: <a href="../interfaces/_query_runner_iresolvedquery_.iresolvedquery.html" class="tsd-signature-type">IResolvedQuery</a></h5>
@@ -1148,19 +1215,19 @@ img { max-width: 100%; }
 				<a name="extractjourneys" class="tsd-anchor"></a>
 				<h3>extract<wbr>Journeys</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">extract<wbr>Journeys<span class="tsd-signature-symbol">(</span>profilesByStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a>, query<span class="tsd-signature-symbol">: </span><a href="../interfaces/_query_runner_iresolvedquery_.iresolvedquery.html" class="tsd-signature-type">IResolvedQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_ipath_.ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">extract<wbr>Journeys<span class="tsd-signature-symbol">(</span>profilesByStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_stops_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a>, query<span class="tsd-signature-symbol">: </span><a href="../interfaces/_query_runner_iresolvedquery_.iresolvedquery.html" class="tsd-signature-type">IResolvedQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_ipath_.ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L25">planner/public-transport/CSA/JourneyExtractor.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L42">planner/public-transport/CSA/JourneyExtractor.ts:42</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>profilesByStop: <a href="../interfaces/_planner_public_transport_csa_data_structure_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a></h5>
+								<h5>profilesByStop: <a href="../interfaces/_planner_public_transport_csa_data_structure_stops_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a></h5>
 							</li>
 							<li>
 								<h5>query: <a href="../interfaces/_query_runner_iresolvedquery_.iresolvedquery.html" class="tsd-signature-type">IResolvedQuery</a></h5>
@@ -1180,7 +1247,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/CSA/JourneyExtractor.ts#L82">planner/public-transport/CSA/JourneyExtractor.ts:82</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/JourneyExtractor.ts#L110">planner/public-transport/CSA/JourneyExtractor.ts:110</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

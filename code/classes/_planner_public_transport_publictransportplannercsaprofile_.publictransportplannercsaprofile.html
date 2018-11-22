@@ -987,6 +987,30 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>An implementation of the Connection Scan Algorithm (SCA).</p>
+				</div>
+				<dl class="tsd-comment-tags">
+					<dt>implements</dt>
+					<dd><p><a href="../interfaces/_planner_public_transport_ipublictransportplanner_.ipublictransportplanner.html">IPublicTransportPlanner</a></p>
+					</dd>
+					<dt>property</dt>
+					<dd><p>profilesByStop Describes the CSA profiles for each scanned stop.</p>
+					</dd>
+					<dt>property</dt>
+					<dd><p>earliestArrivalByTrip Describes the earliest arrival time for each scanned trip.</p>
+					</dd>
+					<dt>property</dt>
+					<dd><p>durationToTargetByStop Describes the walking duration to the target stop for a scanned stop.</p>
+					</dd>
+					<dt>returns</dt>
+					<dd><p>multiple <a href="../interfaces/_interfaces_ipath_.ipath.html">IPath</a>s that consist of several <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>s.</p>
+					</dd>
+				</dl>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -1058,7 +1082,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L36">planner/public-transport/PublicTransportPlannerCSAProfile.ts:36</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L47">planner/public-transport/PublicTransportPlannerCSAProfile.ts:47</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1089,7 +1113,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">connections<wbr>Fetcher<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_fetcher_connections_iconnectionsfetcher_.iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L25">planner/public-transport/PublicTransportPlannerCSAProfile.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L36">planner/public-transport/PublicTransportPlannerCSAProfile.ts:36</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1099,17 +1123,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">duration<wbr>ToTarget<wbr>ByStop<span class="tsd-signature-symbol">:</span> <a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L34">planner/public-transport/PublicTransportPlannerCSAProfile.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L45">planner/public-transport/PublicTransportPlannerCSAProfile.ts:45</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 				<a name="earliestarrivalbytrip" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> earliest<wbr>Arrival<wbr>ByTrip</h3>
-				<div class="tsd-signature tsd-kind-icon">earliest<wbr>Arrival<wbr>ByTrip<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_public_transport_csa_data_structure_iearliestarrivalbytrip_.iearliestarrivalbytrip.html" class="tsd-signature-type">IEarliestArrivalByTrip</a></div>
+				<div class="tsd-signature tsd-kind-icon">earliest<wbr>Arrival<wbr>ByTrip<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_public_transport_csa_data_structure_trips_iearliestarrivalbytrip_.iearliestarrivalbytrip.html" class="tsd-signature-type">IEarliestArrivalByTrip</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L33">planner/public-transport/PublicTransportPlannerCSAProfile.ts:33</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L44">planner/public-transport/PublicTransportPlannerCSAProfile.ts:44</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1119,7 +1143,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">journey<wbr>Extractor<span class="tsd-signature-symbol">:</span> <a href="_planner_public_transport_csa_journeyextractor_.journeyextractor.html" class="tsd-signature-type">JourneyExtractor</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L30">planner/public-transport/PublicTransportPlannerCSAProfile.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L41">planner/public-transport/PublicTransportPlannerCSAProfile.ts:41</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1129,17 +1153,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">location<wbr>Resolver<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_query_runner_ilocationresolver_.ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L27">planner/public-transport/PublicTransportPlannerCSAProfile.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L38">planner/public-transport/PublicTransportPlannerCSAProfile.ts:38</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 				<a name="profilesbystop" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> profiles<wbr>ByStop</h3>
-				<div class="tsd-signature tsd-kind-icon">profiles<wbr>ByStop<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_public_transport_csa_data_structure_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a></div>
+				<div class="tsd-signature tsd-kind-icon">profiles<wbr>ByStop<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_public_transport_csa_data_structure_stops_iprofilesbystop_.iprofilesbystop.html" class="tsd-signature-type">IProfilesByStop</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L32">planner/public-transport/PublicTransportPlannerCSAProfile.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L43">planner/public-transport/PublicTransportPlannerCSAProfile.ts:43</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1149,7 +1173,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_query_runner_iresolvedquery_.iresolvedquery.html" class="tsd-signature-type">IResolvedQuery</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L36">planner/public-transport/PublicTransportPlannerCSAProfile.ts:36</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L47">planner/public-transport/PublicTransportPlannerCSAProfile.ts:47</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1159,7 +1183,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">reachable<wbr>Stops<wbr>Finder<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_stops_ireachablestopsfinder_.ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L28">planner/public-transport/PublicTransportPlannerCSAProfile.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L39">planner/public-transport/PublicTransportPlannerCSAProfile.ts:39</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1169,7 +1193,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">road<wbr>Planner<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_planner_road_iroadplanner_.iroadplanner.html" class="tsd-signature-type">IRoadPlanner</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L26">planner/public-transport/PublicTransportPlannerCSAProfile.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L37">planner/public-transport/PublicTransportPlannerCSAProfile.ts:37</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1186,7 +1210,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L122">planner/public-transport/PublicTransportPlannerCSAProfile.ts:122</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L135">planner/public-transport/PublicTransportPlannerCSAProfile.ts:135</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1209,7 +1233,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L86">planner/public-transport/PublicTransportPlannerCSAProfile.ts:86</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L97">planner/public-transport/PublicTransportPlannerCSAProfile.ts:97</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_ipath_.ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1226,7 +1250,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L110">planner/public-transport/PublicTransportPlannerCSAProfile.ts:110</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L121">planner/public-transport/PublicTransportPlannerCSAProfile.ts:121</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1249,7 +1273,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L185">planner/public-transport/PublicTransportPlannerCSAProfile.ts:185</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L199">planner/public-transport/PublicTransportPlannerCSAProfile.ts:199</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1269,13 +1293,13 @@ img { max-width: 100%; }
 				<a name="incorporateinprofile" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> incorporate<wbr>InProfile</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">incorporate<wbr>InProfile<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a>, duration<span class="tsd-signature-symbol">: </span><a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a>, stop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_stops_istop_.istop.html" class="tsd-signature-type">IStop</a>, minVectorTimes<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">incorporate<wbr>InProfile<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a>, duration<span class="tsd-signature-symbol">: </span><a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a>, stop<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_stops_istop_.istop.html" class="tsd-signature-type">IStop</a>, arrivalTimeByTransfers<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L206">planner/public-transport/PublicTransportPlannerCSAProfile.ts:206</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L224">planner/public-transport/PublicTransportPlannerCSAProfile.ts:224</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1290,7 +1314,7 @@ img { max-width: 100%; }
 								<h5>stop: <a href="../interfaces/_fetcher_stops_istop_.istop.html" class="tsd-signature-type">IStop</a></h5>
 							</li>
 							<li>
-								<h5>minVectorTimes: <a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a></h5>
+								<h5>arrivalTimeByTransfers: <a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1307,7 +1331,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L130">planner/public-transport/PublicTransportPlannerCSAProfile.ts:130</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L143">planner/public-transport/PublicTransportPlannerCSAProfile.ts:143</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1318,13 +1342,13 @@ img { max-width: 100%; }
 				<a name="isdominated" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Dominated</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">is<wbr>Dominated<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a>, currentArrivalTimeByTransfers<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					<li class="tsd-signature tsd-kind-icon">is<wbr>Dominated<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a>, arrivalTimeByTransfers<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L177">planner/public-transport/PublicTransportPlannerCSAProfile.ts:177</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L192">planner/public-transport/PublicTransportPlannerCSAProfile.ts:192</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1333,7 +1357,7 @@ img { max-width: 100%; }
 								<h5>connection: <a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a></h5>
 							</li>
 							<li>
-								<h5>currentArrivalTimeByTransfers: <a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a></h5>
+								<h5>arrivalTimeByTransfers: <a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1350,7 +1374,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L52">planner/public-transport/PublicTransportPlannerCSAProfile.ts:52</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L63">planner/public-transport/PublicTransportPlannerCSAProfile.ts:63</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1373,7 +1397,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L154">planner/public-transport/PublicTransportPlannerCSAProfile.ts:154</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L167">planner/public-transport/PublicTransportPlannerCSAProfile.ts:167</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1396,7 +1420,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L59">planner/public-transport/PublicTransportPlannerCSAProfile.ts:59</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L70">planner/public-transport/PublicTransportPlannerCSAProfile.ts:70</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1413,7 +1437,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L158">planner/public-transport/PublicTransportPlannerCSAProfile.ts:158</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L173">planner/public-transport/PublicTransportPlannerCSAProfile.ts:173</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1430,13 +1454,13 @@ img { max-width: 100%; }
 				<a name="updateearliestarrivalbytrip" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> update<wbr>Earliest<wbr>Arrival<wbr>ByTrip</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">update<wbr>Earliest<wbr>Arrival<wbr>ByTrip<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a>, currentArrivalTimeByTransfers<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">update<wbr>Earliest<wbr>Arrival<wbr>ByTrip<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a>, arrivalTimeByTransfers<span class="tsd-signature-symbol">: </span><a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L164">planner/public-transport/PublicTransportPlannerCSAProfile.ts:164</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L179">planner/public-transport/PublicTransportPlannerCSAProfile.ts:179</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1445,7 +1469,7 @@ img { max-width: 100%; }
 								<h5>connection: <a href="../interfaces/_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a></h5>
 							</li>
 							<li>
-								<h5>currentArrivalTimeByTransfers: <a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a></h5>
+								<h5>arrivalTimeByTransfers: <a href="../interfaces/_planner_public_transport_csa_data_structure_iarrivaltimebytransfers_.iarrivaltimebytransfers.html" class="tsd-signature-type">IArrivalTimeByTransfers</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1462,7 +1486,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/ba98448/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L144">planner/public-transport/PublicTransportPlannerCSAProfile.ts:144</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/PublicTransportPlannerCSAProfile.ts#L157">planner/public-transport/PublicTransportPlannerCSAProfile.ts:157</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

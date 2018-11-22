@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;planner/public-transport/CSA/data-structure/IProfilesByStop&quot; | plannerjs</title>
+	<title>ITransferProfile | plannerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -909,24 +909,97 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-			<a href="../interfaces/_planner_public_transport_csa_data_structure_iprofilesbystop_.iprofilesbystop.html" class="tsd-kind-icon">IProfiles<wbr>ByStop</a>
+		<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+			<a href="_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html" class="tsd-kind-icon">ITransfer<wbr>Profile</a>
+			<ul>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html#arrivaltime" class="tsd-kind-icon">arrival<wbr>Time</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html#enterconnection" class="tsd-kind-icon">enter<wbr>Connection</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html#exitconnection" class="tsd-kind-icon">exit<wbr>Connection</a>
+				</li>
+			</ul>
 		</li>
 	</ul>
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Interface for the CSA profile for a specific amount of transfers that can be made.</p>
+				</div>
+				<dl class="tsd-comment-tags">
+					<dt>property</dt>
+					<dd><p>arrivalTime Describes the arrival time in milliseconds.</p>
+					</dd>
+					<dt>property</dt>
+					<dd><p>exitConnection Describes the <a href="_fetcher_connections_iconnection_.iconnection.html">IConnection</a> that arrives at the target <a href="_fetcher_stops_istop_.istop.html">IStop</a>.</p>
+					</dd>
+					<dt>property</dt>
+					<dd><p>enterConnection Describes the <a href="_fetcher_connections_iconnection_.iconnection.html">IConnection</a> that should be taken
+						to arrive at the arrivalTime in the target <a href="_fetcher_stops_istop_.istop.html">IStop</a>.</p>
+					</dd>
+				</dl>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-hierarchy">
+			<h3>Hierarchy</h3>
+			<ul class="tsd-hierarchy">
+				<li>
+					<span class="target">ITransferProfile</span>
+				</li>
+			</ul>
+		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
-						<h3>Interfaces</h3>
+						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_planner_public_transport_csa_data_structure_iprofilesbystop_.iprofilesbystop.html" class="tsd-kind-icon">IProfiles<wbr>ByStop</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html#arrivaltime" class="tsd-kind-icon">arrival<wbr>Time</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html#enterconnection" class="tsd-kind-icon">enter<wbr>Connection</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_planner_public_transport_csa_data_structure_stops_itransferprofile_.itransferprofile.html#exitconnection" class="tsd-kind-icon">exit<wbr>Connection</a></li>
 						</ul>
 					</section>
 				</div>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="arrivaltime" class="tsd-anchor"></a>
+				<h3>arrival<wbr>Time</h3>
+				<div class="tsd-signature tsd-kind-icon">arrival<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/data-structure/stops/ITransferProfile.ts#L12">planner/public-transport/CSA/data-structure/stops/ITransferProfile.ts:12</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="enterconnection" class="tsd-anchor"></a>
+				<h3>enter<wbr>Connection</h3>
+				<div class="tsd-signature tsd-kind-icon">enter<wbr>Connection<span class="tsd-signature-symbol">:</span> <a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/data-structure/stops/ITransferProfile.ts#L14">planner/public-transport/CSA/data-structure/stops/ITransferProfile.ts:14</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="exitconnection" class="tsd-anchor"></a>
+				<h3>exit<wbr>Connection</h3>
+				<div class="tsd-signature tsd-kind-icon">exit<wbr>Connection<span class="tsd-signature-symbol">:</span> <a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/36ad8fa/src/planner/public-transport/CSA/data-structure/stops/ITransferProfile.ts#L13">planner/public-transport/CSA/data-structure/stops/ITransferProfile.ts:13</a></li>
+					</ul>
+				</aside>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
