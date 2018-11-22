@@ -46,6 +46,8 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
+  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherNMBS);
 
@@ -57,7 +59,7 @@ container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
   .to(ConnectionsFetcherMerge).whenTargetTagged("type", "merge");*/
 
 container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS);
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn);
+// container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn);
 container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy);
 
 export default container;

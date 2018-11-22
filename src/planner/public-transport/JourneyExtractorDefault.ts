@@ -1,24 +1,39 @@
 import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
+import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
+import TravelMode from "../../TravelMode";
 import TYPES from "../../types";
 import Path from "../Path";
 import IRoadPlanner from "../road/IRoadPlanner";
 import Step from "../Step";
-import IProfilesByStop from "./CSA/data-structure/IProfilesByStop";
-import Profile from "./CSA/data-structure/Profile";
+import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
+import ReachableStopsFinderMode from "../stops/ReachableStopsFinderMode";
+import ReachableStopsSearchPhase from "../stops/ReachableStopsSearchPhase";
+import IProfilesByStop from "./CSA/data-structure/stops/IProfilesByStop";
+import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
+import Profile from "./CSA/data-structure/stops/Profile";
 import ProfileUtil from "./CSA/util/ProfileUtil";
 import IJourneyExtractor from "./IJourneyExtractor";
 import JourneyExtractionPhase from "./JourneyExtractionPhase";
 
+/**
+ * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
+ * A journey is an [[IPath]] that consist of several [[IStep]]s.
+ * The [[JourneyExtractor]] takes care of initial, intermediate and final footpaths.
+ *
+ * @property bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.
+ */
 @injectable()
 export default class JourneyExtractorDefault implements IJourneyExtractor {
   private readonly transferRoadPlanner: IRoadPlanner;
   private readonly finalRoadPlanner: IRoadPlanner;
+  private readonly initialReachableStopsFinder: IReachableStopsFinder;
+
   private readonly locationResolver: ILocationResolver;
 
   private bestArrivalTime: number[][] = [];
@@ -30,11 +45,15 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
     @inject(TYPES.RoadPlanner)
     @tagged("phase", JourneyExtractionPhase.Final)
       finalRoadPlanner: IRoadPlanner,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Initial)
+      initialReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
   ) {
     this.transferRoadPlanner = transferRoadPlanner;
     this.finalRoadPlanner = finalRoadPlanner;
     this.locationResolver = locationResolver;
+    this.initialReachableStopsFinder = initialReachableStopsFinder;
   }
 
   public async extractJourneys(
@@ -44,7 +63,17 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
     const filteredProfilesByStop: IProfilesByStop = ProfileUtil.filterInfinity(profilesByStop);
 
     const journeys = [];
-    for (const departureStop of query.from) {
+    const departureLocation: IStop = query.from[0] as IStop;
+
+    const reachableStops = await this.initialReachableStopsFinder.findReachableStops(
+      departureLocation,
+      ReachableStopsFinderMode.Source,
+      query.maximumTransferDuration,
+      query.minimumWalkingSpeed,
+    );
+
+    for (const reachableStop of reachableStops) {
+      const departureStop: IStop = reachableStop.stop;
 
       if (!filteredProfilesByStop[departureStop.id]) {
         console.warn("Can't find departure stop: " + departureStop.id);
@@ -53,30 +82,33 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
 
       for (const profile of filteredProfilesByStop[departureStop.id]) {
         if (profile.departureTime >= query.minimumDepartureTime.getTime()) {
+          const arrivalStop = query.to[0];
 
-          for (let transfers = 0; transfers < profile.arrivalTimes.length; transfers++) {
-            for (const arrivalStop of query.to) {
-              if (this.checkBestArrivalTime(profile, transfers, departureStop, arrivalStop)) {
-                this.setBestArrivalTime(departureStop, arrivalStop, profile.arrivalTimes[transfers]);
+          for (let amountOfTransfers = 0; amountOfTransfers < profile.transferProfiles.length; amountOfTransfers++) {
+            const transferProfile = profile.transferProfiles[amountOfTransfers];
 
-                try {
-                  const journey = await this.extractJourney(
-                    arrivalStop,
-                    profile,
-                    transfers,
-                    filteredProfilesByStop,
-                    query,
-                  );
+            if (this.checkBestArrivalTime(transferProfile, departureStop, arrivalStop)) {
+              try {
+                const journey = await this.extractJourney(
+                  arrivalStop,
+                  reachableStop,
+                  profile,
+                  amountOfTransfers,
+                  filteredProfilesByStop,
+                  query,
+                );
 
-                  journeys.push(journey);
-                } catch (e) {
-                  console.warn(e);
-                }
+                journeys.push(journey);
+
+                this.setBestArrivalTime(departureStop, arrivalStop, transferProfile.arrivalTime);
+              } catch (e) {
+                console.warn(e);
               }
             }
-          }
-        }
 
+          }
+
+        }
       }
     }
 
@@ -84,14 +116,30 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
   }
 
   private checkBestArrivalTime(
-    profile: Profile,
-    transfers: number,
+    transferProfile: ITransferProfile,
     departureStop: ILocation,
     arrivalStop: ILocation,
   ): boolean {
-    return profile.arrivalTimes[transfers] < Infinity &&
-      (!this.bestArrivalTime[departureStop.id] || !this.bestArrivalTime[departureStop.id][arrivalStop.id] ||
-        profile.arrivalTimes[transfers] < this.bestArrivalTime[departureStop.id][arrivalStop.id]);
+
+    const canArrive = transferProfile.arrivalTime < Infinity;
+
+    if (!canArrive) {
+      return false;
+    }
+
+    const bestArrivalTimesOfDepartureStop = this.bestArrivalTime[departureStop.id];
+
+    if (!bestArrivalTimesOfDepartureStop) {
+      return true;
+    }
+
+    const bestArrivalTime = bestArrivalTimesOfDepartureStop[arrivalStop.id];
+
+    if (!bestArrivalTime) {
+      return true;
+    }
+
+    return transferProfile.arrivalTime < bestArrivalTime;
   }
 
   private setBestArrivalTime(departureStop: ILocation, arrivalStop: ILocation, arrivalTime: number): void {
@@ -103,6 +151,7 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
 
   private async extractJourney(
     arrivalStop: ILocation,
+    reachableStop: IReachableStop,
     profile: Profile,
     transfers: number,
     profilesByStop: IProfilesByStop,
@@ -113,13 +162,26 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
     // Extract journey for amount of transfers
     const path: Path = Path.create();
 
-    let currentEntry = profile;
+    let currentProfile = profile;
     let remainingTransfers = transfers;
+
+    if (reachableStop.duration > 0) {
+      const currentTransferProfile = profile.transferProfiles[remainingTransfers];
+
+      this.addInitialFootpath(
+        path,
+        currentTransferProfile,
+        reachableStop,
+        query.from[0],
+      );
+    }
 
     while (remainingTransfers >= 0) {
       // Construct and push step
-      const enterConnection: IConnection = currentEntry.enterConnections[remainingTransfers];
-      const exitConnection: IConnection = currentEntry.exitConnections[remainingTransfers];
+      const currentTransferProfile = currentProfile.transferProfiles[remainingTransfers];
+
+      const enterConnection: IConnection = currentTransferProfile.enterConnection;
+      const exitConnection: IConnection = currentTransferProfile.exitConnection;
 
       const step: IStep = Step.createFromConnections(enterConnection, exitConnection);
       path.addStep(step);
@@ -131,28 +193,36 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
         let i = nextProfile.length - 1;
         let found = false;
 
-        while (!found) {
-          const connection = nextProfile[i].enterConnections[remainingTransfers];
+        while (!found && i >= 0) {
+          const nextTransferProfile = nextProfile[i].transferProfiles[remainingTransfers];
+          const connection = nextTransferProfile.enterConnection;
 
-          const from = await this.locationResolver.resolve(step.stopLocation.id);
-          const to = await this.locationResolver.resolve(connection.departureStop);
+          if (connection) {
+            const from = await this.locationResolver.resolve(step.stopLocation.id);
+            const to = await this.locationResolver.resolve(connection.departureStop);
 
-          const walkingResult = await this.transferRoadPlanner.plan({
-            from: [from],
-            to: [to],
-            minimumWalkingSpeed: query.minimumWalkingSpeed,
-            maximumWalkingSpeed: query.maximumWalkingSpeed,
-          });
+            const walkingResult = await this.transferRoadPlanner.plan({
+              from: [from],
+              to: [to],
+              minimumWalkingSpeed: query.minimumWalkingSpeed,
+              maximumWalkingSpeed: query.maximumWalkingSpeed,
+            });
 
-          if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
-            connection.departureTime.getTime() >= step.stopTime.getTime() +
-            walkingResult[0].steps[0].duration.minimum
-          ) {
-            found = true;
-            path.addStep(walkingResult[0].steps[0]);
-            currentEntry = nextProfile[i];
+            if (walkingResult && walkingResult[0] && walkingResult[0].steps[0] &&
+              connection.departureTime.getTime() >= step.stopTime.getTime() +
+              walkingResult[0].steps[0].duration.minimum
+            ) {
+              found = true;
+              path.addStep(walkingResult[0].steps[0]);
+              currentProfile = nextProfile[i];
+            }
           }
+
           i--;
+        }
+
+        if (!found) {
+          return Promise.reject("Can't reach arrival stop: " + arrivalStop.id + ", transfers: " + transfers);
         }
       }
     }
@@ -162,10 +232,33 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
     }
 
     if (!shouldReturn) {
-      return Promise.reject("Can't reach arrival stop.");
+      return Promise.reject("Can't reach arrival stop: " + arrivalStop.id + ", transfers: " + transfers);
     }
 
     return path as IPath;
+  }
+
+  private addInitialFootpath(
+    path: Path,
+    transferProfile: ITransferProfile,
+    reachableStop: IReachableStop,
+    startLocation: ILocation,
+  ): void {
+    const enterConnection: IConnection = transferProfile.enterConnection;
+    const stopTime = enterConnection.departureTime;
+    const startTime = new Date(stopTime.valueOf() - reachableStop.duration);
+
+    const step = Step.create(
+      startLocation,
+      reachableStop.stop as ILocation,
+      TravelMode.Walking,
+      { minimum: reachableStop.duration },
+      startTime,
+      enterConnection.departureTime,
+      undefined,
+    );
+
+    path.addStep(step);
   }
 
   private async addFinalFootpath(path: Path, arrivalStop: ILocation, query: IResolvedQuery): Promise<boolean> {

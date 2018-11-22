@@ -8,6 +8,7 @@ const stopsFetcher = new StopsFetcherDeLijn();
 const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
 
 test("[ReachableStopsFinderBirdsEye] reachable stops", async () => {
+  jest.setTimeout(15000);
 
   const sourceStop = await stopsFetcher.getStopById("https://data.delijn.be/stops/590009");
 
