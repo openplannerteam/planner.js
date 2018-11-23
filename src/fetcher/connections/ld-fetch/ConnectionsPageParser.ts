@@ -1,7 +1,7 @@
 import { Triple } from "rdf-js";
 import TravelMode from "../../../TravelMode";
+import Rdf from "../../../util/Rdf";
 import Units from "../../../util/Units";
-import { transformObject, transformPredicate } from "../../helpers";
 import DropOffType from "../DropOffType";
 import IConnection from "../IConnection";
 import PickupType from "../PickupType";
@@ -58,7 +58,7 @@ export default class ConnectionsPageParser {
   }
 
   private transformPredicate(triple: Triple): Triple {
-    return transformPredicate({
+    return Rdf.transformPredicate({
       "http://semweb.mmlab.be/ns/linkedconnections#departureTime": "departureTime",
       "http://semweb.mmlab.be/ns/linkedconnections#departureDelay": "departureDelay",
       "http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay": "arrivalDelay",
@@ -78,7 +78,7 @@ export default class ConnectionsPageParser {
   private transformObject(triple: Triple): Triple {
 
     if (triple.predicate.value === "gtfs:dropOffType") {
-      return transformObject({
+      return Rdf.transformObject({
         "http://vocab.gtfs.org/terms#Regular": DropOffType.Regular,
         "http://vocab.gtfs.org/terms#NotAvailable": DropOffType.NotAvailable,
         "http://vocab.gtfs.org/terms#MustPhone": DropOffType.MustPhone,
@@ -87,7 +87,7 @@ export default class ConnectionsPageParser {
     }
 
     if (triple.predicate.value === "gtfs:pickupType") {
-      return transformObject({
+      return Rdf.transformObject({
         "http://vocab.gtfs.org/terms#Regular": PickupType.Regular,
         "http://vocab.gtfs.org/terms#NotAvailable": PickupType.NotAvailable,
         "http://vocab.gtfs.org/terms#MustPhone": PickupType.MustPhone,

@@ -1,7 +1,7 @@
 import { Triple } from "rdf-js";
 import UriTemplate from "uritemplate";
 import TravelMode from "../../../TravelMode";
-import { matchesTriple } from "../../helpers";
+import Rdf from "../../../util/Rdf";
 import ConnectionsPageParser from "./ConnectionsPageParser";
 import IHydraPage from "./IHydraPage";
 
@@ -31,11 +31,11 @@ export default class HydraPageParser {
 
   public getSearchTemplate(): UriTemplate {
     const searchTriple = this.triples.find(
-      matchesTriple(this.documentIri, "http://www.w3.org/ns/hydra/core#search", null),
+      Rdf.matchesTriple(this.documentIri, "http://www.w3.org/ns/hydra/core#search", null),
     );
 
     const templateTriple = this.triples.find(
-      matchesTriple(searchTriple.object.value, "http://www.w3.org/ns/hydra/core#template", null),
+      Rdf.matchesTriple(searchTriple.object.value, "http://www.w3.org/ns/hydra/core#template", null),
     );
 
     const template = templateTriple.object.value;
@@ -44,7 +44,7 @@ export default class HydraPageParser {
 
   public getNextPageIri(): string {
     const nextPageTriple: Triple = this.triples.find(
-      matchesTriple(this.documentIri, "http://www.w3.org/ns/hydra/core#next", null),
+      Rdf.matchesTriple(this.documentIri, "http://www.w3.org/ns/hydra/core#next", null),
     );
 
     if (nextPageTriple && nextPageTriple.object.value.substr(0, 4) === "http") {
@@ -54,7 +54,7 @@ export default class HydraPageParser {
 
   public getPreviousPageIri(): string {
     const previousPageTriple: Triple = this.triples.find(
-      matchesTriple(this.documentIri, "http://www.w3.org/ns/hydra/core#previous", null),
+      Rdf.matchesTriple(this.documentIri, "http://www.w3.org/ns/hydra/core#previous", null),
     );
 
     if (previousPageTriple && previousPageTriple.object.value.substr(0, 4) === "http") {
@@ -64,7 +64,7 @@ export default class HydraPageParser {
 
   private getDocumentIri(): string {
     const typeTriple = this.triples.find(
-      matchesTriple(
+      Rdf.matchesTriple(
         null,
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
         "http://www.w3.org/ns/hydra/core#PartialCollectionView",
