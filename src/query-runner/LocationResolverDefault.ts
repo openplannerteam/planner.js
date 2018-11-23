@@ -1,18 +1,18 @@
 import { inject, injectable } from "inversify";
 import IStop from "../fetcher/stops/IStop";
-import IStopsFetcherMediator from "../fetcher/stops/IStopsFetcherMediator";
+import IStopsProvider from "../fetcher/stops/IStopsProvider";
 import ILocation from "../interfaces/ILocation";
 import TYPES from "../types";
 import ILocationResolver from "./ILocationResolver";
 
 @injectable()
 export default class LocationResolverDefault implements ILocationResolver {
-  private readonly stopsFetcherMediator: IStopsFetcherMediator;
+  private readonly stopsProvider: IStopsProvider;
 
   constructor(
-    @inject(TYPES.StopsFetcherMediator) stopsFetcherMediator: IStopsFetcherMediator,
+    @inject(TYPES.StopsProvider) stopsProvider: IStopsProvider,
   ) {
-    this.stopsFetcherMediator = stopsFetcherMediator;
+    this.stopsProvider = stopsProvider;
   }
 
   public async resolve(input: ILocation | IStop | string): Promise<ILocation> {
@@ -44,7 +44,7 @@ export default class LocationResolverDefault implements ILocationResolver {
   }
 
   private async resolveById(id: string): Promise<ILocation> {
-    const stop: IStop = await this.stopsFetcherMediator.getStopById(id);
+    const stop: IStop = await this.stopsProvider.getStopById(id);
 
     if (stop) {
       return {

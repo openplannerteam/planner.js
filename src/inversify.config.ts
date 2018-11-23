@@ -1,12 +1,15 @@
-import { Container } from "inversify";
+import { Container, interfaces } from "inversify";
+import LDFetch from "ldfetch";
+import Catalog from "./Catalog";
 import Context from "./Context";
+import ConnectionsProviderPassthrough from "./fetcher/connections/ConnectionsProviderPassthrough";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
-import ConnectionsFetcherNMBS from "./fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
+import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
+import ConnectionsFetcherLDFetch from "./fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
-import IStopsFetcherMediator from "./fetcher/stops/IStopsFetcherMediator";
-import StopsFetcherDeLijn from "./fetcher/stops/ld-fetch/StopsFetcherDeLijn";
-import StopsFetcherNMBS from "./fetcher/stops/ld-fetch/StopsFetcherNMBS";
-import StopsFetcherProxy from "./fetcher/stops/proxy/StopsFetcherProxy";
+import IStopsProvider from "./fetcher/stops/IStopsProvider";
+import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractionPhase from "./planner/public-transport/JourneyExtractionPhase";
@@ -21,6 +24,7 @@ import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import LocationResolverDefault from "./query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "./query-runner/QueryRunnerDefault";
+import TravelMode from "./TravelMode";
 import TYPES from "./types";
 
 const container = new Container();
@@ -49,17 +53,56 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherNMBS);
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPassthrough).inSingletonScope();
+container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLDFetch);
+container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
+  .toFactory<IConnectionsFetcher>(
+    (context: interfaces.Context) =>
+      (accessUrl: string, travelMode: TravelMode) => {
+        const fetcher = context.container.get<ConnectionsFetcherLDFetch>(TYPES.ConnectionsFetcher);
 
-/*container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
-  .to(ConnectionsFetcherNMBS).whenTargetTagged("type", "source");
-container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
-  .to(ConnectionsFetcherDeLijn).whenTargetTagged("type", "source");
-container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
-  .to(ConnectionsFetcherMerge).whenTargetTagged("type", "merge");*/
+        fetcher.setAccessUrl(accessUrl);
+        fetcher.setTravelMode(travelMode);
 
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS).inSingletonScope();
-// container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn).inSingletonScope();
-container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy).inSingletonScope();
+        return fetcher;
+      },
+  );
+
+container.bind<IStopsProvider>(TYPES.StopsProvider).to(StopsProviderDefault).inSingletonScope();
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherLDFetch);
+container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
+  .toFactory<IStopsFetcher>(
+    (context: interfaces.Context) =>
+      (prefix: string, accessUrl: string) => {
+        const fetcher = context.container.get<StopsFetcherLDFetch>(TYPES.StopsFetcher);
+
+        fetcher.setPrefix(prefix);
+        fetcher.setAccessUrl(accessUrl);
+
+        return fetcher;
+      },
+  );
+
+// Init catalog
+const catalog = new Catalog();
+catalog.addStopsFetcher("http://irail.be/stations/NMBS/", "https://irail.be/stations/NMBS");
+catalog.addConnectionsFetcher("https://graph.irail.be/sncb/connections", TravelMode.Train);
+
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalog);
+
+// Init LDFetch
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const httpStartTimes = {};
+
+ldFetch.on("request", (url) => httpStartTimes[url] = new Date());
+
+ldFetch.on("redirect", (obj) => httpStartTimes[obj.to] = httpStartTimes[obj.from]);
+
+ldFetch.on("response", (url) => {
+  const difference = (new Date()).getTime() - httpStartTimes[url].getTime();
+  console.log(`HTTP GET - ${url} (${difference}ms)`);
+});
+
+container.bind<LDFetch>(TYPES.LDFetch).toConstantValue(ldFetch);
 
 export default container;

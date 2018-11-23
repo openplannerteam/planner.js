@@ -1,9 +1,15 @@
+import LDFetch from "ldfetch";
 import "reflect-metadata";
-import ConnectionsFetcherNMBS from "../fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
+import ConnectionsFetcherLDFetch from "../fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
+import TravelMode from "../TravelMode";
 
-const fetcher = new ConnectionsFetcherNMBS();
-// const fetcher = container.getTagged<IConnectionsFetcher>(TYPES.ConnectionsFetcher, "type", "merge");
-fetcher.setConfig({
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+
+const connectionsFetcher = new ConnectionsFetcherLDFetch(ldFetch);
+connectionsFetcher.setTravelMode(TravelMode.Train);
+connectionsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
+
+connectionsFetcher.setConfig({
   lowerBoundDate: new Date(),
   upperBoundDate: new Date(),
   backward: false,
@@ -16,7 +22,7 @@ fetcher.setConfig({
 
   let i = 0;
 
-  for await (const connection of fetcher) {
+  for await (const connection of connectionsFetcher) {
     console.log(i++, connection.id, connection.departureTime);
 
     if (i++ > 1000) {

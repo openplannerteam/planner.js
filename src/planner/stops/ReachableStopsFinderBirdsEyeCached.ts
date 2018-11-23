@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import IStop from "../../fetcher/stops/IStop";
-import IStopsFetcherMediator from "../../fetcher/stops/IStopsFetcherMediator";
+import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
@@ -13,9 +13,9 @@ export default class ReachableStopsFinderBirdsEyeCached implements IReachableSto
   private readonly reachableStopsCache: {[cacheKey: string]: IReachableStop[]};
 
   constructor(
-    @inject(TYPES.StopsFetcherMediator) stopsFetcherMediator: IStopsFetcherMediator,
+    @inject(TYPES.StopsProvider) stopsProvider: IStopsProvider,
   ) {
-    this.reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcherMediator);
+    this.reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsProvider);
     this.reachableStopsCache = {};
   }
 

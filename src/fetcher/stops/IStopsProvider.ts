@@ -6,7 +6,7 @@ import IStop from "./IStop";
  * @method getStopById Returns the [[IStop]] for the given stopId
  * @method getAllStops Returns concatenated array of [[IStop]]s from all [[IStopsFetcher]]s it mediates
  */
-export default interface IStopsFetcherMediator {
+export default interface IStopsProvider {
   getStopById: (stopId: string) => Promise<IStop>;
   getAllStops: () => Promise<IStop[]>;
 }

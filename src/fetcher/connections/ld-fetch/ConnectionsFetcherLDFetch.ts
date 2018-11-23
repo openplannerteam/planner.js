@@ -1,22 +1,34 @@
-import { injectable } from "inversify";
-import LdFetch from "ldfetch";
+import { inject, injectable } from "inversify";
+import LDFetch from "ldfetch";
+import TravelMode from "../../../TravelMode";
+import TYPES from "../../../types";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import ConnectionsIteratorLDFetch from "./ConnectionsIteratorLDFetch";
 
 /**
  * Wraps the [[ConnectionsIteratorLDFetch]] for use in a for-await-of statement
  * @implements IConnectionsFetcher
  */
 @injectable()
-export default abstract class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
+export default class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
 
-  protected readonly ldFetch: LdFetch;
+  protected readonly ldFetch: LDFetch;
   protected config: IConnectionsFetcherConfig;
+  private travelMode: TravelMode;
+  private accessUrl: string;
 
-  constructor() {
-    this.ldFetch = new LdFetch();
-    this.setupDebug();
+  constructor(@inject(TYPES.LDFetch) ldFetch: LDFetch) {
+    this.ldFetch = ldFetch;
+  }
+
+  public setTravelMode(travelMode: TravelMode) {
+    this.travelMode = travelMode;
+  }
+
+  public setAccessUrl(accessUrl: string) {
+    this.accessUrl = accessUrl;
   }
 
   /**
@@ -26,27 +38,16 @@ export default abstract class ConnectionsFetcherLDFetch implements IConnectionsF
     return this.fetch();
   }
 
-  public abstract fetch(): AsyncIterator<IConnection>;
+  public fetch(): AsyncIterator<IConnection> {
+    return new ConnectionsIteratorLDFetch(
+      this.accessUrl,
+      this.travelMode,
+      this.ldFetch,
+      this.config,
+    );
+  }
 
   public setConfig(config: IConnectionsFetcherConfig): void {
     this.config = config;
-  }
-
-  private setupDebug() {
-    const httpStartTimes = {};
-    const httpResponseTimes = {};
-
-    this.ldFetch.on("request", (url) => {
-      httpStartTimes[url] = new Date();
-    });
-
-    this.ldFetch.on("redirect", (obj) => {
-      httpStartTimes[obj.to] = httpStartTimes[obj.from];
-    });
-
-    this.ldFetch.on("response", (url) => {
-      httpResponseTimes[url] = (new Date()).getTime() - httpStartTimes[url].getTime();
-      console.log(`HTTP GET - ${url} (${httpResponseTimes[url]}ms)`);
-    });
   }
 }

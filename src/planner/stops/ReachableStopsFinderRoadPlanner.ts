@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import IStop from "../../fetcher/stops/IStop";
-import IStopsFetcherMediator from "../../fetcher/stops/IStopsFetcherMediator";
+import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
@@ -12,14 +12,14 @@ import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 @injectable()
 export default class ReachableStopsFinderRoadPlanner implements IReachableStopsFinder {
-  private readonly stopsFetcherMediator: IStopsFetcherMediator;
+  private readonly stopsProvider: IStopsProvider;
   private readonly roadPlanner: IRoadPlanner;
 
   constructor(
-    @inject(TYPES.StopsFetcherMediator) stopsFetcherMediator: IStopsFetcherMediator,
+    @inject(TYPES.StopsProvider) stopsProvider: IStopsProvider,
     @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
   ) {
-    this.stopsFetcherMediator = stopsFetcherMediator;
+    this.stopsProvider = stopsProvider;
     this.roadPlanner = roadPlanner;
   }
 
@@ -43,7 +43,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
       minimumWalkingSpeed: minimumSpeed,
     };
 
-    const allStops = await this.stopsFetcherMediator.getAllStops();
+    const allStops = await this.stopsProvider.getAllStops();
     const reachableStops: IReachableStop[] = [{stop: sourceOrTargetStop, duration: 0}];
 
     await Promise.all(allStops.map(async (possibleTarget: IStop) => {

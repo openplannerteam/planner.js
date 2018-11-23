@@ -1,8 +1,9 @@
 import "jest";
-import ConnectionsFetcherNMBS from "../../fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
+import LDFetch from "ldfetch";
+import ConnectionsFetcherLDFetch from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import connections from "../../fetcher/connections/tests/connection-data";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
-import StopsFetcherNMBS from "../../fetcher/stops/ld-fetch/StopsFetcherNMBS";
+import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
@@ -28,10 +29,16 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     };
 
     beforeAll(async () => {
+
+      const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+
       const connectionFetcher = new ConnectionsFetcherNMBSTest(connections);
       connectionFetcher.setConfig({ backward: true });
 
-      const stopsFetcher = new StopsFetcherNMBS();
+      const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
+      stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
+      stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
+
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const roadPlanner = new RoadPlannerBirdsEye();
@@ -91,8 +98,16 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     let result: IPath[];
 
     beforeAll(async () => {
-      const connectionFetcher = new ConnectionsFetcherNMBS();
-      const stopsFetcher = new StopsFetcherNMBS();
+      const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+
+      const connectionFetcher = new ConnectionsFetcherLDFetch(ldFetch);
+      connectionFetcher.setTravelMode(TravelMode.Train);
+      connectionFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
+
+      const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
+      stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
+      stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
+
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const roadPlanner = new RoadPlannerBirdsEye();

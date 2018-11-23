@@ -1,6 +1,7 @@
-import { injectable, unmanaged } from "inversify";
+import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
 import { Triple } from "rdf-js";
+import TYPES from "../../../types";
 import { transformPredicate } from "../../helpers";
 import IStop from "../IStop";
 import IStopsFetcher from "../IStopsFetcher";
@@ -16,49 +17,57 @@ interface IStopMap {
 @injectable()
 export default class StopsFetcherLDFetch implements IStopsFetcher {
 
-  public readonly prefix: string;
-  private readonly sources: string[];
+  public prefix: string;
+  private accessUrl: string;
 
   private ldFetch: LDFetch;
   private loadPromise: Promise<any>;
   private stops: IStopMap;
 
-  constructor(@unmanaged() prefix: string, @unmanaged() sources: string[]) {
-    this.prefix = prefix;
-    this.sources = sources;
-    this.ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+  constructor(
+    @inject(TYPES.LDFetch) ldFetch: LDFetch,
+  ) {
+    this.ldFetch = ldFetch;
     this.loadStops();
   }
 
+  public setPrefix(prefix: string) {
+    this.prefix = prefix;
+  }
+
+  public setAccessUrl(accessUrl: string) {
+    this.accessUrl = accessUrl;
+  }
+
   public async getStopById(stopId: string): Promise<IStop> {
-    if (this.loadPromise) {
-      await this.loadPromise;
-    }
+    await this.ensureStopsLoaded();
 
     return this.stops[stopId];
   }
 
   public async getAllStops(): Promise<IStop[]> {
-    if (this.loadPromise) {
-      await this.loadPromise;
-    }
+    await this.ensureStopsLoaded();
 
     return Object.values(this.stops);
   }
 
+  private async ensureStopsLoaded() {
+    if (!this.loadPromise && !this.stops) {
+      this.loadStops();
+    }
+
+    if (this.loadPromise) {
+      await this.loadPromise;
+    }
+  }
+
   private loadStops() {
-    if (this.sources) {
+    if (this.accessUrl) {
 
-      this.loadPromise = Promise
-        .all(this.sources.map((url) => this.ldFetch.get(url)))
-        .then((responses) => {
-          // logTripleTable(response.triples);
-
-          this.stops = responses.reduce((stops, response) => {
-            Object.assign(stops, this.parseTriples(response.triples));
-            return stops;
-          }, {});
-
+      this.loadPromise = this.ldFetch
+        .get(this.accessUrl)
+        .then((response) => {
+          this.stops = this.parseTriples(response.triples);
           this.loadPromise = null;
         })
         .catch((reason) => {

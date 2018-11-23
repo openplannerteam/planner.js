@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import IStop from "../../fetcher/stops/IStop";
-import IStopsFetcherMediator from "../../fetcher/stops/IStopsFetcherMediator";
+import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
@@ -10,12 +10,12 @@ import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 @injectable()
 export default class ReachableStopsFinderBirdsEye implements IReachableStopsFinder {
-  private readonly stopsFetcherMediator: IStopsFetcherMediator;
+  private readonly stopsProvider: IStopsProvider;
 
   constructor(
-    @inject(TYPES.StopsFetcherMediator) stopsFetcherMediator: IStopsFetcherMediator,
+    @inject(TYPES.StopsProvider) stopsProvider: IStopsProvider,
   ) {
-    this.stopsFetcherMediator = stopsFetcherMediator;
+    this.stopsProvider = stopsProvider;
   }
 
   public async findReachableStops(
@@ -27,7 +27,7 @@ export default class ReachableStopsFinderBirdsEye implements IReachableStopsFind
 
     // Mode can be ignored since birds eye view distance is identical
 
-    const allStops = await this.stopsFetcherMediator.getAllStops();
+    const allStops = await this.stopsProvider.getAllStops();
 
     return allStops.map((possibleTarget: IStop): IReachableStop => {
       if (possibleTarget.id === sourceOrTargetStop.id) {
