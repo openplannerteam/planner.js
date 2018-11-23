@@ -1,12 +1,17 @@
 import "jest";
+import LDFetch from "ldfetch";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
-import IPath from "../../interfaces/IPath";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import IRoadPlanner from "./IRoadPlanner";
 import RoadPlannerBirdsEye from "./RoadPlannerBirdsEye";
 
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 const planner: IRoadPlanner = new RoadPlannerBirdsEye();
-const stopsFetcher = new StopsFetcherLDFetch("http://irail.be/stations/NMBS/", ["https://irail.be/stations/NMBS"]);
+
+const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
+stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
+stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
+
 const locationResolver = new LocationResolverDefault(stopsFetcher);
 
 test("[RoadPlannerBirdsEye] distance between stops", async () => {

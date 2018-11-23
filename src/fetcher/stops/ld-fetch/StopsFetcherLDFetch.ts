@@ -40,19 +40,25 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
   }
 
   public async getStopById(stopId: string): Promise<IStop> {
-    if (this.loadPromise) {
-      await this.loadPromise;
-    }
+    await this.ensureStopsLoaded();
 
     return this.stops[stopId];
   }
 
   public async getAllStops(): Promise<IStop[]> {
+    await this.ensureStopsLoaded();
+
+    return Object.values(this.stops);
+  }
+
+  private async ensureStopsLoaded() {
+    if (!this.loadPromise && !this.stops) {
+      this.loadStops();
+    }
+
     if (this.loadPromise) {
       await this.loadPromise;
     }
-
-    return Object.values(this.stops);
   }
 
   private loadStops() {

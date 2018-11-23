@@ -1,6 +1,6 @@
 import "jest";
+import LDFetch from "ldfetch";
 import IStop from "../IStop";
-import IStopsFetcher from "../IStopsFetcher";
 import StopsFetcherLDFetch from "./StopsFetcherLDFetch";
 
 const DE_LIJN_STOPS_URLS = [
@@ -11,15 +11,15 @@ const DE_LIJN_STOPS_URLS = [
   "http://openplanner.ilabt.imec.be/delijn/Limburg/stops",
 ];
 
-const deLijnFetcher: IStopsFetcher = new StopsFetcherLDFetch(
-  "https://data.delijn.be/stops/",
-  DE_LIJN_STOPS_URLS,
-);
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-const nmbsFetcher: IStopsFetcher = new StopsFetcherLDFetch(
-  "http://irail.be/stations/NMBS/",
-  ["https://irail.be/stations/NMBS"],
-);
+const deLijnFetcher = new StopsFetcherLDFetch(ldFetch);
+deLijnFetcher.setPrefix("https://data.delijn.be/stops/");
+deLijnFetcher.setAccessUrl(DE_LIJN_STOPS_URLS[2]);
+
+const nmbsFetcher = new StopsFetcherLDFetch(ldFetch);
+nmbsFetcher.setPrefix("http://irail.be/stations/NMBS/");
+nmbsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
 test("[StopsFetcherLDFetch] De Lijn first stop", async () => {
   jest.setTimeout(15000);
@@ -30,11 +30,18 @@ test("[StopsFetcherLDFetch] De Lijn first stop", async () => {
   expect(stop.name).toEqual("De Vierweg");
 });
 
+// test("[StopsFetcherLDFetch] De Lijn second stop", async () => {
+//   const stop: IStop = await deLijnFetcher.getStopById("https://data.delijn.be/stops/219025");
+//
+//   expect(stop).toBeDefined();
+//   expect(stop.name).toEqual("Brandweer");
+// });
+
 test("[StopsFetcherLDFetch] De Lijn second stop", async () => {
-  const stop: IStop = await deLijnFetcher.getStopById("https://data.delijn.be/stops/219025");
+  const stop: IStop = await deLijnFetcher.getStopById("https://data.delijn.be/stops/500050");
 
   expect(stop).toBeDefined();
-  expect(stop.name).toEqual("Brandweer");
+  expect(stop.name).toEqual("Station perron 10");
 });
 
 test("[StopsFetcherLDFetch] NMBS", async () => {

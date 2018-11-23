@@ -1,5 +1,5 @@
 import "jest";
-import IStopsFetcher from "../../fetcher/stops/IStopsFetcher";
+import LDFetch from "ldfetch";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import Units from "../../util/Units";
 import ReachableStopsFinderBirdsEye from "./ReachableStopsFinderBirdsEye";
@@ -13,16 +13,18 @@ const DE_LIJN_STOPS_URLS = [
   "http://openplanner.ilabt.imec.be/delijn/Limburg/stops",
 ];
 
-const stopsFetcher: IStopsFetcher = new StopsFetcherLDFetch(
-  "https://data.delijn.be/stops/",
-  DE_LIJN_STOPS_URLS,
-);
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+
+const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
+stopsFetcher.setPrefix("https://data.delijn.be/stops/");
+stopsFetcher.setAccessUrl(DE_LIJN_STOPS_URLS[2]);
 
 const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
 
 test("[ReachableStopsFinderBirdsEye] reachable stops", async () => {
   jest.setTimeout(15000);
 
+  // Vierweg in West-Vlaanderen
   const sourceStop = await stopsFetcher.getStopById("https://data.delijn.be/stops/590009");
 
   expect(sourceStop).toBeDefined();
