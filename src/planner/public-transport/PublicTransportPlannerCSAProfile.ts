@@ -43,6 +43,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private profilesByStop: IProfilesByStop = {}; // S
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
   private durationToTargetByStop: DurationMs[] = [];
+  private gtfsTripByConnection = {};
 
   private query: IResolvedQuery;
 
@@ -123,6 +124,8 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private discoverConnection(connection: IConnection) {
+    this.gtfsTripByConnection[connection.id] = connection["gtfs:trip"];
+
     [connection.departureStop, connection.arrivalStop].forEach((stop) => {
       if (!this.profilesByStop[stop]) {
         this.profilesByStop[stop] = [Profile.create(this.query.maximumTransfers)];
@@ -136,6 +139,23 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     }
   }
 
+  private getTripIdsFromConnection(connection: IConnection): string[] {
+    const tripIds = [connection["gtfs:trip"]];
+
+    if (!connection.nextConnection) {
+      return tripIds;
+    }
+
+    for (const connectionId of connection.nextConnection) {
+      const tripId = this.gtfsTripByConnection[connectionId];
+      if (tripIds.indexOf(tripId) === -1) {
+        tripIds.push(this.gtfsTripByConnection[connectionId]);
+      }
+    }
+
+    return tripIds;
+  }
+
   private calculateEarliestArrivalTime(connection: IConnection): IArrivalTimeByTransfers {
     const remainSeatedTime = this.remainSeated(connection);
     if (connection["gtfs:dropOffType"] === "gtfs:NotAvailable") {
@@ -145,7 +165,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const walkToTargetTime = this.walkToTarget(connection);
     const takeTransferTime = this.takeTransfer(connection);
 
-    return Vectors.minVector(walkToTargetTime, remainSeatedTime, takeTransferTime);
+    return Vectors.minVector((c) => c.arrivalTime, walkToTargetTime, remainSeatedTime, takeTransferTime);
   }
 
   private async initDurationToTargetByStop(): Promise<void> {
@@ -168,21 +188,47 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const walkingTimeToTarget = this.durationToTargetByStop[connection.arrivalStop];
 
     if (walkingTimeToTarget === undefined) {
-      return Array(this.query.maximumTransfers).fill(Infinity);
+      return Array(this.query.maximumTransfers + 1).fill({
+        "arrivalTime": Infinity,
+        "gtfs:trip": connection["gtfs:trip"],
+      });
     }
 
-    return Array(this.query.maximumTransfers)
-      .fill(connection.arrivalTime.getTime() + walkingTimeToTarget);
+    return Array(this.query.maximumTransfers + 1).fill({
+      "arrivalTime": connection.arrivalTime.getTime() + walkingTimeToTarget,
+      "gtfs:trip": connection["gtfs:trip"],
+    });
   }
 
   private remainSeated(connection: IConnection): IArrivalTimeByTransfers {
-    return this.earliestArrivalByTrip[connection["gtfs:trip"]]
-      .map((trip) => trip.arrivalTime);
+    const tripIds = this.getTripIdsFromConnection(connection);
+    const earliestArrivalTimeByTransfers: IArrivalTimeByTransfers = [];
+
+    for (let amountOfTransfers = 0 ; amountOfTransfers < this.query.maximumTransfers + 1; amountOfTransfers++) {
+      const earliestArrivalTime = earliestArrivalTimeByTransfers[amountOfTransfers];
+      let minimumArrivalTime = earliestArrivalTime && earliestArrivalTime.arrivalTime;
+
+      for (const tripId of tripIds) {
+        const tripArrivalTime = this.earliestArrivalByTrip[tripId][amountOfTransfers].arrivalTime;
+
+        if (!minimumArrivalTime || tripArrivalTime < minimumArrivalTime) {
+          earliestArrivalTimeByTransfers[amountOfTransfers] = {
+            "arrivalTime": tripArrivalTime,
+            "gtfs:trip": tripId,
+          };
+          minimumArrivalTime = tripArrivalTime;
+        }
+      }
+
+    }
+
+    return earliestArrivalTimeByTransfers;
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
     return Vectors.shiftVector<IArrivalTimeByTransfers>(
       ProfileUtil.getTransferTimes(this.profilesByStop, connection, this.query.maximumTransfers),
+      { "arrivalTime": Infinity, "gtfs:trip": connection["gtfs:trip"] },
     );
   }
 
@@ -190,13 +236,22 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     connection: IConnection,
     arrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): void {
-    const earliestArrivalByTransfers: IEarliestArrivalByTransfers = this.earliestArrivalByTrip[connection["gtfs:trip"]];
+    const tripIds = this.getTripIdsFromConnection(connection);
 
-    this.earliestArrivalByTrip[connection["gtfs:trip"]] = EarliestArrivalByTransfers.createByConnection(
-      earliestArrivalByTransfers,
-      connection,
-      arrivalTimeByTransfers,
+    const earliestArrivalByTransfers: IEarliestArrivalByTransfers = arrivalTimeByTransfers.map(
+      (arrivalTime, amountOfTransfers: number) => {
+        const tripId: string = arrivalTime["gtfs:trip"];
+        return this.earliestArrivalByTrip[tripId][amountOfTransfers];
+      },
     );
+
+    for (const tripId of tripIds) {
+      this.earliestArrivalByTrip[tripId] = EarliestArrivalByTransfers.createByConnection(
+        earliestArrivalByTransfers,
+        connection,
+        arrivalTimeByTransfers,
+      );
+    }
   }
 
   private isDominated(connection: IConnection, arrivalTimeByTransfers: IArrivalTimeByTransfers): boolean {
@@ -214,18 +269,18 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const earliestProfileEntry = depProfile[depProfile.length - 1];
 
     const earliestArrivalTimeByTransfers = Vectors.minVector(
+      (c) => c.arrivalTime,
       currentArrivalTimeByTransfers,
       earliestProfileEntry.getArrivalTimeByTransfers(),
     );
 
     const departureStop = await this.locationResolver.resolve(connection.departureStop);
-    const reachableStops = await this.transferReachableStopsFinder
-      .findReachableStops(
-        departureStop as IStop,
-        ReachableStopsFinderMode.Source,
-        this.query.maximumTransferDuration,
-        this.query.minimumWalkingSpeed,
-      );
+    const reachableStops = await this.transferReachableStopsFinder.findReachableStops(
+      departureStop as IStop,
+      ReachableStopsFinderMode.Source,
+      this.query.maximumTransferDuration,
+      this.query.minimumWalkingSpeed,
+    );
 
     reachableStops.forEach((reachableStop) => {
       // Incorporate (c_dep_time - f_dur, t_c) into profile of S[f_dep_stop]
@@ -266,19 +321,19 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
           [amountOfTransfers].connection || connection;
 
         if (
-          arrivalTimeByTransfers[amountOfTransfers] < transferProfile.arrivalTime &&
+          arrivalTimeByTransfers[amountOfTransfers].arrivalTime < transferProfile.arrivalTime &&
           connection["gtfs:pickupType"] !== "gtfs:NotAvailable" &&
           possibleExitConnection["gtfs:dropOfType"] !== "gtfs:NotAvailable"
         ) {
-            newTransferProfile.enterConnection = connection;
-            newTransferProfile.exitConnection = possibleExitConnection;
+          newTransferProfile.enterConnection = connection;
+          newTransferProfile.exitConnection = possibleExitConnection;
         } else {
           newTransferProfile.enterConnection = transferProfile.enterConnection;
           newTransferProfile.exitConnection = transferProfile.exitConnection;
         }
 
         if (newTransferProfile.exitConnection && newTransferProfile.enterConnection) {
-          newTransferProfile.arrivalTime = arrivalTimeByTransfers[amountOfTransfers];
+          newTransferProfile.arrivalTime = arrivalTimeByTransfers[amountOfTransfers].arrivalTime;
         }
 
         transferProfiles.push(newTransferProfile);

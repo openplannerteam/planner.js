@@ -32,7 +32,8 @@ export default class ConnectionsFetcherNMBSTest implements AsyncIterator<IConnec
   }
 
   public async next(): Promise<IteratorResult<IConnection>> {
-    const nextConnection = this.connections[this.connectionIndex];
+    let nextConnection = this.connections[this.connectionIndex];
+
     if (!this.config.backward) {
       if (this.connectionIndex === this.connections.length - 1) {
         nextConnection.done = true;
@@ -41,8 +42,8 @@ export default class ConnectionsFetcherNMBSTest implements AsyncIterator<IConnec
       }
 
     } else {
-      if (this.connectionIndex === 0) {
-        nextConnection.done = true;
+      if (!nextConnection) {
+        nextConnection = {value: undefined, done: true};
       } else {
         this.connectionIndex--;
       }

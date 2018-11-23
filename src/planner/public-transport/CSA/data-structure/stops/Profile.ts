@@ -39,7 +39,7 @@ export default class Profile implements IProfile {
     if (transferProfiles) {
       this.transferProfiles = transferProfiles;
     } else {
-      this.transferProfiles = Array(amountOfTransfers).fill({
+      this.transferProfiles = Array(amountOfTransfers + 1).fill({
         exitConnection: undefined,
         enterConnection: undefined,
         arrivalTime: Infinity,
@@ -53,11 +53,14 @@ export default class Profile implements IProfile {
       transferProfile: ITransferProfile,
       amountOfTransfers: number,
       ) =>
-      memo && transferProfile.arrivalTime <= arrivalTimeByTransfers[amountOfTransfers]
+      memo && transferProfile.arrivalTime <= arrivalTimeByTransfers[amountOfTransfers].arrivalTime
       , true);
   }
 
-  public getArrivalTimeByTransfers(): IArrivalTimeByTransfers {
-    return this.transferProfiles.map((transfer: ITransferProfile) => transfer.arrivalTime);
+  public getArrivalTimeByTransfers(tripId?: string): IArrivalTimeByTransfers {
+    return this.transferProfiles.map((transfer: ITransferProfile) => ({
+      "arrivalTime": transfer.arrivalTime,
+      "gtfs:trip": tripId,
+    }));
   }
 }
