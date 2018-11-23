@@ -1,6 +1,6 @@
 import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
-import IConnectionsFetcher from "../../fetcher/connections/IConnectionsFetcher";
+import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import IPath from "../../interfaces/IPath";
 import { DurationMs } from "../../interfaces/units";
@@ -23,7 +23,7 @@ import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 /**
- * An implementation of the Connection Scan Algorithm (SCA).
+ * An implementation of the Connection Scan Algorithm (CSA).
  *
  * @implements [[IPublicTransportPlanner]]
  * @property profilesByStop Describes the CSA profiles for each scanned stop.
@@ -34,7 +34,7 @@ import IPublicTransportPlanner from "./IPublicTransportPlanner";
  */
 @injectable()
 export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
-  private readonly connectionsFetcher: IConnectionsFetcher;
+  private readonly connectionsProvider: IConnectionsProvider;
   private readonly locationResolver: ILocationResolver;
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
@@ -47,7 +47,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private query: IResolvedQuery;
 
   constructor(
-    @inject(TYPES.ConnectionsFetcher) connectionsFetcher: IConnectionsFetcher,
+    @inject(TYPES.ConnectionsProvider) connectionsProvider: IConnectionsProvider,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Transfer)
@@ -57,7 +57,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       finalReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.JourneyExtractor) journeyExtractor: IJourneyExtractor,
   ) {
-    this.connectionsFetcher = connectionsFetcher;
+    this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
@@ -91,7 +91,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     this.query.maximumArrivalTime = upperBoundDate;
     this.query.minimumDepartureTime = lowerBoundDate;
 
-    this.connectionsFetcher.setConfig({
+    this.connectionsProvider.setConfig({
       backward: true,
       upperBoundDate,
       lowerBoundDate,
@@ -101,7 +101,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private async* calculateJourneys(): AsyncIterableIterator<IPath> {
     await this.initDurationToTargetByStop();
 
-    for await (const connection of this.connectionsFetcher) {
+    for await (const connection of this.connectionsProvider) {
       if (connection.departureTime < this.query.minimumDepartureTime) {
         break;
       }

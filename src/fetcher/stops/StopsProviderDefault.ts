@@ -6,7 +6,7 @@ import IStopsFetcher from "./IStopsFetcher";
 import IStopsProvider from "./IStopsProvider";
 
 @injectable()
-export default class StopsProvider implements IStopsProvider {
+export default class StopsProviderDefault implements IStopsProvider {
 
   private readonly stopsFetchers: IStopsFetcher[];
 

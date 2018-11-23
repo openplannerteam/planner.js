@@ -6,7 +6,7 @@ import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 import ConnectionsIteratorMerge from "./ConnectionsIteratorMerge";
 
 @injectable()
-export default class ConnectionsFetcherMerge implements IConnectionsFetcher {
+export default class ConnectionsProviderMerge implements IConnectionsFetcher {
 
   private config: IConnectionsFetcherConfig;
   private connectionsFetchers: IConnectionsFetcher[];
