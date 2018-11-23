@@ -1,9 +1,9 @@
 import Planner from "./index";
 import Units from "./util/Units";
 
-const planner = new Planner();
-
 export default async () => {
+
+  const planner = new Planner();
 
   const roadOnlyResult = await planner.query({
     roadOnly: true,

@@ -1,8 +1,9 @@
 import "jest";
+import LDFetch from "ldfetch";
 import ConnectionsFetcherNMBS from "../../fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
 import connections from "../../fetcher/connections/tests/connection-data";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
-import StopsFetcherNMBS from "../../fetcher/stops/ld-fetch/StopsFetcherNMBS";
+import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
@@ -31,7 +32,10 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const connectionFetcher = new ConnectionsFetcherNMBSTest(connections);
       connectionFetcher.setConfig({ backward: true });
 
-      const stopsFetcher = new StopsFetcherNMBS();
+      const stopsFetcher = new StopsFetcherLDFetch(
+        "http://irail.be/stations/NMBS/",
+        ["https://irail.be/stations/NMBS"],
+      );
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const roadPlanner = new RoadPlannerBirdsEye();
@@ -91,8 +95,11 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     let result: IPath[];
 
     beforeAll(async () => {
-      const connectionFetcher = new ConnectionsFetcherNMBS();
-      const stopsFetcher = new StopsFetcherNMBS();
+      const connectionFetcher = new ConnectionsFetcherNMBS(new LDFetch());
+      const stopsFetcher = new StopsFetcherLDFetch(
+        "http://irail.be/stations/NMBS/",
+        ["https://irail.be/stations/NMBS"],
+      );
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const roadPlanner = new RoadPlannerBirdsEye();

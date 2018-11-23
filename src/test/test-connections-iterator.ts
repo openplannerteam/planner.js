@@ -1,7 +1,8 @@
+import LDFetch from "ldfetch";
 import "reflect-metadata";
 import ConnectionsFetcherNMBS from "../fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
 
-const fetcher = new ConnectionsFetcherNMBS();
+const fetcher = new ConnectionsFetcherNMBS(new LDFetch());
 // const fetcher = container.getTagged<IConnectionsFetcher>(TYPES.ConnectionsFetcher, "type", "merge");
 fetcher.setConfig({
   lowerBoundDate: new Date(),

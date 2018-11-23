@@ -1,4 +1,3 @@
-import { injectable, unmanaged } from "inversify";
 import LDFetch from "ldfetch";
 import { Triple } from "rdf-js";
 import { transformPredicate } from "../../helpers";
@@ -13,7 +12,6 @@ interface IStopMap {
   [stopId: string]: IStop;
 }
 
-@injectable()
 export default class StopsFetcherLDFetch implements IStopsFetcher {
 
   public readonly prefix: string;
@@ -23,7 +21,7 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
   private loadPromise: Promise<any>;
   private stops: IStopMap;
 
-  constructor(@unmanaged() prefix: string, @unmanaged() sources: string[]) {
+  constructor(prefix: string, sources: string[]) {
     this.prefix = prefix;
     this.sources = sources;
     this.ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });

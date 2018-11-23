@@ -1,12 +1,13 @@
-import { Container } from "inversify";
+import { Container, interfaces } from "inversify";
+import LDFetch from "ldfetch";
+import Catalog from "./Catalog";
 import Context from "./Context";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import ConnectionsFetcherNMBS from "./fetcher/connections/ld-fetch/ConnectionsFetcherNMBS";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
-import IStopsFetcherMediator from "./fetcher/stops/IStopsFetcherMediator";
-import StopsFetcherDeLijn from "./fetcher/stops/ld-fetch/StopsFetcherDeLijn";
-import StopsFetcherNMBS from "./fetcher/stops/ld-fetch/StopsFetcherNMBS";
-import StopsFetcherProxy from "./fetcher/stops/proxy/StopsFetcherProxy";
+import IStopsProvider from "./fetcher/stops/IStopsProvider";
+import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import StopsProvider from "./fetcher/stops/StopsProvider";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractionPhase from "./planner/public-transport/JourneyExtractionPhase";
@@ -58,8 +59,32 @@ container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher)
   .to(ConnectionsFetcherMerge).whenTargetTagged("type", "merge");*/
 
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherNMBS).inSingletonScope();
 // container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherDeLijn).inSingletonScope();
-container.bind<IStopsFetcherMediator>(TYPES.StopsFetcherMediator).to(StopsFetcherProxy).inSingletonScope();
+container.bind<IStopsProvider>(TYPES.StopsProvider).to(StopsProvider).inSingletonScope();
+container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
+  .toFactory<IStopsFetcher>(
+    () => (prefix: string, accessUrl: string) => new StopsFetcherLDFetch(prefix, [accessUrl]),
+  );
+
+// Init catalog
+const catalog = new Catalog();
+catalog.addStopsFetcher("http://irail.be/stations/NMBS/", "https://irail.be/stations/NMBS");
+
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalog);
+
+// Init LDFetch
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const httpStartTimes = {};
+
+ldFetch.on("request", (url) => httpStartTimes[url] = new Date());
+
+ldFetch.on("redirect", (obj) => httpStartTimes[obj.to] = httpStartTimes[obj.from]);
+
+ldFetch.on("response", (url) => {
+  const difference = (new Date()).getTime() - httpStartTimes[url].getTime();
+  console.log(`HTTP GET - ${url} (${difference}ms)`);
+});
+
+container.bind<LDFetch>(TYPES.LDFetch).toConstantValue(ldFetch);
 
 export default container;

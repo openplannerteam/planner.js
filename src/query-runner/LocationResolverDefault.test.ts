@@ -1,8 +1,9 @@
 import "jest";
-import StopsFetcherNMBS from "../fetcher/stops/ld-fetch/StopsFetcherNMBS";
+import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import LocationResolverDefault from "./LocationResolverDefault";
 
-const locationResolver = new LocationResolverDefault(new StopsFetcherNMBS());
+const stopsFetcher = new StopsFetcherLDFetch("http://irail.be/stations/NMBS/", ["https://irail.be/stations/NMBS"]);
+const locationResolver = new LocationResolverDefault(stopsFetcher);
 
 test("[LocationResolverDefault] Input {id: 'http://...'}", async () => {
 

@@ -1,10 +1,23 @@
 import "jest";
-import StopsFetcherDeLijn from "../../fetcher/stops/ld-fetch/StopsFetcherDeLijn";
 import Units from "../../util/Units";
 import ReachableStopsFinderBirdsEye from "./ReachableStopsFinderBirdsEye";
 import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
+import IStopsFetcher from "../../fetcher/stops/IStopsFetcher";
+import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 
-const stopsFetcher = new StopsFetcherDeLijn();
+const DE_LIJN_STOPS_URLS = [
+  "http://openplanner.ilabt.imec.be/delijn/Antwerpen/stops",
+  "http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops",
+  "http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops",
+  "http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops",
+  "http://openplanner.ilabt.imec.be/delijn/Limburg/stops",
+];
+
+const stopsFetcher: IStopsFetcher = new StopsFetcherLDFetch(
+  "https://data.delijn.be/stops/",
+  DE_LIJN_STOPS_URLS,
+);
+
 const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
 
 test("[ReachableStopsFinderBirdsEye] reachable stops", async () => {

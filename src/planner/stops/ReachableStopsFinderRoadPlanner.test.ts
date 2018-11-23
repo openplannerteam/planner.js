@@ -1,11 +1,11 @@
 import "jest";
-import StopsFetcherNMBS from "../../fetcher/stops/ld-fetch/StopsFetcherNMBS";
+import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import Units from "../../util/Units";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
 import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
-const stopsFetcher = new StopsFetcherNMBS();
+const stopsFetcher = new StopsFetcherLDFetch("http://irail.be/stations/NMBS/", ["https://irail.be/stations/NMBS"]);
 const roadPlanner = new RoadPlannerBirdsEye();
 const reachableStopsFinder = new ReachableStopsFinderRoadPlanner(stopsFetcher, roadPlanner);
 

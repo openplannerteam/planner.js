@@ -1,18 +1,24 @@
-import { injectable, multiInject } from "inversify";
-import TYPES from "../../../types";
-import IStop from "../IStop";
-import IStopsFetcher from "../IStopsFetcher";
-import IStopsFetcherMediator from "../IStopsFetcherMediator";
+import { inject, injectable } from "inversify";
+import Catalog from "../../Catalog";
+import TYPES, { StopsFetcherFactory } from "../../types";
+import IStop from "./IStop";
+import IStopsFetcher from "./IStopsFetcher";
+import IStopsProvider from "./IStopsProvider";
 
 @injectable()
-export default class StopsFetcherProxy implements IStopsFetcherMediator {
+export default class StopsProvider implements IStopsProvider {
 
   private readonly stopsFetchers: IStopsFetcher[];
 
   constructor(
-    @multiInject(TYPES.StopsFetcher) stopsFetchers: IStopsFetcher[],
+    @inject(TYPES.StopsFetcherFactory) stopsFetcherFactory: StopsFetcherFactory,
+    @inject(TYPES.Catalog) catalog: Catalog,
   ) {
-    this.stopsFetchers = stopsFetchers;
+    this.stopsFetchers = [];
+
+    for (const {prefix, accessUrl} of catalog.stopsFetcherConfigs) {
+      this.stopsFetchers.push(stopsFetcherFactory(prefix, accessUrl));
+    }
   }
 
   public async getStopById(stopId: string): Promise<IStop> {
