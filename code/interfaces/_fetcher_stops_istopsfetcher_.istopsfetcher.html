@@ -931,8 +931,8 @@ img { max-width: 100%; }
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
 					<p>Represents one data source of stops, e.g. De Lijn or NMBS
-						Has a prefix for potential use by a <a href="_fetcher_stops_istopsfetchermediator_.istopsfetchermediator.html">IStopsFetcherMediator</a>
-					Extends <a href="_fetcher_stops_istopsfetchermediator_.istopsfetchermediator.html">IStopsFetcherMediator</a> because it should implement the same methods</p>
+						Has a prefix for potential use by a <a href="_fetcher_stops_istopsprovider_.istopsprovider.html">IStopsProvider</a>
+					Extends <a href="_fetcher_stops_istopsprovider_.istopsprovider.html">IStopsProvider</a> because it should implement the same methods</p>
 				</div>
 			</div>
 		</section>
@@ -940,7 +940,7 @@ img { max-width: 100%; }
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<a href="_fetcher_stops_istopsfetchermediator_.istopsfetchermediator.html" class="tsd-signature-type">IStopsFetcherMediator</a>
+					<a href="_fetcher_stops_istopsprovider_.istopsprovider.html" class="tsd-signature-type">IStopsProvider</a>
 					<ul class="tsd-hierarchy">
 						<li>
 							<span class="target">IStopsFetcher</span>
@@ -952,10 +952,7 @@ img { max-width: 100%; }
 		<section class="tsd-panel">
 			<h3>Implemented by</h3>
 			<ul class="tsd-hierarchy">
-				<li><a href="../classes/_fetcher_stops_ld_fetch_stopsfetcherdelijn_.stopsfetcherdelijn.html" class="tsd-signature-type">StopsFetcherDeLijn</a></li>
-				<li><a href="../classes/_fetcher_stops_ld_fetch_stopsfetcherdelijn_.stopsfetcherdelijn.html" class="tsd-signature-type">StopsFetcherDeLijn</a></li>
 				<li><a href="../classes/_fetcher_stops_ld_fetch_stopsfetcherldfetch_.stopsfetcherldfetch.html" class="tsd-signature-type">StopsFetcherLDFetch</a></li>
-				<li><a href="../classes/_fetcher_stops_ld_fetch_stopsfetchernmbs_.stopsfetchernmbs.html" class="tsd-signature-type">StopsFetcherNMBS</a></li>
 				<li><a href="../classes/_fetcher_stops_json_stopsfetchernmbsjson_.stopsfetchernmbsjson.html" class="tsd-signature-type">StopsFetcherNMBSJSON</a></li>
 			</ul>
 		</section>
@@ -981,9 +978,9 @@ img { max-width: 100%; }
 				<h3>get<wbr>All<wbr>Stops</h3>
 				<div class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Stops<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
-					<p>Inherited from <a href="_fetcher_stops_istopsfetchermediator_.istopsfetchermediator.html">IStopsFetcherMediator</a>.<a href="_fetcher_stops_istopsfetchermediator_.istopsfetchermediator.html#getallstops">getAllStops</a></p>
+					<p>Inherited from <a href="_fetcher_stops_istopsprovider_.istopsprovider.html">IStopsProvider</a>.<a href="_fetcher_stops_istopsprovider_.istopsprovider.html#getallstops">getAllStops</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/fetcher/stops/IStopsFetcherMediator.ts#L11">fetcher/stops/IStopsFetcherMediator.ts:11</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/20e07ea/src/fetcher/stops/IStopsProvider.ts#L11">fetcher/stops/IStopsProvider.ts:11</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1007,9 +1004,9 @@ img { max-width: 100%; }
 				<h3>get<wbr>Stop<wbr>ById</h3>
 				<div class="tsd-signature tsd-kind-icon">get<wbr>Stop<wbr>ById<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
-					<p>Inherited from <a href="_fetcher_stops_istopsfetchermediator_.istopsfetchermediator.html">IStopsFetcherMediator</a>.<a href="_fetcher_stops_istopsfetchermediator_.istopsfetchermediator.html#getstopbyid">getStopById</a></p>
+					<p>Inherited from <a href="_fetcher_stops_istopsprovider_.istopsprovider.html">IStopsProvider</a>.<a href="_fetcher_stops_istopsprovider_.istopsprovider.html#getstopbyid">getStopById</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/fetcher/stops/IStopsFetcherMediator.ts#L10">fetcher/stops/IStopsFetcherMediator.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/20e07ea/src/fetcher/stops/IStopsProvider.ts#L10">fetcher/stops/IStopsProvider.ts:10</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1040,7 +1037,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">prefix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/fetcher/stops/IStopsFetcher.ts#L9">fetcher/stops/IStopsFetcher.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/20e07ea/src/fetcher/stops/IStopsFetcher.ts#L9">fetcher/stops/IStopsFetcher.ts:9</a></li>
 					</ul>
 				</aside>
 			</section>

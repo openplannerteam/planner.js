@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;fetcher/connections/ld-fetch/ConnectionsFetcherDeLijn&quot; | plannerjs</title>
+	<title>IConnectionsProvider | plannerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -909,46 +909,126 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class=" tsd-kind-class tsd-parent-kind-external-module">
-			<a href="../classes/_fetcher_connections_ld_fetch_connectionsfetcherdelijn_.connectionsfetcherdelijn.html" class="tsd-kind-icon">Connections<wbr>Fetcher<wbr>DeLijn</a>
-		</li>
-		<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
-			<a href="_fetcher_connections_ld_fetch_connectionsfetcherdelijn_.html#de_lijn_base_url" class="tsd-kind-icon">DE_<wbr>LIJN_<wbr>BASE_<wbr>URL</a>
+		<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+			<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html" class="tsd-kind-icon">IConnections<wbr>Provider</a>
+			<ul>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#___asynciterator" class="tsd-kind-icon">__@async<wbr>Iterator</a>
+				</li>
+			</ul>
 		</li>
 	</ul>
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>A IConnectionsProvider serves as interface to other classes that want to use <a href="_fetcher_connections_iconnection_.iconnection.html">IConnection</a> instances
+						It does this by acting as a transparent proxy between the user class and the configured [[IConnectionFetcher]]
+					instances</p>
+				</div>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-hierarchy">
+			<h3>Hierarchy</h3>
+			<ul class="tsd-hierarchy">
+				<li>
+					<span class="tsd-signature-type">AsyncIterable</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span>
+					<ul class="tsd-hierarchy">
+						<li>
+							<span class="target">IConnectionsProvider</span>
+							<ul class="tsd-hierarchy">
+								<li>
+									<a href="_fetcher_connections_iconnectionsfetcher_.iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel">
+			<h3>Implemented by</h3>
+			<ul class="tsd-hierarchy">
+				<li><a href="../classes/_fetcher_connections_connectionsproviderpassthrough_.connectionsproviderpassthrough.html" class="tsd-signature-type">ConnectionsProviderPassthrough</a></li>
+			</ul>
+		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
-						<h3>Classes</h3>
+						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-class tsd-parent-kind-external-module"><a href="../classes/_fetcher_connections_ld_fetch_connectionsfetcherdelijn_.connectionsfetcherdelijn.html" class="tsd-kind-icon">Connections<wbr>Fetcher<wbr>DeLijn</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a></li>
 						</ul>
 					</section>
-					<section class="tsd-index-section tsd-is-not-exported">
-						<h3>Variables</h3>
+					<section class="tsd-index-section tsd-is-inherited">
+						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="_fetcher_connections_ld_fetch_connectionsfetcherdelijn_.html#de_lijn_base_url" class="tsd-kind-icon">DE_<wbr>LIJN_<wbr>BASE_<wbr>URL</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#___asynciterator" class="tsd-kind-icon">__@async<wbr>Iterator</a></li>
 						</ul>
 					</section>
 				</div>
 			</section>
 		</section>
-		<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
-			<h2>Variables</h2>
-			<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
-				<a name="de_lijn_base_url" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagConst">Const</span> DE_<wbr>LIJN_<wbr>BASE_<wbr>URL</h3>
-				<div class="tsd-signature tsd-kind-icon">DE_<wbr>LIJN_<wbr>BASE_<wbr>URL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections&quot;</span></div>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="setconfig" class="tsd-anchor"></a>
+				<h3>set<wbr>Config</h3>
+				<div class="tsd-signature tsd-kind-icon">set<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/18ec37a/src/fetcher/connections/ld-fetch/ConnectionsFetcherDeLijn.ts#L7">fetcher/connections/ld-fetch/ConnectionsFetcherDeLijn.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/20e07ea/src/fetcher/connections/IConnectionsProvider.ts#L10">fetcher/connections/IConnectionsProvider.ts:10</a></li>
 					</ul>
 				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="_fetcher_connections_iconnectionsfetcherconfig_.iconnectionsfetcherconfig.html" class="tsd-signature-type">IConnectionsFetcherConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-parameters-title">Parameters</h4>
+									<ul class="tsd-parameters">
+										<li>
+											<h5>config: <a href="_fetcher_connections_iconnectionsfetcherconfig_.iconnectionsfetcherconfig.html" class="tsd-signature-type">IConnectionsFetcherConfig</a></h5>
+										</li>
+									</ul>
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+				<a name="___asynciterator" class="tsd-anchor"></a>
+				<h3>__@async<wbr>Iterator</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<li class="tsd-signature tsd-kind-icon">__@async<wbr>Iterator<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from AsyncIterable.[Symbol.asyncIterator]</p>
+							<ul>
+								<li>Defined in /home/travis/build/openplannerteam/planner.js/node_modules/typescript/lib/lib.esnext.asynciterable.d.ts:39</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
