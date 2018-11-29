@@ -19,10 +19,10 @@ export default class EarliestArrivalByTransfers extends Array<IEarliestArrival> 
     arrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): EarliestArrivalByTransfers {
     return currentArrivalTimeByTransfers.map((earliestArrival: IEarliestArrival, transfer: number) => {
-      if (arrivalTimeByTransfers[transfer] < earliestArrival.arrivalTime) {
+      if (arrivalTimeByTransfers[transfer].arrivalTime < earliestArrival.arrivalTime) {
         return {
           connection,
-          arrivalTime: arrivalTimeByTransfers[transfer],
+          arrivalTime: arrivalTimeByTransfers[transfer].arrivalTime,
         };
       }
 
@@ -35,7 +35,7 @@ export default class EarliestArrivalByTransfers extends Array<IEarliestArrival> 
   constructor(maximumTransfers: number) {
     super();
 
-    for (let amountOfTransfers = 0 ; amountOfTransfers < maximumTransfers ; amountOfTransfers++) {
+    for (let amountOfTransfers = 0 ; amountOfTransfers < maximumTransfers + 1 ; amountOfTransfers++) {
       this[amountOfTransfers] = {
         arrivalTime: Infinity,
         connection: undefined,
