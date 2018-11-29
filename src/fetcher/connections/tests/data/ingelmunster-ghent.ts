@@ -1,4 +1,4 @@
-import TravelMode from "../../../TravelMode";
+import TravelMode from "../../../../TravelMode";
 
 const connections = [
   {

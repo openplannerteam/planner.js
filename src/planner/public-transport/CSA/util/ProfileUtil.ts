@@ -21,13 +21,17 @@ export default class ProfileUtil {
 
   public static getTransferTimes(profilesByStop: IProfilesByStop, connection: IConnection, maxLegs) {
     const { arrivalStop, arrivalTime } = connection;
+
     let i = profilesByStop[arrivalStop].length - 1;
     while (i >= 0) {
       if (profilesByStop[arrivalStop][i].departureTime >= arrivalTime.getTime()) {
-        return profilesByStop[arrivalStop][i].getArrivalTimeByTransfers().slice(); // Return a copy of the array
+        return profilesByStop[arrivalStop][i].getArrivalTimeByTransfers(connection["gtfs:trip"]).slice();
       }
       i--;
     }
-    return Array(maxLegs).fill(Infinity);
+    return Array(maxLegs + 1).fill({
+      "arrivalTime": Infinity,
+      "gtfs:trip": connection["gtfs:trip"],
+    });
   }
 }
