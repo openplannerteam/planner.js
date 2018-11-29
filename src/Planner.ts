@@ -33,7 +33,7 @@ export default class Planner {
    * @param query An [[IQuery]] specifying a route planning query
    * @returns An AsyncIterableIterator of [[IPath]]s
    */
-  public async* query(query: IQuery): AsyncIterableIterator<IPath> {
-    yield* this.queryRunner.run(query);
+  public async query(query: IQuery): Promise<AsyncIterableIterator<IPath>> {
+    return this.queryRunner.run(query);
   }
 }

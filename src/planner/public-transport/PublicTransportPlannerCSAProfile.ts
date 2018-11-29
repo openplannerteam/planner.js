@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
@@ -45,6 +46,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private durationToTargetByStop: DurationMs[] = [];
 
   private query: IResolvedQuery;
+  private iterator: AsyncIterator<IConnection>;
 
   constructor(
     @inject(TYPES.ConnectionsProvider) connectionsProvider: IConnectionsProvider,
@@ -64,11 +66,11 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     this.journeyExtractor = journeyExtractor;
   }
 
-  public async* plan(query: IResolvedQuery): AsyncIterableIterator<IPath> {
+  public async plan(query: IResolvedQuery): Promise<AsyncIterableIterator<IPath>> {
     this.query = query;
     this.setBounds();
 
-    yield* this.calculateJourneys();
+    return this.calculateJourneys();
   }
 
   private setBounds() {
@@ -98,28 +100,59 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     });
   }
 
-  private async* calculateJourneys(): AsyncIterableIterator<IPath> {
+  private async calculateJourneys(): Promise<AsyncIterableIterator<IPath>> {
     await this.initDurationToTargetByStop();
 
-    for await (const connection of this.connectionsProvider) {
+    this.iterator = this.connectionsProvider.createIterator();
+
+    return new Promise((resolve, reject) => {
+
+      const done = () => {
+        const resultIterator = this.journeyExtractor
+          .extractJourneys(
+            this.profilesByStop,
+            this.query,
+          );
+
+        resolve(resultIterator);
+      };
+
+      this.iterator.on("readable", () =>
+        this.processNextConnection(done),
+      );
+
+    }) as Promise<AsyncIterableIterator<IPath>>;
+  }
+
+  private processNextConnection(done: () => void) {
+    const connection = this.iterator.read();
+
+    if (connection) {
       if (connection.departureTime < this.query.minimumDepartureTime) {
-        break;
+        this.iterator.close();
+        done();
+        return;
       }
 
       this.discoverConnection(connection);
-      const earliestArrivalTime = this.calculateEarliestArrivalTime(connection);
 
+      const earliestArrivalTime = this.calculateEarliestArrivalTime(connection);
       this.updateEarliestArrivalByTrip(connection, earliestArrivalTime);
 
       if (!this.isDominated(connection, earliestArrivalTime)) {
-        await this.getFootpathsForDepartureStop(connection, earliestArrivalTime);
+        this.getFootpathsForDepartureStop(connection, earliestArrivalTime)
+          .then(() => this.maybeProcessNextConnection(done));
+
+      } else {
+        this.maybeProcessNextConnection(done);
       }
     }
+  }
 
-    yield* this.journeyExtractor.extractJourneys(
-      this.profilesByStop,
-      this.query,
-    );
+  private maybeProcessNextConnection(done: () => void) {
+    if (!this.iterator.closed) {
+      this.processNextConnection(done);
+    }
   }
 
   private discoverConnection(connection: IConnection) {

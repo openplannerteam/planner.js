@@ -1,6 +1,5 @@
 import "jest";
 import LDFetch from "ldfetch";
-import ConnectionsFetcherLDFetch from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import connections from "../../fetcher/connections/tests/connection-data";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
@@ -14,6 +13,7 @@ import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import JourneyExtractorDefault from "./JourneyExtractorDefault";
 import PublicTransportPlannerCSAProfile from "./PublicTransportPlannerCSAProfile";
+import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 
 describe("[PublicTransportPlannerCSAProfile]", () => {
   describe("mock data", () => {
@@ -100,7 +100,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     beforeAll(async () => {
       const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-      const connectionFetcher = new ConnectionsFetcherLDFetch(ldFetch);
+      const connectionFetcher = new ConnectionsFetcherLazy(ldFetch);
       connectionFetcher.setTravelMode(TravelMode.Train);
       connectionFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
 

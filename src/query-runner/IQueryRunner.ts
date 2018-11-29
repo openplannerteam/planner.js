@@ -3,5 +3,5 @@ import IQuery from "../interfaces/IQuery";
 
 export default interface IQueryRunner {
 
-  run(query: IQuery): AsyncIterableIterator<IPath>;
+  run(query: IQuery): Promise<AsyncIterableIterator<IPath>>;
 }

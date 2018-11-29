@@ -1,8 +1,8 @@
 import LDFetch from "ldfetch";
 import "reflect-metadata";
-import ConnectionsFetcherLDFetch from "../fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
 import TravelMode from "../TravelMode";
 
+/*
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
 const upperBoundDate = new Date();
@@ -36,3 +36,4 @@ connectionsFetcher.setConfig(config);
   console.timeEnd("fetch");
 
 })();
+*/

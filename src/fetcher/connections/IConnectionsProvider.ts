@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import IConnection from "./IConnection";
 import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
 
@@ -6,6 +7,7 @@ import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
  * It does this by acting as a transparent proxy between the user class and the configured [[IConnectionFetcher]]
  * instances
  */
-export default interface IConnectionsProvider extends AsyncIterable<IConnection> {
+export default interface IConnectionsProvider {
+  createIterator: () => AsyncIterator<IConnection>;
   setConfig: (config: IConnectionsFetcherConfig) => void;
 }
