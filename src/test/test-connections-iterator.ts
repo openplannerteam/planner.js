@@ -5,15 +5,18 @@ import TravelMode from "../TravelMode";
 
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
+const upperBoundDate = new Date();
+upperBoundDate.setHours(upperBoundDate.getHours() + 2);
+
+const config = {
+  upperBoundDate,
+  backward: true,
+};
+
 const connectionsFetcher = new ConnectionsFetcherLDFetch(ldFetch);
 connectionsFetcher.setTravelMode(TravelMode.Train);
-connectionsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
-
-connectionsFetcher.setConfig({
-  lowerBoundDate: new Date(),
-  upperBoundDate: new Date(),
-  backward: false,
-});
+connectionsFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
+connectionsFetcher.setConfig(config);
 // iterator.setLowerBound(new Date(2018, 10, 2, 10));
 
 (async () => {
@@ -21,11 +24,12 @@ connectionsFetcher.setConfig({
   console.time("fetch");
 
   let i = 0;
+  let sum = 0;
 
   for await (const connection of connectionsFetcher) {
-    console.log(i++, connection.id, connection.departureTime);
+    sum += connection.departureDelay || 0;
 
-    if (i++ > 1000) {
+    if (i++ > 4000) {
       break;
     }
   }
