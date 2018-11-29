@@ -21,6 +21,7 @@ import Profile from "./CSA/data-structure/stops/Profile";
 import ProfileUtil from "./CSA/util/ProfileUtil";
 import IJourneyExtractor from "./IJourneyExtractor";
 import JourneyExtractionPhase from "./JourneyExtractionPhase";
+import Iterators from "../../util/Iterators";
 
 /**
  * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
@@ -209,11 +210,7 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
             });
 
             // Get first path
-            const walkingPath: IPath = await (new Promise((resolve) => {
-              walkingResult.on("readable", () => {
-                resolve(walkingResult.read());
-              });
-            }) as Promise<IPath>);
+            const walkingPath: IPath = await Iterators.getFirst(walkingResult);
 
             if (walkingPath && walkingPath.steps[0] &&
               connection.departureTime.getTime() >= step.stopTime.getTime() +

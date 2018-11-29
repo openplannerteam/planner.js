@@ -3,6 +3,7 @@ import LDFetch from "ldfetch";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
+import Iterators from "../../util/Iterators";
 import IRoadPlanner from "./IRoadPlanner";
 import RoadPlannerBirdsEye from "./RoadPlannerBirdsEye";
 
@@ -27,14 +28,7 @@ test("[RoadPlannerBirdsEye] distance between stops", async () => {
     maximumWalkingSpeed: 6,
   });
 
-  const result = [];
-  iterator.each((path: IPath) => {
-    result.push(path);
-  });
-
-  await (new Promise((resolve) => {
-    iterator.on("end", () => resolve());
-  }));
+  const result: IPath[] = await Iterators.toArray(iterator);
 
   expect(result).toHaveLength(1);
 
