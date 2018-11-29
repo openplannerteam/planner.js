@@ -46,7 +46,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private durationToTargetByStop: DurationMs[] = [];
 
   private query: IResolvedQuery;
-  private iterator: AsyncIterator<IConnection>;
+  private connectionsIterator: AsyncIterator<IConnection>;
 
   constructor(
     @inject(TYPES.ConnectionsProvider) connectionsProvider: IConnectionsProvider,
@@ -66,7 +66,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     this.journeyExtractor = journeyExtractor;
   }
 
-  public async plan(query: IResolvedQuery): Promise<AsyncIterableIterator<IPath>> {
+  public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     this.query = query;
     this.setBounds();
 
@@ -100,36 +100,40 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     });
   }
 
-  private async calculateJourneys(): Promise<AsyncIterableIterator<IPath>> {
+  private async calculateJourneys(): Promise<AsyncIterator<IPath>> {
     await this.initDurationToTargetByStop();
 
-    this.iterator = this.connectionsProvider.createIterator();
+    this.connectionsIterator = this.connectionsProvider.createIterator();
+
+    const self = this;
 
     return new Promise((resolve, reject) => {
 
       const done = () => {
-        const resultIterator = this.journeyExtractor
+        const resultIterator = self.journeyExtractor
           .extractJourneys(
-            this.profilesByStop,
-            this.query,
+            self.profilesByStop,
+            self.query,
           );
 
         resolve(resultIterator);
       };
 
-      this.iterator.on("readable", () =>
-        this.processNextConnection(done),
+      this.connectionsIterator.on("readable", () =>
+        self.processNextConnection(done),
       );
 
-    }) as Promise<AsyncIterableIterator<IPath>>;
+      this.connectionsIterator.on("end", () => done());
+
+    }) as Promise<AsyncIterator<IPath>>;
   }
 
   private processNextConnection(done: () => void) {
-    const connection = this.iterator.read();
+    const connection = this.connectionsIterator.read();
 
     if (connection) {
       if (connection.departureTime < this.query.minimumDepartureTime) {
-        this.iterator.close();
+        this.connectionsIterator.close();
         done();
         return;
       }
@@ -150,7 +154,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private maybeProcessNextConnection(done: () => void) {
-    if (!this.iterator.closed) {
+    if (!this.connectionsIterator.closed) {
       this.processNextConnection(done);
     }
   }

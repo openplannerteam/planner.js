@@ -5,13 +5,15 @@ export default async () => {
 
   const planner = new Planner();
 
-  // const roadOnlyResult = await planner.query({
-  //   roadOnly: true,
-  //   from: "http://irail.be/stations/NMBS/008896008", // Kortrijk
-  //   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-  // });
-//
-  // console.log(JSON.stringify(roadOnlyResult, null, "  "));
+  const roadOnlyResult = await planner.query({
+    roadOnly: true,
+    from: "http://irail.be/stations/NMBS/008896008", // Kortrijk
+    to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+  });
+
+  roadOnlyResult.each((path) => {
+    console.log(path);
+  });
 
   console.time("Public transport planner");
 
@@ -24,9 +26,10 @@ export default async () => {
   });
 
   console.timeEnd("Public transport planner");
-  for await (const path of publicTransportResult) {
+
+  publicTransportResult.each((path) => {
     console.log(path);
-  }
+  });
 
   return true;
 };

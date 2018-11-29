@@ -6,6 +6,7 @@ import IPath from "../../interfaces/IPath";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Iterators from "../../util/Iterators";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
@@ -53,10 +54,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
           [otherProp]: [possibleTarget as ILocation],
         });
 
-        const paths = [];
-        for await (const path of this.roadPlanner.plan(query)) {
-          paths.push(path);
-        }
+        const paths = await Iterators.toArray(await this.roadPlanner.plan(query));
 
         if (paths.length) {
 

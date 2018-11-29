@@ -1,5 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
+import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 import connections from "../../fetcher/connections/tests/connection-data";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
@@ -9,14 +10,15 @@ import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import TravelMode from "../../TravelMode";
+import Iterators from "../../util/Iterators";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import JourneyExtractorDefault from "./JourneyExtractorDefault";
 import PublicTransportPlannerCSAProfile from "./PublicTransportPlannerCSAProfile";
-import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 
 describe("[PublicTransportPlannerCSAProfile]", () => {
   describe("mock data", () => {
+    jest.setTimeout(100000);
     let result: IPath [];
 
     const query: IResolvedQuery = {
@@ -57,10 +59,8 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         journeyExtractor,
       );
 
-      result = [];
-      for await (const path of CSA.plan(query)) {
-        result.push(path);
-      }
+      const iterator = await CSA.plan(query);
+      result = await Iterators.toArray(iterator);
     });
 
     it("Correct departure and arrival stop", async () => {
@@ -127,10 +127,9 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       );
 
       const queryRunner = new QueryRunnerDefault(locationResolver, CSA, roadPlanner);
-      result = [];
-      for await (const path of queryRunner.run(query)) {
-        result.push(path);
-      }
+      const iterator = await queryRunner.run(query);
+
+      result = await Iterators.toArray(iterator);
     });
 
     it("Correct departure and arrival stop", () => {
