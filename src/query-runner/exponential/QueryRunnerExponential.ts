@@ -4,6 +4,7 @@ import Defaults from "../Defaults";
 import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
+import { DurationMs } from "../interfaces/units";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../types";
 import ILocationResolver from "./ILocationResolver";
@@ -11,9 +12,11 @@ import IQueryRunner from "./IQueryRunner";
 import IResolvedQuery from "./IResolvedQuery";
 
 @injectable()
-export default class QueryRunnerDefault implements IQueryRunner {
+export default class QueryRunnerExponential implements IQueryRunner {
   private locationResolver: ILocationResolver;
   private publicTransportPlanner: IPublicTransportPlanner;
+
+  private timespan: DurationMs = 15 * 60 * 1000; // fifteen minutes
 
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
@@ -24,15 +27,17 @@ export default class QueryRunnerDefault implements IQueryRunner {
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
-    const resolvedQuery: IResolvedQuery = await this.resolveQuery(query);
+    const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
-    if (resolvedQuery.publicTransportOnly) {
-      return this.publicTransportPlanner.plan(resolvedQuery);
+    if (baseQuery.publicTransportOnly) {
+      return this.publicTransportPlanner.plan(baseQuery);
 
     } else {
       return Promise.reject("Query not supported");
     }
   }
+
+  private async runSubquery()
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {
 
@@ -49,13 +54,13 @@ export default class QueryRunnerDefault implements IQueryRunner {
     }
   }
 
-  private async resolveQuery(query: IQuery): Promise<IResolvedQuery> {
+  private async resolveBaseQuery(query: IQuery): Promise<IResolvedQuery> {
     // tslint:disable:trailing-comma
     const {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumTransferDuration, maximumTransfers,
-      minimumDepartureTime, maximumArrivalTime,
+      minimumDepartureTime,
       ...other
     } = query;
     // tslint:enable:trailing-comma
@@ -63,16 +68,6 @@ export default class QueryRunnerDefault implements IQueryRunner {
     const resolvedQuery: IResolvedQuery = Object.assign({}, other);
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
-
-    if (maximumArrivalTime) {
-      resolvedQuery.maximumArrivalTime = maximumArrivalTime;
-
-    } else {
-      const newMaximumArrivalTime = new Date(resolvedQuery.minimumDepartureTime);
-      newMaximumArrivalTime.setHours(newMaximumArrivalTime.getHours() + 2);
-
-      resolvedQuery.maximumArrivalTime = newMaximumArrivalTime;
-    }
 
     resolvedQuery.from = await this.resolveEndpoint(from);
     resolvedQuery.to = await this.resolveEndpoint(to);
