@@ -1,5 +1,6 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
+import Context from "../../Context";
 import Defaults from "../../Defaults";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -19,13 +20,16 @@ export default class QueryRunnerExponential implements IQueryRunner {
   private publicTransportPlanner: IPublicTransportPlanner;
 
   private queryIterator: ExponentialQueryIterator;
+  private context: Context;
 
   constructor(
+    @inject(TYPES.Context) context: Context,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlanner) publicTransportPlanner: IPublicTransportPlanner,
   ) {
     this.locationResolver = locationResolver;
     this.publicTransportPlanner = publicTransportPlanner;
+    this.context = context;
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
@@ -43,7 +47,10 @@ export default class QueryRunnerExponential implements IQueryRunner {
   }
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    return this.publicTransportPlanner.plan(query);
+    // TODO investigate publicTransportPlanner
+    const planner = this.context.getContainer().get<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
+
+    return planner.plan(query);
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {

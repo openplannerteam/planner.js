@@ -41,11 +41,5 @@ export default async (logResults) => {
     }
   });
 
-  publicTransportResult.each((path) => {
-    if (logResults) {
-      console.log(path);
-    }
-  });
-
   return true;
 };
