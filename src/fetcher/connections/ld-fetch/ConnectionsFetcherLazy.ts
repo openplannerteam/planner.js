@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
 import TravelMode from "../../../TravelMode";
@@ -5,14 +6,14 @@ import TYPES from "../../../types";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
-import ConnectionsIteratorLDFetch from "./ConnectionsIteratorLDFetch";
+import ConnectionsIteratorLazy from "./ConnectionsIteratorLazy";
 
 /**
- * Wraps the [[ConnectionsIteratorLDFetch]] for use in a for-await-of statement
+ * Wraps the [[ConnectionsIteratorLazy]]
  * @implements IConnectionsFetcher
  */
 @injectable()
-export default class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
+export default class ConnectionsFetcherLazy implements IConnectionsFetcher {
 
   protected readonly ldFetch: LDFetch;
   protected config: IConnectionsFetcherConfig;
@@ -31,15 +32,8 @@ export default class ConnectionsFetcherLDFetch implements IConnectionsFetcher {
     this.accessUrl = accessUrl;
   }
 
-  /**
-   * Called by the semantics of the for-await-of statement.
-   */
-  public [Symbol.asyncIterator](): AsyncIterator<IConnection> {
-    return this.fetch();
-  }
-
-  public fetch(): AsyncIterator<IConnection> {
-    return new ConnectionsIteratorLDFetch(
+  public createIterator(): AsyncIterator<IConnection> {
+    return new ConnectionsIteratorLazy(
       this.accessUrl,
       this.travelMode,
       this.ldFetch,

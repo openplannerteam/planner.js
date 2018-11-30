@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Catalog from "../../Catalog";
 import TYPES, { ConnectionsFetcherFactory } from "../../types";
@@ -23,8 +24,8 @@ export default class ConnectionsProviderPassthrough implements IConnectionsProvi
     this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
   }
 
-  public [Symbol.asyncIterator](): AsyncIterator<IConnection> {
-    return this.connectionsFetcher[Symbol.asyncIterator]();
+  public createIterator(): AsyncIterator<IConnection> {
+    return this.connectionsFetcher.createIterator();
   }
 
   public setConfig(config: IConnectionsFetcherConfig): void {

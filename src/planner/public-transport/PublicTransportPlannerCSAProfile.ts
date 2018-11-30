@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
@@ -46,6 +47,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private gtfsTripByConnection = {};
 
   private query: IResolvedQuery;
+  private connectionsIterator: AsyncIterator<IConnection>;
 
   constructor(
     @inject(TYPES.ConnectionsProvider) connectionsProvider: IConnectionsProvider,
@@ -65,11 +67,11 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     this.journeyExtractor = journeyExtractor;
   }
 
-  public async* plan(query: IResolvedQuery): AsyncIterableIterator<IPath> {
+  public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     this.query = query;
     this.setBounds();
 
-    yield* this.calculateJourneys();
+    return this.calculateJourneys();
   }
 
   private setBounds() {
@@ -99,28 +101,68 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     });
   }
 
-  private async* calculateJourneys(): AsyncIterableIterator<IPath> {
+  private async calculateJourneys(): Promise<AsyncIterator<IPath>> {
     await this.initDurationToTargetByStop();
 
-    for await (const connection of this.connectionsProvider) {
+    this.connectionsIterator = this.connectionsProvider.createIterator();
+
+    const self = this;
+
+    return new Promise((resolve, reject) => {
+
+      const done = () => {
+        const resultIterator = self.journeyExtractor
+          .extractJourneys(
+            self.profilesByStop,
+            self.query,
+          );
+
+        resolve(resultIterator);
+      };
+
+      this.connectionsIterator.on("readable", () =>
+        self.processNextConnection(done),
+      );
+
+      this.connectionsIterator.on("end", () => done());
+
+    }) as Promise<AsyncIterator<IPath>>;
+  }
+
+  private processNextConnection(done: () => void) {
+    const connection = this.connectionsIterator.read();
+
+    if (connection) {
+      if (connection.arrivalTime > this.query.maximumArrivalTime) {
+        this.maybeProcessNextConnection(done);
+        return;
+      }
+
       if (connection.departureTime < this.query.minimumDepartureTime) {
-        break;
+        this.connectionsIterator.close();
+        done();
+        return;
       }
 
       this.discoverConnection(connection);
-      const earliestArrivalTime = this.calculateEarliestArrivalTime(connection);
 
+      const earliestArrivalTime = this.calculateEarliestArrivalTime(connection);
       this.updateEarliestArrivalByTrip(connection, earliestArrivalTime);
 
       if (!this.isDominated(connection, earliestArrivalTime)) {
-        await this.getFootpathsForDepartureStop(connection, earliestArrivalTime);
+        this.getFootpathsForDepartureStop(connection, earliestArrivalTime)
+          .then(() => this.maybeProcessNextConnection(done));
+
+      } else {
+        this.maybeProcessNextConnection(done);
       }
     }
+  }
 
-    yield* this.journeyExtractor.extractJourneys(
-      this.profilesByStop,
-      this.query,
-    );
+  private maybeProcessNextConnection(done: () => void) {
+    if (!this.connectionsIterator.closed) {
+      this.processNextConnection(done);
+    }
   }
 
   private discoverConnection(connection: IConnection) {
@@ -204,7 +246,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const tripIds = this.getTripIdsFromConnection(connection);
     const earliestArrivalTimeByTransfers: IArrivalTimeByTransfers = [];
 
-    for (let amountOfTransfers = 0 ; amountOfTransfers < this.query.maximumTransfers + 1; amountOfTransfers++) {
+    for (let amountOfTransfers = 0; amountOfTransfers < this.query.maximumTransfers + 1; amountOfTransfers++) {
       const earliestArrivalTime = earliestArrivalTimeByTransfers[amountOfTransfers];
       let minimumArrivalTime = earliestArrivalTime && earliestArrivalTime.arrivalTime;
 

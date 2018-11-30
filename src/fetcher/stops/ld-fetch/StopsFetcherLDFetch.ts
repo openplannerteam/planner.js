@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
 import { Triple } from "rdf-js";
 import TYPES from "../../../types";
-import { transformPredicate } from "../../helpers";
+import Rdf from "../../../util/Rdf";
 import IStop from "../IStop";
 import IStopsFetcher from "../IStopsFetcher";
 
@@ -77,7 +77,7 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
   }
 
   private transformPredicate(triple: Triple): Triple {
-    return transformPredicate({
+    return Rdf.transformPredicate({
       "http://xmlns.com/foaf/0.1/name": "name",
       "http://www.w3.org/2003/01/geo/wgs84_pos#lat": "latitude",
       "http://www.w3.org/2003/01/geo/wgs84_pos#long": "longitude",

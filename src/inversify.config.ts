@@ -5,7 +5,7 @@ import Context from "./Context";
 import ConnectionsProviderPassthrough from "./fetcher/connections/ConnectionsProviderPassthrough";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
-import ConnectionsFetcherLDFetch from "./fetcher/connections/ld-fetch/ConnectionsFetcherLDFetch";
+import ConnectionsFetcherLazy from "./fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
@@ -54,12 +54,12 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
 container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPassthrough).inSingletonScope();
-container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLDFetch);
+container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(
     (context: interfaces.Context) =>
       (accessUrl: string, travelMode: TravelMode) => {
-        const fetcher = context.container.get<ConnectionsFetcherLDFetch>(TYPES.ConnectionsFetcher);
+        const fetcher = context.container.get<ConnectionsFetcherLazy>(TYPES.ConnectionsFetcher);
 
         fetcher.setAccessUrl(accessUrl);
         fetcher.setTravelMode(travelMode);

@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import Context from "./Context";
 import IPath from "./interfaces/IPath";
 import IQuery from "./interfaces/IQuery";
@@ -31,9 +32,9 @@ export default class Planner {
   /**
    * Given an [[IQuery]], it will evaluate the query and eventually produce an [[IQueryResult]]
    * @param query An [[IQuery]] specifying a route planning query
-   * @returns An AsyncIterableIterator of [[IPath]]s
+   * @returns An AsyncIterator of [[IPath]]s
    */
-  public async* query(query: IQuery): AsyncIterableIterator<IPath> {
-    yield* this.queryRunner.run(query);
+  public async query(query: IQuery): Promise<AsyncIterator<IPath>> {
+    return this.queryRunner.run(query);
   }
 }

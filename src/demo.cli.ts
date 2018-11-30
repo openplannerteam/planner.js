@@ -7,7 +7,7 @@ const isDebugging = process && process.argv.includes("--debug");
     debugger;
   }
 
-  runDemo()
+  runDemo(true)
     .then(() => console.log("Success"))
     .catch((e) => console.error(e));
 })();

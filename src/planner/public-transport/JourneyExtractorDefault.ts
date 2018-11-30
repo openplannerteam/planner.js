@@ -1,3 +1,4 @@
+import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../fetcher/connections/IConnection";
 import IStop from "../../fetcher/stops/IStop";
@@ -8,6 +9,7 @@ import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TravelMode from "../../TravelMode";
 import TYPES from "../../types";
+import Iterators from "../../util/Iterators";
 import Path from "../Path";
 import IRoadPlanner from "../road/IRoadPlanner";
 import Step from "../Step";
@@ -56,10 +58,10 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
     this.initialReachableStopsFinder = initialReachableStopsFinder;
   }
 
-  public async* extractJourneys(
+  public async extractJourneys(
     profilesByStop: IProfilesByStop,
     query: IResolvedQuery,
-  ): AsyncIterableIterator<IPath> {
+  ): Promise<AsyncIterator<IPath>> {
     const filteredProfilesByStop: IProfilesByStop = ProfileUtil.filterInfinity(profilesByStop);
 
     const departureLocation: IStop = query.from[0] as IStop;
@@ -70,6 +72,8 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
       query.maximumTransferDuration,
       query.minimumWalkingSpeed,
     );
+
+    const paths = [];
 
     for (const reachableStop of reachableStops) {
       const departureStop: IStop = reachableStop.stop;
@@ -88,14 +92,14 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
 
             if (this.checkBestArrivalTime(transferProfile, departureStop, arrivalStop)) {
               try {
-                yield this.extractJourney(
+                paths.push(await this.extractJourney(
                   arrivalStop,
                   reachableStop,
                   profile,
                   amountOfTransfers,
                   filteredProfilesByStop,
                   query,
-                );
+                ));
 
                 this.setBestArrivalTime(departureStop, arrivalStop, transferProfile.arrivalTime);
               } catch (e) {
@@ -108,6 +112,8 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
         }
       }
     }
+
+    return new ArrayIterator<IPath>(paths);
   }
 
   private checkBestArrivalTime(
@@ -201,9 +207,10 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
               to: [to],
               minimumWalkingSpeed: query.minimumWalkingSpeed,
               maximumWalkingSpeed: query.maximumWalkingSpeed,
-            }).next();
+            });
 
-            const walkingPath = walkingResult.value;
+            // Get first path
+            const walkingPath: IPath = await Iterators.getFirst(walkingResult);
 
             if (walkingPath && walkingPath.steps[0] &&
               connection.departureTime.getTime() >= step.stopTime.getTime() +

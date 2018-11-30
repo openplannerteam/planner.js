@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { inject, injectable, named } from "inversify";
 import Defaults from "../Defaults";
 import ILocation from "../interfaces/ILocation";
@@ -26,17 +27,18 @@ export default class QueryRunnerDefault implements IQueryRunner {
     this.roadPlanner = roadPlanner;
   }
 
-  public async* run(query: IQuery): AsyncIterableIterator<IPath> {
+  public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
     const resolvedQuery: IResolvedQuery = await this.resolveQuery(query);
 
     if (resolvedQuery.roadOnly) {
-      yield* this.roadPlanner.plan(resolvedQuery);
+      return this.roadPlanner.plan(resolvedQuery);
+
     } else if (resolvedQuery.publicTransportOnly) {
-      yield* this.publicTransportPlanner.plan(resolvedQuery);
+      return this.publicTransportPlanner.plan(resolvedQuery);
+
     } else {
       return Promise.reject("Query not supported");
     }
-
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {

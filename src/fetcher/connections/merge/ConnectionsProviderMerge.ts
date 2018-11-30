@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { injectable, multiInject, tagged } from "inversify";
 import TYPES from "../../../types";
 import IConnection from "../IConnection";
@@ -8,6 +9,8 @@ import ConnectionsIteratorMerge from "./ConnectionsIteratorMerge";
 @injectable()
 export default class ConnectionsProviderMerge implements IConnectionsFetcher {
 
+  public createIterator: () => AsyncIterator<IConnection>;
+
   private config: IConnectionsFetcherConfig;
   private connectionsFetchers: IConnectionsFetcher[];
 
@@ -15,12 +18,6 @@ export default class ConnectionsProviderMerge implements IConnectionsFetcher {
     @multiInject(TYPES.ConnectionsFetcher) @tagged("type", "source") connectionsFetchers: IConnectionsFetcher[],
   ) {
     this.connectionsFetchers = connectionsFetchers;
-  }
-
-  public [Symbol.asyncIterator](): AsyncIterator<IConnection> {
-    const iterators = this.connectionsFetchers.map((fetcher) => fetcher[Symbol.asyncIterator]());
-
-    return new ConnectionsIteratorMerge(iterators, this.config);
   }
 
   public setConfig(config: IConnectionsFetcherConfig): void {

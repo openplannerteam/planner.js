@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
@@ -6,6 +7,7 @@ import IPath from "../../interfaces/IPath";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Iterators from "../../util/Iterators";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
@@ -53,29 +55,18 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
           [otherProp]: [possibleTarget as ILocation],
         });
 
-        const paths = [];
-        for await (const path of this.roadPlanner.plan(query)) {
-          paths.push(path);
-        }
+        const pathIterator = await this.roadPlanner.plan(query);
 
-        if (paths.length) {
+        const durationIterator: AsyncIterator<DurationMs> = pathIterator.map((path: IPath) =>
+          // Minimum speed is passed so sum max duration over all steps
+          path.steps.reduce((totalDuration: DurationMs, step) => totalDuration + step.duration.maximum, 0),
+        );
 
-          // tslint:disable-next-line:no-shadowed-variable
-          const shortestDuration = paths.reduce((shortestDuration: DurationMs, path: IPath) => {
-            // Minimum speed is passed so sum max duration over all steps
-            const duration = path.steps
-              .reduce((totalDuration: DurationMs, step) => totalDuration + step.duration.maximum, 0);
+        const sufficientlyShortDuration = await Iterators
+          .find(durationIterator, (duration: DurationMs) => duration < maximumDuration);
 
-            if (duration < shortestDuration) {
-              return duration;
-            }
-
-            return shortestDuration;
-          }, Number.POSITIVE_INFINITY);
-
-          if (shortestDuration < maximumDuration) {
-            reachableStops.push({stop: possibleTarget, duration: shortestDuration});
-          }
+        if (sufficientlyShortDuration) {
+          reachableStops.push({stop: possibleTarget, duration: sufficientlyShortDuration});
         }
       }
 

@@ -1,7 +1,9 @@
 import "jest";
 import LDFetch from "ldfetch";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import IPath from "../../interfaces/IPath";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
+import Iterators from "../../util/Iterators";
 import IRoadPlanner from "./IRoadPlanner";
 import RoadPlannerBirdsEye from "./RoadPlannerBirdsEye";
 
@@ -19,17 +21,14 @@ test("[RoadPlannerBirdsEye] distance between stops", async () => {
   const kortrijkLocation = await locationResolver.resolve({ id: "http://irail.be/stations/NMBS/008896008" });
   const ghentLocation = await locationResolver.resolve({ id: "http://irail.be/stations/NMBS/008892007" });
 
-  const iterator = planner.plan({
+  const iterator = await planner.plan({
     from: [kortrijkLocation], // Kortrijk
     to: [ghentLocation], // Ghent-Sint-Pieters,
     minimumWalkingSpeed: 3,
     maximumWalkingSpeed: 6,
   });
 
-  const result = [];
-  for await (const path of iterator) {
-    result.push(path);
-  }
+  const result: IPath[] = await Iterators.toArray(iterator);
 
   expect(result).toHaveLength(1);
 
