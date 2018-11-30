@@ -913,10 +913,10 @@ img { max-width: 100%; }
 			<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html" class="tsd-kind-icon">IConnections<wbr>Provider</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a>
+					<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a>
 				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-					<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#___asynciterator" class="tsd-kind-icon">__@async<wbr>Iterator</a>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a>
 				</li>
 			</ul>
 		</li>
@@ -937,15 +937,10 @@ img { max-width: 100%; }
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="tsd-signature-type">AsyncIterable</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span>
+					<span class="target">IConnectionsProvider</span>
 					<ul class="tsd-hierarchy">
 						<li>
-							<span class="target">IConnectionsProvider</span>
-							<ul class="tsd-hierarchy">
-								<li>
-									<a href="_fetcher_connections_iconnectionsfetcher_.iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a>
-								</li>
-							</ul>
+							<a href="_fetcher_connections_iconnectionsfetcher_.iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a>
 						</li>
 					</ul>
 				</li>
@@ -964,13 +959,8 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a></li>
-						</ul>
-					</section>
-					<section class="tsd-index-section tsd-is-inherited">
-						<h3>Methods</h3>
-						<ul class="tsd-index-list">
-							<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html#___asynciterator" class="tsd-kind-icon">__@async<wbr>Iterator</a></li>
 						</ul>
 					</section>
 				</div>
@@ -979,12 +969,37 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="createiterator" class="tsd-anchor"></a>
+				<h3>create<wbr>Iterator</h3>
+				<div class="tsd-signature tsd-kind-icon">create<wbr>Iterator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5975218/src/fetcher/connections/IConnectionsProvider.ts#L11">fetcher/connections/IConnectionsProvider.ts:11</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="setconfig" class="tsd-anchor"></a>
 				<h3>set<wbr>Config</h3>
 				<div class="tsd-signature tsd-kind-icon">set<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/6b7e235/src/fetcher/connections/IConnectionsProvider.ts#L10">fetcher/connections/IConnectionsProvider.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5975218/src/fetcher/connections/IConnectionsProvider.ts#L12">fetcher/connections/IConnectionsProvider.ts:12</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1008,27 +1023,6 @@ img { max-width: 100%; }
 						</li>
 					</ul>
 				</div>
-			</section>
-		</section>
-		<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
-			<h2>Methods</h2>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-				<a name="___asynciterator" class="tsd-anchor"></a>
-				<h3>__@async<wbr>Iterator</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">__@async<wbr>Iterator<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<p>Inherited from AsyncIterable.[Symbol.asyncIterator]</p>
-							<ul>
-								<li>Defined in /home/travis/build/openplannerteam/planner.js/node_modules/typescript/lib/lib.esnext.asynciterable.d.ts:39</li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="_fetcher_connections_iconnection_.iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
-					</li>
-				</ul>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
