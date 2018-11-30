@@ -97,13 +97,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     return new Promise((resolve, reject) => {
 
       const done = () => {
-        const resultIterator = self.journeyExtractor
-          .extractJourneys(
-            self.profilesByStop,
-            self.query,
-          );
-
-        resolve(resultIterator);
+        self.journeyExtractor.extractJourneys(self.profilesByStop, self.query)
+          .then((resultIterator) => {
+            resolve(resultIterator);
+          });
       };
 
       this.connectionsIterator.on("readable", () =>

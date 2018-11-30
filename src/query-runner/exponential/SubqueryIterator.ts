@@ -5,6 +5,7 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
   private callback: (query: Q) => Promise<AsyncIterator<R>>;
 
   private currentResultIterator: AsyncIterator<R>;
+  private currentResultPushed: number;
   private isLastResultIterator = false;
 
   constructor(queryIterator: AsyncIterator<Q>, run: (query: Q) => Promise<AsyncIterator<R>>) {
@@ -41,13 +42,21 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
     this.callback(subquery)
       .then((resultIterator: AsyncIterator<R>) => {
         self.currentResultIterator = resultIterator;
+        self.currentResultPushed = 0;
 
         self.currentResultIterator.once("end", () => {
+          delete self.currentResultIterator;
+
+          // Close if last iterator
           if (self.isLastResultIterator) {
             self.close();
+            done();
           }
 
-          delete self.currentResultIterator;
+          // Iterator was empty
+          if (self.currentResultPushed === 0) {
+            self._read(null, done);
+          }
         });
 
         this.pushItemsAsync(done);
@@ -75,6 +84,7 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
 
     while (item) {
       this._push(item);
+      this.currentResultPushed++;
       hasPushed = true;
 
       item = this.currentResultIterator.read();

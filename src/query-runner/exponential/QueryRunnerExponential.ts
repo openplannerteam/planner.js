@@ -1,22 +1,24 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
-import Defaults from "../Defaults";
-import ILocation from "../interfaces/ILocation";
-import IPath from "../interfaces/IPath";
-import IQuery from "../interfaces/IQuery";
-import { DurationMs } from "../interfaces/units";
-import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
-import TYPES from "../types";
-import ILocationResolver from "./ILocationResolver";
-import IQueryRunner from "./IQueryRunner";
-import IResolvedQuery from "./IResolvedQuery";
+import Defaults from "../../Defaults";
+import ILocation from "../../interfaces/ILocation";
+import IPath from "../../interfaces/IPath";
+import IQuery from "../../interfaces/IQuery";
+import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
+import TYPES from "../../types";
+import ILocationResolver from "../ILocationResolver";
+import IQueryRunner from "../IQueryRunner";
+import IResolvedQuery from "../IResolvedQuery";
+import ExponentialQueryIterator from "./ExponentialQueryIterator";
+import SubqueryIterator from "./SubqueryIterator";
 
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
+  public private;
   private locationResolver: ILocationResolver;
   private publicTransportPlanner: IPublicTransportPlanner;
 
-  private timespan: DurationMs = 15 * 60 * 1000; // fifteen minutes
+  private queryIterator: ExponentialQueryIterator;
 
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
@@ -30,14 +32,19 @@ export default class QueryRunnerExponential implements IQueryRunner {
     const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
     if (baseQuery.publicTransportOnly) {
-      return this.publicTransportPlanner.plan(baseQuery);
+
+      this.queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
+
+      return new SubqueryIterator<IResolvedQuery, IPath>(this.queryIterator, this.runSubquery.bind(this));
 
     } else {
       return Promise.reject("Query not supported");
     }
   }
 
-  private async runSubquery()
+  private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+    return this.publicTransportPlanner.plan(query);
+  }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {
 

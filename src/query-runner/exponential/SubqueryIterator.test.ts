@@ -1,4 +1,4 @@
-import { ArrayIterator, AsyncIterator } from "asynciterator";
+import { ArrayIterator } from "asynciterator";
 import "jest";
 import SubqueryIterator from "./SubqueryIterator";
 
@@ -15,10 +15,12 @@ const subqueryIterator = new SubqueryIterator<number, string>(queryIterator, (nu
 });
 
 test("[SubqueryIterator]", (done) => {
-  jest.setTimeout(100000);
+
+  let current = 0;
+  const expected = ["a", "b", "b", "c", "c", "c"];
 
   subqueryIterator.each((str) => {
-    console.log(str);
+    expect(expected[current++]).toBe(str);
   });
 
   subqueryIterator.on("end", () => done());
