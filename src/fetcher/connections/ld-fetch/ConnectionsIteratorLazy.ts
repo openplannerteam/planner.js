@@ -7,6 +7,13 @@ import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 import HydraPageParser from "./HydraPageParser";
 import IHydraPage from "./IHydraPage";
 
+/**
+ * Base class for fetching linked connections with LDFetch and letting the caller iterate over them asynchronously
+ * through implementing the AsyncIterator protocol.
+ * LDFetch returns documents as an array of RDF triples.
+ * The meta Hydra triples are used for paginating to the next or previous page.
+ * The triples that describe linked connections get deserialized to instances of [[IConnection]]
+ */
 export default class ConnectionsIteratorLazy extends BufferedIterator<IConnection> {
   private readonly baseUrl: string;
   private readonly travelMode: TravelMode;
@@ -59,8 +66,6 @@ export default class ConnectionsIteratorLazy extends BufferedIterator<IConnectio
   }
 
   private async loadPage(url: string) {
-    console.log("Loading", url);
-
     await this.ldFetch.get(url)
       .then((response) => {
 

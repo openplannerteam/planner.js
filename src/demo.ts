@@ -1,7 +1,7 @@
 import Planner from "./index";
 import Units from "./util/Units";
 
-export default async () => {
+export default async (logResults) => {
 
   const planner = new Planner();
 
@@ -12,7 +12,9 @@ export default async () => {
   });
 
   roadOnlyResult.each((path) => {
-    console.log(path);
+    if (logResults) {
+      console.log(path);
+    }
   });
 
   console.time("Public transport planner");
@@ -28,7 +30,9 @@ export default async () => {
   console.timeEnd("Public transport planner");
 
   publicTransportResult.each((path) => {
-    console.log(path);
+    if (logResults) {
+      console.log(path);
+    }
   });
 
   return true;

@@ -9,6 +9,7 @@ import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TravelMode from "../../TravelMode";
 import TYPES from "../../types";
+import Iterators from "../../util/Iterators";
 import Path from "../Path";
 import IRoadPlanner from "../road/IRoadPlanner";
 import Step from "../Step";
@@ -21,7 +22,6 @@ import Profile from "./CSA/data-structure/stops/Profile";
 import ProfileUtil from "./CSA/util/ProfileUtil";
 import IJourneyExtractor from "./IJourneyExtractor";
 import JourneyExtractionPhase from "./JourneyExtractionPhase";
-import Iterators from "../../util/Iterators";
 
 /**
  * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
