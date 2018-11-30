@@ -50,7 +50,6 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
           // Close if last iterator
           if (self.isLastResultIterator) {
             self.close();
-            done();
           }
 
           // Iterator was empty
