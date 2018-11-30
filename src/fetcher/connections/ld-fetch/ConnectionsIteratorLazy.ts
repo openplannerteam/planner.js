@@ -90,10 +90,6 @@ export default class ConnectionsIteratorLazy extends BufferedIterator<IConnectio
       if (this.config.backward) {
         let c = connections.length - 1;
 
-        while (c >= 0 && connections[c].arrivalTime > this.config.upperBoundDate) {
-          c--;
-        }
-
         while (c >= 0) {
           this._push(connections[c]);
           c--;

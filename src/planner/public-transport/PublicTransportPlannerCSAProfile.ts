@@ -133,6 +133,11 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const connection = this.connectionsIterator.read();
 
     if (connection) {
+      if (connection.arrivalTime > this.query.maximumArrivalTime) {
+        this.maybeProcessNextConnection(done);
+        return;
+      }
+
       if (connection.departureTime < this.query.minimumDepartureTime) {
         this.connectionsIterator.close();
         done();
@@ -241,7 +246,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const tripIds = this.getTripIdsFromConnection(connection);
     const earliestArrivalTimeByTransfers: IArrivalTimeByTransfers = [];
 
-    for (let amountOfTransfers = 0 ; amountOfTransfers < this.query.maximumTransfers + 1; amountOfTransfers++) {
+    for (let amountOfTransfers = 0; amountOfTransfers < this.query.maximumTransfers + 1; amountOfTransfers++) {
       const earliestArrivalTime = earliestArrivalTimeByTransfers[amountOfTransfers];
       let minimumArrivalTime = earliestArrivalTime && earliestArrivalTime.arrivalTime;
 
