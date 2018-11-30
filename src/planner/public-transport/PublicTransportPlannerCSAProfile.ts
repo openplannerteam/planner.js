@@ -75,24 +75,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private setBounds() {
-    let upperBoundDate;
-    let lowerBoundDate;
-
-    if (this.query.minimumDepartureTime) {
-      lowerBoundDate = this.query.minimumDepartureTime;
-    } else {
-      lowerBoundDate = new Date();
-    }
-
-    if (this.query.maximumArrivalTime) {
-      upperBoundDate = this.query.maximumArrivalTime;
-    } else {
-      upperBoundDate = new Date(lowerBoundDate);
-      upperBoundDate.setHours(upperBoundDate.getHours() + 2);
-    }
-
-    this.query.maximumArrivalTime = upperBoundDate;
-    this.query.minimumDepartureTime = lowerBoundDate;
+    const {
+      minimumDepartureTime: lowerBoundDate,
+      maximumArrivalTime: upperBoundDate,
+    } = this.query;
 
     this.connectionsProvider.setConfig({
       backward: true,

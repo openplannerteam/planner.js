@@ -62,11 +62,23 @@ export default class QueryRunnerDefault implements IQueryRunner {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumTransferDuration, maximumTransfers,
+      minimumDepartureTime, maximumArrivalTime,
       ...other
     } = query;
     // tslint:enable:trailing-comma
 
     const resolvedQuery: IResolvedQuery = Object.assign({}, other);
+
+    resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
+
+    if (maximumArrivalTime) {
+      resolvedQuery.maximumArrivalTime = maximumArrivalTime;
+    } else {
+      const newMaximumArrivalTime = new Date(resolvedQuery.minimumDepartureTime);
+      newMaximumArrivalTime.setHours(newMaximumArrivalTime.getHours() + 2);
+
+      resolvedQuery.maximumArrivalTime = newMaximumArrivalTime;
+    }
 
     resolvedQuery.from = await this.resolveEndpoint(from);
     resolvedQuery.to = await this.resolveEndpoint(to);
