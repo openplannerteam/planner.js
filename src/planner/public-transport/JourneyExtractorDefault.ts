@@ -190,6 +190,10 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
       const exitConnection: IConnection = currentTransferProfile.exitConnection;
 
       const step: IStep = Step.createFromConnections(enterConnection, exitConnection);
+
+      step.startLocation = await this.locationResolver.resolve(step.startLocation.id);
+      step.stopLocation = await this.locationResolver.resolve(step.stopLocation.id);
+
       path.addStep(step);
 
       remainingTransfers--;
