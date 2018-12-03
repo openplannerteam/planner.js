@@ -82,9 +82,16 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   );
 
 // Init catalog
+// const catalog = new Catalog();
+// catalog.addStopsFetcher("http://irail.be/stations/NMBS/", "https://irail.be/stations/NMBS");
+// catalog.addConnectionsFetcher("https://graph.irail.be/sncb/connections", TravelMode.Train);
+
 const catalog = new Catalog();
-catalog.addStopsFetcher("http://irail.be/stations/NMBS/", "https://irail.be/stations/NMBS");
-catalog.addConnectionsFetcher("https://graph.irail.be/sncb/connections", TravelMode.Train);
+catalog.addStopsFetcher(
+  "https://data.delijn.be/stops/",
+  "https://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops",
+);
+catalog.addConnectionsFetcher("https://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/connections", TravelMode.Bus);
 
 container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalog);
 
