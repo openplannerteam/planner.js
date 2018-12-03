@@ -11,6 +11,7 @@ import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
+import FilterUniqueIterator from "./FilterUniqueIterator";
 import SubqueryIterator from "./SubqueryIterator";
 
 @injectable()
@@ -19,7 +20,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
   private locationResolver: ILocationResolver;
   private publicTransportPlanner: IPublicTransportPlanner;
 
-  private queryIterator: ExponentialQueryIterator;
   private context: Context;
 
   constructor(
@@ -37,9 +37,10 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
     if (baseQuery.publicTransportOnly) {
 
-      this.queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
+      const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
+      const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(queryIterator, this.runSubquery.bind(this));
 
-      return new SubqueryIterator<IResolvedQuery, IPath>(this.queryIterator, this.runSubquery.bind(this));
+      return new FilterUniqueIterator(subqueryIterator);
 
     } else {
       return Promise.reject("Query not supported");

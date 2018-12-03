@@ -46,6 +46,26 @@ export default class Step implements IStep {
     );
   }
 
+  public static compareEquals(step: IStep, otherStep: IStep): boolean {
+    if (otherStep.travelMode !== step.travelMode) {
+      return false;
+    }
+
+    if (otherStep.travelMode === TravelMode.Train || otherStep.travelMode === TravelMode.Bus) {
+      return otherStep.enterConnectionId === step.enterConnectionId &&
+        otherStep.exitConnectionId === step.exitConnectionId;
+    }
+
+    if (otherStep.travelMode === TravelMode.Walking) {
+      return Step.compareLocations(otherStep.startLocation, step.startLocation) &&
+        Step.compareLocations(otherStep.stopLocation, step.stopLocation);
+    }
+  }
+
+  private static compareLocations(a: ILocation, b: ILocation): boolean {
+    return a.id === b.id && a.longitude === b.longitude && a.latitude === b.latitude;
+  }
+
   public distance: DistanceM;
   public duration: IProbabilisticValue<DurationMs>;
   public startLocation: ILocation;
