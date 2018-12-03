@@ -87,8 +87,8 @@
                 </p>
                 <p>
                     Right now, there are two types of data, so there are two types of providers:
-                    <a href="code/interfaces/_fetcher_connections_iconnectionsprovider_.iconnectionsprovider.html">connections providers</a> and
-                    <a href="code/interfaces/_fetcher_stops_istopsprovider_.istopsprovider.html">stops providers</a>
+                    <a href="code/interfaces/iconnectionsprovider.html">connections providers</a> and
+                    <a href="code/interfaces/istopsprovider.html">stops providers</a>
                 </p>
                 <h4>Fetchers</h4>
                 <p>
@@ -99,15 +99,15 @@
                 </p>
                 <p>
                     Right now, there are two types of data, so there are two types of fetchers:
-                    <a href="code/interfaces/_fetcher_connections_iconnectionsfetcher_.iconnectionsfetcher.html">connections fetchers</a> and
-                    <a href="code/interfaces/_fetcher_stops_istopsprovider_.istopsprovider.html">stops fetchers</a>
+                    <a href="code/interfaces/iconnectionsfetcher.html">connections fetchers</a> and
+                    <a href="code/interfaces/istopsprovider.html">stops fetchers</a>
                 </p>
                 <h4>Planners</h4>
                 <p>These represent the core algorithms of this library. There are
-                    <a href="code/interfaces/_planner_road_iroadplanner_.iroadplanner.html">road planners</a> and
-                    <a href="code/interfaces/_planner_public_transport_ipublictransportplanner_.ipublictransportplanner.html">public-transport planners</a>.
+                    <a href="code/interfaces/iroadplanner.html">road planners</a> and
+                    <a href="code/interfaces/ipublictransportplanner.html">public-transport planners</a>.
                     Additionally, there are
-                    <a href="http://localhost:63342/planner.js/docs/code/interfaces/_fetcher_stops_istopsfetcher_.istopsfetcher.html">reachable stops finders</a>,
+                    <a href="code/interfaces/ireachablestopsfinder.html">reachable stops finders</a>,
                     which are used in certain steps of public-transport planner algorithms
                 </p>
 
@@ -120,20 +120,56 @@
                     If you bundle a different dependencies container with your Planner,
                     your specific Planner will be able to act differently.
                 </p>
+                <h4>Phases</h4>
                 <p>
                     To allow maximum flexibility, some algorithms allow injecting multiple implementations of the same interface,
-                    dependening on the <b>phase</b> of the algorithm. For example:
+                    depending on the <b>phase</b> of the algorithm. For example:
                 </p>
                 <pre><code class="typescript">container.bind&lt;IJourneyExtractor&gt;(TYPES.JourneyExtractor).to(JourneyExtractorDefault);
 container.bind&lt;IRoadPlanner&gt;(TYPES.RoadPlanner).to(RoadPlannerBirdsEye).whenTargetTagged(&quot;phase&quot;, JourneyExtractionPhase.Initial);
 container.bind&lt;IRoadPlanner&gt;(TYPES.RoadPlanner).to(RoadPlannerBirdsEye).whenTargetTagged(&quot;phase&quot;, JourneyExtractionPhase.Transfer);
 container.bind&lt;IRoadPlanner&gt;(TYPES.RoadPlanner).to(RoadPlannerBirdsEye).whenTargetTagged(&quot;phase&quot;, JourneyExtractionPhase.Final);</code></pre>
                 <p>
-                    This example is useless right now, because only one road planner is implemented
+                    This example is pointless right now, because only one road planner is implemented
+                </p>
+                <h4>Catalog</h4>
+                <p>
+                    Each container should have a Catalog which holds the access URLs (and other meta data) of all data sources.
+                    For example, a planner that should only plan NMBS routes could have this catalog:
+                </p>
+                <pre><code class="typescript">const catalog = new Catalog();
+catalog.addStopsFetcher(&quot;http://irail.be/stations/NMBS/&quot;, &quot;https://irail.be/stations/NMBS&quot;);
+catalog.addConnectionsFetcher(&quot;https://graph.irail.be/sncb/connections&quot;, TravelMode.Train);
+
+container.bind&lt;Catalog&gt;(TYPES.Catalog).toConstantValue(catalog);</code></pre>
+                <p></p>
+                <h4>Factories</h4>
+                <p>
+                    Providers create all the necessary fetchers based on the data sources configured in the catalog.
+                    Factories form the glue between all these parts: they create a fetcher based on a catalog entry on
+                    behalf of a provider. <b>Warning: subject to change</b>
                 </p>
                 <p>
-                    E.g., one could make a dependency container specifically for shared bikes and public transport.
-                    Therefore, we would need to bind different classes to the Planner: //TODO
+                    For example:
+                </p>
+                <pre><code class="typescript">container.bind&lt;IConnectionsProvider&gt;(TYPES.ConnectionsProvider).to(ConnectionsProviderPassthrough).inSingletonScope();
+container.bind&lt;IConnectionsFetcher&gt;(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
+container.bind&lt;interfaces.Factory&lt;IConnectionsFetcher&gt;&gt;(TYPES.ConnectionsFetcherFactory)
+  .toFactory&lt;IConnectionsFetcher&gt;(
+    (context: interfaces.Context) =&gt;
+      (accessUrl: string, travelMode: TravelMode) =&gt; {
+        const fetcher = context.container.get&lt;ConnectionsFetcherLazy&gt;(TYPES.ConnectionsFetcher);
+
+        fetcher.setAccessUrl(accessUrl);
+        fetcher.setTravelMode(travelMode);
+
+        return fetcher;
+      },
+  );</code></pre>
+                <p></p>
+                <h4>Possibilities</h4>
+                <p>
+                    One could make a dependency container specifically for shared bikes and public transport.
                 </p>
                 <p>
                     Another example would be to create a dependency container for public transport systems only.
