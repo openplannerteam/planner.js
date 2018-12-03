@@ -11,4 +11,6 @@ export default interface IStep {
   stopTime?: Date;
   duration: IProbabilisticValue<DurationMs>;
   distance?: DistanceM;
+  enterConnectionId?: string;
+  exitConnectionId?: string;
 }

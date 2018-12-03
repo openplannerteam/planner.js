@@ -89,6 +89,11 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
 
           for (let amountOfTransfers = 0; amountOfTransfers < profile.transferProfiles.length; amountOfTransfers++) {
             const transferProfile = profile.transferProfiles[amountOfTransfers];
+            const enterStop = transferProfile.enterConnection && transferProfile.enterConnection.departureStop;
+
+            if (enterStop !== departureStop.id) {
+              continue;
+            }
 
             if (this.checkBestArrivalTime(transferProfile, departureStop, arrivalStop)) {
               try {

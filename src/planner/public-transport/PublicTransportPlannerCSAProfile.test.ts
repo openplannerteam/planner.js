@@ -66,7 +66,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         result = await Iterators.toArray(iterator);
       });
 
-      it("Correct departure and arrival stop", async () => {
+      it("Correct departure and arrival stop", () => {
         expect(result).toBeDefined();
 
         for (const path of result) {
