@@ -34,7 +34,7 @@ export default async (logResults) => {
   publicTransportResult.on("readable", () => {
     let path = publicTransportResult.read();
 
-    while (path && i < 20) {
+    while (path && i < 5) {
       console.log(i++, path);
 
       path = publicTransportResult.read();

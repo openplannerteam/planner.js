@@ -73,7 +73,7 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
       query.minimumWalkingSpeed,
     );
 
-    const paths = [];
+    const paths: IPath[] = [];
 
     for (const reachableStop of reachableStops) {
       const departureStop: IStop = reachableStop.stop;
@@ -118,7 +118,7 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
       }
     }
 
-    return new ArrayIterator<IPath>(paths);
+    return new ArrayIterator<IPath>(paths.reverse());
   }
 
   private checkBestArrivalTime(
