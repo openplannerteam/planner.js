@@ -925,21 +925,28 @@ img { max-width: 100%; }
 <span class="hljs-keyword">const</span> Planner = <span class="hljs-built_in">require</span>(<span class="hljs-string">'plannerjs'</span>).default;</code></pre>
 			<p>Use it in both environments:</p>
 			<pre><code class="language-javascript"><span class="hljs-keyword">const</span> planner = <span class="hljs-keyword">new</span> Planner();
-  planner.query({
-    <span class="hljs-attr">publicTransportOnly</span>: <span class="hljs-literal">true</span>,
-    <span class="hljs-attr">from</span>: <span class="hljs-string">"http://irail.be/stations/NMBS/008896925"</span>, <span class="hljs-comment">// Ingelmunster</span>
-    to: <span class="hljs-string">"http://irail.be/stations/NMBS/008892007"</span>, <span class="hljs-comment">// Ghent-Sint-Pieters</span>
-    minimumDepartureTime: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(),
-    <span class="hljs-attr">maximumTransferDuration</span>: <span class="hljs-number">30</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 30 minutes</span>
-  }).then(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
-      <span class="hljs-built_in">console</span>.log(result);
-      <span class="hljs-keyword">if</span>(result &amp;&amp; result.paths) {
-        alert(<span class="hljs-string">'Found '</span> + result.paths.length + <span class="hljs-string">' paths'</span>);
-      }
-    })
-    .catch(<span class="hljs-function">(<span class="hljs-params">reason</span>) =&gt;</span> {
-      <span class="hljs-built_in">console</span>.error(reason);
-    });</code></pre>
+planner.query({
+  <span class="hljs-attr">publicTransportOnly</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">from</span>: <span class="hljs-string">"http://irail.be/stations/NMBS/008812005"</span>, <span class="hljs-comment">// Brussels North</span>
+  to: <span class="hljs-string">"http://irail.be/stations/NMBS/008892007"</span>, <span class="hljs-comment">// Ghent-Sint-Pieters</span>
+  minimumDepartureTime: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(),
+  <span class="hljs-attr">maximumTransferDuration</span>: <span class="hljs-number">30</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>, <span class="hljs-comment">// 30 minutes</span>
+}).then(<span class="hljs-function">(<span class="hljs-params">publicTransportResult</span>) =&gt;</span> {
+  <span class="hljs-keyword">let</span> amountOfResults = <span class="hljs-number">0</span>;
+
+  publicTransportResult.on(<span class="hljs-string">"readable"</span>, () =&gt; {
+    <span class="hljs-keyword">let</span> path = publicTransportResult.read();
+
+    <span class="hljs-keyword">while</span> (path &amp;&amp; amountOfResults &lt; <span class="hljs-number">15</span>) {
+      <span class="hljs-comment">// do something with path;</span>
+
+      amountOfResults++;
+      path = publicTransportResult.read();
+    }
+  });
+}).catch(<span class="hljs-function">(<span class="hljs-params">reason</span>) =&gt;</span> {
+  <span class="hljs-built_in">console</span>.error(reason);
+});</code></pre>
 			<h2 id="documentation">Documentation</h2>
 			<p>For further instructions, follow the documentation at <a href="https://openplannerteam.github.io/planner.js/">https://openplannerteam.github.io/planner.js/</a></p>
 			<h2 id="developing">Developing</h2>
