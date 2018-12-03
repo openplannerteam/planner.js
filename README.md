@@ -27,17 +27,8 @@ planner.query({
   minimumDepartureTime: new Date(),
   maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
 }).then((publicTransportResult) => {
-  let amountOfResults = 0;
-
-  publicTransportResult.on("readable", () => {
-    let path = publicTransportResult.read();
-
-    while (path && amountOfResults < 15) {
-      // do something with path;
-
-      amountOfResults++;
-      path = publicTransportResult.read();
-    }
+  publicTransportResult.take(15).on('data', (path) => {
+   console.log(path);
   });
 }).catch((reason) => {
   console.error(reason);
