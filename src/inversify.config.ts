@@ -20,6 +20,7 @@ import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
 import ReachableStopsSearchPhase from "./planner/stops/ReachableStopsSearchPhase";
+import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import LocationResolverDefault from "./query-runner/LocationResolverDefault";
@@ -29,7 +30,7 @@ import TYPES from "./types";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
-container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
+container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDefault);
 
 container.bind<IRoadPlanner>(TYPES.RoadPlanner)

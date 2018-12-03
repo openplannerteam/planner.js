@@ -64,17 +64,17 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
         const iterator = await CSA.plan(query);
         result = await Iterators.toArray(iterator);
+      });
 
-        it("Correct departure and arrival stop", async () => {
-          expect(result).toBeDefined();
+      it("Correct departure and arrival stop", async () => {
+        expect(result).toBeDefined();
 
-          for (const path of result) {
-            expect(path.steps).toBeDefined();
-            expect(path.steps[0]).toBeDefined();
-            expect(query.from.map((from) => from.id)).toContain(path.steps[0].startLocation.id);
-            expect(query.to.map((to) => to.id)).toContain(path.steps[path.steps.length - 1].stopLocation.id);
-          }
-        });
+        for (const path of result) {
+          expect(path.steps).toBeDefined();
+          expect(path.steps[0]).toBeDefined();
+          expect(query.from.map((from) => from.id)).toContain(path.steps[0].startLocation.id);
+          expect(query.to.map((to) => to.id)).toContain(path.steps[path.steps.length - 1].stopLocation.id);
+        }
       });
     });
 
@@ -251,7 +251,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
           journeyExtractor,
         );
 
-        const queryRunner = new QueryRunnerDefault(locationResolver, CSA, roadPlanner);
+        const queryRunner = new QueryRunnerDefault(locationResolver, CSA);
         const iterator = await queryRunner.run(query);
 
         result = await Iterators.toArray(iterator);
@@ -349,7 +349,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
           journeyExtractor,
         );
 
-        const queryRunner = new QueryRunnerDefault(locationResolver, CSA, roadPlanner);
+        const queryRunner = new QueryRunnerDefault(locationResolver, CSA);
         const iterator = await queryRunner.run(query);
 
         result = await Iterators.toArray(iterator);

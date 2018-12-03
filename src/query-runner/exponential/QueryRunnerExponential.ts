@@ -1,37 +1,56 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
-import Defaults from "../Defaults";
-import ILocation from "../interfaces/ILocation";
-import IPath from "../interfaces/IPath";
-import IQuery from "../interfaces/IQuery";
-import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
-import TYPES from "../types";
-import ILocationResolver from "./ILocationResolver";
-import IQueryRunner from "./IQueryRunner";
-import IResolvedQuery from "./IResolvedQuery";
+import Context from "../../Context";
+import Defaults from "../../Defaults";
+import ILocation from "../../interfaces/ILocation";
+import IPath from "../../interfaces/IPath";
+import IQuery from "../../interfaces/IQuery";
+import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
+import TYPES from "../../types";
+import ILocationResolver from "../ILocationResolver";
+import IQueryRunner from "../IQueryRunner";
+import IResolvedQuery from "../IResolvedQuery";
+import ExponentialQueryIterator from "./ExponentialQueryIterator";
+import SubqueryIterator from "./SubqueryIterator";
 
 @injectable()
-export default class QueryRunnerDefault implements IQueryRunner {
+export default class QueryRunnerExponential implements IQueryRunner {
+  public private;
   private locationResolver: ILocationResolver;
   private publicTransportPlanner: IPublicTransportPlanner;
 
+  private queryIterator: ExponentialQueryIterator;
+  private context: Context;
+
   constructor(
+    @inject(TYPES.Context) context: Context,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlanner) publicTransportPlanner: IPublicTransportPlanner,
   ) {
     this.locationResolver = locationResolver;
     this.publicTransportPlanner = publicTransportPlanner;
+    this.context = context;
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
-    const resolvedQuery: IResolvedQuery = await this.resolveQuery(query);
+    const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
-    if (resolvedQuery.publicTransportOnly) {
-      return this.publicTransportPlanner.plan(resolvedQuery);
+    if (baseQuery.publicTransportOnly) {
+
+      this.queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
+
+      return new SubqueryIterator<IResolvedQuery, IPath>(this.queryIterator, this.runSubquery.bind(this));
 
     } else {
       return Promise.reject("Query not supported");
     }
+  }
+
+  private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+    // TODO investigate publicTransportPlanner
+    const planner = this.context.getContainer().get<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
+
+    return planner.plan(query);
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {
@@ -49,13 +68,13 @@ export default class QueryRunnerDefault implements IQueryRunner {
     }
   }
 
-  private async resolveQuery(query: IQuery): Promise<IResolvedQuery> {
+  private async resolveBaseQuery(query: IQuery): Promise<IResolvedQuery> {
     // tslint:disable:trailing-comma
     const {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumTransferDuration, maximumTransfers,
-      minimumDepartureTime, maximumArrivalTime,
+      minimumDepartureTime,
       ...other
     } = query;
     // tslint:enable:trailing-comma
@@ -63,16 +82,6 @@ export default class QueryRunnerDefault implements IQueryRunner {
     const resolvedQuery: IResolvedQuery = Object.assign({}, other);
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
-
-    if (maximumArrivalTime) {
-      resolvedQuery.maximumArrivalTime = maximumArrivalTime;
-
-    } else {
-      const newMaximumArrivalTime = new Date(resolvedQuery.minimumDepartureTime);
-      newMaximumArrivalTime.setHours(newMaximumArrivalTime.getHours() + 2);
-
-      resolvedQuery.maximumArrivalTime = newMaximumArrivalTime;
-    }
 
     resolvedQuery.from = await this.resolveEndpoint(from);
     resolvedQuery.to = await this.resolveEndpoint(to);
