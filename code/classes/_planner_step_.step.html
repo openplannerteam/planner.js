@@ -922,6 +922,12 @@ img { max-width: 100%; }
 					<a href="_planner_step_.step.html#duration" class="tsd-kind-icon">duration</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
+					<a href="_planner_step_.step.html#enterconnectionid" class="tsd-kind-icon">enter<wbr>Connection<wbr>Id</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class">
+					<a href="_planner_step_.step.html#exitconnectionid" class="tsd-kind-icon">exit<wbr>Connection<wbr>Id</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class">
 					<a href="_planner_step_.step.html#startlocation" class="tsd-kind-icon">start<wbr>Location</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -977,6 +983,8 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="_planner_step_.step.html#distance" class="tsd-kind-icon">distance</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="_planner_step_.step.html#duration" class="tsd-kind-icon">duration</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="_planner_step_.step.html#enterconnectionid" class="tsd-kind-icon">enter<wbr>Connection<wbr>Id</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="_planner_step_.step.html#exitconnectionid" class="tsd-kind-icon">exit<wbr>Connection<wbr>Id</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="_planner_step_.step.html#startlocation" class="tsd-kind-icon">start<wbr>Location</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="_planner_step_.step.html#starttime" class="tsd-kind-icon">start<wbr>Time</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="_planner_step_.step.html#stoplocation" class="tsd-kind-icon">stop<wbr>Location</a></li>
@@ -1000,13 +1008,13 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Step<span class="tsd-signature-symbol">(</span>startLocation<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, stopLocation<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, travelMode<span class="tsd-signature-symbol">: </span><a href="../enums/_travelmode_.travelmode.html" class="tsd-signature-type">TravelMode</a>, duration<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_iprobabilisticvalue_.iprobabilisticvalue.html" class="tsd-signature-type">IProbabilisticValue</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a><span class="tsd-signature-symbol">&gt;</span>, startTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Date</span>, stopTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Date</span>, distance<span class="tsd-signature-symbol">?: </span><a href="../modules/_interfaces_units_.html#distancem" class="tsd-signature-type">DistanceM</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_planner_step_.step.html" class="tsd-signature-type">Step</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Step<span class="tsd-signature-symbol">(</span>startLocation<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, stopLocation<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_ilocation_.ilocation.html" class="tsd-signature-type">ILocation</a>, travelMode<span class="tsd-signature-symbol">: </span><a href="../enums/_travelmode_.travelmode.html" class="tsd-signature-type">TravelMode</a>, duration<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_iprobabilisticvalue_.iprobabilisticvalue.html" class="tsd-signature-type">IProbabilisticValue</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_interfaces_units_.html#durationms" class="tsd-signature-type">DurationMs</a><span class="tsd-signature-symbol">&gt;</span>, startTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Date</span>, stopTime<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Date</span>, distance<span class="tsd-signature-symbol">?: </span><a href="../modules/_interfaces_units_.html#distancem" class="tsd-signature-type">DistanceM</a>, enterConnectionId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, exitConnectionId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_planner_step_.step.html" class="tsd-signature-type">Step</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L52">planner/Step.ts:52</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L57">planner/Step.ts:57</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1032,6 +1040,12 @@ img { max-width: 100%; }
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> distance: <a href="../modules/_interfaces_units_.html#distancem" class="tsd-signature-type">DistanceM</a></h5>
 							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> enterConnectionId: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> exitConnectionId: <span class="tsd-signature-type">string</span></h5>
+							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="_planner_step_.step.html" class="tsd-signature-type">Step</a></h4>
 					</li>
@@ -1047,7 +1061,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#distance">distance</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L46">planner/Step.ts:46</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L49">planner/Step.ts:49</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1058,7 +1072,29 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#duration">duration</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L47">planner/Step.ts:47</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L50">planner/Step.ts:50</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<a name="enterconnectionid" class="tsd-anchor"></a>
+				<h3>enter<wbr>Connection<wbr>Id</h3>
+				<div class="tsd-signature tsd-kind-icon">enter<wbr>Connection<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#enterconnectionid">enterConnectionId</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L56">planner/Step.ts:56</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<a name="exitconnectionid" class="tsd-anchor"></a>
+				<h3>exit<wbr>Connection<wbr>Id</h3>
+				<div class="tsd-signature tsd-kind-icon">exit<wbr>Connection<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#exitconnectionid">exitConnectionId</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L57">planner/Step.ts:57</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1069,7 +1105,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#startlocation">startLocation</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L48">planner/Step.ts:48</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L51">planner/Step.ts:51</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1080,7 +1116,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#starttime">startTime</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L49">planner/Step.ts:49</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L52">planner/Step.ts:52</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1091,7 +1127,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#stoplocation">stopLocation</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L50">planner/Step.ts:50</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L53">planner/Step.ts:53</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1102,7 +1138,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#stoptime">stopTime</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L51">planner/Step.ts:51</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L54">planner/Step.ts:54</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1113,7 +1149,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Implementation of <a href="../interfaces/_interfaces_istep_.istep.html">IStep</a>.<a href="../interfaces/_interfaces_istep_.istep.html#travelmode">travelMode</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L52">planner/Step.ts:52</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L55">planner/Step.ts:55</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1130,7 +1166,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L10">planner/Step.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L10">planner/Step.ts:10</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1171,7 +1207,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/019d0db/src/planner/Step.ts#L30">planner/Step.ts:30</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/8d46693/src/planner/Step.ts#L30">planner/Step.ts:30</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
