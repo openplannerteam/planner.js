@@ -1,7 +1,0 @@
-{
-  "name": "plannerjs-example-browser",
-  "version": "1.0.0",
-  "scripts": {
-    "start": "cp ../../dist/bundle.js bundle.js && python -m SimpleHTTPServer 8000"
-  }
-}
