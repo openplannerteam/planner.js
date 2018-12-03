@@ -20,21 +20,28 @@ const Planner = require('plannerjs').default;
 Use it in both environments:
 ```javascript
 const planner = new Planner();
-  planner.query({
-    publicTransportOnly: true,
-    from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-    to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-    minimumDepartureTime: new Date(),
-    maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
-  }).then((result) => {
-      console.log(result);
-      if(result && result.paths) {
-        alert('Found ' + result.paths.length + ' paths');
-      }
-    })
-    .catch((reason) => {
-      console.error(reason);
-    });
+planner.query({
+  publicTransportOnly: true,
+  from: "http://irail.be/stations/NMBS/008812005", // Brussels North
+  to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+  minimumDepartureTime: new Date(),
+  maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
+}).then((publicTransportResult) => {
+  let amountOfResults = 0;
+
+  publicTransportResult.on("readable", () => {
+    let path = publicTransportResult.read();
+
+    while (path && amountOfResults < 15) {
+      // do something with path;
+
+      amountOfResults++;
+      path = publicTransportResult.read();
+    }
+  });
+}).catch((reason) => {
+  console.error(reason);
+});
 ```
 
 ## Documentation
