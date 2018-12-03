@@ -49,6 +49,7 @@ export default class LocationResolverDefault implements ILocationResolver {
     if (stop) {
       return {
         id,
+        name: stop.name,
         latitude: stop.latitude,
         longitude: stop.longitude,
       };
