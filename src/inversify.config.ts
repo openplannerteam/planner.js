@@ -24,7 +24,6 @@ import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExpone
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import LocationResolverDefault from "./query-runner/LocationResolverDefault";
-import QueryRunnerDefault from "./query-runner/QueryRunnerDefault";
 import TravelMode from "./TravelMode";
 import TYPES from "./types";
 
