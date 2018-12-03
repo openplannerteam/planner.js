@@ -40,6 +40,9 @@ export default class Step implements IStep {
       },
       enterConnection.departureTime,
       exitConnection.arrivalTime,
+      undefined,
+      enterConnection.id,
+      exitConnection.id,
     );
   }
 
@@ -50,6 +53,8 @@ export default class Step implements IStep {
   public stopLocation: ILocation;
   public stopTime: Date;
   public travelMode: TravelMode;
+  public enterConnectionId: string;
+  public exitConnectionId: string;
 
   constructor(
     startLocation: ILocation,
@@ -59,6 +64,8 @@ export default class Step implements IStep {
     startTime?: Date,
     stopTime?: Date,
     distance?: DistanceM,
+    enterConnectionId?: string,
+    exitConnectionId?: string,
   ) {
     this.distance = distance;
     this.duration = duration;
@@ -67,5 +74,7 @@ export default class Step implements IStep {
     this.startTime = startTime;
     this.stopLocation = stopLocation;
     this.stopTime = stopTime;
+    this.enterConnectionId = enterConnectionId;
+    this.exitConnectionId = exitConnectionId;
   }
 }

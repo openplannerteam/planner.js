@@ -364,8 +364,6 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
         transferProfiles.push(newTransferProfile);
       }
 
-      // If the new departure time is equal, update the profile entry
-      // Else, insert a new entry
       const departureTime = connection.departureTime.getTime() - duration;
       const newProfile: Profile = Profile.createFromTransfers(departureTime, transferProfiles);
 
