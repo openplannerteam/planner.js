@@ -1,10 +1,15 @@
 import { AsyncIterator, BufferedIterator } from "asynciterator";
 
-type MergeIteratorSelector<T> = (values: T[]) => number;
-
+/**
+ * Asynciterator that merges a number of source asynciterators based on the passed selector function.
+ * The selector function gets passed an array of values read from each of the asynciterators.
+ * Values can be undefined if their respective source iterator has ended.
+ * It should return the index in that array of the value to select.
+ * @param condensed When true, undefined values are filtered from the array passed to the selector function
+ */
 export default class MergeIterator<T> extends BufferedIterator<T> {
   private readonly sourceIterators: Array<AsyncIterator<T>>;
-  private readonly selector: MergeIteratorSelector<T>;
+  private readonly selector: (values: T[]) => number;
   private readonly condensed: boolean;
 
   private values: T[];
@@ -12,7 +17,7 @@ export default class MergeIterator<T> extends BufferedIterator<T> {
   private endedSources: number;
   private shouldClose: boolean;
 
-  constructor(sourceIterators: Array<AsyncIterator<T>>, selector: MergeIteratorSelector<T>, condensed?: boolean) {
+  constructor(sourceIterators: Array<AsyncIterator<T>>, selector: (values: T[]) => number, condensed?: boolean) {
     super();
 
     this.sourceIterators = sourceIterators;
