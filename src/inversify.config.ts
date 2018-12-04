@@ -35,6 +35,8 @@ container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDef
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
   .to(PublicTransportPlannerCSAProfile);
+container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
+  .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorDefault);

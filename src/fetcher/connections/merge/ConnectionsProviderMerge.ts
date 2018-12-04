@@ -1,5 +1,5 @@
 import { AsyncIterator } from "asynciterator";
-import { inject, injectable, multiInject } from "inversify";
+import { inject, injectable } from "inversify";
 import Catalog from "../../../Catalog";
 import TYPES, { ConnectionsFetcherFactory } from "../../../types";
 import MergeIterator from "../../../util/MergeIterator";
@@ -7,6 +7,9 @@ import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 
+/**
+ * Instantiates and merge sorts all registered connection fetchers
+ */
 @injectable()
 export default class ConnectionsProviderMerge implements IConnectionsFetcher {
 

@@ -16,7 +16,11 @@ const TYPES = {
   StopsFetcherFactory: Symbol("StopsFetcherFactory"),
 
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
+  PublicTransportPlannerFactory: Symbol("PublicTransportPlannerFactory"),
+
   RoadPlanner: Symbol("RoadPlanner"),
+  RoadPlannerFactory: Symbol("RoadPlannerFactory"),
+
   ReachableStopsFinder: Symbol("ReachableStopsFinder"),
   JourneyExtractor: Symbol("JourneyExtractor"),
   LDFetch: Symbol("LDFetch"),

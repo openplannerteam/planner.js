@@ -71,18 +71,7 @@ describe("[QueryRunnerExponential]", () => {
       );
     };
 
-    const fakeContext = {
-      getContainer() {
-        return {
-          get() {
-            return createPlanner();
-          },
-        };
-      },
-    };
-
-    // @ts-ignore
-    return new QueryRunnerExponential(fakeContext as Context, locationResolver, null);
+    return new QueryRunnerExponential(locationResolver, createPlanner);
   };
 
   const result: IPath[] = [];
