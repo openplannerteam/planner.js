@@ -1,6 +1,5 @@
 import "jest";
 import LDFetch from "ldfetch";
-import Context from "../../Context";
 import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
@@ -29,17 +28,6 @@ describe("[QueryRunnerExponential]", () => {
 
   const createExponentialQueryRunner = () => {
     const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
-
-    const httpStartTimes = {};
-
-    ldFetch.on("request", (url) => httpStartTimes[url] = new Date());
-
-    ldFetch.on("redirect", (obj) => httpStartTimes[obj.to] = httpStartTimes[obj.from]);
-
-    ldFetch.on("response", (url) => {
-      const difference = (new Date()).getTime() - httpStartTimes[url].getTime();
-      console.log(`HTTP GET - ${url} (${difference}ms)`);
-    });
 
     const connectionFetcher = new ConnectionsFetcherLazy(ldFetch);
     connectionFetcher.setTravelMode(TravelMode.Train);
