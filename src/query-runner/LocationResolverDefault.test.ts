@@ -1,22 +1,15 @@
 import "jest";
-import Context from "../Context";
-import StopsFetcherNMBS from "../fetcher/stops/StopsFetcherNMBS";
-import TYPES from "../types";
+import LDFetch from "ldfetch";
+import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import LocationResolverDefault from "./LocationResolverDefault";
 
-const dummyContext = {
-  getContainer() {
-    return {
-      getAll(type) {
-        if (type === TYPES.StopsFetcher) {
-          return [new StopsFetcherNMBS()];
-        }
-      },
-    };
-  },
-};
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-const locationResolver = new LocationResolverDefault(dummyContext as Context);
+const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
+stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
+stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
+
+const locationResolver = new LocationResolverDefault(stopsFetcher);
 
 test("[LocationResolverDefault] Input {id: 'http://...'}", async () => {
 

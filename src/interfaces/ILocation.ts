@@ -1,6 +1,6 @@
 export default interface ILocation {
   id?: string;
-  time?: Date;
+  name?: string;
   longitude?: number;
   latitude?: number;
 }

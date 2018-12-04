@@ -1,38 +1,34 @@
 import "jest";
-import Context from "../../Context";
-import StopsFetcherNMBS from "../../fetcher/stops/StopsFetcherNMBS";
+import LDFetch from "ldfetch";
+import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
-import TYPES from "../../types";
+import Iterators from "../../util/Iterators";
 import IRoadPlanner from "./IRoadPlanner";
 import RoadPlannerBirdsEye from "./RoadPlannerBirdsEye";
 
-const dummyContext = {
-  getContainer() {
-    return {
-      getAll(type) {
-        if (type === TYPES.StopsFetcher) {
-          return [new StopsFetcherNMBS()];
-        }
-      },
-    };
-  },
-};
-
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 const planner: IRoadPlanner = new RoadPlannerBirdsEye();
-const locationResolver = new LocationResolverDefault(dummyContext as Context);
+
+const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
+stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
+stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
+
+const locationResolver = new LocationResolverDefault(stopsFetcher);
 
 test("[RoadPlannerBirdsEye] distance between stops", async () => {
 
-  const kortrijkLocation = await locationResolver.resolve({id: "http://irail.be/stations/NMBS/008896008"});
-  const ghentLocation = await locationResolver.resolve({id: "http://irail.be/stations/NMBS/008892007"});
+  const kortrijkLocation = await locationResolver.resolve({ id: "http://irail.be/stations/NMBS/008896008" });
+  const ghentLocation = await locationResolver.resolve({ id: "http://irail.be/stations/NMBS/008892007" });
 
-  const result: IPath[] = await planner.plan({
+  const iterator = await planner.plan({
     from: [kortrijkLocation], // Kortrijk
     to: [ghentLocation], // Ghent-Sint-Pieters,
     minimumWalkingSpeed: 3,
     maximumWalkingSpeed: 6,
   });
+
+  const result: IPath[] = await Iterators.toArray(iterator);
 
   expect(result).toHaveLength(1);
 

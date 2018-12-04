@@ -1,16 +1,22 @@
+import LDFetch from "ldfetch";
 import "reflect-metadata";
-import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
-import ConnectionsFetcherDeLijn from "../fetcher/connections/ld-fetch/ConnectionsFetcherDeLijn";
-import container from "../inversify.config";
-import TYPES from "../types";
+import TravelMode from "../TravelMode";
 
-const fetcher = new ConnectionsFetcherDeLijn();
-// const fetcher = container.getTagged<IConnectionsFetcher>(TYPES.ConnectionsFetcher, "type", "merge");
-fetcher.setConfig({
-  lowerBoundDate: new Date(),
-  upperBoundDate: new Date(),
-  backward: false,
-});
+/*
+const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+
+const upperBoundDate = new Date();
+upperBoundDate.setHours(upperBoundDate.getHours() + 2);
+
+const config = {
+  upperBoundDate,
+  backward: true,
+};
+
+const connectionsFetcher = new ConnectionsFetcherLDFetch(ldFetch);
+connectionsFetcher.setTravelMode(TravelMode.Train);
+connectionsFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
+connectionsFetcher.setConfig(config);
 // iterator.setLowerBound(new Date(2018, 10, 2, 10));
 
 (async () => {
@@ -18,14 +24,16 @@ fetcher.setConfig({
   console.time("fetch");
 
   let i = 0;
+  let sum = 0;
 
-  for await (const connection of fetcher) {
-    console.log(i++, connection["@id"], connection.departureTime);
+  for await (const connection of connectionsFetcher) {
+    sum += connection.departureDelay || 0;
 
-    if (i++ > 1000) {
+    if (i++ > 4000) {
       break;
     }
   }
   console.timeEnd("fetch");
 
 })();
+*/

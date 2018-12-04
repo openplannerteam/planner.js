@@ -1,6 +1,10 @@
-import IStop from "./IStop";
+import IStopsProvider from "./IStopsProvider";
 
-export default interface IStopsFetcher {
+/**
+ * Represents one data source of stops, e.g. De Lijn or NMBS
+ * Has a prefix for potential use by a [[IStopsProvider]]
+ * Extends [[IStopsProvider]] because it should implement the same methods
+ */
+export default interface IStopsFetcher extends IStopsProvider {
   prefix: string;
-  getStopById: (stopId: string | string[]) => Promise<IStop>;
 }

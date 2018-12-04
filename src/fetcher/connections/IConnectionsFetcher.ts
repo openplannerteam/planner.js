@@ -1,6 +1,8 @@
-import IConnection from "./IConnection";
-import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
+import IConnectionsProvider from "./IConnectionsProvider";
 
-export default interface IConnectionsFetcher extends AsyncIterable<IConnection> {
-  setConfig: (config: IConnectionsFetcherConfig) => void;
+/**
+ * Entry point for fetching linked connections ([[IConnection]]s)
+ * Serves as interface for dependency injection, so all implementations should have @injectable() decorator
+ */
+export default interface IConnectionsFetcher extends IConnectionsProvider {
 }

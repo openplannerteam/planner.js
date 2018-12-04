@@ -1,15 +1,19 @@
-import haversine from "haversine";
+import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { injectable } from "inversify";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
+import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
+import TravelMode from "../../TravelMode";
+import Geo from "../../util/Geo";
+import Units from "../../util/Units";
 import IRoadPlanner from "./IRoadPlanner";
 
 @injectable()
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
 
-  public async plan(query: IResolvedQuery): Promise<IPath[]> {
+  public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     const { from: fromLocations, to: toLocations, minimumWalkingSpeed, maximumWalkingSpeed} = query;
 
     const paths = [];
@@ -23,21 +27,21 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
       }
     }
 
-    return paths;
+    return new ArrayIterator<IPath>(paths);
   }
 
   private getPathBetweenLocations(
     from: ILocation,
     to: ILocation,
-    minWalkingSpeed: number,
-    maxWalkingSpeed: number,
+    minWalkingSpeed: SpeedkmH,
+    maxWalkingSpeed: SpeedkmH,
   ): IPath {
 
-    const distance = this.getDistanceBetweenLocations(from, to);
-    const minDuration = distance / maxWalkingSpeed;
-    const maxDuration = distance / minWalkingSpeed;
+    const distance = Geo.getDistanceBetweenLocations(from, to);
+    const minDuration = Units.toDuration(distance, maxWalkingSpeed);
+    const maxDuration = Units.toDuration(distance, minWalkingSpeed);
 
-    const duration: IProbabilisticValue = {
+    const duration: IProbabilisticValue<DurationMs> = {
       minimum: minDuration,
       maximum: maxDuration,
       average: (minDuration + maxDuration) / 2,
@@ -49,25 +53,8 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
         stopLocation: to,
         duration,
         distance,
+        travelMode: TravelMode.Walking,
       }],
     };
-  }
-
-  private getDistanceBetweenLocations(from: ILocation, to: ILocation): number {
-    const { longitude: depLongitude, latitude: depLatitude } = from;
-    const { longitude: arrLongitude, latitude: arrLatitude } = to;
-
-    if (depLongitude === undefined || depLatitude === undefined ||
-      arrLongitude === undefined || arrLatitude === undefined) {
-      return Number.POSITIVE_INFINITY;
-    }
-
-    return haversine({
-      latitude: depLatitude,
-      longitude: depLongitude,
-    }, {
-      latitude: arrLatitude,
-      longitude: arrLongitude,
-    });
   }
 }
