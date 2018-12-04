@@ -1,11 +1,12 @@
 import { Container, interfaces } from "inversify";
 import LDFetch from "ldfetch";
 import Catalog from "./Catalog";
+import catalog from "./catalog.delijn";
 import Context from "./Context";
-import ConnectionsProviderPassthrough from "./fetcher/connections/ConnectionsProviderPassthrough";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import ConnectionsFetcherLazy from "./fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
+import ConnectionsProviderMerge from "./fetcher/connections/merge/ConnectionsProviderMerge";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
@@ -51,7 +52,7 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPassthrough).inSingletonScope();
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderMerge).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(
@@ -81,18 +82,7 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-// Init catalog
-// const catalog = new Catalog();
-// catalog.addStopsFetcher("http://irail.be/stations/NMBS/", "https://irail.be/stations/NMBS");
-// catalog.addConnectionsFetcher("https://graph.irail.be/sncb/connections", TravelMode.Train);
-
-const catalog = new Catalog();
-catalog.addStopsFetcher(
-  "https://data.delijn.be/stops/",
-  "https://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops",
-);
-catalog.addConnectionsFetcher("https://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/connections", TravelMode.Bus);
-
+// Bind catalog
 container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalog);
 
 // Init LDFetch

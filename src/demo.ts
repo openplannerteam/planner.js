@@ -21,8 +21,10 @@ export default async (logResults) => {
 
   const publicTransportResult = await planner.query({
     publicTransportOnly: true,
-    from: "https://data.delijn.be/stops/201657", // Ingelmunster
-    to: "https://data.delijn.be/stops/205910", // Ghent-Sint-Pieters
+    from: "https://data.delijn.be/stops/201657",
+    to: "https://data.delijn.be/stops/205910",
+    // from: "http://irail.be/stations/NMBS/008896008", // Kortrijk
+    // to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
     minimumDepartureTime: new Date(),
     maximumTransferDuration: Units.fromHours(.01),
   });
