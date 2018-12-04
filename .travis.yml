@@ -25,5 +25,5 @@ deploy:
     local-dir: docs
     on:
       tags: false
-      branch: dev
+      branch: master
       node_js: "node"
