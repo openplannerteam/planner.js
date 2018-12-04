@@ -21,8 +21,12 @@ export default async (logResults) => {
 
   const publicTransportResult = await planner.query({
     publicTransportOnly: true,
-    from: "https://data.delijn.be/stops/201657",
-    to: "https://data.delijn.be/stops/205910",
+    // from: "https://data.delijn.be/stops/201657",
+    // to: "https://data.delijn.be/stops/205910",
+    // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
+    // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
+    from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
+    to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
     // from: "http://irail.be/stations/NMBS/008896008", // Kortrijk
     // to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
     minimumDepartureTime: new Date(),

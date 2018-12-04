@@ -46,7 +46,6 @@ describe("[QueryRunnerExponential]", () => {
     connectionFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
 
     const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-    stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
     stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
     const locationResolver = new LocationResolverDefault(stopsFetcher);

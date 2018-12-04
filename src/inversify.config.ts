@@ -72,12 +72,9 @@ container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherLDFetch);
 container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   .toFactory<IStopsFetcher>(
     (context: interfaces.Context) =>
-      (prefix: string, accessUrl: string) => {
+      (accessUrl: string) => {
         const fetcher = context.container.get<StopsFetcherLDFetch>(TYPES.StopsFetcher);
-
-        fetcher.setPrefix(prefix);
         fetcher.setAccessUrl(accessUrl);
-
         return fetcher;
       },
   );

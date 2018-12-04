@@ -25,5 +25,5 @@ const TYPES = {
 
 export default TYPES;
 
-export type StopsFetcherFactory = (prefix: string, accessUrl: string) => IStopsFetcher;
+export type StopsFetcherFactory = (accessUrl: string) => IStopsFetcher;
 export type ConnectionsFetcherFactory = (accessUrl: string, travelMode: TravelMode) => IConnectionsFetcher;
