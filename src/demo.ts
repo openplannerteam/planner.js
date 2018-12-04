@@ -24,8 +24,7 @@ export default async (logResults) => {
     from: "https://data.delijn.be/stops/201657", // Ingelmunster
     to: "https://data.delijn.be/stops/205910", // Ghent-Sint-Pieters
     minimumDepartureTime: new Date(),
-    maximumTransfers: 2,
-    maximumTransferDuration: Units.fromHours(.05),
+    maximumTransferDuration: Units.fromHours(.01),
   });
 
   console.timeEnd("Public transport planner");
