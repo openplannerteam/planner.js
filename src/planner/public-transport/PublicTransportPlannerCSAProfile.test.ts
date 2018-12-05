@@ -1,5 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
+import Defaults from "../../Defaults";
 import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
@@ -16,7 +17,6 @@ import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import TravelMode from "../../TravelMode";
 import Iterators from "../../util/Iterators";
 import Units from "../../util/Units";
-import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import JourneyExtractorDefault from "./JourneyExtractorDefault";
 import PublicTransportPlannerCSAProfile from "./PublicTransportPlannerCSAProfile";
@@ -56,17 +56,21 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const query: IResolvedQuery = {
         publicTransportOnly: true,
-        from: [{ id: "http://irail.be/stations/NMBS/008896925", latitude: 50.914326, longitude: 3.255416 }],
-        to: [{ id: "http://irail.be/stations/NMBS/008892007", latitude: 51.035896, longitude: 3.710675 }],
+        from: [{latitude: 50.914326, longitude: 3.255415 }],
+        to: [{ latitude: 51.035896, longitude: 3.710875 }],
         minimumDepartureTime: new Date("2018-11-06T09:00:00.000Z"),
         maximumArrivalTime: new Date("2018-11-06T19:00:00.000Z"),
         maximumTransfers: 8,
+        minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
+        maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
+        maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
       };
 
       beforeAll(async () => {
         const CSA = createCSA(connectionsIngelmunsterGhent);
         const iterator = await CSA.plan(query);
         result = await Iterators.toArray(iterator);
+        console.log(result);
       });
 
       it("Correct departure and arrival stop", () => {
@@ -91,6 +95,9 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         minimumDepartureTime: new Date("2017-12-19T15:50:00.000Z"),
         maximumArrivalTime: new Date("2017-12-19T16:50:00.000Z"),
         maximumTransfers: 1,
+        minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
+        maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
+        maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
       };
 
       beforeAll(async () => {
@@ -125,6 +132,9 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         minimumDepartureTime: new Date("2017-12-19T16:20:00.000Z"),
         maximumArrivalTime: new Date("2017-12-19T16:50:00.000Z"),
         maximumTransfers: 1,
+        minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
+        maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
+        maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
       };
 
       beforeAll(async () => {

@@ -76,6 +76,19 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     this.query = query;
+
+    const departureLocation = this.query.from[0];
+    if (!departureLocation.id) {
+      departureLocation.id = "geo:" + departureLocation.latitude + "," + departureLocation.longitude;
+      departureLocation.name = "Departure location";
+    }
+
+    const arrivalLocation = this.query.to[0];
+    if (!arrivalLocation.id) {
+      arrivalLocation.id = "geo:" + arrivalLocation.latitude + "," + arrivalLocation.longitude;
+      arrivalLocation.name = "Arrival location";
+    }
+
     this.setBounds();
 
     return this.calculateJourneys();
@@ -312,6 +325,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     connection: IConnection,
     currentArrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): Promise<void> {
+    const departureLocation: IStop = this.query.from[0] as IStop;
     const depProfile: Profile[] = this.profilesByStop[connection.departureStop];
     const earliestProfileEntry: Profile = depProfile[depProfile.length - 1];
 
@@ -321,17 +335,16 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       earliestProfileEntry.getArrivalTimeByTransfers(),
     );
 
-    const canReachInitialStop: IReachableStop = this.initialReachableStops.find((reachable: IReachableStop) =>
+    const initialReachableStop: IReachableStop = this.initialReachableStops.find(
+      (reachable: IReachableStop) =>
       reachable.stop.id === connection.departureStop,
     );
 
-    if (canReachInitialStop) {
-      const fromLocation: IStop = this.query.from[0] as IStop;
-
+    if (initialReachableStop) {
       this.incorporateInProfile(
         connection,
-        canReachInitialStop.duration,
-        fromLocation,
+        initialReachableStop.duration,
+        departureLocation,
         earliestArrivalTimeByTransfers,
       );
     }
@@ -345,7 +358,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     );
 
     reachableStops.forEach((reachableStop: IReachableStop) => {
-      if (reachableStop.stop.id !== this.query.from[0].id) {
+      if (reachableStop.stop.id !== departureLocation.id) {
         this.incorporateInProfile(
           connection,
           reachableStop.duration,
