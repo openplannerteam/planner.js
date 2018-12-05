@@ -37,17 +37,14 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const roadPlanner = new RoadPlannerBirdsEye();
       const journeyExtractor = new JourneyExtractorDefault(
-        roadPlanner,
-        roadPlanner,
-        reachableStopsFinder,
         locationResolver,
       );
 
       return new PublicTransportPlannerCSAProfile(
         connectionFetcher,
         locationResolver,
+        reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
         journeyExtractor,
@@ -167,17 +164,14 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const roadPlanner = new RoadPlannerBirdsEye();
       const journeyExtractor = new JourneyExtractorDefault(
-        roadPlanner,
-        roadPlanner,
-        reachableStopsFinder,
         locationResolver,
       );
 
       const CSA = new PublicTransportPlannerCSAProfile(
         connectionFetcher,
         locationResolver,
+        reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
         journeyExtractor,
