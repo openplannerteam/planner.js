@@ -2,7 +2,7 @@ import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Catalog from "../../../Catalog";
 import TYPES, { ConnectionsFetcherFactory } from "../../../types";
-import MergeIterator from "../../../util/MergeIterator";
+import MergeIterator from "../../../util/iterators/MergeIterator";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";

@@ -1,5 +1,4 @@
 import { Container, interfaces } from "inversify";
-import LDFetch from "ldfetch";
 import Catalog from "./Catalog";
 import catalogDeLijn from "./catalog.delijn";
 import catalogNmbs from "./catalog.nmbs";
@@ -8,6 +7,7 @@ import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import ConnectionsFetcherLazy from "./fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 import ConnectionsProviderMerge from "./fetcher/connections/merge/ConnectionsProviderMerge";
+import LDFetch from "./fetcher/LDFetch";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
@@ -89,18 +89,6 @@ container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
 // container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
 
 // Init LDFetch
-const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
-const httpStartTimes = {};
-
-ldFetch.on("request", (url) => httpStartTimes[url] = new Date());
-
-ldFetch.on("redirect", (obj) => httpStartTimes[obj.to] = httpStartTimes[obj.from]);
-
-ldFetch.on("response", (url) => {
-  const difference = (new Date()).getTime() - httpStartTimes[url].getTime();
-  console.log(`HTTP GET - ${url} (${difference}ms)`);
-});
-
-container.bind<LDFetch>(TYPES.LDFetch).toConstantValue(ldFetch);
+container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();
 
 export default container;
