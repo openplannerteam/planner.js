@@ -913,9 +913,6 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-constructor tsd-parent-kind-class">
 					<a href="queryrunnerexponential.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class">
-					<a href="queryrunnerexponential.html#private" class="tsd-kind-icon">private</a>
-				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="queryrunnerexponential.html#run" class="tsd-kind-icon">run</a>
 				</li>
@@ -950,12 +947,6 @@ img { max-width: 100%; }
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
-						<h3>Properties</h3>
-						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="queryrunnerexponential.html#private" class="tsd-kind-icon">private</a></li>
-						</ul>
-					</section>
-					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="queryrunnerexponential.html#run" class="tsd-kind-icon">run</a></li>
@@ -970,43 +961,27 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Query<wbr>Runner<wbr>Exponential<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="context.html" class="tsd-signature-type">Context</a>, locationResolver<span class="tsd-signature-symbol">: </span><a href="../interfaces/ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a>, publicTransportPlanner<span class="tsd-signature-symbol">: </span><a href="../interfaces/ipublictransportplanner.html" class="tsd-signature-type">IPublicTransportPlanner</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="queryrunnerexponential.html" class="tsd-signature-type">QueryRunnerExponential</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Query<wbr>Runner<wbr>Exponential<span class="tsd-signature-symbol">(</span>locationResolver<span class="tsd-signature-symbol">: </span><a href="../interfaces/ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a>, publicTransportPlannerFactory<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">interfaces.Factory</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ipublictransportplanner.html" class="tsd-signature-type">IPublicTransportPlanner</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="queryrunnerexponential.html" class="tsd-signature-type">QueryRunnerExponential</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/783a200/src/query-runner/exponential/QueryRunnerExponential.ts#L23">query-runner/exponential/QueryRunnerExponential.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/31dd51c/src/query-runner/exponential/QueryRunnerExponential.ts#L19">query-runner/exponential/QueryRunnerExponential.ts:19</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>context: <a href="context.html" class="tsd-signature-type">Context</a></h5>
-							</li>
-							<li>
 								<h5>locationResolver: <a href="../interfaces/ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a></h5>
 							</li>
 							<li>
-								<h5>publicTransportPlanner: <a href="../interfaces/ipublictransportplanner.html" class="tsd-signature-type">IPublicTransportPlanner</a></h5>
+								<h5>publicTransportPlannerFactory: <span class="tsd-signature-type">interfaces.Factory</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ipublictransportplanner.html" class="tsd-signature-type">IPublicTransportPlanner</a><span class="tsd-signature-symbol">&gt;</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="queryrunnerexponential.html" class="tsd-signature-type">QueryRunnerExponential</a></h4>
 					</li>
 				</ul>
-			</section>
-		</section>
-		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-				<a name="private" class="tsd-anchor"></a>
-				<h3>private</h3>
-				<div class="tsd-signature tsd-kind-icon">private<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/783a200/src/query-runner/exponential/QueryRunnerExponential.ts#L19">query-runner/exponential/QueryRunnerExponential.ts:19</a></li>
-					</ul>
-				</aside>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
@@ -1022,7 +997,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/iqueryrunner.html">IQueryRunner</a>.<a href="../interfaces/iqueryrunner.html#run">run</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/783a200/src/query-runner/exponential/QueryRunnerExponential.ts#L35">query-runner/exponential/QueryRunnerExponential.ts:35</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/31dd51c/src/query-runner/exponential/QueryRunnerExponential.ts#L31">query-runner/exponential/QueryRunnerExponential.ts:31</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

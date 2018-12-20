@@ -913,7 +913,7 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-constructor tsd-parent-kind-class">
 					<a href="connectionsprovidermerge.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class">
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="connectionsprovidermerge.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -925,6 +925,13 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Instantiates and merge sorts all registered connection fetchers</p>
+				</div>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -950,14 +957,9 @@ img { max-width: 100%; }
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
-						<h3>Properties</h3>
-						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="connectionsprovidermerge.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a></li>
-						</ul>
-					</section>
-					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsprovidermerge.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsprovidermerge.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a></li>
 						</ul>
 					</section>
@@ -970,19 +972,22 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Connections<wbr>Provider<wbr>Merge<span class="tsd-signature-symbol">(</span>connectionsFetchers<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectionsprovidermerge.html" class="tsd-signature-type">ConnectionsProviderMerge</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Connections<wbr>Provider<wbr>Merge<span class="tsd-signature-symbol">(</span>connectionsFetcherFactory<span class="tsd-signature-symbol">: </span><a href="../globals.html#connectionsfetcherfactory" class="tsd-signature-type">ConnectionsFetcherFactory</a>, catalog<span class="tsd-signature-symbol">: </span><a href="catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectionsprovidermerge.html" class="tsd-signature-type">ConnectionsProviderMerge</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/783a200/src/fetcher/connections/merge/ConnectionsProviderMerge.ts#L15">fetcher/connections/merge/ConnectionsProviderMerge.ts:15</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/31dd51c/src/fetcher/connections/merge/ConnectionsProviderMerge.ts#L55">fetcher/connections/merge/ConnectionsProviderMerge.ts:55</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>connectionsFetchers: <a href="../interfaces/iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a><span class="tsd-signature-symbol">[]</span></h5>
+								<h5>connectionsFetcherFactory: <a href="../globals.html#connectionsfetcherfactory" class="tsd-signature-type">ConnectionsFetcherFactory</a></h5>
+							</li>
+							<li>
+								<h5>catalog: <a href="catalog.html" class="tsd-signature-type">Catalog</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="connectionsprovidermerge.html" class="tsd-signature-type">ConnectionsProviderMerge</a></h4>
@@ -991,36 +996,24 @@ img { max-width: 100%; }
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="createiterator" class="tsd-anchor"></a>
 				<h3>create<wbr>Iterator</h3>
-				<div class="tsd-signature tsd-kind-icon">create<wbr>Iterator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-				<aside class="tsd-sources">
-					<p>Implementation of <a href="../interfaces/iconnectionsfetcher.html">IConnectionsFetcher</a>.<a href="../interfaces/iconnectionsfetcher.html#createiterator">createIterator</a></p>
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/783a200/src/fetcher/connections/merge/ConnectionsProviderMerge.ts#L12">fetcher/connections/merge/ConnectionsProviderMerge.ts:12</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-type-declaration">
-					<h4>Type declaration</h4>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter-siganture">
-							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">create<wbr>Iterator<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/31dd51c/src/fetcher/connections/merge/ConnectionsProviderMerge.ts#L68">fetcher/connections/merge/ConnectionsProviderMerge.ts:68</a></li>
 							</ul>
-							<ul class="tsd-descriptions">
-								<li class="tsd-description">
-									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
 			</section>
-		</section>
-		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="setconfig" class="tsd-anchor"></a>
 				<h3>set<wbr>Config</h3>
@@ -1031,7 +1024,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/783a200/src/fetcher/connections/merge/ConnectionsProviderMerge.ts#L23">fetcher/connections/merge/ConnectionsProviderMerge.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/31dd51c/src/fetcher/connections/merge/ConnectionsProviderMerge.ts#L81">fetcher/connections/merge/ConnectionsProviderMerge.ts:81</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
