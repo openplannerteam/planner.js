@@ -1,5 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
+import Context from "../../Context";
 import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
@@ -38,6 +39,8 @@ describe("[QueryRunnerExponential]", () => {
     const locationResolver = new LocationResolverDefault(stopsFetcher);
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
+    const context = new Context();
+
     const createJourneyExtractor = () => {
       return new JourneyExtractorDefault(
         locationResolver,
@@ -55,7 +58,7 @@ describe("[QueryRunnerExponential]", () => {
       );
     };
 
-    return new QueryRunnerExponential(locationResolver, createPlanner);
+    return new QueryRunnerExponential(context, locationResolver, createPlanner);
   };
 
   const result: IPath[] = [];

@@ -1,3 +1,4 @@
+import EventType from "./EventType";
 import Planner from "./index";
 import IPath from "./interfaces/IPath";
 import IStep from "./interfaces/IStep";
@@ -7,19 +8,20 @@ export default async (logResults) => {
 
   const planner = new Planner();
 
-  // const roadOnlyResult = await planner.query({
-  //  roadOnly: true,
-  //  from: "http://irail.be/stations/NMBS/008896008", // Kortrijk
-  //  to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-  // });
-//
-  // roadOnlyResult.each((path) => {
-  //  if (logResults) {
-  //    console.log(path);
-  //  }
-  // });
+  if (logResults) {
+    planner
+      .on(EventType.Query, (query) => {
+        console.log("Query", query);
+      })
+      .on(EventType.QueryExponential, (query) => {
+        const { minimumDepartureTime, maximumArrivalTime } = query;
 
-  console.time("Public transport planner");
+        console.log("[Subquery]", minimumDepartureTime, maximumArrivalTime, maximumArrivalTime - minimumDepartureTime);
+      })
+      .on(EventType.LDFetchGet, (url, duration) => {
+        console.log(`[GET] ${url} (${duration}ms)`);
+      });
+  }
 
   const publicTransportResult = await planner.query({
     publicTransportOnly: true,
@@ -35,17 +37,24 @@ export default async (logResults) => {
     maximumTransferDuration: Units.fromHours(.01),
   });
 
-  console.timeEnd("Public transport planner");
+  return new Promise((resolve, reject) => {
+    let i = 0;
 
-  let i = 0;
+    publicTransportResult.take(3)
+      .on("data", (path: IPath) => {
+        ++i;
 
-  publicTransportResult.take(3).on("data", (path: IPath) => {
-    console.log(++i);
-    path.steps.forEach((step: IStep) => {
-      console.log(JSON.stringify(step, null, " "));
-    });
-    console.log("\n");
+        if (logResults) {
+          console.log(++i);
+          path.steps.forEach((step: IStep) => {
+            console.log(JSON.stringify(step, null, " "));
+          });
+          console.log("\n");
+        }
+
+        if (i === 3) {
+          resolve(true);
+        }
+      });
   });
-
-  return true;
 };
