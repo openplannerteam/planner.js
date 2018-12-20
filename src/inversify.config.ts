@@ -1,7 +1,8 @@
 import { Container, interfaces } from "inversify";
 import LDFetch from "ldfetch";
 import Catalog from "./Catalog";
-import catalog from "./catalog.nmbs";
+import catalogDeLijn from "./catalog.delijn";
+import catalogNmbs from "./catalog.nmbs";
 import Context from "./Context";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
@@ -82,7 +83,10 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   );
 
 // Bind catalog
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalog);
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
+
+// const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn);
+// container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
 
 // Init LDFetch
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
