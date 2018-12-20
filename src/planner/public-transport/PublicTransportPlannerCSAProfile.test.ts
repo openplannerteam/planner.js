@@ -70,7 +70,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         const CSA = createCSA(connectionsIngelmunsterGhent);
         const iterator = await CSA.plan(query);
         result = await Iterators.toArray(iterator);
-        console.log(result);
       });
 
       it("Correct departure and arrival stop", () => {
@@ -90,8 +89,16 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const query: IResolvedQuery = {
         publicTransportOnly: true,
-        from: [{ id: "http://irail.be/stations/NMBS/008821006" }],
-        to: [{ id: "http://irail.be/stations/NMBS/008812005" }],
+        from: [{
+          id: "http://irail.be/stations/NMBS/008821006",
+          latitude: 51.2172,
+          longitude: 4.421101,
+        }],
+        to: [{
+          id: "http://irail.be/stations/NMBS/008812005",
+          latitude: 50.859663,
+          longitude: 4.360846,
+        }],
         minimumDepartureTime: new Date("2017-12-19T15:50:00.000Z"),
         maximumArrivalTime: new Date("2017-12-19T16:50:00.000Z"),
         maximumTransfers: 1,
@@ -127,8 +134,16 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const query: IResolvedQuery = {
         publicTransportOnly: true,
-        from: [{ id: "http://irail.be/stations/NMBS/008812005" }],
-        to: [{ id: "http://irail.be/stations/NMBS/008821006" }],
+        from: [{
+          id: "http://irail.be/stations/NMBS/008812005",
+          latitude: 50.859663,
+          longitude: 4.360846,
+        }],
+        to: [{
+          id: "http://irail.be/stations/NMBS/008821006",
+          latitude: 51.2172,
+          longitude: 4.421101,
+        }],
         minimumDepartureTime: new Date("2017-12-19T16:20:00.000Z"),
         maximumArrivalTime: new Date("2017-12-19T16:50:00.000Z"),
         maximumTransfers: 1,
