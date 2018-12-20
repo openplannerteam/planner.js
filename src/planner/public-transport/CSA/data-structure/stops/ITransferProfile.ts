@@ -9,6 +9,7 @@ import IConnection from "../../../../../fetcher/connections/IConnection";
  * to arrive at the arrivalTime in the target [[IStop]].
  */
 export default interface ITransferProfile {
+  departureTime: number;
   arrivalTime: number;
   exitConnection: IConnection;
   enterConnection: IConnection;

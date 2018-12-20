@@ -6,7 +6,6 @@ import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
 import JourneyExtractorDefault from "../../planner/public-transport/JourneyExtractorDefault";
 import PublicTransportPlannerCSAProfile from "../../planner/public-transport/PublicTransportPlannerCSAProfile";
-import RoadPlannerBirdsEye from "../../planner/road/RoadPlannerBirdsEye";
 import ReachableStopsFinderBirdsEyeCached from "../../planner/stops/ReachableStopsFinderBirdsEyeCached";
 import TravelMode from "../../TravelMode";
 import Units from "../../util/Units";
@@ -38,13 +37,9 @@ describe("[QueryRunnerExponential]", () => {
 
     const locationResolver = new LocationResolverDefault(stopsFetcher);
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-    const roadPlanner = new RoadPlannerBirdsEye();
 
     const createJourneyExtractor = () => {
       return new JourneyExtractorDefault(
-        roadPlanner,
-        roadPlanner,
-        reachableStopsFinder,
         locationResolver,
       );
     };
@@ -53,6 +48,7 @@ describe("[QueryRunnerExponential]", () => {
       return new PublicTransportPlannerCSAProfile(
         connectionFetcher,
         locationResolver,
+        reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
         createJourneyExtractor(),
