@@ -1,4 +1,4 @@
-import EventTypes from "./EventTypes";
+import EventType from "./EventType";
 import Planner from "./index";
 import IPath from "./interfaces/IPath";
 import IStep from "./interfaces/IStep";
@@ -23,10 +23,15 @@ export default async (logResults) => {
   console.time("Public transport planner");
 
   planner
-    .on(EventTypes.Query, (...args) => {
-      console.log("Query", args);
+    .on(EventType.Query, (query) => {
+      console.log("Query", query);
     })
-    .on(EventTypes.LDFetchGet, (url, duration) => {
+    .on(EventType.QueryExponential, (query) => {
+      const {minimumDepartureTime, maximumArrivalTime} = query;
+
+      console.log("[Subquery]", minimumDepartureTime, maximumArrivalTime, maximumArrivalTime - minimumDepartureTime);
+    })
+    .on(EventType.LDFetchGet, (url, duration) => {
       console.log(`[GET] ${url} (${duration}ms)`);
     });
 

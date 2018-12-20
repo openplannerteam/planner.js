@@ -1,11 +1,14 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable, interfaces } from "inversify";
+import Context from "../../Context";
 import Defaults from "../../Defaults";
+import EventType from "../../EventType";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
+import Emiterator from "../../util/iterators/Emiterator";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
@@ -17,13 +20,17 @@ import SubqueryIterator from "./SubqueryIterator";
 export default class QueryRunnerExponential implements IQueryRunner {
   private locationResolver: ILocationResolver;
   private publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
+  private context: Context;
 
   constructor(
+    @inject(TYPES.Context)
+      context: Context,
     @inject(TYPES.LocationResolver)
       locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlannerFactory)
       publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
   ) {
+    this.context = context;
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
   }
@@ -34,7 +41,12 @@ export default class QueryRunnerExponential implements IQueryRunner {
     if (baseQuery.publicTransportOnly) {
 
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
-      const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(queryIterator, this.runSubquery.bind(this));
+      const emitQueryIterator = new Emiterator<IResolvedQuery>(queryIterator, this.context, EventType.QueryExponential);
+
+      const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(
+        emitQueryIterator,
+        this.runSubquery.bind(this),
+      );
 
       return new FilterUniquePathsIterator(subqueryIterator);
 

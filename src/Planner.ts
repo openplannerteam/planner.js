@@ -2,7 +2,7 @@ import { AsyncIterator } from "asynciterator";
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import Context from "./Context";
-import EventTypes from "./EventTypes";
+import EventType from "./EventType";
 import IPath from "./interfaces/IPath";
 import IQuery from "./interfaces/IQuery";
 import defaultContainer from "./inversify.config";
@@ -39,7 +39,7 @@ export default class Planner implements EventEmitter {
    * @returns An AsyncIterator of [[IPath]]s
    */
   public async query(query: IQuery): Promise<AsyncIterator<IPath>> {
-    this.emit(EventTypes.Query, query);
+    this.emit(EventType.Query, query);
 
     return this.queryRunner.run(query);
   }

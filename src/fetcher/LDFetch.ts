@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import LDFetchBase from "ldfetch";
 import { Triple } from "rdf-js";
 import Context from "../Context";
-import EventTypes from "../EventTypes";
+import EventType from "../EventType";
 import TYPES from "../types";
 
 export interface ILDFetchResponse {
@@ -42,7 +42,7 @@ export default class LDFetch implements LDFetchBase {
     this.ldFetchBase.on("response", (url) => {
       const duration = (new Date()).getTime() - this.httpStartTimes[url].getTime();
 
-      this.context.emit(EventTypes.LDFetchGet, url, duration);
+      this.context.emit(EventType.LDFetchGet, url, duration);
     });
   }
 }
