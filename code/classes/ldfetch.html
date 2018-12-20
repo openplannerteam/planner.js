@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IStopsFetcher | plannerjs</title>
+	<title>LDFetch | plannerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -907,14 +907,14 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class="current tsd-kind-interface">
-			<a href="istopsfetcher.html" class="tsd-kind-icon">IStops<wbr>Fetcher</a>
+		<li class="current tsd-kind-class">
+			<a href="ldfetch.html" class="tsd-kind-icon">LDFetch</a>
 			<ul>
-				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a href="istopsfetcher.html#getallstops" class="tsd-kind-icon">get<wbr>All<wbr>Stops</a>
+				<li class=" tsd-kind-constructor tsd-parent-kind-class">
+					<a href="ldfetch.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a href="istopsfetcher.html#getstopbyid" class="tsd-kind-icon">get<wbr>Stop<wbr>ById</a>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="ldfetch.html#get" class="tsd-kind-icon">get</a>
 				</li>
 			</ul>
 		</li>
@@ -925,8 +925,7 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
-					<p>Represents one data source of stops, e.g. De Lijn or NMBS
-					Extends <a href="istopsprovider.html">IStopsProvider</a> because it should implement the same methods</p>
+					<p>Proxies an ldfetch instance to transform its events</p>
 				</div>
 			</div>
 		</section>
@@ -934,94 +933,85 @@ img { max-width: 100%; }
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<a href="istopsprovider.html" class="tsd-signature-type">IStopsProvider</a>
-					<ul class="tsd-hierarchy">
-						<li>
-							<span class="target">IStopsFetcher</span>
-						</li>
-					</ul>
+					<span class="target">LDFetch</span>
 				</li>
 			</ul>
 		</section>
 		<section class="tsd-panel">
-			<h3>Implemented by</h3>
+			<h3>Implements</h3>
 			<ul class="tsd-hierarchy">
-				<li><a href="../classes/stopsfetcherldfetch.html" class="tsd-signature-type">StopsFetcherLDFetch</a></li>
+				<li><span class="tsd-signature-type">any</span></li>
 			</ul>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
-					<section class="tsd-index-section tsd-is-inherited">
-						<h3>Properties</h3>
+					<section class="tsd-index-section ">
+						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="istopsfetcher.html#getallstops" class="tsd-kind-icon">get<wbr>All<wbr>Stops</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="istopsfetcher.html#getstopbyid" class="tsd-kind-icon">get<wbr>Stop<wbr>ById</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="ldfetch.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Methods</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="ldfetch.html#get" class="tsd-kind-icon">get</a></li>
 						</ul>
 					</section>
 				</div>
 			</section>
 		</section>
-		<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
-			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-				<a name="getallstops" class="tsd-anchor"></a>
-				<h3>get<wbr>All<wbr>Stops</h3>
-				<div class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Stops<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-				<aside class="tsd-sources">
-					<p>Inherited from <a href="istopsprovider.html">IStopsProvider</a>.<a href="istopsprovider.html#getallstops">getAllStops</a></p>
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/741ebb3/src/fetcher/stops/IStopsProvider.ts#L11">fetcher/stops/IStopsProvider.ts:11</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-type-declaration">
-					<h4>Type declaration</h4>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter-siganture">
-							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Constructors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+				<a name="constructor" class="tsd-anchor"></a>
+				<h3>constructor</h3>
+				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">new LDFetch<span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">: </span><a href="context.html" class="tsd-signature-type">Context</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ldfetch.html" class="tsd-signature-type">LDFetch</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/741ebb3/src/fetcher/LDFetch.ts#L22">fetcher/LDFetch.ts:22</a></li>
 							</ul>
-							<ul class="tsd-descriptions">
-								<li class="tsd-description">
-									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>context: <a href="context.html" class="tsd-signature-type">Context</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="ldfetch.html" class="tsd-signature-type">LDFetch</a></h4>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-				<a name="getstopbyid" class="tsd-anchor"></a>
-				<h3>get<wbr>Stop<wbr>ById</h3>
-				<div class="tsd-signature tsd-kind-icon">get<wbr>Stop<wbr>ById<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-				<aside class="tsd-sources">
-					<p>Inherited from <a href="istopsprovider.html">IStopsProvider</a>.<a href="istopsprovider.html#getstopbyid">getStopById</a></p>
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/741ebb3/src/fetcher/stops/IStopsProvider.ts#L10">fetcher/stops/IStopsProvider.ts:10</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-type-declaration">
-					<h4>Type declaration</h4>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter-siganture">
-							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>stopId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">&gt;</span></li>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="get" class="tsd-anchor"></a>
+				<h3>get</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ildfetchresponse.html" class="tsd-signature-type">ILDFetchResponse</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/741ebb3/src/fetcher/LDFetch.ts#L33">fetcher/LDFetch.ts:33</a></li>
 							</ul>
-							<ul class="tsd-descriptions">
-								<li class="tsd-description">
-									<h4 class="tsd-parameters-title">Parameters</h4>
-									<ul class="tsd-parameters">
-										<li>
-											<h5>stopId: <span class="tsd-signature-type">string</span></h5>
-										</li>
-									</ul>
-									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">&gt;</span></h4>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>url: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ildfetchresponse.html" class="tsd-signature-type">ILDFetchResponse</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
