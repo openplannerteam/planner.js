@@ -245,7 +245,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const walkingTimeToTarget = this.durationToTargetByStop[connection.arrivalStop];
 
     if (
-      walkingTimeToTarget === undefined ||
+      walkingTimeToTarget === undefined || connection["gtfs:dropOfType"] === "gtfs:NotAvailable" ||
       connection.arrivalTime.getTime() + walkingTimeToTarget > this.query.maximumArrivalTime.getTime()
     ) {
       return Array(this.query.maximumTransfers + 1).fill({
@@ -286,8 +286,16 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   }
 
   private takeTransfer(connection: IConnection): IArrivalTimeByTransfers {
+
+    const transferTimes: IArrivalTimeByTransfers = ProfileUtil.getTransferTimes(
+      this.profilesByStop,
+      connection,
+      this.query.maximumTransfers,
+      this.query.minimumTransferDuration,
+      );
+
     return Vectors.shiftVector<IArrivalTimeByTransfers>(
-      ProfileUtil.getTransferTimes(this.profilesByStop, connection, this.query.maximumTransfers),
+      transferTimes,
       { "arrivalTime": Infinity, "gtfs:trip": connection["gtfs:trip"] },
     );
   }
