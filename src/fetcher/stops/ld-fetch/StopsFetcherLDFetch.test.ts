@@ -14,11 +14,9 @@ const DE_LIJN_STOPS_URLS = [
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
 const deLijnFetcher = new StopsFetcherLDFetch(ldFetch);
-deLijnFetcher.setPrefix("https://data.delijn.be/stops/");
 deLijnFetcher.setAccessUrl(DE_LIJN_STOPS_URLS[2]);
 
 const nmbsFetcher = new StopsFetcherLDFetch(ldFetch);
-nmbsFetcher.setPrefix("http://irail.be/stations/NMBS/");
 nmbsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
 test("[StopsFetcherLDFetch] De Lijn first stop", async () => {

@@ -16,31 +16,20 @@ export default class StopsProviderDefault implements IStopsProvider {
   ) {
     this.stopsFetchers = [];
 
-    for (const {prefix, accessUrl} of catalog.stopsFetcherConfigs) {
-      this.stopsFetchers.push(stopsFetcherFactory(prefix, accessUrl));
+    for (const { accessUrl } of catalog.stopsFetcherConfigs) {
+      this.stopsFetchers.push(stopsFetcherFactory(accessUrl));
     }
   }
 
   public async getStopById(stopId: string): Promise<IStop> {
-    const fetcher = this.determineStopFetcher(stopId);
-
-    if (fetcher) {
-      return fetcher.getStopById(stopId);
-    }
+    return Promise.all(this.stopsFetchers
+      .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getStopById(stopId)),
+    ).then((results: IStop[]) => results.find((stop) => stop !== undefined));
   }
 
   public async getAllStops(): Promise<IStop[]> {
     return Promise.all(this.stopsFetchers
       .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getAllStops()),
     ).then((results: IStop[][]) => [].concat(...results));
-  }
-
-  private determineStopFetcher(stopId: string): IStopsFetcher {
-    if (!this.stopsFetchers || !this.stopsFetchers.length) {
-      return null;
-    }
-
-    return this.stopsFetchers
-      .find((fetcher) => stopId.indexOf(fetcher.prefix) === 0);
   }
 }

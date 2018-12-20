@@ -2,7 +2,7 @@ import { AsyncIterator, SimpleTransformIterator } from "asynciterator";
 import IPath from "../../interfaces/IPath";
 import Path from "../../planner/Path";
 
-export default class FilterUniqueIterator extends SimpleTransformIterator<IPath, IPath> {
+export default class FilterUniquePathsIterator extends SimpleTransformIterator<IPath, IPath> {
 
   private store: Path[];
 

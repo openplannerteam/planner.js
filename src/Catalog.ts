@@ -4,8 +4,8 @@ export default class Catalog {
   public stopsFetcherConfigs = [];
   public connectionsFetcherConfigs = [];
 
-  public addStopsFetcher(prefix: string, accessUrl: string) {
-    this.stopsFetcherConfigs.push({prefix, accessUrl});
+  public addStopsFetcher(accessUrl: string) {
+    this.stopsFetcherConfigs.push({accessUrl});
   }
 
   public addConnectionsFetcher(accessUrl: string, travelMode: TravelMode) {

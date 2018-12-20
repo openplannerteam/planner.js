@@ -17,7 +17,6 @@ interface IStopMap {
 @injectable()
 export default class StopsFetcherLDFetch implements IStopsFetcher {
 
-  public prefix: string;
   private accessUrl: string;
 
   private ldFetch: LDFetch;
@@ -29,10 +28,6 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
   ) {
     this.ldFetch = ldFetch;
     this.loadStops();
-  }
-
-  public setPrefix(prefix: string) {
-    this.prefix = prefix;
   }
 
   public setAccessUrl(accessUrl: string) {
