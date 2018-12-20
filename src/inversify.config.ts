@@ -1,7 +1,7 @@
 import { Container, interfaces } from "inversify";
 import LDFetch from "ldfetch";
 import Catalog from "./Catalog";
-import catalog from "./catalog.delijn";
+import catalog from "./catalog.nmbs";
 import Context from "./Context";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
