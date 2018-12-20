@@ -70,7 +70,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     const {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
-      maximumTransferDuration, maximumTransfers,
+      minimumTransferDuration, maximumTransferDuration, maximumTransfers,
       minimumDepartureTime,
       ...other
     } = query;
@@ -85,6 +85,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
 
+    resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
     resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
     resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 

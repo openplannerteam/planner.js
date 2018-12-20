@@ -11,6 +11,7 @@ export default interface IQuery {
   walkingSpeed?: SpeedkmH;
   minimumWalkingSpeed?: SpeedkmH;
   maximumWalkingSpeed?: SpeedkmH;
+  minimumTransferDuration?: DurationMs;
   maximumTransferDuration?: DurationMs;
   maximumTransfers?: number;
 }

@@ -1,5 +1,7 @@
 import EventTypes from "./EventTypes";
 import Planner from "./index";
+import IPath from "./interfaces/IPath";
+import IStep from "./interfaces/IStep";
 import Units from "./util/Units";
 
 export default async (logResults) => {
@@ -46,28 +48,12 @@ export default async (logResults) => {
 
   let i = 0;
 
-  publicTransportResult.on("readable", () => {
-    let path = publicTransportResult.read();
-
-    while (path && i < 5) {
-      // console.log(i++, path);
-
-      console.log(i++);
-
-      path.steps.forEach((step) => {
-        console.log(step.startTime);
-        console.log(step.startLocation.name);
-        console.log(step.travelMode);
-        console.log(step.stopTime);
-        console.log(step.stopLocation.name);
-        console.log("");
-      });
-
-      console.log("");
-      console.log("");
-
-      path = publicTransportResult.read();
-    }
+  publicTransportResult.take(3).on("data", (path: IPath) => {
+    console.log(++i);
+    path.steps.forEach((step: IStep) => {
+      console.log(JSON.stringify(step, null, " "));
+    });
+    console.log("\n");
   });
 
   return true;
