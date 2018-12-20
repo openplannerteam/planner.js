@@ -20,13 +20,13 @@ export default async (logResults) => {
 
   console.time("Public transport planner");
 
-  planner.on(EventTypes.Query, (...args) => {
-    console.log("Query", args);
-  });
-
-  planner.on(EventTypes.LDFetchGet, (url, duration) => {
-    console.log(`[GET] ${url} (${duration}ms)`);
-  });
+  planner
+    .on(EventTypes.Query, (...args) => {
+      console.log("Query", args);
+    })
+    .on(EventTypes.LDFetchGet, (url, duration) => {
+      console.log(`[GET] ${url} (${duration}ms)`);
+    });
 
   const publicTransportResult = await planner.query({
     publicTransportOnly: true,
