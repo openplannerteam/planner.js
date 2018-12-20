@@ -1,6 +1,5 @@
 import { AsyncIterator } from "asynciterator";
-import { inject, injectable } from "inversify";
-import Context from "../../Context";
+import { inject, injectable, interfaces } from "inversify";
 import Defaults from "../../Defaults";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -11,25 +10,22 @@ import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
-import FilterUniqueIterator from "./FilterUniqueIterator";
+import FilterUniquePathsIterator from "./FilterUniquePathsIterator";
 import SubqueryIterator from "./SubqueryIterator";
 
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
-  public private;
   private locationResolver: ILocationResolver;
-  private publicTransportPlanner: IPublicTransportPlanner;
-
-  private context: Context;
+  private publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
 
   constructor(
-    @inject(TYPES.Context) context: Context,
-    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.PublicTransportPlanner) publicTransportPlanner: IPublicTransportPlanner,
+    @inject(TYPES.LocationResolver)
+      locationResolver: ILocationResolver,
+    @inject(TYPES.PublicTransportPlannerFactory)
+      publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
   ) {
     this.locationResolver = locationResolver;
-    this.publicTransportPlanner = publicTransportPlanner;
-    this.context = context;
+    this.publicTransportPlannerFactory = publicTransportPlannerFactory;
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
@@ -40,7 +36,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
       const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(queryIterator, this.runSubquery.bind(this));
 
-      return new FilterUniqueIterator(subqueryIterator);
+      return new FilterUniquePathsIterator(subqueryIterator);
 
     } else {
       return Promise.reject("Query not supported");
@@ -48,8 +44,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
   }
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    // TODO investigate publicTransportPlanner
-    const planner = this.context.getContainer().get<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
+    // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
+    const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
     return planner.plan(query);
   }

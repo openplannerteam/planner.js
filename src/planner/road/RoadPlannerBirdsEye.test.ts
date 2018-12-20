@@ -11,7 +11,6 @@ const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 const planner: IRoadPlanner = new RoadPlannerBirdsEye();
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
 const locationResolver = new LocationResolverDefault(stopsFetcher);

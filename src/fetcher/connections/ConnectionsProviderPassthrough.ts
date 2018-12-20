@@ -9,6 +9,7 @@ import IConnectionsProvider from "./IConnectionsProvider";
 
 /**
  * Passes through one [[IConnectionsFetcher]], the first one if there are multiple
+ * This provider is most/only useful if there is only one fetcher
  */
 @injectable()
 export default class ConnectionsProviderPassthrough implements IConnectionsProvider {

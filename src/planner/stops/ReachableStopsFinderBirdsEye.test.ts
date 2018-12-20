@@ -16,7 +16,6 @@ const DE_LIJN_STOPS_URLS = [
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-stopsFetcher.setPrefix("https://data.delijn.be/stops/");
 stopsFetcher.setAccessUrl(DE_LIJN_STOPS_URLS[2]);
 
 const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);

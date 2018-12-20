@@ -9,13 +9,11 @@ import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetc
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IStep from "../../interfaces/IStep";
-import Planner from "../../Planner";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import TravelMode from "../../TravelMode";
 import Iterators from "../../util/Iterators";
-import Units from "../../util/Units";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import JourneyExtractorDefault from "./JourneyExtractorDefault";
@@ -32,7 +30,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       connectionFetcher.setConfig({ backward: true });
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-      stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
@@ -162,7 +159,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       connectionFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-      stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
@@ -330,49 +326,5 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       });
     });
 
-    describe("Exponential query runner", () => {
-      jest.setTimeout(100000);
-      let publicTransportResult;
-
-      const query = {
-        publicTransportOnly: true,
-        from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-        minimumDepartureTime: new Date(),
-        maximumTransferDuration: Units.fromHours(.5),
-      };
-
-      const result: IPath[] = [];
-
-      beforeAll(async (done) => {
-        const planner = new Planner();
-        publicTransportResult = await planner.query(query);
-
-        let i = 0;
-        publicTransportResult.on("readable", () => {
-          let path = publicTransportResult.read();
-          if (path) {
-            result.push(path);
-          }
-
-          while (path && i < 10) {
-            i++;
-            path = publicTransportResult.read();
-
-            if (path) {
-              result.push(path);
-            }
-          }
-
-          if (i === 10) {
-            done();
-          }
-        });
-      });
-
-      it("Correct departure and arrival stop", () => {
-          checkStops(result, query);
-      });
-    });
   });
 });

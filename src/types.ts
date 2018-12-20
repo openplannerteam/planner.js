@@ -16,7 +16,11 @@ const TYPES = {
   StopsFetcherFactory: Symbol("StopsFetcherFactory"),
 
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
+  PublicTransportPlannerFactory: Symbol("PublicTransportPlannerFactory"),
+
   RoadPlanner: Symbol("RoadPlanner"),
+  RoadPlannerFactory: Symbol("RoadPlannerFactory"),
+
   ReachableStopsFinder: Symbol("ReachableStopsFinder"),
   JourneyExtractor: Symbol("JourneyExtractor"),
   LDFetch: Symbol("LDFetch"),
@@ -25,5 +29,5 @@ const TYPES = {
 
 export default TYPES;
 
-export type StopsFetcherFactory = (prefix: string, accessUrl: string) => IStopsFetcher;
+export type StopsFetcherFactory = (accessUrl: string) => IStopsFetcher;
 export type ConnectionsFetcherFactory = (accessUrl: string, travelMode: TravelMode) => IConnectionsFetcher;
