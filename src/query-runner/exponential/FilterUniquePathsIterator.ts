@@ -7,7 +7,10 @@ export default class FilterUniquePathsIterator extends SimpleTransformIterator<I
   private store: Path[];
 
   constructor(source: AsyncIterator<IPath>) {
-    super(source);
+    super(source, {
+      maxBufferSize: 1,
+      autoStart: false,
+    });
 
     this.store = [];
   }

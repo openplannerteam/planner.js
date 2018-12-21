@@ -41,10 +41,14 @@ export default class QueryRunnerExponential implements IQueryRunner {
     if (baseQuery.publicTransportOnly) {
 
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
-      const emitQueryIterator = new Emiterator<IResolvedQuery>(queryIterator, this.context, EventType.QueryExponential);
+      // const emitQueryIterator = new Emiterator<IResolvedQuery>(
+      // queryIterator,
+      // this.context,
+      // EventType.QueryExponential,
+      // );
 
       const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(
-        emitQueryIterator,
+        queryIterator,
         this.runSubquery.bind(this),
       );
 
@@ -57,6 +61,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
+    this.context.emit(EventType.QueryExponential, query);
+
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
     return planner.plan(query);

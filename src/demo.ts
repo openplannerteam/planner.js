@@ -9,6 +9,9 @@ export default async (logResults) => {
   const planner = new Planner();
 
   if (logResults) {
+    let scannedPages = 0;
+    let scannedConnections = 0;
+
     planner
       .on(EventType.Query, (query) => {
         console.log("Query", query);
@@ -16,10 +19,16 @@ export default async (logResults) => {
       .on(EventType.QueryExponential, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;
 
+        console.log("Total scanned pages", scannedPages);
+        console.log("Total scanned connections", scannedConnections);
         console.log("[Subquery]", minimumDepartureTime, maximumArrivalTime, maximumArrivalTime - minimumDepartureTime);
       })
       .on(EventType.LDFetchGet, (url, duration) => {
+        scannedPages++;
         console.log(`[GET] ${url} (${duration}ms)`);
+      })
+      .on(EventType.ConnectionScan, (connection) => {
+        scannedConnections++;
       });
   }
 
@@ -31,8 +40,10 @@ export default async (logResults) => {
     // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
     // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
     // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-    from: "http://irail.be/stations/NMBS/008896008", // Kortrijk
+    from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+   /* from: {longitude: 3.707352, latitude: 51.011877},
+    to: {longitude: 3.707353, latitude: 51.011877},*/
     minimumDepartureTime: new Date(),
     maximumTransferDuration: Units.fromHours(.01),
   });
@@ -45,16 +56,17 @@ export default async (logResults) => {
         ++i;
 
         if (logResults) {
-          console.log(++i);
-          path.steps.forEach((step: IStep) => {
-            console.log(JSON.stringify(step, null, " "));
-          });
+          console.log(i);
+          console.log(JSON.stringify(path, null, " "));
           console.log("\n");
         }
 
         if (i === 3) {
           resolve(true);
         }
+      })
+      .on("end", () => {
+        resolve(false);
       });
   });
 };
