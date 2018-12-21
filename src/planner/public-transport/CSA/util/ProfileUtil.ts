@@ -1,4 +1,6 @@
+import DropOffType from "../../../../fetcher/connections/DropOffType";
 import IConnection from "../../../../fetcher/connections/IConnection";
+import { DurationMs } from "../../../../interfaces/units";
 import IArrivalTimeByTransfers from "../data-structure/IArrivalTimeByTransfers";
 import IProfilesByStop from "../data-structure/stops/IProfilesByStop";
 
@@ -23,21 +25,28 @@ export default class ProfileUtil {
   public static getTransferTimes(
     profilesByStop: IProfilesByStop,
     connection: IConnection,
-    maxLegs,
-    minimumTransferDuration,
+    maxLegs: number,
+    minimumTransferDuration: DurationMs,
+    maximumTransferDuration: DurationMs,
   ): IArrivalTimeByTransfers {
     const { arrivalStop, arrivalTime } = connection;
     const trip = connection["gtfs:trip"];
 
-    if (connection["gtfs:dropOffType"] !== "gtfs:NotAvailable") {
+    if (connection["gtfs:dropOffType"] !== DropOffType.NotAvailable) {
 
-      let i = profilesByStop[arrivalStop].length - 1;
-      while (i >= 0) {
-        if (profilesByStop[arrivalStop][i].departureTime >= arrivalTime.getTime() + minimumTransferDuration) {
-          const arrivalTimeByTransfers = profilesByStop[arrivalStop][i].getArrivalTimeByTransfers(trip);
+      let profileIndex = profilesByStop[arrivalStop].length - 1;
+      while (profileIndex >= 0) {
+
+        const departure: number = profilesByStop[arrivalStop][profileIndex].departureTime;
+        const arrival: number = arrivalTime.getTime();
+
+        const transferDuration = departure - arrival;
+
+        if (transferDuration >= minimumTransferDuration && transferDuration <= maximumTransferDuration) {
+          const arrivalTimeByTransfers = profilesByStop[arrivalStop][profileIndex].getArrivalTimeByTransfers(trip);
           return arrivalTimeByTransfers.slice() as IArrivalTimeByTransfers;
         }
-        i--;
+        profileIndex--;
       }
 
     }

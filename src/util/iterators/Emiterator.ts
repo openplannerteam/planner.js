@@ -18,6 +18,8 @@ export default class Emiterator<T> extends SimpleTransformIterator<T, T> {
 
         return item;
       },
+      maxBufferSize: 1,
+      autoStart: false,
     };
 
     super(source, options);

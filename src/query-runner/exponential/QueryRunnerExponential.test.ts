@@ -69,26 +69,13 @@ describe("[QueryRunnerExponential]", () => {
 
     publicTransportResult = await queryRunner.run(query);
 
-    let i = 0;
-    publicTransportResult.on("readable", () => {
-      let path = publicTransportResult.read();
-      if (path) {
+    await publicTransportResult.take(3)
+      .on("data", (path: IPath) => {
         result.push(path);
-      }
-
-      while (path && i < 10) {
-        i++;
-        path = publicTransportResult.read();
-
-        if (path) {
-          result.push(path);
-        }
-      }
-
-      if (i === 10) {
+      })
+      .on("end", () => {
         done();
-      }
-    });
+      });
   });
 
   it("Correct departure and arrival stop", () => {

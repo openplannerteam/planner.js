@@ -85,22 +85,22 @@ export default class ConnectionsIteratorLazy extends BufferedIterator<IConnectio
   }
 
   private pushCurrentPage(): void {
-      const { connections } = this.currentPage;
+    const { connections } = this.currentPage;
 
-      if (this.config.backward) {
-        let c = connections.length - 1;
+    if (this.config.backward) {
+      let c = connections.length - 1;
 
-        while (c >= 0) {
-          this._push(connections[c]);
-          c--;
-        }
+      while (c >= 0) {
+        this._push(connections[c]);
+        c--;
+      }
 
-        // Forwards
-      } else {
-        for (const connection of connections) {
-          this._push(connection);
-        }
+      // Forwards
+    } else {
+      for (const connection of connections) {
+        this._push(connection);
       }
     }
+  }
 
 }

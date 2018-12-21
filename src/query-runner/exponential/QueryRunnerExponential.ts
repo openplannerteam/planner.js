@@ -9,6 +9,7 @@ import IQuery from "../../interfaces/IQuery";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
 import Emiterator from "../../util/iterators/Emiterator";
+import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
@@ -41,10 +42,14 @@ export default class QueryRunnerExponential implements IQueryRunner {
     if (baseQuery.publicTransportOnly) {
 
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
-      const emitQueryIterator = new Emiterator<IResolvedQuery>(queryIterator, this.context, EventType.QueryExponential);
+      // const emitQueryIterator = new Emiterator<IResolvedQuery>(
+      // queryIterator,
+      // this.context,
+      // EventType.QueryExponential,
+      // );
 
       const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(
-        emitQueryIterator,
+        queryIterator,
         this.runSubquery.bind(this),
       );
 
@@ -57,6 +62,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
+    this.context.emit(EventType.QueryExponential, query);
+
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
     return planner.plan(query);
@@ -82,6 +89,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     const {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
+      maximumWalkingDuration, maximumWalkingDistance,
       minimumTransferDuration, maximumTransferDuration, maximumTransfers,
       minimumDepartureTime,
       ...other
@@ -96,6 +104,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
     resolvedQuery.to = await this.resolveEndpoint(to);
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
+    resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
+      Units.toDuration(maximumWalkingDistance, resolvedQuery.minimumWalkingSpeed) || Defaults.defaultWalkingDuration;
 
     resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
     resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
