@@ -1,7 +1,6 @@
 import EventType from "./EventType";
 import Planner from "./index";
 import IPath from "./interfaces/IPath";
-import IStep from "./interfaces/IStep";
 import Units from "./util/Units";
 
 export default async (logResults) => {
@@ -42,10 +41,8 @@ export default async (logResults) => {
     // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
     from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-   /* from: {longitude: 3.707352, latitude: 51.011877},
-    to: {longitude: 3.707353, latitude: 51.011877},*/
     minimumDepartureTime: new Date(),
-    maximumTransferDuration: Units.fromHours(.01),
+    maximumTransferDuration: Units.fromHours(0.5),
   });
 
   return new Promise((resolve, reject) => {

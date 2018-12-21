@@ -9,6 +9,7 @@ import IQuery from "../../interfaces/IQuery";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
 import Emiterator from "../../util/iterators/Emiterator";
+import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
@@ -88,6 +89,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     const {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
+      maximumWalkingDuration, maximumWalkingDistance,
       minimumTransferDuration, maximumTransferDuration, maximumTransfers,
       minimumDepartureTime,
       ...other
@@ -102,6 +104,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
     resolvedQuery.to = await this.resolveEndpoint(to);
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
+    resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
+      Units.toDuration(maximumWalkingDistance, resolvedQuery.minimumWalkingSpeed) || Defaults.defaultWalkingDuration;
 
     resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
     resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;

@@ -40,6 +40,14 @@ export default class MergeIterator<T> extends BufferedIterator<T> {
     });
   }
 
+  public close() {
+    for (const iterator of this.sourceIterators) {
+      iterator.close();
+    }
+
+    super.close();
+  }
+
   private fillFirstValues(done) {
     this.values = Array(this.sourceIterators.length).fill(undefined);
     let filledValues = 0;

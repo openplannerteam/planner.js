@@ -2,8 +2,10 @@ import { AsyncIterator } from "asynciterator";
 import { inject, injectable, tagged } from "inversify";
 import Context from "../../Context";
 import EventType from "../../EventType";
+import DropOffType from "../../fetcher/connections/DropOffType";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
+import PickupType from "../../fetcher/connections/PickupType";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -125,19 +127,24 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const self = this;
 
     return new Promise((resolve, reject) => {
+      let isDone = false;
+      const done = () => {
+        if (!isDone) {
+          self.connectionsIterator.close();
 
-     const done = () => {
-        self.journeyExtractor.extractJourneys(self.profilesByStop, self.query)
-          .then((resultIterator) => {
-            resolve(resultIterator);
-          });
+          self.journeyExtractor.extractJourneys(self.profilesByStop, self.query)
+            .then((resultIterator) => {
+              resolve(resultIterator);
+            });
+          isDone = true;
+        }
       };
 
-     this.connectionsIterator.on("readable", () =>
+      this.connectionsIterator.on("readable", () =>
         self.processNextConnection(done),
       );
 
-     this.connectionsIterator.on("end", () => done());
+      this.connectionsIterator.on("end", () => done());
 
     }) as Promise<AsyncIterator<IPath>>;
   }
@@ -234,7 +241,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       .findReachableStops(
         arrivalStop,
         ReachableStopsFinderMode.Target,
-        this.query.maximumTransferDuration,
+        this.query.maximumWalkingDuration,
         this.query.minimumWalkingSpeed,
       );
 
@@ -242,6 +249,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       this.context.emit(EventType.QueryAbort);
 
       return false;
+    }
+
+    if (this.context) {
+      this.context.emit(EventType.FinalReachableStops, reachableStops);
     }
 
     for (const reachableStop of reachableStops) {
@@ -257,7 +268,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     this.initialReachableStops = await this.initialReachableStopsFinder.findReachableStops(
       fromLocation,
       ReachableStopsFinderMode.Source,
-      this.query.maximumTransferDuration,
+      this.query.maximumWalkingDuration,
       this.query.minimumWalkingSpeed,
     );
 
@@ -265,6 +276,10 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       this.context.emit(EventType.QueryAbort);
 
       return false;
+    }
+
+    if (this.context) {
+      this.context.emit(EventType.InitialReachableStops, this.initialReachableStops);
     }
 
     return true;
@@ -321,7 +336,8 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       connection,
       this.query.maximumTransfers,
       this.query.minimumTransferDuration,
-      );
+      this.query.maximumTransferDuration,
+    );
 
     return Vectors.shiftVector<IArrivalTimeByTransfers>(
       transferTimes,
@@ -374,7 +390,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
     const initialReachableStop: IReachableStop = this.initialReachableStops.find(
       (reachable: IReachableStop) =>
-      reachable.stop.id === connection.departureStop,
+        reachable.stop.id === connection.departureStop,
     );
 
     if (initialReachableStop) {
@@ -390,7 +406,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
       departureStop as IStop,
       ReachableStopsFinderMode.Source,
-      this.query.maximumTransferDuration,
+      this.query.maximumWalkingDuration,
       this.query.minimumWalkingSpeed,
     );
 
@@ -406,12 +422,23 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     });
   }
 
+  private async emitTransferProfile(transferProfile: ITransferProfile, amountOfTransfers: number): Promise<void> {
+    const departureStop = await this.locationResolver.resolve(transferProfile.enterConnection.departureStop);
+    const arrivalStop = await this.locationResolver.resolve(transferProfile.exitConnection.arrivalStop);
+
+    this.context.emit(EventType.AddedNewTransferProfile, {
+      departureStop,
+      arrivalStop,
+      amountOfTransfers,
+    });
+  }
+
   private incorporateInProfile(
     connection: IConnection,
     duration: DurationMs,
     stop: IStop,
     arrivalTimeByTransfers: IArrivalTimeByTransfers,
-  ) {
+  ): void {
     const departureTime = connection.departureTime.getTime() - duration;
 
     if (departureTime < this.query.minimumDepartureTime.getTime()) {
@@ -447,12 +474,17 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
         if (
           arrivalTimeByTransfers[amountOfTransfers].arrivalTime < transferProfile.arrivalTime &&
-          connection["gtfs:pickupType"] !== "gtfs:NotAvailable" &&
-          possibleExitConnection["gtfs:dropOfType"] !== "gtfs:NotAvailable"
+          connection["gtfs:pickupType"] !== PickupType.NotAvailable &&
+          possibleExitConnection["gtfs:dropOfType"] !== DropOffType.NotAvailable
         ) {
           newTransferProfile.enterConnection = connection;
           newTransferProfile.exitConnection = possibleExitConnection;
           newTransferProfile.departureTime = departureTime;
+
+          if (this.context && this.context.listenerCount(EventType.AddedNewTransferProfile) > 0) {
+            this.emitTransferProfile(newTransferProfile, amountOfTransfers);
+          }
+
         } else {
           newTransferProfile.enterConnection = transferProfile.enterConnection;
           newTransferProfile.exitConnection = transferProfile.exitConnection;

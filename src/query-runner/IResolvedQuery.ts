@@ -10,6 +10,7 @@ export default interface IResolvedQuery {
   publicTransportOnly?: boolean;
   minimumWalkingSpeed?: SpeedkmH;
   maximumWalkingSpeed?: SpeedkmH;
+  maximumWalkingDuration?: DurationMs;
   minimumTransferDuration?: DurationMs;
   maximumTransferDuration?: DurationMs;
   maximumTransfers?: number;
