@@ -1,5 +1,5 @@
 import ILocation from "./ILocation";
-import { DurationMs, SpeedkmH } from "./units";
+import { DistanceM, DurationMs, SpeedkmH } from "./units";
 
 export default interface IQuery {
   from?: string | string[] | ILocation | ILocation[];
@@ -11,6 +11,9 @@ export default interface IQuery {
   walkingSpeed?: SpeedkmH;
   minimumWalkingSpeed?: SpeedkmH;
   maximumWalkingSpeed?: SpeedkmH;
+  maximumWalkingDuration?: DurationMs;
+  maximumWalkingDistance?: DistanceM;
+  minimumTransferDuration?: DurationMs;
   maximumTransferDuration?: DurationMs;
   maximumTransfers?: number;
 }

@@ -1,35 +1,39 @@
 import { AsyncIterator } from "asynciterator";
-import { inject, injectable } from "inversify";
+import { inject, injectable, interfaces } from "inversify";
 import Context from "../../Context";
 import Defaults from "../../Defaults";
+import EventType from "../../EventType";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
+import Emiterator from "../../util/iterators/Emiterator";
+import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
-import FilterUniqueIterator from "./FilterUniqueIterator";
+import FilterUniquePathsIterator from "./FilterUniquePathsIterator";
 import SubqueryIterator from "./SubqueryIterator";
 
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
-  public private;
   private locationResolver: ILocationResolver;
-  private publicTransportPlanner: IPublicTransportPlanner;
-
+  private publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
   private context: Context;
 
   constructor(
-    @inject(TYPES.Context) context: Context,
-    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.PublicTransportPlanner) publicTransportPlanner: IPublicTransportPlanner,
+    @inject(TYPES.Context)
+      context: Context,
+    @inject(TYPES.LocationResolver)
+      locationResolver: ILocationResolver,
+    @inject(TYPES.PublicTransportPlannerFactory)
+      publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
   ) {
-    this.locationResolver = locationResolver;
-    this.publicTransportPlanner = publicTransportPlanner;
     this.context = context;
+    this.locationResolver = locationResolver;
+    this.publicTransportPlannerFactory = publicTransportPlannerFactory;
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
@@ -38,9 +42,18 @@ export default class QueryRunnerExponential implements IQueryRunner {
     if (baseQuery.publicTransportOnly) {
 
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
-      const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(queryIterator, this.runSubquery.bind(this));
+      // const emitQueryIterator = new Emiterator<IResolvedQuery>(
+      // queryIterator,
+      // this.context,
+      // EventType.QueryExponential,
+      // );
 
-      return new FilterUniqueIterator(subqueryIterator);
+      const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(
+        queryIterator,
+        this.runSubquery.bind(this),
+      );
+
+      return new FilterUniquePathsIterator(subqueryIterator);
 
     } else {
       return Promise.reject("Query not supported");
@@ -48,8 +61,10 @@ export default class QueryRunnerExponential implements IQueryRunner {
   }
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    // TODO investigate publicTransportPlanner
-    const planner = this.context.getContainer().get<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
+    // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
+    this.context.emit(EventType.QueryExponential, query);
+
+    const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
     return planner.plan(query);
   }
@@ -74,7 +89,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
     const {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
-      maximumTransferDuration, maximumTransfers,
+      maximumWalkingDuration, maximumWalkingDistance,
+      minimumTransferDuration, maximumTransferDuration, maximumTransfers,
       minimumDepartureTime,
       ...other
     } = query;
@@ -88,7 +104,10 @@ export default class QueryRunnerExponential implements IQueryRunner {
     resolvedQuery.to = await this.resolveEndpoint(to);
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
+    resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
+      Units.toDuration(maximumWalkingDistance, resolvedQuery.minimumWalkingSpeed) || Defaults.defaultWalkingDuration;
 
+    resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
     resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
     resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 

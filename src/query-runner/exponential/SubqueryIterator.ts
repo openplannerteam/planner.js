@@ -53,7 +53,7 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
           }
 
           // Iterator was empty
-          if (self.currentResultPushed === 0) {
+          if (self.currentResultPushed === 0 && !this.closed) {
             self._read(null, done);
           }
         });

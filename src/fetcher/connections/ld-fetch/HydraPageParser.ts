@@ -63,13 +63,26 @@ export default class HydraPageParser {
   }
 
   private getDocumentIri(): string {
-    const typeTriple = this.triples.find(
+    // Type can be either http://www.w3.org/ns/hydra/core#PartialCollectionView
+    // or http://www.w3.org/ns/hydra/core#PagedCollection
+
+    let typeTriple = this.triples.find(
       Rdf.matchesTriple(
         null,
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
         "http://www.w3.org/ns/hydra/core#PartialCollectionView",
       ),
     );
+
+    if (!typeTriple) {
+      typeTriple = this.triples.find(
+        Rdf.matchesTriple(
+          null,
+          "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+          "http://www.w3.org/ns/hydra/core#PagedCollection",
+        ),
+      );
+    }
 
     if (!typeTriple) {
       throw new Error("Hydra page doesn`t have type triple");

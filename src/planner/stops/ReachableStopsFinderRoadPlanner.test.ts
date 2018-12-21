@@ -9,7 +9,6 @@ import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-stopsFetcher.setPrefix("http://irail.be/stations/NMBS/");
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
 const roadPlanner = new RoadPlannerBirdsEye();
