@@ -3,6 +3,8 @@ import { AsyncIterator } from "asynciterator";
 import { EventEmitter, Listener } from "events";
 import Context from "./Context";
 import EventType from "./EventType";
+import IStop from "./fetcher/stops/IStop";
+import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import IPath from "./interfaces/IPath";
 import IQuery from "./interfaces/IQuery";
 import defaultContainer from "./inversify.config";
@@ -96,5 +98,15 @@ export default class Planner implements EventEmitter {
     this.context.setMaxListeners(n);
 
     return this;
+  }
+
+  public getAllStops(): Promise<IStop[]> {
+    const provider = this.context.getContainer().get<IStopsProvider>(TYPES.StopsProvider);
+
+    if (provider) {
+      return provider.getAllStops();
+    }
+
+    return Promise.reject();
   }
 }
