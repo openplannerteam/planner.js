@@ -2,7 +2,6 @@ import { AsyncIterator } from "asynciterator";
 import { inject, injectable, interfaces } from "inversify";
 import Context from "../../Context";
 import Defaults from "../../Defaults";
-import InvalidQueryError from "../../errors/InvalidQueryError";
 import EventType from "../../EventType";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -41,6 +40,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
     if (baseQuery.publicTransportOnly) {
+
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
       // const emitQueryIterator = new Emiterator<IResolvedQuery>(
       // queryIterator,
@@ -56,7 +56,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
       return new FilterUniquePathsIterator(subqueryIterator);
 
     } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true");
+      return Promise.reject("Query not supported");
     }
   }
 
@@ -100,14 +100,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
 
-    try {
-      resolvedQuery.from = await this.resolveEndpoint(from);
-      resolvedQuery.to = await this.resolveEndpoint(to);
-
-    } catch (e) {
-      return Promise.reject(new InvalidQueryError(e));
-    }
-
+    resolvedQuery.from = await this.resolveEndpoint(from);
+    resolvedQuery.to = await this.resolveEndpoint(to);
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
     resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
