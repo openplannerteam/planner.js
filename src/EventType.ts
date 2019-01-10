@@ -1,16 +1,11 @@
 enum EventType {
   Query = "query",
   QueryExponential = "query-exponential",
-  AbortQuery = "abort-query",
-  InvalidQuery = "invalid-query",
-
+  QueryAbort = "query-abort",
   LDFetchGet = "ldfetch-get",
-
-  Warning = "warning",
-
   ConnectionScan = "connection-scan",
-  InitialReachableStops = "initial-reachable-stops",
   FinalReachableStops = "final-reachable-stops",
+  InitialReachableStops = "initial-reachable-stops",
   AddedNewTransferProfile = "added-new-transfer-profile",
 }
 

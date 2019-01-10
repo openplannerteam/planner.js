@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify";
-import LocationResolverError from "../errors/LocationResolverError";
 import IStop from "../fetcher/stops/IStop";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
 import ILocation from "../interfaces/ILocation";
@@ -24,7 +23,7 @@ export default class LocationResolverDefault implements ILocationResolver {
         return this.resolveById(input);
       }
 
-      return Promise.reject(new LocationResolverError(`Location "${input}" is a string, but not an ID`));
+      return Promise.reject(`Location "${input}" is a string, but not an ID`);
     }
 
     const location: ILocation = input;
@@ -38,9 +37,7 @@ export default class LocationResolverDefault implements ILocationResolver {
     }
 
     if (!hasCoords) {
-      return Promise.reject(
-        new LocationResolverError(`Location "${JSON.stringify(input)}" should have latitude and longitude`),
-      );
+      return Promise.reject(`Location "${JSON.stringify(input)}" should have latitude and longitude`);
     }
 
     return location;
@@ -58,7 +55,7 @@ export default class LocationResolverDefault implements ILocationResolver {
       };
     }
 
-    return Promise.reject(new LocationResolverError(`No fetcher for id ${id}`));
+    throw new Error(`No fetcher for id ${id}`);
   }
 
   private isId(testString: string): boolean {
