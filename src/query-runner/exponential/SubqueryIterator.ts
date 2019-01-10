@@ -9,7 +9,7 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
   private isLastResultIterator = false;
 
   constructor(queryIterator: AsyncIterator<Q>, run: (query: Q) => Promise<AsyncIterator<R>>) {
-    super();
+    super({maxBufferSize: 1, autoStart: false});
 
     this.queryIterator = queryIterator;
     this.callback = run;
@@ -71,7 +71,7 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
   }
 
   private pushItemsAsync(done) {
-    this.currentResultIterator.on("readable", () => {
+    this.currentResultIterator.once("readable", () => {
       this.pushItemsSync();
       done();
     });

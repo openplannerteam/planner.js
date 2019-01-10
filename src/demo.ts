@@ -11,6 +11,8 @@ export default async (logResults) => {
     let scannedPages = 0;
     let scannedConnections = 0;
 
+    let logFetch = true;
+
     planner
       .on(EventType.InvalidQuery, (error) => {
         console.log("InvalidQuery", error);
@@ -24,13 +26,19 @@ export default async (logResults) => {
       .on(EventType.QueryExponential, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;
 
+        logFetch = true;
+
         console.log("Total scanned pages", scannedPages);
         console.log("Total scanned connections", scannedConnections);
         console.log("[Subquery]", minimumDepartureTime, maximumArrivalTime, maximumArrivalTime - minimumDepartureTime);
       })
       .on(EventType.LDFetchGet, (url, duration) => {
         scannedPages++;
-        console.log(`[GET] ${url} (${duration}ms)`);
+
+        if (logFetch) {
+          console.log(`[GET] ${url} (${duration}ms)`);
+          logFetch = false;
+        }
       })
       .on(EventType.ConnectionScan, (connection) => {
         scannedConnections++;
@@ -51,24 +59,25 @@ export default async (logResults) => {
       // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
       from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
       to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-      minimumDepartureTime: new Date("2019-01-10T08:13:20.530Z"),
+      minimumDepartureTime: new Date(),
       maximumTransferDuration: Units.fromHours(0.5),
     })
       .then((publicTransportResult) => {
 
+        const amount = 3;
         let i = 0;
 
-        publicTransportResult.take(3)
+        publicTransportResult.take(amount)
           .on("data", (path: IPath) => {
             ++i;
 
-            if (logResults) {
+            if (logResults && false) {
               console.log(i);
               console.log(JSON.stringify(path, null, " "));
               console.log("\n");
             }
 
-            if (i === 3) {
+            if (i === amount) {
               resolve(true);
             }
           })

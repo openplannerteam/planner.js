@@ -11,10 +11,6 @@ import defaultContainer from "./inversify.config";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
 
-if (!Symbol.asyncIterator) {
-  (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
-}
-
 /**
  * Allows to ask route planning queries over our knowledge graphs
  */
