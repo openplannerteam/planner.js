@@ -43,13 +43,21 @@ export default class Planner implements EventEmitter {
   public async query(query: IQuery): Promise<AsyncIterator<IPath>> {
     this.emit(EventType.Query, query);
 
-    const iterator = await this.queryRunner.run(query);
+    try {
+      const iterator = await this.queryRunner.run(query);
 
-    this.once(EventType.QueryAbort, () => {
-      iterator.close();
-    });
+      this.once(EventType.AbortQuery, () => {
+        iterator.close();
+      });
 
-    return iterator;
+      return iterator;
+    } catch (e) {
+      if (e.eventType) {
+        this.context.emit(e.eventType, e.message);
+      }
+
+      return Promise.reject();
+    }
   }
 
   public addListener(type: string | symbol, listener: Listener): this {

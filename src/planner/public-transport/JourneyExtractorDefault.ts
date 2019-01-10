@@ -1,5 +1,6 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
+import Context from "../../Context";
 import IConnection from "../../fetcher/connections/IConnection";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -28,9 +29,14 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
   private readonly locationResolver: ILocationResolver;
 
   private bestArrivalTime: number[][] = [];
+  private context: Context;
 
-  constructor(@inject(TYPES.LocationResolver) locationResolver: ILocationResolver) {
+  constructor(
+    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
+    @inject(TYPES.Context)context?: Context,
+  ) {
     this.locationResolver = locationResolver;
+    this.context = context;
   }
 
   public async extractJourneys(
@@ -72,7 +78,7 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
               transferProfile.arrivalTime,
             );
           } catch (e) {
-            console.warn(e);
+            this.context.emitWarning(e);
           }
         }
       }
@@ -173,17 +179,17 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
       // Get next profile based on the arrival time at the current location.
       if (remainingTransfers >= 0) {
         const currentProfiles: IProfile[] = profilesByStop[currentLocation.id];
-        let i: number = currentProfiles.length - 1;
+        let profileIndex: number = currentProfiles.length - 1;
 
-        currentTransferProfile = currentProfiles[i].transferProfiles[remainingTransfers];
+        currentTransferProfile = currentProfiles[profileIndex].transferProfiles[remainingTransfers];
         departureTime = new Date(currentTransferProfile.departureTime);
 
-        while (i >= 0 && departureTime < exitConnection.arrivalTime) {
-          currentTransferProfile = currentProfiles[--i].transferProfiles[remainingTransfers];
+        while (profileIndex >= 0 && departureTime < exitConnection.arrivalTime) {
+          currentTransferProfile = currentProfiles[--profileIndex].transferProfiles[remainingTransfers];
           departureTime = new Date(currentTransferProfile.departureTime);
         }
 
-        if (i === -1) {
+        if (profileIndex === -1) {
           // This should never happen.
           return Promise.reject("Can't find next connection");
         }

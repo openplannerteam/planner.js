@@ -1,6 +1,7 @@
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import { Container, injectable } from "inversify";
+import EventType from "./EventType";
 
 /**
  * The Context serves as event pass through and holder of the inversify container object.
@@ -33,6 +34,10 @@ export default class Context implements EventEmitter {
 
   public emit(type: string | symbol, ...args: any[]): boolean {
     return this.emitter.emit(type, ...args);
+  }
+
+  public emitWarning(...args: any[]): boolean {
+    return this.emit(EventType.Warning, ...args);
   }
 
   public listenerCount(type: string | symbol): number {
