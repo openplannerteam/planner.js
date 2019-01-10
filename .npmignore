@@ -1,0 +1,7 @@
+node_modules/*
+.idea/*
+bundle.js
+bundle.js.map
+stats.json
+docs/*
+examples

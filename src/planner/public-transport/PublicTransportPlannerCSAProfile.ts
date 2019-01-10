@@ -88,18 +88,6 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     this.query = query;
 
-    const departureLocation = this.query.from[0];
-    if (!departureLocation.id) {
-      departureLocation.id = "geo:" + departureLocation.latitude + "," + departureLocation.longitude;
-      departureLocation.name = "Departure location";
-    }
-
-    const arrivalLocation = this.query.to[0];
-    if (!arrivalLocation.id) {
-      arrivalLocation.id = "geo:" + arrivalLocation.latitude + "," + arrivalLocation.longitude;
-      arrivalLocation.name = "Arrival location";
-    }
-
     this.setBounds();
 
     return this.calculateJourneys();
@@ -224,7 +212,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
   private calculateEarliestArrivalTime(connection: IConnection): IArrivalTimeByTransfers {
     const remainSeatedTime = this.remainSeated(connection);
-    if (connection["gtfs:dropOffType"] === "gtfs:NotAvailable") {
+    if (connection["gtfs:dropOffType"] === DropOffType.NotAvailable) {
       return remainSeatedTime;
     }
 
@@ -246,7 +234,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       );
 
     if (reachableStops.length === 0 && this.context) {
-      this.context.emit(EventType.QueryAbort);
+      this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
 
       return false;
     }
@@ -256,7 +244,16 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     }
 
     for (const reachableStop of reachableStops) {
+      if (!this.query.to[0].id && reachableStop.duration === 0) {
+        this.query.to[0] = reachableStop.stop;
+      }
+
       this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration;
+    }
+
+    if (!this.query.to[0].id) {
+      this.query.to[0].id = "geo:" + this.query.to[0].latitude + "," + this.query.to[0].longitude;
+      this.query.to[0].name = "Arrival location";
     }
 
     return true;
@@ -272,8 +269,21 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       this.query.minimumWalkingSpeed,
     );
 
+    const stopIndex = 0;
+    while (stopIndex < this.initialReachableStops.length && !this.query.from[0].id) {
+      const reachableStop = this.initialReachableStops[stopIndex];
+      if (reachableStop.duration === 0) {
+        this.query.from[0] = reachableStop.stop;
+      }
+    }
+
+    if (!this.query.from[0].id) {
+      this.query.from[0].id = "geo:" + this.query.from[0].latitude + "," + this.query.from[0].longitude;
+      this.query.from[0].name = "Departure location";
+    }
+
     if (this.initialReachableStops.length === 0 && this.context) {
-      this.context.emit(EventType.QueryAbort);
+      this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
 
       return false;
     }
@@ -402,35 +412,45 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       );
     }
 
-    const departureStop: ILocation = await this.locationResolver.resolve(connection.departureStop);
-    const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
-      departureStop as IStop,
-      ReachableStopsFinderMode.Source,
-      this.query.maximumWalkingDuration,
-      this.query.minimumWalkingSpeed,
-    );
+    try {
+      const departureStop: ILocation = await this.locationResolver.resolve(connection.departureStop);
+      const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
+        departureStop as IStop,
+        ReachableStopsFinderMode.Source,
+        this.query.maximumWalkingDuration,
+        this.query.minimumWalkingSpeed,
+      );
 
-    reachableStops.forEach((reachableStop: IReachableStop) => {
-      if (reachableStop.stop.id !== departureLocation.id) {
-        this.incorporateInProfile(
-          connection,
-          reachableStop.duration,
-          reachableStop.stop,
-          earliestArrivalTimeByTransfers,
-        );
-      }
-    });
+      reachableStops.forEach((reachableStop: IReachableStop) => {
+        if (reachableStop.stop.id !== departureLocation.id) {
+          this.incorporateInProfile(
+            connection,
+            reachableStop.duration,
+            reachableStop.stop,
+            earliestArrivalTimeByTransfers,
+          );
+        }
+      });
+
+    } catch (e) {
+        this.context.emitWarning(e);
+    }
   }
 
   private async emitTransferProfile(transferProfile: ITransferProfile, amountOfTransfers: number): Promise<void> {
-    const departureStop = await this.locationResolver.resolve(transferProfile.enterConnection.departureStop);
-    const arrivalStop = await this.locationResolver.resolve(transferProfile.exitConnection.arrivalStop);
+    try {
+      const departureStop = await this.locationResolver.resolve(transferProfile.enterConnection.departureStop);
+      const arrivalStop = await this.locationResolver.resolve(transferProfile.exitConnection.arrivalStop);
 
-    this.context.emit(EventType.AddedNewTransferProfile, {
-      departureStop,
-      arrivalStop,
-      amountOfTransfers,
-    });
+      this.context.emit(EventType.AddedNewTransferProfile, {
+        departureStop,
+        arrivalStop,
+        amountOfTransfers,
+      });
+
+    } catch (e) {
+      this.context.emitWarning(e);
+    }
   }
 
   private incorporateInProfile(
