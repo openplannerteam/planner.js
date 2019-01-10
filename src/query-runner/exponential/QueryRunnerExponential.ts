@@ -9,7 +9,6 @@ import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
-import Emiterator from "../../util/iterators/Emiterator";
 import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
@@ -20,9 +19,9 @@ import SubqueryIterator from "./SubqueryIterator";
 
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
-  private locationResolver: ILocationResolver;
-  private publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
-  private context: Context;
+  private readonly locationResolver: ILocationResolver;
+  private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
+  private readonly context: Context;
 
   constructor(
     @inject(TYPES.Context)
@@ -42,11 +41,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
     if (baseQuery.publicTransportOnly) {
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
-      // const emitQueryIterator = new Emiterator<IResolvedQuery>(
-      // queryIterator,
-      // this.context,
-      // EventType.QueryExponential,
-      // );
 
       const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(
         queryIterator,
