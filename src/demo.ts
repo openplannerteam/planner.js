@@ -12,8 +12,14 @@ export default async (logResults) => {
     let scannedConnections = 0;
 
     planner
-      .on(EventType.Query, (query) => {
-        console.log("Query", query);
+      .on(EventType.InvalidQuery, (error) => {
+        console.log("InvalidQuery", error);
+      })
+      .on(EventType.AbortQuery, (reason) => {
+        console.log("AbortQuery", reason);
+      })
+      .on(EventType.Query, () => {
+        console.log("Query");
       })
       .on(EventType.QueryExponential, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;
@@ -28,42 +34,52 @@ export default async (logResults) => {
       })
       .on(EventType.ConnectionScan, (connection) => {
         scannedConnections++;
+      })
+      .on(EventType.Warning, (e) => {
+        console.warn(e);
       });
   }
 
-  const publicTransportResult = await planner.query({
-    publicTransportOnly: true,
-    // from: "https://data.delijn.be/stops/201657",
-    // to: "https://data.delijn.be/stops/205910",
-    // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-    // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
-    // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
-    // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-    from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-    to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-    minimumDepartureTime: new Date(),
-    maximumTransferDuration: Units.fromHours(0.5),
-  });
-
   return new Promise((resolve, reject) => {
-    let i = 0;
+    planner.query({
+      publicTransportOnly: true,
+      // from: "https://data.delijn.be/stops/201657",
+      // to: "https://data.delijn.be/stops/205910",
+      // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
+      // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
+      // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
+      // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
+      from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
+      to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+      minimumDepartureTime: new Date("2019-01-10T08:13:20.530Z"),
+      maximumTransferDuration: Units.fromHours(0.5),
+    })
+      .then((publicTransportResult) => {
 
-    publicTransportResult.take(3)
-      .on("data", (path: IPath) => {
-        ++i;
+        let i = 0;
 
-        if (logResults) {
-          console.log(i);
-          console.log(JSON.stringify(path, null, " "));
-          console.log("\n");
-        }
+        publicTransportResult.take(3)
+          .on("data", (path: IPath) => {
+            ++i;
 
-        if (i === 3) {
-          resolve(true);
-        }
+            if (logResults) {
+              console.log(i);
+              console.log(JSON.stringify(path, null, " "));
+              console.log("\n");
+            }
+
+            if (i === 3) {
+              resolve(true);
+            }
+          })
+          .on("end", () => {
+            resolve(false);
+          });
+
       })
-      .on("end", () => {
+      .catch(() => {
         resolve(false);
       });
   });
+
 };
