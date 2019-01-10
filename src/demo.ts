@@ -51,7 +51,7 @@ export default async (logResults) => {
       // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
       from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
       to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-      minimumDepartureTime: new Date("2019-01-10T08:13:20.530Z"),
+      minimumDepartureTime: new Date(),
       maximumTransferDuration: Units.fromHours(0.5),
     })
       .then((publicTransportResult) => {
