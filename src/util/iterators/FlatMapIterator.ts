@@ -1,6 +1,6 @@
 import { AsyncIterator, BufferedIterator } from "asynciterator";
 
-export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
+export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
   private queryIterator: AsyncIterator<Q>;
   private callback: (query: Q) => Promise<AsyncIterator<R>>;
 
@@ -10,6 +10,8 @@ export default class SubqueryIterator<Q, R> extends BufferedIterator<R> {
 
   constructor(queryIterator: AsyncIterator<Q>, run: (query: Q) => Promise<AsyncIterator<R>>) {
     super({maxBufferSize: 1, autoStart: false});
+
+    console.log("FlatMap");
 
     this.queryIterator = queryIterator;
     this.callback = run;

@@ -1,17 +1,17 @@
 import { ArrayIterator } from "asynciterator";
 import "jest";
-import AsyncArrayIterator from "../../util/iterators/AsyncArrayIterator";
-import SubqueryIterator from "./SubqueryIterator";
+import AsyncArrayIterator from "./AsyncArrayIterator";
+import FlatMapIterator from "./FlatMapIterator";
 
 const ALPHABET = "abc";
 const expected = ["a", "b", "b", "c", "c", "c"];
 
-describe("[SubqueryIterator]", () => {
+describe("[FlatMapIterator]", () => {
 
   const runTest = (QueryIterator, ResultIterator, done) => {
     const queryIterator = new QueryIterator([1, 2, 3], 10);
 
-    const subqueryIterator = new SubqueryIterator<number, string>(queryIterator, (num) => {
+    const flatMapIterator = new FlatMapIterator<number, string>(queryIterator, (num) => {
       return new Promise((resolve) => {
         const array = Array(num).fill(ALPHABET[num - 1]);
 
@@ -21,11 +21,11 @@ describe("[SubqueryIterator]", () => {
 
     let current = 0;
 
-    subqueryIterator.each((str) => {
+    flatMapIterator.each((str) => {
       expect(expected[current++]).toBe(str);
     });
 
-    subqueryIterator.on("end", () => done());
+    flatMapIterator.on("end", () => done());
   };
 
   it("Subqueries from ArrayIterator / Results from ArrayIterator", (done) => {

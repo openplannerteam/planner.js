@@ -9,13 +9,13 @@ import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
+import FlatMapIterator from "../../util/iterators/FlatMapIterator";
 import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
 import FilterUniquePathsIterator from "./FilterUniquePathsIterator";
-import SubqueryIterator from "./SubqueryIterator";
 
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
@@ -42,7 +42,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     if (baseQuery.publicTransportOnly) {
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
 
-      const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(
+      const subqueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
         queryIterator,
         this.runSubquery.bind(this),
       );
