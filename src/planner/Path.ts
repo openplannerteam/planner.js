@@ -10,6 +10,18 @@ export default class Path implements IPath {
     );
   }
 
+  public static compareEquals(path: IPath, otherPath: IPath): boolean {
+    if (path.steps.length !== otherPath.steps.length) {
+      return false;
+    }
+
+    return path.steps.every((step, stepIndex) => {
+      const otherStep = otherPath.steps[stepIndex];
+
+      return Step.compareEquals(step, otherStep);
+    });
+  }
+
   public steps: IStep[];
 
   constructor(steps: IStep[]) {
@@ -18,18 +30,5 @@ export default class Path implements IPath {
 
   public addStep(step: IStep): void {
     this.steps.push(step);
-  }
-
-  public equals(path: IPath): boolean {
-
-    if (this.steps.length !== path.steps.length) {
-      return false;
-    }
-
-    return this.steps.every((step, stepIndex) => {
-      const otherStep = path.steps[stepIndex];
-
-      return Step.compareEquals(step, otherStep);
-    });
   }
 }

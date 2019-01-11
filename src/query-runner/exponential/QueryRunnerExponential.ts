@@ -7,15 +7,16 @@ import EventType from "../../EventType";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
+import Path from "../../planner/Path";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
+import FilterUniqueIterator from "../../util/iterators/FilterUniqueIterator";
 import FlatMapIterator from "../../util/iterators/FlatMapIterator";
 import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
-import FilterUniquePathsIterator from "./FilterUniquePathsIterator";
 
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
@@ -47,7 +48,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
         this.runSubquery.bind(this),
       );
 
-      return new FilterUniquePathsIterator(subqueryIterator);
+      return new FilterUniqueIterator<IPath>(subqueryIterator, Path.compareEquals);
 
     } else {
       throw new InvalidQueryError("Query should have publicTransportOnly = true");
