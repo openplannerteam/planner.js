@@ -32,6 +32,10 @@ export default class ConnectionsFetcherLazy implements IConnectionsFetcher {
     this.accessUrl = accessUrl;
   }
 
+  public prefetchConnections(): void {
+    return;
+  }
+
   public createIterator(): AsyncIterator<IConnection> {
     return new ConnectionsIteratorLazy(
       this.accessUrl,

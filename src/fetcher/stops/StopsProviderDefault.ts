@@ -21,6 +21,12 @@ export default class StopsProviderDefault implements IStopsProvider {
     }
   }
 
+  public prefetchStops(): void {
+    for (const stopsFetcher of this.stopsFetchers) {
+      stopsFetcher.prefetchStops();
+    }
+  }
+
   public async getStopById(stopId: string): Promise<IStop> {
     return Promise.all(this.stopsFetchers
       .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getStopById(stopId)),

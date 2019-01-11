@@ -1,7 +1,7 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Defaults from "../../Defaults";
-import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
+import ConnectionsFetcherLazy from "../../fetcher/connections/hydra/ConnectionsFetcherLazy";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
 import connectionsJoining from "../../fetcher/connections/tests/data/joining";

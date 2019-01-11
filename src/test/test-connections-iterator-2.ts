@@ -1,5 +1,5 @@
 import LDFetch from "ldfetch";
-import ConnectionsIteratorLazy from "../fetcher/connections/ld-fetch/ConnectionsIteratorLazy";
+import ConnectionsIteratorLazy from "../fetcher/connections/hydra/ConnectionsIteratorLazy";
 import TravelMode from "../TravelMode";
 
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });

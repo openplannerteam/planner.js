@@ -116,6 +116,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
 
     return new Promise((resolve, reject) => {
       let isDone = false;
+
       const done = () => {
         if (!isDone) {
           self.connectionsIterator.close();
@@ -124,6 +125,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
             .then((resultIterator) => {
               resolve(resultIterator);
             });
+
           isDone = true;
         }
       };

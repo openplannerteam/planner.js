@@ -11,6 +11,8 @@ export default async (logResults) => {
     let scannedPages = 0;
     let scannedConnections = 0;
 
+    // let logFetch = true;
+
     planner
       .on(EventType.InvalidQuery, (error) => {
         console.log("InvalidQuery", error);
@@ -24,6 +26,8 @@ export default async (logResults) => {
       .on(EventType.QueryExponential, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;
 
+        // logFetch = true;
+
         console.log("Total scanned pages", scannedPages);
         console.log("Total scanned connections", scannedConnections);
         console.log("[Subquery]", minimumDepartureTime, maximumArrivalTime, maximumArrivalTime - minimumDepartureTime);
@@ -31,6 +35,11 @@ export default async (logResults) => {
       .on(EventType.LDFetchGet, (url, duration) => {
         scannedPages++;
         console.log(`[GET] ${url} (${duration}ms)`);
+
+        // if (logFetch) {
+        //   console.log(`[GET] ${url} (${duration}ms)`);
+        //   logFetch = false;
+        // }
       })
       .on(EventType.ConnectionScan, (connection) => {
         scannedConnections++;
@@ -56,9 +65,10 @@ export default async (logResults) => {
     })
       .then((publicTransportResult) => {
 
+        const amount = 3;
         let i = 0;
 
-        publicTransportResult.take(3)
+        publicTransportResult.take(amount)
           .on("data", (path: IPath) => {
             ++i;
 
@@ -68,7 +78,7 @@ export default async (logResults) => {
               console.log("\n");
             }
 
-            if (i === 3) {
+            if (i === amount) {
               resolve(true);
             }
           })

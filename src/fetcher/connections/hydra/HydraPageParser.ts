@@ -1,8 +1,6 @@
 import { Triple } from "rdf-js";
 import UriTemplate from "uritemplate";
-import TravelMode from "../../../TravelMode";
 import Rdf from "../../../util/Rdf";
-import ConnectionsPageParser from "./ConnectionsPageParser";
 import IHydraPage from "./IHydraPage";
 
 /**
@@ -18,14 +16,11 @@ export default class HydraPageParser {
     this.documentIri = this.getDocumentIri();
   }
 
-  public getPage(index: number, travelMode: TravelMode): IHydraPage {
-    const connectionsParser = new ConnectionsPageParser(this.documentIri, this.triples);
-    const connections = connectionsParser.getConnections(travelMode);
-
+  public getPage(index: number): IHydraPage {
     return {
       index,
       documentIri: this.documentIri,
-      connections,
+      triples: this.triples,
     };
   }
 

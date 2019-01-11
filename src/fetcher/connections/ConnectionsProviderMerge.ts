@@ -1,11 +1,11 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
-import Catalog from "../../../Catalog";
-import TYPES, { ConnectionsFetcherFactory } from "../../../types";
-import MergeIterator from "../../../util/iterators/MergeIterator";
-import IConnection from "../IConnection";
-import IConnectionsFetcher from "../IConnectionsFetcher";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import Catalog from "../../Catalog";
+import TYPES, { ConnectionsFetcherFactory } from "../../types";
+import MergeIterator from "../../util/iterators/MergeIterator";
+import IConnection from "./IConnection";
+import IConnectionsFetcher from "./IConnectionsFetcher";
+import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
 
 /**
  * Instantiates and merge sorts all registered connection fetchers
@@ -63,6 +63,10 @@ export default class ConnectionsProviderMerge implements IConnectionsFetcher {
     for (const { accessUrl, travelMode } of catalog.connectionsFetcherConfigs) {
       this.connectionsFetchers.push(connectionsFetcherFactory(accessUrl, travelMode));
     }
+  }
+
+  public prefetchConnections(): void {
+    return;
   }
 
   public createIterator(): AsyncIterator<IConnection> {

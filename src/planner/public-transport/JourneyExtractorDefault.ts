@@ -77,13 +77,14 @@ export default class JourneyExtractorDefault implements IJourneyExtractor {
               arrivalLocation,
               transferProfile.arrivalTime,
             );
+
           } catch (e) {
             this.context.emitWarning(e);
           }
         }
       }
-
     }
+
     return new ArrayIterator<IPath>(paths.reverse());
   }
 
