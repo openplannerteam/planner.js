@@ -1,6 +1,6 @@
 import { AsyncIterator, SimpleTransformIterator, SimpleTransformIteratorOptions } from "asynciterator";
 import Context from "../../Context";
-import EventType from "../../EventType";
+import EventType from "../../enums/EventType";
 
 /**
  * Lazily emits an event of specified type for each item that passes through source iterator

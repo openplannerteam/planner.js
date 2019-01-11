@@ -1,6 +1,6 @@
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 export default interface IReachableStopsFinder {
   findReachableStops: (

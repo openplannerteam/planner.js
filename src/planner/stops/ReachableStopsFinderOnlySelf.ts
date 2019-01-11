@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 @injectable()
 export default class ReachableStopsFinderOnlySelf implements IReachableStopsFinder {

@@ -1,4 +1,4 @@
-import TravelMode from "./TravelMode";
+import TravelMode from "./enums/TravelMode";
 
 export default class Catalog {
 

@@ -1,5 +1,5 @@
 import Catalog from "./Catalog";
-import TravelMode from "./TravelMode";
+import TravelMode from "./enums/TravelMode";
 
 const catalog = new Catalog();
 

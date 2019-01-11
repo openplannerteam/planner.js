@@ -1,13 +1,13 @@
 import { ArrayIterator } from "asynciterator";
 import LdFetch from "ldfetch";
-import TravelMode from "../../../TravelMode";
+import TravelMode from "../../../enums/TravelMode";
 import FlatMapIterator from "../../../util/iterators/FlatMapIterator";
+import ConnectionsPageParser from "../hydra/ConnectionsPageParser";
+import HydraPageIterator from "../hydra/HydraPageIterator";
+import IHydraPage from "../hydra/IHydraPage";
+import IHydraPageIteratorConfig from "../hydra/IHydraPageIteratorConfig";
 import IConnection from "../IConnection";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
-import ConnectionsPageParser from "./ConnectionsPageParser";
-import HydraPageIterator from "./HydraPageIterator";
-import IHydraPage from "./IHydraPage";
-import IHydraPageIteratorConfig from "./IHydraPageIteratorConfig";
 
 /**
  * Base class for fetching linked connections with LDFetch and letting the caller iterate over them asynchronously

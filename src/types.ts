@@ -1,6 +1,6 @@
+import TravelMode from "./enums/TravelMode";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
-import TravelMode from "./TravelMode";
 
 const TYPES = {
   Context: Symbol("Context"),

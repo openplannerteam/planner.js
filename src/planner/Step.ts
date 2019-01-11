@@ -1,9 +1,9 @@
+import TravelMode from "../enums/TravelMode";
 import IConnection from "../fetcher/connections/IConnection";
 import ILocation from "../interfaces/ILocation";
 import IProbabilisticValue from "../interfaces/IProbabilisticValue";
 import IStep from "../interfaces/IStep";
 import { DistanceM, DurationMs } from "../interfaces/units";
-import TravelMode from "../TravelMode";
 
 export default class Step implements IStep {
 

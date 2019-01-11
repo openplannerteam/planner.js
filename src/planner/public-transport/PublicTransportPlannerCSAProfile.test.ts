@@ -1,7 +1,8 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Defaults from "../../Defaults";
-import ConnectionsFetcherLazy from "../../fetcher/connections/hydra/ConnectionsFetcherLazy";
+import TravelMode from "../../enums/TravelMode";
+import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
 import connectionsJoining from "../../fetcher/connections/tests/data/joining";
@@ -13,7 +14,6 @@ import IStep from "../../interfaces/IStep";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
-import TravelMode from "../../TravelMode";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import JourneyExtractorDefault from "./JourneyExtractorDefault";

@@ -1,4 +1,4 @@
-import EventType from "./EventType";
+import EventType from "./enums/EventType";
 import Planner from "./index";
 import IPath from "./interfaces/IPath";
 import Units from "./util/Units";

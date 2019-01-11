@@ -1,6 +1,6 @@
 import "jest";
 import LdFetch from "ldfetch";
-import TravelMode from "../../../TravelMode";
+import TravelMode from "../../../enums/TravelMode";
 import IConnection from "../IConnection";
 import ConnectionsIteratorLazy from "./ConnectionsIteratorLazy";
 

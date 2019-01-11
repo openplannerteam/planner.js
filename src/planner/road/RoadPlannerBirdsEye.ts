@@ -1,11 +1,11 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { injectable } from "inversify";
+import TravelMode from "../../enums/TravelMode";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
-import TravelMode from "../../TravelMode";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
 import Path from "../Path";
