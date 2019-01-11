@@ -9,6 +9,7 @@ import ConnectionsProviderMerge from "./fetcher/connections/ConnectionsProviderM
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import ConnectionsFetcherLazy from "./fetcher/connections/lazy/ConnectionsFetcherLazy";
+import ConnectionsProviderPrefetch from "./fetcher/connections/prefetch/ConnectionsProviderPrefetch";
 import LDFetch from "./fetcher/LDFetch";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
@@ -52,7 +53,7 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderMerge).inSingletonScope();
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPrefetch).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(

@@ -9,6 +9,7 @@ export default class BinarySearch<T> {
 
   /**
    * Find the last index of the given key, or the index after which that key would be hypothetically spliced in
+   * Adapted from: https://www.algorithmsandme.com/last-occurrence-of-element-with-binary-search/
    * @param key
    * @param start
    * @param end

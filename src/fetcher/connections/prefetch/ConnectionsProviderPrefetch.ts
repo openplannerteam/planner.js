@@ -1,4 +1,5 @@
 import { AsyncIterator } from "asynciterator";
+import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { inject, injectable } from "inversify";
 import Catalog from "../../../Catalog";
 import TYPES, { ConnectionsFetcherFactory } from "../../../types";
@@ -7,6 +8,8 @@ import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 import IConnectionsProvider from "../IConnectionsProvider";
 import ConnectionsStore from "./ConnectionsStore";
+
+const MAX_CONNECTIONS = 20000;
 
 /**
  * Passes through one [[IConnectionsFetcher]], the first one if there are multiple
@@ -46,17 +49,22 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
         this.connectionsIterator = this.connectionsFetcher.createIterator();
 
         this.connectionsIterator
-          .take(10000)
+          .take(MAX_CONNECTIONS)
           .each((connection: IConnection) => {
             this.connectionsStore.append(connection);
           });
-
       }, 0);
     }
   }
 
   public createIterator(): AsyncIterator<IConnection> {
-    return this.connectionsStore.getIteratorView(this.connectionsFetcherConfig);
+    if (this.startedPrefetching) {
+      return new PromiseProxyIterator(() =>
+        this.connectionsStore.getIteratorView(this.connectionsFetcherConfig),
+      );
+    }
+
+    throw new Error("TODO");
   }
 
   public setConfig(config: IConnectionsFetcherConfig): void {
