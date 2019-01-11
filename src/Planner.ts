@@ -3,6 +3,7 @@ import { AsyncIterator } from "asynciterator";
 import { EventEmitter, Listener } from "events";
 import Context from "./Context";
 import EventType from "./EventType";
+import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import IStop from "./fetcher/stops/IStop";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import IPath from "./interfaces/IPath";
@@ -104,13 +105,33 @@ export default class Planner implements EventEmitter {
     return this;
   }
 
-  public getAllStops(): Promise<IStop[]> {
-    const provider = this.context.getContainer().get<IStopsProvider>(TYPES.StopsProvider);
+  public prefetchStops(): void {
+    const container = this.context.getContainer();
+    const stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
 
-    if (provider) {
-      return provider.getAllStops();
+    if (stopsProvider) {
+      stopsProvider.prefetchStops();
+    }
+  }
+
+  public prefetchConnections(): void {
+    const container = this.context.getContainer();
+    const connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
+
+    if (connectionsProvider) {
+      connectionsProvider.prefetchConnections();
+    }
+  }
+
+  public getAllStops(): Promise<IStop[]> {
+    const container = this.context.getContainer();
+    const stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
+
+    if (stopsProvider) {
+      return stopsProvider.getAllStops();
     }
 
     return Promise.reject();
   }
+
 }

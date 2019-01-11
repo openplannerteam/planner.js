@@ -25,6 +25,10 @@ export default class ConnectionsProviderPassthrough implements IConnectionsProvi
     this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
   }
 
+  public prefetchConnections(): void {
+    this.connectionsFetcher.prefetchConnections();
+  }
+
   public createIterator(): AsyncIterator<IConnection> {
     return this.connectionsFetcher.createIterator();
   }

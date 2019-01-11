@@ -11,8 +11,6 @@ export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
   constructor(queryIterator: AsyncIterator<Q>, run: (query: Q) => Promise<AsyncIterator<R>>) {
     super({maxBufferSize: 1, autoStart: false});
 
-    console.log("FlatMap");
-
     this.queryIterator = queryIterator;
     this.callback = run;
 

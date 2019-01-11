@@ -4,7 +4,7 @@ import TravelMode from "../../../TravelMode";
 import FlatMapIterator from "../../../util/iterators/FlatMapIterator";
 import IConnection from "../IConnection";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
-import ConnectionsPageParser from "../ld-fetch/ConnectionsPageParser";
+import ConnectionsPageParser from "./ConnectionsPageParser";
 import HydraPageIterator from "./HydraPageIterator";
 import IHydraPage from "./IHydraPage";
 import IHydraPageIteratorConfig from "./IHydraPageIteratorConfig";

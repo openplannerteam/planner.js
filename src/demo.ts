@@ -11,7 +11,7 @@ export default async (logResults) => {
     let scannedPages = 0;
     let scannedConnections = 0;
 
-    let logFetch = true;
+    // let logFetch = true;
 
     planner
       .on(EventType.InvalidQuery, (error) => {
@@ -26,7 +26,7 @@ export default async (logResults) => {
       .on(EventType.QueryExponential, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;
 
-        logFetch = true;
+        // logFetch = true;
 
         console.log("Total scanned pages", scannedPages);
         console.log("Total scanned connections", scannedConnections);
@@ -34,11 +34,12 @@ export default async (logResults) => {
       })
       .on(EventType.LDFetchGet, (url, duration) => {
         scannedPages++;
+        console.log(`[GET] ${url} (${duration}ms)`);
 
-        if (logFetch) {
-          console.log(`[GET] ${url} (${duration}ms)`);
-          logFetch = false;
-        }
+        // if (logFetch) {
+        //   console.log(`[GET] ${url} (${duration}ms)`);
+        //   logFetch = false;
+        // }
       })
       .on(EventType.ConnectionScan, (connection) => {
         scannedConnections++;
@@ -71,7 +72,7 @@ export default async (logResults) => {
           .on("data", (path: IPath) => {
             ++i;
 
-            if (logResults && false) {
+            if (logResults) {
               console.log(i);
               console.log(JSON.stringify(path, null, " "));
               console.log("\n");

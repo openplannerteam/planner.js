@@ -8,6 +8,7 @@ import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
  * instances
  */
 export default interface IConnectionsProvider {
+  prefetchConnections: () => void;
   createIterator: () => AsyncIterator<IConnection>;
   setConfig: (config: IConnectionsFetcherConfig) => void;
 }

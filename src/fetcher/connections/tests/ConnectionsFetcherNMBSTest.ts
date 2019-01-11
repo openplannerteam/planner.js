@@ -14,6 +14,10 @@ export default class ConnectionsFetcherNMBSTest implements IConnectionsFetcher {
       this.connections = connections;
   }
 
+  public prefetchConnections(): void {
+    return;
+  }
+
   public setConfig(config: IConnectionsFetcherConfig): void {
     this.config = config;
   }

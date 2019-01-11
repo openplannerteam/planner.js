@@ -34,6 +34,10 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
     this.accessUrl = accessUrl;
   }
 
+  public prefetchStops(): void {
+    this.ensureStopsLoaded();
+  }
+
   public async getStopById(stopId: string): Promise<IStop> {
     await this.ensureStopsLoaded();
 

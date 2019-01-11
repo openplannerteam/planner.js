@@ -1,7 +1,7 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Context from "../../Context";
-import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
+import ConnectionsFetcherLazy from "../../fetcher/connections/hydra/ConnectionsFetcherLazy";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
