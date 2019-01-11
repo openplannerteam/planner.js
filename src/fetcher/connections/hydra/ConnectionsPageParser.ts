@@ -1,10 +1,10 @@
 import { Triple } from "rdf-js";
-import TravelMode from "../../../TravelMode";
+import DropOffType from "../../../enums/DropOffType";
+import PickupType from "../../../enums/PickupType";
+import TravelMode from "../../../enums/TravelMode";
 import Rdf from "../../../util/Rdf";
 import Units from "../../../util/Units";
-import DropOffType from "../DropOffType";
 import IConnection from "../IConnection";
-import PickupType from "../PickupType";
 
 interface IEntity {
 }

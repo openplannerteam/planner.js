@@ -1,7 +1,7 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
-import TravelMode from "../../../TravelMode";
+import TravelMode from "../../../enums/TravelMode";
 import TYPES from "../../../types";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";

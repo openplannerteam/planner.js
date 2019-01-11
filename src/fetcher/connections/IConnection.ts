@@ -1,7 +1,7 @@
+import DropOffType from "../../enums/DropOffType";
+import PickupType from "../../enums/PickupType";
+import TravelMode from "../../enums/TravelMode";
 import { DurationMs } from "../../interfaces/units";
-import TravelMode from "../../TravelMode";
-import DropOffType from "./DropOffType";
-import PickupType from "./PickupType";
 
 /**
  * Interface for a Connection. This describes an actual transport vehicle going from its

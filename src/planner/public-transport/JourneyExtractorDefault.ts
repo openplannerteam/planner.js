@@ -1,13 +1,13 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Context from "../../Context";
+import TravelMode from "../../enums/TravelMode";
 import IConnection from "../../fetcher/connections/IConnection";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
-import TravelMode from "../../TravelMode";
 import TYPES from "../../types";
 import Path from "../Path";
 import Step from "../Step";

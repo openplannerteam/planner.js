@@ -1,6 +1,6 @@
 import LDFetch from "ldfetch";
 import "reflect-metadata";
-import TravelMode from "../TravelMode";
+import TravelMode from "../enums/TravelMode";
 
 /*
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });

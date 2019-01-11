@@ -3,10 +3,13 @@ import Catalog from "./Catalog";
 import catalogDeLijn from "./catalog.delijn";
 import catalogNmbs from "./catalog.nmbs";
 import Context from "./Context";
+import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
+import TravelMode from "./enums/TravelMode";
 import ConnectionsProviderMerge from "./fetcher/connections/ConnectionsProviderMerge";
-import ConnectionsFetcherLazy from "./fetcher/connections/hydra/ConnectionsFetcherLazy";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
+import ConnectionsFetcherLazy from "./fetcher/connections/lazy/ConnectionsFetcherLazy";
+import ConnectionsProviderPrefetch from "./fetcher/connections/prefetch/ConnectionsProviderPrefetch";
 import LDFetch from "./fetcher/LDFetch";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
@@ -21,12 +24,10 @@ import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderOnlySelf from "./planner/stops/ReachableStopsFinderOnlySelf";
 import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStopsFinderRoadPlannerCached";
-import ReachableStopsSearchPhase from "./planner/stops/ReachableStopsSearchPhase";
 import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import LocationResolverDefault from "./query-runner/LocationResolverDefault";
-import TravelMode from "./TravelMode";
 import TYPES from "./types";
 
 const container = new Container();
@@ -52,7 +53,7 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderMerge).inSingletonScope();
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPrefetch).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(

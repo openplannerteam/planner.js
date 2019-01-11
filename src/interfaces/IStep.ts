@@ -1,4 +1,4 @@
-import TravelMode from "../TravelMode";
+import TravelMode from "../enums/TravelMode";
 import ILocation from "./ILocation";
 import IProbabilisticValue from "./IProbabilisticValue";
 import { DistanceM, DurationMs } from "./units";

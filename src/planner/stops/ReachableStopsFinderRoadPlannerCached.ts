@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import { DurationMs, SpeedkmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
 @injectable()

@@ -2,7 +2,7 @@ import { AsyncIterator } from "asynciterator";
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import Context from "./Context";
-import EventType from "./EventType";
+import EventType from "./enums/EventType";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import IStop from "./fetcher/stops/IStop";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";

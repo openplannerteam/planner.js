@@ -1,7 +1,7 @@
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import { Container, injectable } from "inversify";
-import EventType from "./EventType";
+import EventType from "./enums/EventType";
 
 /**
  * The Context serves as event pass through and holder of the inversify container object.

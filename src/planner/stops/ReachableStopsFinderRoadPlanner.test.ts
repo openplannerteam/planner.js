@@ -1,9 +1,9 @@
 import "jest";
 import LDFetch from "ldfetch";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import Units from "../../util/Units";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });

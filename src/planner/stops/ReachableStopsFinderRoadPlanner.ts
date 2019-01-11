@@ -1,5 +1,6 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import ILocation from "../../interfaces/ILocation";
@@ -10,7 +11,6 @@ import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 @injectable()
 export default class ReachableStopsFinderRoadPlanner implements IReachableStopsFinder {
