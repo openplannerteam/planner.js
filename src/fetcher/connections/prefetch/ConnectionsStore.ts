@@ -1,4 +1,4 @@
-import { AsyncIterator, IntegerIterator, IntegerIteratorOptions } from "asynciterator";
+import { ArrayIterator, AsyncIterator, IntegerIterator, IntegerIteratorOptions } from "asynciterator";
 import BinarySearch from "../../../util/BinarySearch";
 import IConnection from "../IConnection";
 import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
@@ -14,11 +14,13 @@ export default class ConnectionsStore {
   private readonly store: IConnection[];
   private readonly binarySearch: BinarySearch<IConnection>;
   private viewPromises: IViewPromise[];
+  private hasFinished: boolean;
 
   constructor() {
     this.store = [];
     this.binarySearch = new BinarySearch<IConnection>(this.store, (connection) => connection.departureTime.valueOf());
     this.viewPromises = [];
+    this.hasFinished = false;
   }
 
   public append(connection: IConnection) {
@@ -41,9 +43,21 @@ export default class ConnectionsStore {
     }
   }
 
+  /**
+   * Signals that the store will no longer be appended.
+   * [[getIterator]] never returns a view promise after this, because those would never get resolved
+   */
+  public finish(): void {
+    this.hasFinished = true;
+  }
+
   public getIterator(fetcherConfig: IConnectionsFetcherConfig): Promise<AsyncIterator<IConnection>> {
     const { backward } = fetcherConfig;
     let { lowerBoundDate, upperBoundDate } = fetcherConfig;
+
+    if (this.hasFinished && this.store.length === 0) {
+      return Promise.resolve(new ArrayIterator([]));
+    }
 
     const firstConnection = this.store[0];
     const firstDepartureTime = firstConnection && firstConnection.departureTime;
@@ -73,7 +87,7 @@ export default class ConnectionsStore {
 
     // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
     // then return a promise
-    if (!lastDepartureTime || lastDepartureTime <= upperBoundDate) {
+    if (!this.hasFinished && (!lastDepartureTime || lastDepartureTime <= upperBoundDate)) {
       const { viewPromise, promise } = this.createViewPromise(backward, lowerBoundDate, upperBoundDate);
 
       this.viewPromises.push(viewPromise);
@@ -81,7 +95,7 @@ export default class ConnectionsStore {
       return promise;
     }
 
-    // Else if the whole interval is available, return an iterator immediately
+    // Else if the whole interval is available, or the store has finished, return an iterator immediately
     return Promise.resolve(this.getIteratorView(backward, lowerBoundDate, upperBoundDate));
   }
 

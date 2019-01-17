@@ -28,6 +28,8 @@ describe("[ConnectionsStore]", () => {
         connectionsStore.append(connection);
       }
 
+      connectionsStore.finish();
+
       createIterator = async (backward, lowerBoundDate, upperBoundDate): Promise<AsyncIterator<IConnection>> => {
         const fetcherConfig: IConnectionsFetcherConfig = {
           backward,
@@ -58,7 +60,10 @@ describe("[ConnectionsStore]", () => {
           expect(expected[current--]).toBe(str.departureTime);
         });
 
-        iteratorView.on("end", () => done());
+        iteratorView.on("end", () => {
+          expect(current).toBe(-1);
+          done();
+        });
       });
 
       it("upperBoundDate is loaded but doesn\'t exist in store", async (done) => {
@@ -71,7 +76,10 @@ describe("[ConnectionsStore]", () => {
           expect(expected[current--]).toBe(str.departureTime);
         });
 
-        iteratorView.on("end", () => done());
+        iteratorView.on("end", () => {
+          expect(current).toBe(-1);
+          done();
+        });
       });
 
     });
@@ -79,23 +87,17 @@ describe("[ConnectionsStore]", () => {
     describe("forward", () => {
 
       it("lowerBoundDate is loaded & exists in store", async (done) => {
-        const iteratorView = await createIterator(false, 3, 6);
+        const iteratorView = await createIterator(false, 3, null);
 
-        console.log("a");
-
-        const expected = [3, 3, 5, 6, 6, 6, 6];
+        const expected = [3, 3, 5, 6, 6, 6, 6, 7, 7];
         let current = 0;
 
-        console.log("b");
-
         iteratorView.each((str: IConnection) => {
-          console.log(str);
           expect(expected[current++]).toBe(str.departureTime);
         });
 
         iteratorView.on("end", () => {
-          expect(current).toBe(expected.length - 1);
-          console.log("c");
+          expect(current).toBe(expected.length);
           done();
         });
       });
@@ -103,14 +105,17 @@ describe("[ConnectionsStore]", () => {
       it("lowerBoundDate is loaded but doesn\'t exist in store", async (done) => {
         const iteratorView = await createIterator(false, 4, null);
 
-        const expected = [1, 2, 3, 3];
+        const expected = [5, 6, 6, 6, 6, 7, 7];
         let current = 0;
 
         iteratorView.each((str: IConnection) => {
-          expect(expected[current--]).toBe(str.departureTime);
+          expect(expected[current++]).toBe(str.departureTime);
         });
 
-        iteratorView.on("end", () => done());
+        iteratorView.on("end", () => {
+          expect(current).toBe(expected.length);
+          done();
+        });
       });
 
     });
@@ -139,6 +144,9 @@ describe("[ConnectionsStore]", () => {
 
       if (i < fakeConnections.length) {
         setTimeout(appendNext, 100);
+
+      } else {
+        connectionsStore.finish();
       }
     };
 
@@ -158,7 +166,10 @@ describe("[ConnectionsStore]", () => {
         expect(expected[current--]).toBe(str.departureTime);
       });
 
-      iteratorView.on("end", () => done());
+      iteratorView.on("end", () => {
+        expect(current).toBe(-1);
+        done();
+      });
     });
 
   });
