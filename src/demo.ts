@@ -56,7 +56,7 @@ export default async (logResults) => {
       });
   }
 
-  return wait(1000)
+  return wait(5000)
     .then(() => new Promise((resolve, reject) => {
       if (logResults) {
         console.log("Start query");
@@ -70,7 +70,7 @@ export default async (logResults) => {
         // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
         // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
         // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-        from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
+        from: "Ingelmunster", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         minimumDepartureTime: new Date(),
         maximumTransferDuration: Units.fromHours(0.5),

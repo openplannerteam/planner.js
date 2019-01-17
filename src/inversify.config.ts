@@ -28,13 +28,13 @@ import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStop
 import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
-import LocationResolverDefault from "./query-runner/LocationResolverDefault";
+import LocationResolverConvenience from "./query-runner/LocationResolverConvenience";
 import TYPES from "./types";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
-container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDefault);
+container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
   .to(CSAProfile);
