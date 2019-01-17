@@ -12,50 +12,112 @@ describe("[ConnectionsStore]", () => {
    * and both Dates and Numbers return a number
    */
 
-  describe("All loaded", () => {
+  describe("Loaded sync", () => {
 
-    const fakeDepartureTimes = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7];
-    // @ts-ignore
-    const fakeConnections: IConnection[] = fakeDepartureTimes
-      .map((departureTime) => ({departureTime}));
+    let connectionsStore;
+    let createIterator;
 
-    const connectionsStore = new ConnectionsStore();
-    for (const connection of fakeConnections) {
-      connectionsStore.append(connection);
-    }
+    beforeEach(() => {
+      const fakeDepartureTimes = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7];
+      // @ts-ignore
+      const fakeConnections: IConnection[] = fakeDepartureTimes
+        .map((departureTime) => ({departureTime}));
 
-    it("iterator view: backward / upperBoundDate is loaded & exists in store", async (done) => {
-      const fetcherConfig: IConnectionsFetcherConfig = {
-        backward: true,
-        upperBoundDate: (6 as unknown) as Date,
+      connectionsStore = new ConnectionsStore();
+      for (const connection of fakeConnections) {
+        connectionsStore.append(connection);
+      }
+
+      connectionsStore.finish();
+
+      createIterator = async (backward, lowerBoundDate, upperBoundDate): Promise<AsyncIterator<IConnection>> => {
+        const fetcherConfig: IConnectionsFetcherConfig = {
+          backward,
+        };
+
+        if (lowerBoundDate) {
+          fetcherConfig.lowerBoundDate = (lowerBoundDate as unknown) as Date;
+        }
+
+        if (upperBoundDate) {
+          fetcherConfig.upperBoundDate = (upperBoundDate as unknown) as Date;
+        }
+
+        return connectionsStore.getIterator(fetcherConfig);
       };
-      const iteratorView: AsyncIterator<IConnection> = await connectionsStore.getIteratorView(fetcherConfig);
 
-      const expected = [1, 2, 3, 3, 5, 6, 6, 6, 6];
-      let current = expected.length - 1;
-
-      iteratorView.each((str: IConnection) => {
-        expect(expected[current--]).toBe(str.departureTime);
-      });
-
-      iteratorView.on("end", () => done());
     });
 
-    it("iterator view: backward / upperBoundDate is loaded but doesn\'t exist in store", async (done) => {
-      const fetcherConfig: IConnectionsFetcherConfig = {
-        backward: true,
-        upperBoundDate: (4 as unknown) as Date,
-      };
-      const iteratorView: AsyncIterator<IConnection> = await connectionsStore.getIteratorView(fetcherConfig);
+    describe("backward", () => {
 
-      const expected = [1, 2, 3, 3];
-      let current = expected.length - 1;
+      it("upperBoundDate is loaded & exists in store", async (done) => {
+        const iteratorView = await createIterator(true, null, 6);
 
-      iteratorView.each((str: IConnection) => {
-        expect(expected[current--]).toBe(str.departureTime);
+        const expected = [1, 2, 3, 3, 5, 6, 6, 6, 6];
+        let current = expected.length - 1;
+
+        iteratorView.each((str: IConnection) => {
+          expect(expected[current--]).toBe(str.departureTime);
+        });
+
+        iteratorView.on("end", () => {
+          expect(current).toBe(-1);
+          done();
+        });
       });
 
-      iteratorView.on("end", () => done());
+      it("upperBoundDate is loaded but doesn\'t exist in store", async (done) => {
+        const iteratorView = await createIterator(true, null, 4);
+
+        const expected = [1, 2, 3, 3];
+        let current = expected.length - 1;
+
+        iteratorView.each((str: IConnection) => {
+          expect(expected[current--]).toBe(str.departureTime);
+        });
+
+        iteratorView.on("end", () => {
+          expect(current).toBe(-1);
+          done();
+        });
+      });
+
+    });
+
+    describe("forward", () => {
+
+      it("lowerBoundDate is loaded & exists in store", async (done) => {
+        const iteratorView = await createIterator(false, 3, null);
+
+        const expected = [3, 3, 5, 6, 6, 6, 6, 7, 7];
+        let current = 0;
+
+        iteratorView.each((str: IConnection) => {
+          expect(expected[current++]).toBe(str.departureTime);
+        });
+
+        iteratorView.on("end", () => {
+          expect(current).toBe(expected.length);
+          done();
+        });
+      });
+
+      it("lowerBoundDate is loaded but doesn\'t exist in store", async (done) => {
+        const iteratorView = await createIterator(false, 4, null);
+
+        const expected = [5, 6, 6, 6, 6, 7, 7];
+        let current = 0;
+
+        iteratorView.each((str: IConnection) => {
+          expect(expected[current++]).toBe(str.departureTime);
+        });
+
+        iteratorView.on("end", () => {
+          expect(current).toBe(expected.length);
+          done();
+        });
+      });
+
     });
 
   });
@@ -82,6 +144,9 @@ describe("[ConnectionsStore]", () => {
 
       if (i < fakeConnections.length) {
         setTimeout(appendNext, 100);
+
+      } else {
+        connectionsStore.finish();
       }
     };
 
@@ -92,7 +157,7 @@ describe("[ConnectionsStore]", () => {
         backward: true,
         upperBoundDate: (7 as unknown) as Date,
       };
-      const iteratorView: AsyncIterator<IConnection> = await connectionsStore.getIteratorView(fetcherConfig);
+      const iteratorView: AsyncIterator<IConnection> = await connectionsStore.getIterator(fetcherConfig);
 
       const expected = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7];
       let current = expected.length - 1;
@@ -101,7 +166,10 @@ describe("[ConnectionsStore]", () => {
         expect(expected[current--]).toBe(str.departureTime);
       });
 
-      iteratorView.on("end", () => done());
+      iteratorView.on("end", () => {
+        expect(current).toBe(-1);
+        done();
+      });
     });
 
   });

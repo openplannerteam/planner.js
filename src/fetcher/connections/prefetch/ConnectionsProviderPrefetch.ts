@@ -50,6 +50,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
         this.connectionsIterator
           .take(MAX_CONNECTIONS)
+          .on("end", () => this.connectionsStore.finish())
           .each((connection: IConnection) => {
             this.connectionsStore.append(connection);
           });
@@ -60,7 +61,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
   public createIterator(): AsyncIterator<IConnection> {
     if (this.startedPrefetching) {
       return new PromiseProxyIterator(() =>
-        this.connectionsStore.getIteratorView(this.connectionsFetcherConfig),
+        this.connectionsStore.getIterator(this.connectionsFetcherConfig),
       );
     }
 
