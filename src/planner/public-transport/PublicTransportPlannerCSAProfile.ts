@@ -45,11 +45,11 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
   private readonly initialReachableStopsFinder: IReachableStopsFinder;
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
-  private readonly journeyExtractor: IJourneyExtractor;
+  private readonly journeyExtractor: IJourneyExtractor<IProfilesByStop>;
   private readonly context: Context;
 
   private profilesByStop: IProfilesByStop = {}; // S
-  private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
+  private earliestArrivalByTrip: IEarliestArrivalByTrip<IEarliestArrivalByTransfers> = {}; // T
   private durationToTargetByStop: DurationMs[] = [];
   private gtfsTripByConnection = {};
   private initialReachableStops: IReachableStop[] = [];
@@ -72,7 +72,7 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
     @tagged("phase", ReachableStopsSearchPhase.Final)
       finalReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.JourneyExtractor)
-      journeyExtractor: IJourneyExtractor,
+      journeyExtractor: IJourneyExtractor<IProfilesByStop>,
     @inject(TYPES.Context)
       context?: Context,
   ) {
@@ -271,16 +271,18 @@ export default class PublicTransportPlannerCSAProfile implements IPublicTranspor
       this.query.minimumWalkingSpeed,
     );
 
-    const stopIndex = 0;
-    while (stopIndex < this.initialReachableStops.length && !this.query.from[0].id) {
+    let stopIndex = 0;
+    while (stopIndex < this.initialReachableStops.length && !fromLocation.id) {
       const reachableStop = this.initialReachableStops[stopIndex];
       if (reachableStop.duration === 0) {
         this.query.from[0] = reachableStop.stop;
       }
+
+      stopIndex++;
     }
 
     if (!this.query.from[0].id) {
-      this.query.from[0].id = "geo:" + this.query.from[0].latitude + "," + this.query.from[0].longitude;
+      this.query.from[0].id = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
       this.query.from[0].name = "Departure location";
     }
 

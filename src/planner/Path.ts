@@ -31,4 +31,8 @@ export default class Path implements IPath {
   public addStep(step: IStep): void {
     this.steps.push(step);
   }
+
+  public reverse(): void {
+    this.steps.reverse();
+  }
 }

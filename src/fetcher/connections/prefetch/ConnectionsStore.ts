@@ -42,7 +42,7 @@ export default class ConnectionsStore {
     const { lowerBoundDate, upperBoundDate, backward } = fetcherConfig;
 
     if (!backward) {
-      throw new Error("Backward is not yet supported");
+      throw new Error("Forward is not yet supported");
     }
 
     if (backward && upperBoundDate) {
