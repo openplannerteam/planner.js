@@ -19,7 +19,7 @@ import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBir
 import CSAEarliestArrival from "./CSAEarliestArrival";
 import JourneyExtractorEarliestArrivalTime from "./JourneyExtractorEarliestArrivalTime";
 
-describe("[PublicTransportPlannerCSAProfile]", () => {
+describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
   describe("mock data", () => {
     jest.setTimeout(100000);
 
