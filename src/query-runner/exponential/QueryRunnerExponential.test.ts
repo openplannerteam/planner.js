@@ -6,8 +6,8 @@ import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFe
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
+import CSAProfile from "../../planner/public-transport/CSAProfile";
 import JourneyExtractorDefault from "../../planner/public-transport/JourneyExtractorDefault";
-import PublicTransportPlannerCSAProfile from "../../planner/public-transport/PublicTransportPlannerCSAProfile";
 import ReachableStopsFinderBirdsEyeCached from "../../planner/stops/ReachableStopsFinderBirdsEyeCached";
 import Units from "../../util/Units";
 import LocationResolverDefault from "../LocationResolverDefault";
@@ -48,7 +48,7 @@ describe("[QueryRunnerExponential]", () => {
     };
 
     const createPlanner = () => {
-      return new PublicTransportPlannerCSAProfile(
+      return new CSAProfile(
         connectionFetcher,
         locationResolver,
         reachableStopsFinder,

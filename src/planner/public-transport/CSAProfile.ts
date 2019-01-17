@@ -39,7 +39,7 @@ import IPublicTransportPlanner from "./IPublicTransportPlanner";
  * @returns multiple [[IPath]]s that consist of several [[IStep]]s.
  */
 @injectable()
-export default class PublicTransportPlannerCSAProfile implements IPublicTransportPlanner {
+export default class CSAProfile implements IPublicTransportPlanner {
   private readonly connectionsProvider: IConnectionsProvider;
   private readonly locationResolver: ILocationResolver;
   private readonly initialReachableStopsFinder: IReachableStopsFinder;

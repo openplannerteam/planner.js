@@ -16,8 +16,8 @@ import LocationResolverDefault from "../../query-runner/LocationResolverDefault"
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
+import CSAProfile from "./CSAProfile";
 import JourneyExtractorDefault from "./JourneyExtractorDefault";
-import PublicTransportPlannerCSAProfile from "./PublicTransportPlannerCSAProfile";
 
 describe("[PublicTransportPlannerCSAProfile]", () => {
   describe("mock data", () => {
@@ -38,7 +38,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         locationResolver,
       );
 
-      return new PublicTransportPlannerCSAProfile(
+      return new CSAProfile(
         connectionFetcher,
         locationResolver,
         reachableStopsFinder,
@@ -189,7 +189,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         locationResolver,
       );
 
-      const CSA = new PublicTransportPlannerCSAProfile(
+      const CSA = new CSAProfile(
         connectionFetcher,
         locationResolver,
         reachableStopsFinder,

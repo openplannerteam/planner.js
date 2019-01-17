@@ -1,4 +1,4 @@
-import { ArrayIterator, AsyncIterator } from "asynciterator";
+import { AsyncIterator, SingletonIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Context from "../../Context";
 import IPath from "../../interfaces/IPath";
@@ -58,7 +58,7 @@ export default class JourneyExtractorEarliestArrivalTime implements IJourneyExtr
 
     path.reverse();
 
-    return new ArrayIterator<IPath>([path]);
+    return new SingletonIterator(path);
   }
 
 }

@@ -3,14 +3,16 @@ import LDFetch from "ldfetch";
 import Defaults from "../../Defaults";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
+import connectionsJoining from "../../fetcher/connections/tests/data/joining";
+import connectionsSplitting from "../../fetcher/connections/tests/data/splitting";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
+import CSAEarliestArrival from "./CSAEarliestArrival";
 import JourneyExtractorEarliestArrivalTime from "./JourneyExtractorEarliestArrivalTime";
-import PublicTransportPlannerCSAEarliestArrival from "./PublicTransportPlannerCSAEarliestArrival";
 
 describe("[PublicTransportPlannerCSAProfile]", () => {
   describe("mock data", () => {
@@ -31,7 +33,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         locationResolver,
       );
 
-      return new PublicTransportPlannerCSAEarliestArrival(
+      return new CSAEarliestArrival(
         connectionFetcher,
         locationResolver,
         reachableStopsFinder,
@@ -60,7 +62,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         const CSA = createCSA(connectionsIngelmunsterGhent);
         const iterator = await CSA.plan(query);
         result = await Iterators.toArray(iterator);
-        console.log(JSON.stringify(result, null, " "));
       });
 
       it("Correct departure and arrival stop", () => {
@@ -75,7 +76,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       });
     });
 
-    /*describe("splitting", () => {
+    describe("splitting", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
@@ -163,6 +164,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
           expect(query.to.map((to) => to.id)).toContain(path.steps[0].stopLocation.id);
         }
       });
-    });*/
+    });
   });
 });
