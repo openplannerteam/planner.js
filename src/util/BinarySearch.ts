@@ -1,3 +1,7 @@
+/**
+ * Util class with binary search procedures
+ * Assumes that array is in ascending order according to predicate
+ */
 export default class BinarySearch<T> {
   private readonly array: T[];
   private readonly predicate: (item: T) => number;
@@ -8,16 +12,25 @@ export default class BinarySearch<T> {
   }
 
   /**
-   * Find the first index of the given key, or the index after which that key would be hypothetically spliced in
-   * Adapted from: https://www.algorithmsandme.com/last-occurrence-of-element-with-binary-search/
+   * Find the first index of the given key, or the index before which that key would be hypothetically spliced in
+   * Adapted from: https://algorithmsandme.com/first-occurrence-of-element/
    * @param key
    * @param start
    * @param end
    */
-  public findFirstIndex(key: number, start: number = 0, end: number = (this.array.length - 1)) {
+  public findFirstIndex(key: number, start: number = 0, end: number = (this.array.length - 1)): number {
     while (start < end) {
-      const mid = start + Math.floor(((end - start) + 1) / 2);
+      const mid = start + Math.floor((end - start) / 2);
+
+      if (this.predicate(this.array[mid]) >= key) {
+        end = mid;
+
+      } else {
+        start = mid + 1;
+      }
     }
+
+    return start;
   }
 
   /**
@@ -27,7 +40,7 @@ export default class BinarySearch<T> {
    * @param start
    * @param end
    */
-  public findLastIndex(key: number, start: number = 0, end: number = (this.array.length - 1)) {
+  public findLastIndex(key: number, start: number = 0, end: number = (this.array.length - 1)): number {
     while (start < end) {
       const mid = start + Math.floor(((end - start) + 1) / 2);
 
