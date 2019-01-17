@@ -1,6 +1,8 @@
 /**
  * Stores for each gtfs:trip the earliest arrival [[IEarliestArrivalByTransfers]] to the target [[IStop]].
  */
-export default interface IEarliestArrivalByTrip<T> {
-  [trip: string]: T;
+import IEarliestArrivalByTransfers from "./IEarliestArrivalByTransfers";
+
+export default interface IEarliestArrivalByTrip {
+  [trip: string]: IEarliestArrivalByTransfers;
 }

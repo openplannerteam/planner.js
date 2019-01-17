@@ -6,19 +6,21 @@ import EventType from "../../enums/EventType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
+import TravelMode from "../../enums/TravelMode";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
-import { DurationMs } from "../../interfaces/units";
+import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Path from "../Path";
+import Step from "../Step";
 import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
 import IProfileByStop from "./CSA/data-structure/stops/IProfileByStop";
-import IEarliestArrival from "./CSA/data-structure/trips/IEarliestArrival";
-import IEarliestArrivalByTrip from "./CSA/data-structure/trips/IEarliestArrivalByTrip";
+import IEnterConnectionByTrip from "./CSA/data-structure/trips/IEnterConnectionByTrip";
 import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
@@ -27,8 +29,7 @@ import IPublicTransportPlanner from "./IPublicTransportPlanner";
  *
  * @implements [[IPublicTransportPlanner]]
  * @property profilesByStop Describes the CSA profiles for each scanned stop.
- * @property earliestArrivalByTrip Describes the earliest arrival time for each scanned trip.
- * @property durationToTargetByStop Describes the walking duration to the target stop for a scanned stop.
+ * @property enterConnectionByTrip Describes the connection you should enter at a departure location for each trip.
  *
  * @returns multiple [[IPath]]s that consist of several [[IStep]]s.
  */
@@ -43,10 +44,11 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private readonly context: Context;
 
   private profilesByStop: IProfileByStop = {}; // S
-  private earliestArrivalByTrip: IEarliestArrivalByTrip<IEarliestArrival> = {}; // T
-  private durationToTargetByStop: DurationMs[] = [];
+  private enterConnectionByTrip: IEnterConnectionByTrip = {}; // T
   private gtfsTripsByConnection = {};
+
   private initialReachableStops: IReachableStop[] = [];
+  private finalReachableStops: IReachableStop[] = [];
 
   private query: IResolvedQuery;
   private connectionsIterator: AsyncIterator<IConnection>;
@@ -100,8 +102,8 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   private async calculateJourneys(): Promise<AsyncIterator<IPath>> {
-    await this.initArrivalStopProfile();
     await this.initInitialReachableStops();
+    await this.initFinalReachableStops();
 
     this.connectionsIterator = this.connectionsProvider.createIterator();
 
@@ -151,7 +153,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       const tripIds = this.getTripIdsFromConnection(connection);
       for (const tripId of tripIds) {
 
-        const canRemainSeated = this.earliestArrivalByTrip[tripId].connection;
+        const canRemainSeated = this.enterConnectionByTrip[tripId];
         const canTakeTransfer = (this.profilesByStop[connection.departureStop].arrivalTime <=
           connection.departureTime.getTime() && connection["gtfs:pickupType"] !== PickupType.NotAvailable);
 
@@ -178,30 +180,18 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private async initInitialReachableStops(): Promise<boolean> {
     const fromLocation: IStop = this.query.from[0] as IStop;
 
+    // Making sure the departure location has an id
+    if (!fromLocation.id) {
+      this.query.from[0].id = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
+      this.query.from[0].name = "Departure location";
+    }
+
     this.initialReachableStops = await this.initialReachableStopsFinder.findReachableStops(
       fromLocation,
       ReachableStopsFinderMode.Source,
       this.query.maximumWalkingDuration,
       this.query.minimumWalkingSpeed,
     );
-
-    // Check if departure location is a stop.
-    let stopIndex = 0;
-    while (stopIndex < this.initialReachableStops.length && !this.query.from[0].id) {
-      const reachableStop = this.initialReachableStops[stopIndex];
-
-      if (reachableStop.duration === 0) {
-        this.query.from[0] = reachableStop.stop;
-      }
-
-      stopIndex++;
-    }
-
-    // Making sure the departure location has an id
-    if (!fromLocation.id) {
-      this.query.from[0].id = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
-      this.query.from[0].name = "Departure location";
-    }
 
     // Abort when we can't reach a single stop.
     if (this.initialReachableStops.length === 0 && this.context) {
@@ -210,32 +200,89 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       return false;
     }
 
+    // Check if departure location is a stop.
+    for (const reachableStop of this.initialReachableStops) {
+      if (reachableStop.duration === 0) {
+        this.query.from[0] = reachableStop.stop;
+      }
+    }
+
     if (this.context) {
       this.context.emit(EventType.InitialReachableStops, this.initialReachableStops);
     }
 
     this.initialReachableStops.forEach(({ stop, duration }: IReachableStop) => {
+      const departureTime = this.query.minimumDepartureTime.getTime();
+      const arrivalTime = this.query.minimumDepartureTime.getTime() + duration;
+
       this.profilesByStop[stop.id] = {
-        departureTime: this.query.minimumDepartureTime.getTime(),
-        arrivalTime: this.query.minimumDepartureTime.getTime() + duration,
-        exitConnection: undefined,
-        enterConnection: undefined,
+        departureTime,
+        arrivalTime,
       };
+
+      if (duration > 0) {
+        const path: Path = Path.create();
+
+        const footpath: IStep = Step.create(
+          this.query.from[0],
+          stop,
+          TravelMode.Walking,
+          {
+            minimum: arrivalTime - departureTime,
+          },
+          new Date(departureTime),
+          new Date(arrivalTime),
+        );
+
+        path.addStep(footpath);
+
+        this.profilesByStop[stop.id].path = path;
+      }
 
     });
 
     return true;
   }
 
-  private initArrivalStopProfile(): void {
-    const arrivalStopId: string = this.query.to[0].id;
+  private async initFinalReachableStops(): Promise<boolean> {
+    const arrivalStop: IStop = this.query.to[0] as IStop;
 
-    this.profilesByStop[arrivalStopId] = {
+    if (!this.query.to[0].id) {
+      this.query.to[0].id = "geo:" + arrivalStop.latitude + "," + arrivalStop.longitude;
+      this.query.to[0].name = "Arrival location";
+    }
+
+    this.finalReachableStops = await this.finalReachableStopsFinder
+      .findReachableStops(
+        arrivalStop,
+        ReachableStopsFinderMode.Target,
+        this.query.maximumWalkingDuration,
+        this.query.minimumWalkingSpeed,
+      );
+
+    if (this.finalReachableStops.length === 0 && this.context) {
+      this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
+
+      return false;
+    }
+
+    if (this.context) {
+      this.context.emit(EventType.FinalReachableStops, this.finalReachableStops);
+    }
+
+    // Check if arrival location is a stop.
+    for (const reachableStop of this.finalReachableStops) {
+      if (reachableStop.duration === 0) {
+        this.query.to[0] = reachableStop.stop;
+      }
+    }
+
+    this.profilesByStop[this.query.to[0].id] = {
       departureTime: Infinity,
       arrivalTime: Infinity,
-      exitConnection: undefined,
-      enterConnection: undefined,
     };
+
+    return true;
   }
 
   private discoverConnection(connection: IConnection) {
@@ -246,22 +293,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         this.profilesByStop[stop] = {
           departureTime: Infinity,
           arrivalTime: Infinity,
-          exitConnection: undefined,
-          enterConnection: undefined,
         };
       }
     });
-
-    const tripIds: string[] = this.getTripIdsFromConnection(connection);
-
-    for (const tripId of tripIds) {
-      if (!this.earliestArrivalByTrip[tripId]) {
-        this.earliestArrivalByTrip[tripId] = {
-          arrivalTime: Infinity,
-          connection: undefined,
-        };
-      }
-    }
   }
 
   private getTripIdsFromConnection(connection: IConnection): string[] {
@@ -291,11 +325,12 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   private updateTrips(connection: IConnection, tripId: string): void {
-    if (!this.earliestArrivalByTrip[tripId].connection) {
-      this.earliestArrivalByTrip[tripId] = {
-        arrivalTime: Infinity, // don't need this
-        connection, // first connection of the trip we are taking
-      };
+    const isInitialReachableStop = this.initialReachableStops.find(({ stop }: IReachableStop) =>
+      stop.id === connection.departureStop,
+    );
+
+    if (!this.enterConnectionByTrip[tripId] || isInitialReachableStop) {
+      this.enterConnectionByTrip[tripId] = connection;
     }
   }
 
@@ -309,7 +344,8 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         this.query.minimumWalkingSpeed,
       );
 
-      reachableStops.forEach(({stop, duration}: IReachableStop) => {
+      reachableStops.forEach((reachableStop: IReachableStop) => {
+        const { stop, duration } = reachableStop;
         const reachableStopArrival = this.profilesByStop[stop.id].arrivalTime;
 
         if (reachableStopArrival > connection.arrivalTime.getTime() + duration) {
@@ -317,14 +353,48 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
             departureTime: connection.departureTime.getTime(),
             arrivalTime: connection.arrivalTime.getTime() + duration,
             exitConnection: connection,
-            enterConnection: this.earliestArrivalByTrip[tripId].connection,
+            enterConnection: this.enterConnectionByTrip[tripId],
           };
         }
+
+        this.checkIfArrivalStopIsReachable(connection, reachableStop);
 
       });
 
     } catch (e) {
       this.context.emitWarning(e);
+    }
+  }
+
+  private checkIfArrivalStopIsReachable(connection: IConnection, { stop, duration }: IReachableStop): void {
+    const canReachArrivalStop = this.finalReachableStops.find((reachableStop: IReachableStop) => {
+      return reachableStop.stop.id === stop.id;
+    });
+
+    if (canReachArrivalStop && canReachArrivalStop.duration > 0) {
+      const departureTime = connection.arrivalTime.getTime() + duration;
+      const arrivalTime = connection.arrivalTime.getTime() + duration + canReachArrivalStop.duration;
+
+      const path: Path = Path.create();
+
+      const footpath: IStep = Step.create(
+        stop,
+        this.query.to[0],
+        TravelMode.Walking,
+        {
+          minimum: arrivalTime - departureTime,
+        },
+        new Date(departureTime),
+        new Date(arrivalTime),
+      );
+
+      path.addStep(footpath);
+
+      this.profilesByStop[this.query.to[0].id] = {
+        departureTime,
+        arrivalTime,
+        path,
+      };
     }
   }
 }

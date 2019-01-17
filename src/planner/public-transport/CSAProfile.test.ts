@@ -259,7 +259,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const query: IQuery = {
         publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-        to: "http://irail.be/stations/NMBS/008892007", // Antwerpen
+        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         maximumArrivalTime,
         minimumDepartureTime,
       };
@@ -291,7 +291,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const query: IQuery = {
         publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-        to: "http://irail.be/stations/NMBS/008892007", // Antwerpen
+        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         maximumArrivalTime,
         minimumDepartureTime,
       };

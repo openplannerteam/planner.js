@@ -1,6 +1,7 @@
 import { AsyncIterator, SingletonIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Context from "../../Context";
+import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
@@ -45,15 +46,33 @@ export default class JourneyExtractorEarliestArrivalTime implements IJourneyExtr
     let currentProfile: ITransferProfile = profilesByStop[currentStopId];
 
     while (currentStopId !== departureStopId) {
-      const step: IStep = Step.createFromConnections(
-        currentProfile.enterConnection,
-        currentProfile.exitConnection,
-      );
+      const { enterConnection, exitConnection, path: profilePath } = currentProfile;
 
-      path.addStep(step);
+      if (currentProfile.enterConnection && currentProfile.exitConnection) {
 
-      currentStopId = currentProfile.enterConnection.departureStop;
-      currentProfile = profilesByStop[currentStopId];
+        const enterLocation: ILocation = await this.locationResolver.resolve(enterConnection.departureStop);
+        const exitLocation: ILocation = await this.locationResolver.resolve(exitConnection.arrivalStop);
+
+        const step: IStep = Step.createFromConnections(
+          enterConnection,
+          exitConnection,
+        );
+
+        step.startLocation = enterLocation;
+        step.stopLocation = exitLocation;
+        path.addStep(step);
+
+        currentStopId = enterConnection.departureStop;
+        currentProfile = profilesByStop[currentStopId];
+      }
+
+      if (profilePath) {
+        path.addPath(profilePath);
+
+        currentStopId = profilePath.getStartLocationId();
+        currentProfile = profilesByStop[currentStopId];
+      }
+
     }
 
     path.reverse();

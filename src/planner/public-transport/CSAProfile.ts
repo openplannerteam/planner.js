@@ -49,7 +49,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private readonly context: Context;
 
   private profilesByStop: IProfilesByStop = {}; // S
-  private earliestArrivalByTrip: IEarliestArrivalByTrip<IEarliestArrivalByTransfers> = {}; // T
+  private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
   private durationToTargetByStop: DurationMs[] = [];
   private gtfsTripByConnection = {};
   private initialReachableStops: IReachableStop[] = [];
@@ -227,6 +227,11 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initDurationToTargetByStop(): Promise<boolean> {
     const arrivalStop: IStop = this.query.to[0] as IStop;
 
+    if (!this.query.to[0].id) {
+      this.query.to[0].id = "geo:" + this.query.to[0].latitude + "," + this.query.to[0].longitude;
+      this.query.to[0].name = "Arrival location";
+    }
+
     const reachableStops = await this.finalReachableStopsFinder
       .findReachableStops(
         arrivalStop,
@@ -246,16 +251,11 @@ export default class CSAProfile implements IPublicTransportPlanner {
     }
 
     for (const reachableStop of reachableStops) {
-      if (!this.query.to[0].id && reachableStop.duration === 0) {
+      if (reachableStop.duration === 0) {
         this.query.to[0] = reachableStop.stop;
       }
 
       this.durationToTargetByStop[reachableStop.stop.id] = reachableStop.duration;
-    }
-
-    if (!this.query.to[0].id) {
-      this.query.to[0].id = "geo:" + this.query.to[0].latitude + "," + this.query.to[0].longitude;
-      this.query.to[0].name = "Arrival location";
     }
 
     return true;
@@ -264,6 +264,11 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initInitialReachableStops(): Promise<boolean> {
     const fromLocation: IStop = this.query.from[0] as IStop;
 
+    if (!this.query.from[0].id) {
+      this.query.from[0].id = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
+      this.query.from[0].name = "Departure location";
+    }
+
     this.initialReachableStops = await this.initialReachableStopsFinder.findReachableStops(
       fromLocation,
       ReachableStopsFinderMode.Source,
@@ -271,19 +276,10 @@ export default class CSAProfile implements IPublicTransportPlanner {
       this.query.minimumWalkingSpeed,
     );
 
-    let stopIndex = 0;
-    while (stopIndex < this.initialReachableStops.length && !fromLocation.id) {
-      const reachableStop = this.initialReachableStops[stopIndex];
+    for (const reachableStop of this.initialReachableStops) {
       if (reachableStop.duration === 0) {
         this.query.from[0] = reachableStop.stop;
       }
-
-      stopIndex++;
-    }
-
-    if (!this.query.from[0].id) {
-      this.query.from[0].id = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
-      this.query.from[0].name = "Departure location";
     }
 
     if (this.initialReachableStops.length === 0 && this.context) {
