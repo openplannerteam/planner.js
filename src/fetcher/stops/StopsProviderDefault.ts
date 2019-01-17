@@ -16,7 +16,7 @@ export default class StopsProviderDefault implements IStopsProvider {
   ) {
     this.stopsFetchers = [];
 
-    for (const { accessUrl } of catalog.stopsFetcherConfigs) {
+    for (const { accessUrl } of catalog.stopsSourceConfigs) {
       this.stopsFetchers.push(stopsFetcherFactory(accessUrl));
     }
   }
