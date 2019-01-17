@@ -29,7 +29,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
     @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
     @inject(TYPES.Catalog) catalog: Catalog,
   ) {
-    const { accessUrl, travelMode } = catalog.connectionsFetcherConfigs[0];
+    const { accessUrl, travelMode } = catalog.connectionsSourceConfigs[0];
 
     this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
     this.connectionsStore = new ConnectionsStore();

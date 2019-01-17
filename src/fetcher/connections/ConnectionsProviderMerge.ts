@@ -61,7 +61,7 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
   ) {
     this.connectionsFetchers = [];
 
-    for (const { accessUrl, travelMode } of catalog.connectionsFetcherConfigs) {
+    for (const { accessUrl, travelMode } of catalog.connectionsSourceConfigs) {
       this.connectionsFetchers.push(connectionsFetcherFactory(accessUrl, travelMode));
     }
   }
