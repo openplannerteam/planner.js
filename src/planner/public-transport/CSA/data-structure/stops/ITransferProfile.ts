@@ -1,4 +1,5 @@
 import IConnection from "../../../../../fetcher/connections/IConnection";
+import Path from "../../../../Path";
 
 /**
  * Interface for the CSA profile for a specific amount of transfers that can be made.
@@ -11,6 +12,7 @@ import IConnection from "../../../../../fetcher/connections/IConnection";
 export default interface ITransferProfile {
   departureTime: number;
   arrivalTime: number;
-  exitConnection: IConnection;
-  enterConnection: IConnection;
+  exitConnection?: IConnection;
+  enterConnection?: IConnection;
+  path?: Path;
 }

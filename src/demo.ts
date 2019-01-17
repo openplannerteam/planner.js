@@ -27,8 +27,8 @@ export default async (logResults) => {
       .on(EventType.AbortQuery, (reason) => {
         console.log("AbortQuery", reason);
       })
-      .on(EventType.Query, () => {
-        console.log("Query");
+      .on(EventType.Query, (Query) => {
+        console.log("Query", Query);
       })
       .on(EventType.QueryExponential, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;

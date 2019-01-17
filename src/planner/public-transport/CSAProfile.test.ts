@@ -16,8 +16,8 @@ import LocationResolverDefault from "../../query-runner/LocationResolverDefault"
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
-import JourneyExtractorDefault from "./JourneyExtractorDefault";
-import PublicTransportPlannerCSAProfile from "./PublicTransportPlannerCSAProfile";
+import CSAProfile from "./CSAProfile";
+import JourneyExtractorProfile from "./JourneyExtractorProfile";
 
 describe("[PublicTransportPlannerCSAProfile]", () => {
   describe("mock data", () => {
@@ -34,11 +34,11 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorDefault(
+      const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,
       );
 
-      return new PublicTransportPlannerCSAProfile(
+      return new CSAProfile(
         connectionFetcher,
         locationResolver,
         reachableStopsFinder,
@@ -185,11 +185,11 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorDefault(
+      const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,
       );
 
-      const CSA = new PublicTransportPlannerCSAProfile(
+      const CSA = new CSAProfile(
         connectionFetcher,
         locationResolver,
         reachableStopsFinder,
@@ -259,7 +259,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const query: IQuery = {
         publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-        to: "http://irail.be/stations/NMBS/008892007", // Antwerpen
+        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         maximumArrivalTime,
         minimumDepartureTime,
       };
@@ -291,7 +291,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const query: IQuery = {
         publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-        to: "http://irail.be/stations/NMBS/008892007", // Antwerpen
+        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         maximumArrivalTime,
         minimumDepartureTime,
       };

@@ -31,4 +31,16 @@ export default class Path implements IPath {
   public addStep(step: IStep): void {
     this.steps.push(step);
   }
+
+  public addPath(path: IPath): void {
+    this.steps.push(...path.steps);
+  }
+
+  public reverse(): void {
+    this.steps.reverse();
+  }
+
+  public getStartLocationId(): string {
+    return (" " + this.steps[0].startLocation.id).slice(1);
+  }
 }
