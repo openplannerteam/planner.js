@@ -265,7 +265,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         const iterator = await queryRunner.run(query);
 
         result = await Iterators.toArray(iterator);
-        console.log(JSON.stringify(result, null, " "));
       });
 
       it("Correct departure and arrival stop", () => {
