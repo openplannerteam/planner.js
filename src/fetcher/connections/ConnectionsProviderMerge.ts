@@ -6,12 +6,13 @@ import MergeIterator from "../../util/iterators/MergeIterator";
 import IConnection from "./IConnection";
 import IConnectionsFetcher from "./IConnectionsFetcher";
 import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
+import IConnectionsProvider from "./IConnectionsProvider";
 
 /**
  * Instantiates and merge sorts all registered connection fetchers
  */
 @injectable()
-export default class ConnectionsProviderMerge implements IConnectionsFetcher {
+export default class ConnectionsProviderMerge implements IConnectionsProvider {
 
   private static forwardsConnectionSelector(connections: IConnection[]): number {
     if (connections.length === 1) {

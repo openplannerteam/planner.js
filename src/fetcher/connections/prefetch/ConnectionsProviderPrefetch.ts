@@ -60,7 +60,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
   public createIterator(): AsyncIterator<IConnection> {
     if (this.startedPrefetching) {
       return new PromiseProxyIterator(() =>
-        this.connectionsStore.getIteratorView(this.connectionsFetcherConfig),
+        this.connectionsStore.getIterator(this.connectionsFetcherConfig),
       );
     }
 

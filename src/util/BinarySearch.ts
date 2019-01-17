@@ -8,6 +8,19 @@ export default class BinarySearch<T> {
   }
 
   /**
+   * Find the first index of the given key, or the index after which that key would be hypothetically spliced in
+   * Adapted from: https://www.algorithmsandme.com/last-occurrence-of-element-with-binary-search/
+   * @param key
+   * @param start
+   * @param end
+   */
+  public findFirstIndex(key: number, start: number = 0, end: number = (this.array.length - 1)) {
+    while (start < end) {
+      const mid = start + Math.floor(((end - start) + 1) / 2);
+    }
+  }
+
+  /**
    * Find the last index of the given key, or the index after which that key would be hypothetically spliced in
    * Adapted from: https://www.algorithmsandme.com/last-occurrence-of-element-with-binary-search/
    * @param key
@@ -28,4 +41,5 @@ export default class BinarySearch<T> {
 
     return start;
   }
+
 }
