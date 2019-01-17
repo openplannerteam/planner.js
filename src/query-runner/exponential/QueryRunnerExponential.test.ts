@@ -7,7 +7,7 @@ import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetc
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
 import CSAProfile from "../../planner/public-transport/CSAProfile";
-import JourneyExtractorDefault from "../../planner/public-transport/JourneyExtractorDefault";
+import JourneyExtractorProfile from "../../planner/public-transport/JourneyExtractorProfile";
 import ReachableStopsFinderBirdsEyeCached from "../../planner/stops/ReachableStopsFinderBirdsEyeCached";
 import Units from "../../util/Units";
 import LocationResolverDefault from "../LocationResolverDefault";
@@ -42,7 +42,7 @@ describe("[QueryRunnerExponential]", () => {
     const context = new Context();
 
     const createJourneyExtractor = () => {
-      return new JourneyExtractorDefault(
+      return new JourneyExtractorProfile(
         locationResolver,
       );
     };

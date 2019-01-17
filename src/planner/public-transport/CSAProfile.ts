@@ -45,7 +45,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private readonly initialReachableStopsFinder: IReachableStopsFinder;
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
-  private readonly journeyExtractor: IJourneyExtractor<IProfilesByStop>;
+  private readonly journeyExtractor: IJourneyExtractor;
   private readonly context: Context;
 
   private profilesByStop: IProfilesByStop = {}; // S
@@ -72,7 +72,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     @tagged("phase", ReachableStopsSearchPhase.Final)
       finalReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.JourneyExtractor)
-      journeyExtractor: IJourneyExtractor<IProfilesByStop>,
+      journeyExtractor: IJourneyExtractor,
     @inject(TYPES.Context)
       context?: Context,
   ) {

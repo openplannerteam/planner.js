@@ -19,7 +19,7 @@ import IProfilesByStop from "./planner/public-transport/CSA/data-structure/stops
 import CSAProfile from "./planner/public-transport/CSAProfile";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
-import JourneyExtractorDefault from "./planner/public-transport/JourneyExtractorDefault";
+import JourneyExtractorProfile from "./planner/public-transport/JourneyExtractorProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
@@ -44,8 +44,8 @@ container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTranspor
 container.bind<IRoadPlanner>(TYPES.RoadPlanner)
   .to(RoadPlannerBirdsEye);
 
-container.bind<IJourneyExtractor<IProfilesByStop>>(TYPES.JourneyExtractor)
-  .to(JourneyExtractorDefault);
+container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
+  .to(JourneyExtractorProfile);
 
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);

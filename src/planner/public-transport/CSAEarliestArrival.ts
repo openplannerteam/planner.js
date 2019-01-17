@@ -40,7 +40,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private readonly initialReachableStopsFinder: IReachableStopsFinder;
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
-  private readonly journeyExtractor: IJourneyExtractor<IProfileByStop>;
+  private readonly journeyExtractor: IJourneyExtractor;
   private readonly context: Context;
 
   private profilesByStop: IProfileByStop = {}; // S
@@ -68,7 +68,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     @tagged("phase", ReachableStopsSearchPhase.Final)
       finalReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.JourneyExtractor)
-      journeyExtractor: IJourneyExtractor<IProfileByStop>,
+      journeyExtractor: IJourneyExtractor,
     @inject(TYPES.Context)
       context?: Context,
   ) {

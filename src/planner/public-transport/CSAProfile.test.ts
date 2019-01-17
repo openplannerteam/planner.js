@@ -17,7 +17,7 @@ import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import CSAProfile from "./CSAProfile";
-import JourneyExtractorDefault from "./JourneyExtractorDefault";
+import JourneyExtractorProfile from "./JourneyExtractorProfile";
 
 describe("[PublicTransportPlannerCSAProfile]", () => {
   describe("mock data", () => {
@@ -34,7 +34,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorDefault(
+      const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,
       );
 
@@ -185,7 +185,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorDefault(
+      const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,
       );
 

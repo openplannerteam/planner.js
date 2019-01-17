@@ -21,7 +21,7 @@ import IJourneyExtractor from "./IJourneyExtractor";
  * @property bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.
  */
 @injectable()
-export default class JourneyExtractorEarliestArrivalTime implements IJourneyExtractor<IProfileByStop> {
+export default class JourneyExtractorEarliestArrival implements IJourneyExtractor {
   private readonly locationResolver: ILocationResolver;
 
   private context: Context;

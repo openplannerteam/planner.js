@@ -17,7 +17,7 @@ import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import CSAEarliestArrival from "./CSAEarliestArrival";
-import JourneyExtractorEarliestArrivalTime from "./JourneyExtractorEarliestArrivalTime";
+import JourneyExtractorEarliestArrival from "./JourneyExtractorEarliestArrival";
 
 describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
   describe("mock data", () => {
@@ -34,7 +34,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorEarliestArrivalTime(
+      const journeyExtractor = new JourneyExtractorEarliestArrival(
         locationResolver,
       );
 
@@ -185,7 +185,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorEarliestArrivalTime(
+      const journeyExtractor = new JourneyExtractorEarliestArrival(
         locationResolver,
       );
 
