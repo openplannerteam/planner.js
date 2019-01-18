@@ -95,7 +95,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       maximumArrivalTime: upperBoundDate,
     } = this.query;
 
-    this.connectionsProvider.setConfig({
+    this.connectionsProvider.setIteratorOptions({
       upperBoundDate,
       lowerBoundDate,
     });

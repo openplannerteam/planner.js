@@ -5,7 +5,7 @@ import Catalog from "../../../Catalog";
 import TYPES, { ConnectionsFetcherFactory } from "../../../types";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 import IConnectionsProvider from "../IConnectionsProvider";
 import ConnectionsStore from "./ConnectionsStore";
 
@@ -23,7 +23,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
   private startedPrefetching: boolean;
   private connectionsIterator: AsyncIterator<IConnection>;
-  private connectionsFetcherConfig: IConnectionsFetcherConfig;
+  private connectionsIteratorOptions: IConnectionsIteratorOptions;
 
   constructor(
     @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
@@ -40,12 +40,12 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
       this.startedPrefetching = true;
 
       setTimeout(() => {
-        const config: IConnectionsFetcherConfig = {
+        const options: IConnectionsIteratorOptions = {
           backward: false,
           lowerBoundDate: new Date(),
         };
 
-        this.connectionsFetcher.setConfig(config);
+        this.connectionsFetcher.setIteratorOptions(options);
         this.connectionsIterator = this.connectionsFetcher.createIterator();
 
         this.connectionsIterator
@@ -61,14 +61,14 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
   public createIterator(): AsyncIterator<IConnection> {
     if (this.startedPrefetching) {
       return new PromiseProxyIterator(() =>
-        this.connectionsStore.getIterator(this.connectionsFetcherConfig),
+        this.connectionsStore.getIterator(this.connectionsIteratorOptions),
       );
     }
 
     throw new Error("TODO");
   }
 
-  public setConfig(config: IConnectionsFetcherConfig): void {
-    this.connectionsFetcherConfig = config;
+  public setIteratorOptions(options: IConnectionsIteratorOptions): void {
+    this.connectionsIteratorOptions = options;
   }
 }

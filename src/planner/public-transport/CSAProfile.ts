@@ -99,7 +99,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
       maximumArrivalTime: upperBoundDate,
     } = this.query;
 
-    this.connectionsProvider.setConfig({
+    this.connectionsProvider.setIteratorOptions({
       backward: true,
       upperBoundDate,
       lowerBoundDate,

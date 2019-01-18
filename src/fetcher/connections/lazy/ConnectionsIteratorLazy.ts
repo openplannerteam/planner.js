@@ -7,7 +7,7 @@ import HydraPageIterator from "../hydra/HydraPageIterator";
 import IHydraPage from "../hydra/IHydraPage";
 import IHydraPageIteratorConfig from "../hydra/IHydraPageIteratorConfig";
 import IConnection from "../IConnection";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 
 /**
  * Base class for fetching linked connections with LDFetch and letting the caller iterate over them asynchronously
@@ -21,13 +21,13 @@ export default class ConnectionsIteratorLazy extends FlatMapIterator<IHydraPage,
     baseUrl: string,
     travelMode: TravelMode,
     ldFetch: LdFetch,
-    config: IConnectionsFetcherConfig,
+    options: IConnectionsIteratorOptions,
   ) {
-    const departureTimeDate = config.backward ?
-      config.upperBoundDate : config.lowerBoundDate;
+    const departureTimeDate = options.backward ?
+      options.upperBoundDate : options.lowerBoundDate;
 
     const pageIteratorConfig: IHydraPageIteratorConfig = {
-      backward: config.backward,
+      backward: options.backward,
       initialTemplateVariables: {
         departureTime: departureTimeDate.toISOString(),
       },

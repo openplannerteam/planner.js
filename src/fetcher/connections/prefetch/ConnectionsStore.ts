@@ -1,7 +1,7 @@
 import { ArrayIterator, AsyncIterator, IntegerIterator, IntegerIteratorOptions } from "asynciterator";
 import BinarySearch from "../../../util/BinarySearch";
 import IConnection from "../IConnection";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 
 interface IViewPromise {
   backward: boolean;
@@ -51,9 +51,9 @@ export default class ConnectionsStore {
     this.hasFinished = true;
   }
 
-  public getIterator(fetcherConfig: IConnectionsFetcherConfig): Promise<AsyncIterator<IConnection>> {
-    const { backward } = fetcherConfig;
-    let { lowerBoundDate, upperBoundDate } = fetcherConfig;
+  public getIterator(iteratorOptions: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>> {
+    const { backward } = iteratorOptions;
+    let { lowerBoundDate, upperBoundDate } = iteratorOptions;
 
     if (this.hasFinished && this.store.length === 0) {
       return Promise.resolve(new ArrayIterator([]));

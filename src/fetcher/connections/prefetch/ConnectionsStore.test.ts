@@ -1,7 +1,7 @@
 import {AsyncIterator} from "asynciterator";
 import "jest";
 import IConnection from "../IConnection";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 import ConnectionsStore from "./ConnectionsStore";
 
 describe("[ConnectionsStore]", () => {
@@ -31,19 +31,19 @@ describe("[ConnectionsStore]", () => {
       connectionsStore.finish();
 
       createIterator = async (backward, lowerBoundDate, upperBoundDate): Promise<AsyncIterator<IConnection>> => {
-        const fetcherConfig: IConnectionsFetcherConfig = {
+        const iteratorOptions: IConnectionsIteratorOptions = {
           backward,
         };
 
         if (lowerBoundDate) {
-          fetcherConfig.lowerBoundDate = (lowerBoundDate as unknown) as Date;
+          iteratorOptions.lowerBoundDate = (lowerBoundDate as unknown) as Date;
         }
 
         if (upperBoundDate) {
-          fetcherConfig.upperBoundDate = (upperBoundDate as unknown) as Date;
+          iteratorOptions.upperBoundDate = (upperBoundDate as unknown) as Date;
         }
 
-        return connectionsStore.getIterator(fetcherConfig);
+        return connectionsStore.getIterator(iteratorOptions);
       };
 
     });
@@ -153,11 +153,11 @@ describe("[ConnectionsStore]", () => {
     setTimeout(appendNext, 100);
 
     it("iterator view: backward / upperBoundDate isn't loaded at first", async (done) => {
-      const fetcherConfig: IConnectionsFetcherConfig = {
+      const iteratorOptions: IConnectionsIteratorOptions = {
         backward: true,
         upperBoundDate: (7 as unknown) as Date,
       };
-      const iteratorView: AsyncIterator<IConnection> = await connectionsStore.getIterator(fetcherConfig);
+      const iteratorView: AsyncIterator<IConnection> = await connectionsStore.getIterator(iteratorOptions);
 
       const expected = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7];
       let current = expected.length - 1;
