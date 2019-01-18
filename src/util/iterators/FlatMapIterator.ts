@@ -20,6 +20,7 @@ export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
     });
   }
 
+  // Not sure if this gets called
   public close() {
     this.currentResultIterator._end();
 
