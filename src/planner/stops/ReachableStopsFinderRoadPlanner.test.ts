@@ -20,7 +20,7 @@ test("[ReachableStopsFinderRoadPlanner] reachable stops", async () => {
 
   expect(sourceStop).toBeDefined();
 
-  // Get reachable stops in 50 km (10h at 5km/h)
+  // Get reachable stops in 5 km (1h at 5km/h)
   const reachableStops = await reachableStopsFinder.findReachableStops(
     sourceStop,
     ReachableStopsFinderMode.Source,

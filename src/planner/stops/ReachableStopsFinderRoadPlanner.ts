@@ -8,7 +8,9 @@ import IPath from "../../interfaces/IPath";
 import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Geo from "../../util/Geo";
 import Iterators from "../../util/Iterators";
+import Units from "../../util/Units";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
@@ -48,10 +50,21 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
       minimumWalkingSpeed: minimumSpeed,
     };
 
-    const allStops = await this.stopsProvider.getAllStops();
+    const allStops: IStop[] = await this.stopsProvider.getAllStops();
+
+    const stopsInsideCircleArea: IStop[] = [];
+    for (const stop of allStops) {
+      const distance = Geo.getDistanceBetweenStops(sourceOrTargetStop, stop);
+      const duration = Units.toDuration(distance, minimumSpeed);
+
+      if (duration <= maximumDuration) {
+        stopsInsideCircleArea.push(stop);
+      }
+    }
+
     const reachableStops: IReachableStop[] = [{stop: sourceOrTargetStop, duration: 0}];
 
-    await Promise.all(allStops.map(async (possibleTarget: IStop) => {
+    await Promise.all(stopsInsideCircleArea.map(async (possibleTarget: IStop) => {
       if (possibleTarget.id !== sourceOrTargetStop.id) {
 
         const query = Object.assign({}, baseQuery, {
