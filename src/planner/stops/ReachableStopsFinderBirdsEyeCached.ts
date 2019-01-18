@@ -7,6 +7,10 @@ import TYPES from "../../types";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 import ReachableStopsFinderBirdsEye from "./ReachableStopsFinderBirdsEye";
 
+/**
+ * This [[IReachableStopsFinder]] forms a caching layer in front of a [[ReachableStopsFinderBirdsEye]] instance,
+ * so all the distances don't have to be calculated repeatedly
+ */
 @injectable()
 export default class ReachableStopsFinderBirdsEyeCached implements IReachableStopsFinder {
   private readonly reachableStopsFinder: ReachableStopsFinderBirdsEye;

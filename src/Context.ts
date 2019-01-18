@@ -5,8 +5,9 @@ import EventType from "./enums/EventType";
 
 /**
  * The Context serves as event pass through and holder of the inversify container object.
- * Proxies an internal EventEmitter because ´decorate(injectable(), EventEmitter)´ causes
- * errors when running tests in Jest
+ *
+ * It proxies an internal EventEmitter (instead of extending EventEmitter) because
+ * ´decorate(injectable(), EventEmitter)´ causes errors when running tests in Jest
  */
 @injectable()
 // @ts-ignore

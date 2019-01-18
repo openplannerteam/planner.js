@@ -18,6 +18,19 @@ import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
 
+/**
+ * This exponential query runner only accepts public transport queries (`publicTransportOnly = true`).
+ * It uses the registered [[IPublicTransportPlanner]] to execute them.
+ *
+ * To improve the user perceived performance, the query gets split into subqueries
+ * with exponentially increasing time frames:
+ *
+ * ```
+ * minimumDepartureTime + 15 minutes, 30 minutes, 60 minutes, 120 minutes...
+ * ```
+ *
+ * In the current implementation, the `maximumArrivalTime` is ignored
+ */
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
   private readonly locationResolver: ILocationResolver;

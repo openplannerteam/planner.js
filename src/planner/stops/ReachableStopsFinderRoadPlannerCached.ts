@@ -8,6 +8,10 @@ import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
+/**
+ * This [[IReachableStopsFinder]] forms a caching layer in front of a [[ReachableStopsFinderRoadPlanner]] instance,
+ * so all the queries don't have to be executed repeatedly
+ */
 @injectable()
 export default class ReachableStopsFinderRoadPlannerCached implements IReachableStopsFinder {
   private readonly reachableStopsFinder: ReachableStopsFinderRoadPlanner;

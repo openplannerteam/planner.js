@@ -8,6 +8,10 @@ import Geo from "../../util/Geo";
 import Units from "../../util/Units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
+/**
+ * This [[IReachableStopsFinder]] determines its reachable stops based on the birds's-eye distance
+ * to the source or target stop.
+ */
 @injectable()
 export default class ReachableStopsFinderBirdsEye implements IReachableStopsFinder {
   private readonly stopsProvider: IStopsProvider;

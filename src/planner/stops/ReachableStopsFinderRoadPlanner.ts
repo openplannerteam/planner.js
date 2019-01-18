@@ -12,6 +12,9 @@ import Iterators from "../../util/Iterators";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
+/**
+ * This [[IReachableStopsFinder]] uses the registered [[IRoadPlanner]] to find reachable stops
+ */
 @injectable()
 export default class ReachableStopsFinderRoadPlanner implements IReachableStopsFinder {
   private readonly stopsProvider: IStopsProvider;

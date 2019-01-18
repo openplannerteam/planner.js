@@ -2,6 +2,10 @@ import IPath from "../interfaces/IPath";
 import IStep from "../interfaces/IStep";
 import Step from "./Step";
 
+/**
+ * This Path class serves as an implementation of the [[IPath]] interface and as a home for some helper functions
+ * related to [[IPath]] instances
+ */
 export default class Path implements IPath {
 
   public static create(): Path {
@@ -10,6 +14,10 @@ export default class Path implements IPath {
     );
   }
 
+  /**
+   * Compare two [[IPath]] instances
+   * @returns true if the two paths are the same
+   */
   public static compareEquals(path: IPath, otherPath: IPath): boolean {
     if (path.steps.length !== otherPath.steps.length) {
       return false;

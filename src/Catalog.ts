@@ -1,5 +1,10 @@
 import TravelMode from "./enums/TravelMode";
 
+/**
+ * A Catalog instance holds the stops source and connections source configs.
+ * These configs get passed to the [[StopsFetcherFactory]] and [[ConnectionsFetcherFactory]] to construct
+ * respectively [[IStopsFetcher]] and [[IConnectionsFetcher]] instances
+ */
 export default class Catalog {
 
   public static combine(...catalogs: Catalog[]): Catalog {

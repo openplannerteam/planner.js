@@ -6,6 +6,13 @@ import ILocation from "../interfaces/ILocation";
 import TYPES from "../types";
 import ILocationResolver from "./ILocationResolver";
 
+/**
+ * This default location resolver resolves [[ILocation]] instances by their `id` (`http(s)://...`)
+ *
+ * If only an `id` string is passed, it returns an [[ILocation]] with all available information.
+ *
+ * If an incomplete [[ILocation]] (but with an `id`) is passed, it gets supplemented as well.
+ */
 @injectable()
 export default class LocationResolverDefault implements ILocationResolver {
   private readonly stopsProvider: IStopsProvider;
