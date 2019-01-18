@@ -4,7 +4,7 @@ import TravelMode from "../../enums/TravelMode";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
@@ -51,8 +51,8 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
   private getPathBetweenLocations(
     from: ILocation,
     to: ILocation,
-    minWalkingSpeed: SpeedkmH,
-    maxWalkingSpeed: SpeedkmH,
+    minWalkingSpeed: SpeedKmH,
+    maxWalkingSpeed: SpeedKmH,
     maxWalkingDuration: DurationMs,
   ): IPath {
 

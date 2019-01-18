@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
@@ -22,7 +22,7 @@ export default class ReachableStopsFinderBirdsEye implements IReachableStopsFind
     sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
-    minimumSpeed: SpeedkmH,
+    minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
 
     // Mode can be ignored since birds eye view distance is identical

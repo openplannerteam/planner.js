@@ -13,7 +13,7 @@ import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
 
 /**
- * Allows to ask route planning queries over our knowledge graphs
+ * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */
 // @ts-ignore
 export default class Planner implements EventEmitter {
@@ -33,9 +33,9 @@ export default class Planner implements EventEmitter {
   }
 
   /**
-   * Given an [[IQuery]], it will evaluate the query and eventually produce an [[IQueryResult]]
+   * Given an [[IQuery]], it will evaluate the query and return a promise for an AsyncIterator of [[IPath]] instances
    * @param query An [[IQuery]] specifying a route planning query
-   * @returns An AsyncIterator of [[IPath]]s
+   * @returns An AsyncIterator of [[IPath]] instances
    */
   public async query(query: IQuery): Promise<AsyncIterator<IPath>> {
     this.emit(EventType.Query, query);

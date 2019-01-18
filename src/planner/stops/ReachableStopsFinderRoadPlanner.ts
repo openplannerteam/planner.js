@@ -5,7 +5,7 @@ import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
@@ -29,7 +29,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
     sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
-    minimumSpeed: SpeedkmH,
+    minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
 
     const minimumDepartureTime = new Date();

@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
 @injectable()
@@ -11,7 +11,7 @@ export default class ReachableStopsFinderOnlySelf implements IReachableStopsFind
     sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
-    minimumSpeed: SpeedkmH,
+    minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
     return [{ stop: sourceOrTargetStop, duration: 0 }];
   }

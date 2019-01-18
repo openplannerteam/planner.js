@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 import ReachableStopsFinderBirdsEye from "./ReachableStopsFinderBirdsEye";
@@ -23,7 +23,7 @@ export default class ReachableStopsFinderBirdsEyeCached implements IReachableSto
     sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
-    minimumSpeed: SpeedkmH,
+    minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
 
     // Mode can be ignored since birds eye view distance is identical
