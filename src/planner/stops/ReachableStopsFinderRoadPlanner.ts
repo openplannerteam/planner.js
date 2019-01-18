@@ -15,7 +15,9 @@ import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
 /**
- * This [[IReachableStopsFinder]] uses the registered [[IRoadPlanner]] to find reachable stops
+ * This [[IReachableStopsFinder]] uses the registered [[IRoadPlanner]] to find reachable stops.
+ * It makes an initial selection of stops based on bird's-eye distance, after which a road planner query gets executed
+ * for each of these stops.
  */
 @injectable()
 export default class ReachableStopsFinderRoadPlanner implements IReachableStopsFinder {
