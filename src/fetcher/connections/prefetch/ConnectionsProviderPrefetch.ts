@@ -9,14 +9,14 @@ import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
 import IConnectionsProvider from "../IConnectionsProvider";
 import ConnectionsStore from "./ConnectionsStore";
 
-const MAX_CONNECTIONS = 20000;
-
 /**
  * Passes through one [[IConnectionsFetcher]], the first one if there are multiple
  * This provider is most/only useful if there is only one fetcher
  */
 @injectable()
 export default class ConnectionsProviderPrefetch implements IConnectionsProvider {
+
+  private static MAX_CONNECTIONS = 20000;
 
   private readonly connectionsFetcher: IConnectionsFetcher;
   private readonly connectionsStore: ConnectionsStore;
@@ -49,7 +49,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
         this.connectionsIterator = this.connectionsFetcher.createIterator();
 
         this.connectionsIterator
-          .take(MAX_CONNECTIONS)
+          .take(ConnectionsProviderPrefetch.MAX_CONNECTIONS)
           .on("end", () => this.connectionsStore.finish())
           .each((connection: IConnection) => {
             this.connectionsStore.append(connection);
