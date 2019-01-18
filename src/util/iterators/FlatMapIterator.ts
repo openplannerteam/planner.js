@@ -6,7 +6,8 @@ export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
 
   private currentResultIterator: AsyncIterator<R>;
   private currentResultPushed: number;
-  private isLastResultIterator = false;
+  private isLastResultIterator: boolean = false;
+  private currentResultFinished: boolean = true;
 
   constructor(queryIterator: AsyncIterator<Q>, run: (query: Q) => Promise<AsyncIterator<R>>) {
     super({maxBufferSize: 1, autoStart: false});
@@ -19,8 +20,18 @@ export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
     });
   }
 
+  public close() {
+    this.currentResultIterator._end();
+
+    super.close();
+  }
+
+  public _destroy() {
+    this.currentResultIterator._end();
+  }
+
   public _read(count: number, done: () => void) {
-    if (!this.currentResultIterator) {
+    if (this.currentResultFinished) {
       const query = this.queryIterator.read();
 
       if (query) {
@@ -43,9 +54,10 @@ export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
       .then((resultIterator: AsyncIterator<R>) => {
         self.currentResultIterator = resultIterator;
         self.currentResultPushed = 0;
+        self.currentResultFinished = false;
 
         self.currentResultIterator.once("end", () => {
-          delete self.currentResultIterator;
+          self.currentResultFinished = true;
 
           // Close if last iterator
           if (self.isLastResultIterator) {

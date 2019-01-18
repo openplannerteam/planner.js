@@ -90,12 +90,13 @@ export default async (logResults) => {
                 console.log("\n");
               }
 
-              if (i === amount) {
-                resolve(true);
-              }
             })
             .on("end", () => {
-              resolve(false);
+              if (i === amount) {
+                resolve(true);
+              } else {
+                resolve(false);
+              }
             });
 
         })
