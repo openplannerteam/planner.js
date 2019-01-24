@@ -20,6 +20,7 @@ import Path from "../Path";
 import Step from "../Step";
 import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
 import IProfileByStop from "./CSA/data-structure/stops/IProfileByStop";
+import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
 import IEnterConnectionByTrip from "./CSA/data-structure/trips/IEnterConnectionByTrip";
 import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
@@ -349,12 +350,19 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         const reachableStopArrival = this.profilesByStop[stop.id].arrivalTime;
 
         if (reachableStopArrival > connection.arrivalTime.getTime() + duration) {
-          this.profilesByStop[stop.id] = {
+
+          const transferProfile = {
             departureTime: connection.departureTime.getTime(),
             arrivalTime: connection.arrivalTime.getTime() + duration,
             exitConnection: connection,
             enterConnection: this.enterConnectionByTrip[tripId],
           };
+
+          if (this.context && this.context.listenerCount(EventType.AddedNewTransferProfile) > 0) {
+            this.emitTransferProfile(transferProfile);
+          }
+
+          this.profilesByStop[stop.id] = transferProfile;
         }
 
         this.checkIfArrivalStopIsReachable(connection, reachableStop);
@@ -362,7 +370,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       });
 
     } catch (e) {
-      this.context.emitWarning(e);
+      if (this.context) {
+        this.context.emitWarning(e);
+      }
     }
   }
 
@@ -395,6 +405,21 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         arrivalTime,
         path,
       };
+    }
+  }
+
+  private async emitTransferProfile(transferProfile: ITransferProfile): Promise<void> {
+    try {
+      const departureStop = await this.locationResolver.resolve(transferProfile.enterConnection.departureStop);
+      const arrivalStop = await this.locationResolver.resolve(transferProfile.exitConnection.arrivalStop);
+
+      this.context.emit(EventType.AddedNewTransferProfile, {
+        departureStop,
+        arrivalStop,
+      });
+
+    } catch (e) {
+      this.context.emitWarning(e);
     }
   }
 }
