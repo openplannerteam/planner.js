@@ -31,7 +31,6 @@
     "inversify": "^5.0.1",
     "isomorphic-fetch": "^2.2.1",
     "ldfetch": "^1.1.1-alpha",
-    "n3": "0.11.2",
     "reflect-metadata": "^0.1.12",
     "uritemplate": "^0.3.4"
   },
