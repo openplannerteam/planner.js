@@ -347,6 +347,14 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
       reachableStops.forEach((reachableStop: IReachableStop) => {
         const { stop, duration } = reachableStop;
+
+        if (!this.profilesByStop[stop.id]) {
+          this.profilesByStop[stop.id] = {
+            departureTime: Infinity,
+            arrivalTime: Infinity,
+          };
+        }
+
         const reachableStopArrival = this.profilesByStop[stop.id].arrivalTime;
 
         if (reachableStopArrival > connection.arrivalTime.getTime() + duration) {

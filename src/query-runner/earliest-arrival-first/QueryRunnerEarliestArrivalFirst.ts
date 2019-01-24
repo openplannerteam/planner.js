@@ -22,7 +22,7 @@ import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
-import EarliestArrivalFirstIterator from "./EarliestArrivalFirstIterator";
+import LinearQueryIterator from "./LinearQueryIterator";
 
 @injectable()
 export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
@@ -81,10 +81,6 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
         earliestArrivalIterator
           .take(1)
           .on("data", (result: IPath) => {
-            if (!result || !result.steps || result.steps.length === 0) {
-              reject();
-            }
-
             resolve(result);
           })
           .on("end", () => {
@@ -92,10 +88,14 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
           });
       });
 
-      const initialTimeSpan: DurationMs = path.steps[path.steps.length - 1].stopTime.getTime() -
-        baseQuery.minimumDepartureTime.getTime();
+      let initialTimeSpan: DurationMs = 15 * 60 * 1000;
 
-      const queryIterator = new EarliestArrivalFirstIterator(baseQuery, initialTimeSpan || 15 * 60 * 1000);
+      if (path && path.steps && path.steps.length > 0) {
+        initialTimeSpan = path.steps[path.steps.length - 1].stopTime.getTime() -
+          baseQuery.minimumDepartureTime.getTime();
+      }
+
+      const queryIterator = new LinearQueryIterator(baseQuery, initialTimeSpan / 2, initialTimeSpan);
 
       const subQueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
         queryIterator,
@@ -112,7 +112,7 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
   }
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    this.context.emit(EventType.QueryExponential, query);
+    this.context.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 

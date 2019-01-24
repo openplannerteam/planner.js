@@ -70,7 +70,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
-    this.context.emit(EventType.QueryExponential, query);
+    this.context.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
