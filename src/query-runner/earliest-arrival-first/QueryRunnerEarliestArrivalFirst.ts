@@ -95,8 +95,6 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
       const initialTimeSpan: DurationMs = path.steps[path.steps.length - 1].stopTime.getTime() -
         baseQuery.minimumDepartureTime.getTime();
 
-      console.log(initialTimeSpan);
-
       const queryIterator = new EarliestArrivalFirstIterator(baseQuery, initialTimeSpan || 15 * 60 * 1000);
 
       const subQueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(

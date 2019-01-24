@@ -78,7 +78,6 @@ describe("[QueryRunnerExponential]", () => {
 
     await publicTransportResult.take(3)
       .on("data", (path: IPath) => {
-        console.log(path);
         result.push(path);
       })
       .on("end", () => {
