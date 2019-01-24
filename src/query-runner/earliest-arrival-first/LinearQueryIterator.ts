@@ -34,7 +34,6 @@ export default class LinearQueryIterator extends AsyncIterator<IResolvedQuery> {
     this.index++;
     this.timespan = this.a * this.index + this.b;
 
-    console.log(Object.assign({}, this.baseQuery, {maximumArrivalTime}));
     return Object.assign({}, this.baseQuery, {maximumArrivalTime});
   }
 
