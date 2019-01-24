@@ -9,6 +9,11 @@ const excludeModules = [
   'n3'
 ];
 
+const excludeAlias = excludeModules.reduce((alias, moduleName) => {
+  alias[moduleName] = path.resolve(__dirname, "webpack/mockModule.js");
+  return alias;
+}, {});
+
 module.exports = {
   entry: "./src/index.ts",
   devtool: "cheap-module-source-map",
@@ -23,10 +28,10 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".js"],
-    alias: excludeModules.reduce((alias, moduleName) => {
-      alias[moduleName] = path.resolve(__dirname, "webpack.mockModule.js");
-      return alias;
-    }, {})
+    alias: {
+      ...excludeAlias,
+      "q": path.resolve(__dirname, "webpack/shimQ.js")
+    }
   },
   output: {
     filename: "bundle.js",
