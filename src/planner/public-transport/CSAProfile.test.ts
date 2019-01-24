@@ -27,7 +27,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
       const connectionFetcher = new ConnectionsFetcherNMBSTest(connections);
-      connectionFetcher.setConfig({ backward: true });
+      connectionFetcher.setIteratorOptions({ backward: true });
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");

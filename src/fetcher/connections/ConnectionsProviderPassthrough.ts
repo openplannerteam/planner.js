@@ -8,7 +8,7 @@ import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 import IConnectionsProvider from "./IConnectionsProvider";
 
 /**
- * Passes through one [[IConnectionsFetcher]], the first one if there are multiple
+ * Passes through any method calls to a *single* [[IConnectionsFetcher]], the first if there are multiple source configs
  * This provider is most/only useful if there is only one fetcher
  */
 @injectable()

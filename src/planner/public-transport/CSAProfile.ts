@@ -433,7 +433,9 @@ export default class CSAProfile implements IPublicTransportPlanner {
       });
 
     } catch (e) {
-      this.context.emitWarning(e);
+      if (this.context) {
+        this.context.emitWarning(e);
+      }
     }
   }
 

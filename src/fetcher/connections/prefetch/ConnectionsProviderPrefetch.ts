@@ -10,8 +10,11 @@ import IConnectionsProvider from "../IConnectionsProvider";
 import ConnectionsStore from "./ConnectionsStore";
 
 /**
- * Passes through one [[IConnectionsFetcher]], the first one if there are multiple
- * This provider is most/only useful if there is only one fetcher
+ * This connections provider implements the [[IConnectionsProvider.prefetchConnections]] method.
+ * When called, it asks an AsyncIterator from the instantiated [[IConnectionsFetcher]].
+ * All items from that iterator get appended to a [[ConnectionsStore]]
+ *
+ * When [[IConnectionsProvider.createIterator]] is called, it returns an iterator *view* from the [[ConnectionsStore]]
  */
 @injectable()
 export default class ConnectionsProviderPrefetch implements IConnectionsProvider {

@@ -1,5 +1,6 @@
 /**
- * Options passed to [[IConnectionsProvider]] and [[IConnectionsFetcherInstances]] instances to
+ * Options passed to [[IConnectionsProvider]] and [[IConnectionsFetcher]] instances
+ * for creating AsyncIterators of [[IConnection]] instances.
  */
 export default interface IConnectionsIteratorOptions {
   upperBoundDate?: Date;

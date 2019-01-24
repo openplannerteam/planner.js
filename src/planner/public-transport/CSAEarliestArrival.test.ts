@@ -27,7 +27,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
       const connectionFetcher = new ConnectionsFetcherNMBSTest(connections);
-      connectionFetcher.setConfig({ backward: false });
+      connectionFetcher.setIteratorOptions({ backward: false });
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
