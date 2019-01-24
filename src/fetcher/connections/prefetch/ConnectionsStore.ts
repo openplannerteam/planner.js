@@ -1,7 +1,7 @@
 import { ArrayIterator, AsyncIterator, IntegerIterator, IntegerIteratorOptions } from "asynciterator";
 import BinarySearch from "../../../util/BinarySearch";
 import IConnection from "../IConnection";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 
 interface IViewPromise {
   backward: boolean;
@@ -10,6 +10,14 @@ interface IViewPromise {
   resolve: (iterator: AsyncIterator<IConnection>) => void;
 }
 
+/**
+ * Class used while prefetching [[IConnection]] instances. It allows appending connections
+ * and creating iterator *views*. Iterator *views* are AsyncIterators that emit references to connections in the store.
+ *
+ * It is assumed that all connections are appended in ascending order by `departureTime`.
+ *
+ * Consequently this connections store serves as an in-memory cache for connections
+ */
 export default class ConnectionsStore {
   private readonly store: IConnection[];
   private readonly binarySearch: BinarySearch<IConnection>;
@@ -23,6 +31,12 @@ export default class ConnectionsStore {
     this.hasFinished = false;
   }
 
+  /**
+   * Add a new [[IConnection]] to the store.
+   *
+   * Additionally, this method checks if any forward iterator views can be pushed to or if any backward iterator can be
+   * resolved
+   */
   public append(connection: IConnection) {
     this.store.push(connection);
 
@@ -51,9 +65,9 @@ export default class ConnectionsStore {
     this.hasFinished = true;
   }
 
-  public getIterator(fetcherConfig: IConnectionsFetcherConfig): Promise<AsyncIterator<IConnection>> {
-    const { backward } = fetcherConfig;
-    let { lowerBoundDate, upperBoundDate } = fetcherConfig;
+  public getIterator(iteratorOptions: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>> {
+    const { backward } = iteratorOptions;
+    let { lowerBoundDate, upperBoundDate } = iteratorOptions;
 
     if (this.hasFinished && this.store.length === 0) {
       return Promise.resolve(new ArrayIterator([]));

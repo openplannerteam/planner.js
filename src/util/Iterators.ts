@@ -1,9 +1,15 @@
 import { AsyncIterator } from "asynciterator";
 
+/**
+ * Utility class with functions to operate on AsyncIterator instances
+ */
 export default class Iterators {
 
+  /**
+   * Returns an array representation of an AsyncIterator.
+   * Assumes the iterator will end sometime
+   */
   public static toArray<T>(iterator: AsyncIterator<T>): Promise<T[]> {
-
     const array = [];
     iterator.each((item: T) => array.push(item));
 
@@ -12,6 +18,9 @@ export default class Iterators {
     });
   }
 
+  /**
+   * Returns the first element of an AsyncIterator.
+   */
   public static getFirst<T>(iterator: AsyncIterator<T>): Promise<T> {
     return new Promise((resolve) => {
       iterator.on("readable", () => {
@@ -20,12 +29,15 @@ export default class Iterators {
     });
   }
 
-  public static find<T>(iterator: AsyncIterator<T>, callback: (element: T) => boolean): Promise<T> {
+  /**
+   * Iterates over elements of an AsyncIterator, returning the first element ´predicate´ returns truthy for.
+   */
+  public static find<T>(iterator: AsyncIterator<T>, predicate: (element: T) => boolean): Promise<T> {
     return new Promise((resolve, reject) => {
       iterator.on("readable", () => {
         let element = iterator.read();
 
-        while (element && !callback(element)) {
+        while (element && !predicate(element)) {
           element = iterator.read();
         }
 

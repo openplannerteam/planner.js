@@ -2,6 +2,7 @@ import "jest";
 import LdFetch from "ldfetch";
 import TravelMode from "../../../enums/TravelMode";
 import IConnection from "../IConnection";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 import ConnectionsIteratorLazy from "./ConnectionsIteratorLazy";
 
 const CONNECTIONS_TO_LOAD = 500; // Should be more than contained on first page
@@ -9,7 +10,7 @@ const CONNECTIONS_TO_LOAD = 500; // Should be more than contained on first page
 test("[ConnectionsIteratorLazy] iterate forwards", (done) => {
   jest.setTimeout(90000);
 
-  const config = {
+  const options: IConnectionsIteratorOptions = {
     backward: false,
     lowerBoundDate: new Date(2018, 10, 22, 10),
   };
@@ -17,7 +18,7 @@ test("[ConnectionsIteratorLazy] iterate forwards", (done) => {
     "https://graph.irail.be/sncb/connections",
     TravelMode.Train,
     new LdFetch(),
-    config,
+    options,
   );
 
   let i = 0;

@@ -3,7 +3,15 @@ import IStop from "../fetcher/stops/IStop";
 import ILocation from "../interfaces/ILocation";
 import { DistanceM } from "../interfaces/units";
 
+/**
+ * Utility class with geographic functions
+ */
 export default class Geo {
+
+  /**
+   * Calculate the distance between two [[ILocation]] instances using the haversine formula
+   * @returns distance is meters ([[DistanceM]])
+   */
   public static getDistanceBetweenLocations(start: ILocation, stop: ILocation): DistanceM {
     const { longitude: depLongitude, latitude: depLatitude } = start;
     const { longitude: arrLongitude, latitude: arrLatitude } = stop;
@@ -24,6 +32,10 @@ export default class Geo {
     });
   }
 
+  /**
+   * Calculate tge distance between two [[IStop]] instances using the haversine formula
+   * @returns distance is meters ([[DistanceM]])
+   */
   public static getDistanceBetweenStops(start: IStop, stop: IStop) {
     return this.getDistanceBetweenLocations(start as ILocation, stop as ILocation);
   }

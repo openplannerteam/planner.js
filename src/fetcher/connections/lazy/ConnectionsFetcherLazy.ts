@@ -5,7 +5,7 @@ import TravelMode from "../../../enums/TravelMode";
 import TYPES from "../../../types";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 import ConnectionsIteratorLazy from "./ConnectionsIteratorLazy";
 
 /**
@@ -16,7 +16,7 @@ import ConnectionsIteratorLazy from "./ConnectionsIteratorLazy";
 export default class ConnectionsFetcherLazy implements IConnectionsFetcher {
 
   protected readonly ldFetch: LDFetch;
-  protected config: IConnectionsFetcherConfig;
+  protected options: IConnectionsIteratorOptions;
   private travelMode: TravelMode;
   private accessUrl: string;
 
@@ -41,11 +41,11 @@ export default class ConnectionsFetcherLazy implements IConnectionsFetcher {
       this.accessUrl,
       this.travelMode,
       this.ldFetch,
-      this.config,
+      this.options,
     );
   }
 
-  public setConfig(config: IConnectionsFetcherConfig): void {
-    this.config = config;
+  public setIteratorOptions(options: IConnectionsIteratorOptions): void {
+    this.options = options;
   }
 }

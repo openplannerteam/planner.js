@@ -1,18 +1,20 @@
 import Catalog from "./Catalog";
 import TravelMode from "./enums/TravelMode";
 
-const catalog = new Catalog();
+/* tslint:disable:max-line-length */
 
-catalog.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Antwerpen/stops");
-catalog.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Limburg/stops");
-catalog.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops");
-catalog.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops");
-catalog.addStopsSource("http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops");
+const catalogDeLijn = new Catalog();
 
-catalog.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Antwerpen/connections", TravelMode.Bus);
-catalog.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Limburg/connections", TravelMode.Bus);
-catalog.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/connections", TravelMode.Bus);
-catalog.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/connections", TravelMode.Bus);
-catalog.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections", TravelMode.Bus);
+catalogDeLijn.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Antwerpen/stops");
+catalogDeLijn.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Limburg/stops");
+catalogDeLijn.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops");
+catalogDeLijn.addStopsSource("http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops");
+catalogDeLijn.addStopsSource("http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops");
 
-export default catalog;
+catalogDeLijn.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Antwerpen/connections", TravelMode.Bus);
+catalogDeLijn.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Limburg/connections", TravelMode.Bus);
+catalogDeLijn.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/connections", TravelMode.Bus);
+catalogDeLijn.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/connections", TravelMode.Bus);
+catalogDeLijn.addConnectionsSource("http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections", TravelMode.Bus);
+
+export default catalogDeLijn;

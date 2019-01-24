@@ -1,6 +1,14 @@
-// duration ms
+/**
+ * Represents duration in ms (milliseconds)
+ */
 export type DurationMs = number;
-// distance in m
+
+/**
+ * Represents distance in m (meters)
+ */
 export type DistanceM = number;
-// speed in km/h
-export type SpeedkmH = number;
+
+/**
+ * Represents duration in km/h (kilometers per hour)
+ */
+export type SpeedKmH = number;

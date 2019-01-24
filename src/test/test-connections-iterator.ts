@@ -16,7 +16,7 @@ const config = {
 const connectionsFetcher = new ConnectionsFetcherLDFetch(ldFetch);
 connectionsFetcher.setTravelMode(TravelMode.Train);
 connectionsFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
-connectionsFetcher.setConfig(config);
+connectionsFetcher.setIteratorOptions(config);
 // iterator.setLowerBound(new Date(2018, 10, 2, 10));
 
 (async () => {

@@ -12,6 +12,12 @@ import ILocationResolver from "./ILocationResolver";
 import IQueryRunner from "./IQueryRunner";
 import IResolvedQuery from "./IResolvedQuery";
 
+/**
+ * This default query runner only accepts public transport queries (`publicTransportOnly = true`).
+ * It uses the registered [[IPublicTransportPlanner]] to execute them.
+ *
+ * The default `minimumDepartureTime` is *now*. The default `maximumArrivalTime` is `minimumDepartureTime + 2 hours`.
+ */
 @injectable()
 export default class QueryRunnerDefault implements IQueryRunner {
   private locationResolver: ILocationResolver;

@@ -1,9 +1,14 @@
 import { injectable } from "inversify";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 
+/**
+ * This [[IReachableStopsFinder]] just returns the passed source or target stop.
+ *
+ * This can be a valid strategy to optimize speed if the user doesn't want to travel by foot to another stop
+ */
 @injectable()
 export default class ReachableStopsFinderOnlySelf implements IReachableStopsFinder {
 
@@ -11,7 +16,7 @@ export default class ReachableStopsFinderOnlySelf implements IReachableStopsFind
     sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
-    minimumSpeed: SpeedkmH,
+    minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
     return [{ stop: sourceOrTargetStop, duration: 0 }];
   }

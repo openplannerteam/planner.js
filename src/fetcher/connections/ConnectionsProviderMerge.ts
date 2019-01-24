@@ -5,7 +5,7 @@ import TYPES, { ConnectionsFetcherFactory } from "../../types";
 import MergeIterator from "../../util/iterators/MergeIterator";
 import IConnection from "./IConnection";
 import IConnectionsFetcher from "./IConnectionsFetcher";
-import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 import IConnectionsProvider from "./IConnectionsProvider";
 
 /**
@@ -52,7 +52,7 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     return latestIndex;
   }
 
-  private config: IConnectionsFetcherConfig;
+  private options: IConnectionsIteratorOptions;
   private connectionsFetchers: IConnectionsFetcher[];
 
   constructor(
@@ -75,7 +75,7 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     const iterators = this.connectionsFetchers
       .map((fetcher) => fetcher.createIterator());
 
-    const selector = this.config.backward ?
+    const selector = this.options.backward ?
       ConnectionsProviderMerge.backwardsConnectionsSelector
       :
       ConnectionsProviderMerge.forwardsConnectionSelector;
@@ -83,10 +83,10 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     return new MergeIterator(iterators, selector, true);
   }
 
-  public setConfig(config: IConnectionsFetcherConfig): void {
-    this.config = config;
+  public setIteratorOptions(options: IConnectionsIteratorOptions): void {
+    this.options = options;
     this.connectionsFetchers.forEach((fetcher) => {
-      fetcher.setConfig(config);
+      fetcher.setIteratorOptions(options);
     });
   }
 }

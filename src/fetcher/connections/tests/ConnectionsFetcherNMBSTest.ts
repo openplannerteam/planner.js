@@ -2,13 +2,13 @@ import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { injectable } from "inversify";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
-import IConnectionsFetcherConfig from "../IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 
 @injectable()
 export default class ConnectionsFetcherNMBSTest implements IConnectionsFetcher {
 
   private connections: Array<IteratorResult<IConnection>> = [];
-  private config: IConnectionsFetcherConfig = {};
+  private options: IConnectionsIteratorOptions = {};
 
   constructor(connections: Array<IteratorResult<IConnection>>) {
       this.connections = connections;
@@ -18,15 +18,15 @@ export default class ConnectionsFetcherNMBSTest implements IConnectionsFetcher {
     return;
   }
 
-  public setConfig(config: IConnectionsFetcherConfig): void {
-    this.config = config;
+  public setIteratorOptions(options: IConnectionsIteratorOptions): void {
+    this.options = options;
   }
 
   public createIterator(): AsyncIterator<IConnection> {
     let array = this.connections
       .map((r) => r.value);
 
-    if (this.config.backward) {
+    if (this.options.backward) {
       array = array.reverse();
     }
 
