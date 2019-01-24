@@ -80,3 +80,22 @@ body {
   font-size: 2em;
   padding: .25em 1em;
 }
+
+#prefetch {
+  position: absolute;
+  top: 10px;
+  left: 54px;
+  z-index: 500;
+  height: 18px;
+  border-radius: 30px;
+  background: #3556a9;
+  color: #fff;
+  font-family: sans-serif;
+  padding: 3px 5px;
+}
+
+#prefetch::after {
+  content: attr(data-last);
+  color: #fff;
+  float: right;
+}

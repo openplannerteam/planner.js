@@ -20,12 +20,15 @@ planner.prefetchConnections();
 let plannerResult;
 const resetButton = document.querySelector("#reset");
 const results = document.querySelector("#results");
+const prefetchBar = document.querySelector("#prefetch");
 
 let lines = [];
 let polyLines = [];
 let resultObjects = [];
 let query = [];
 let allStops = [];
+
+let firstPrefetch;
 
 const removeLines = () => {
   for (const line of polyLines) {
@@ -139,7 +142,21 @@ planner
         polyLines.push(polyline);
       }
     }
-  );
+  )
+  .on("connection-prefetch", (departureTime) => {
+    if (!firstPrefetch) {
+      firstPrefetch = departureTime;
+
+      prefetchBar.innerHTML = departureTime.toLocaleTimeString();
+
+    } else {
+      const pxPerMs = .00005;
+      const width = (departureTime.valueOf() - firstPrefetch.valueOf()) * pxPerMs;
+
+      prefetchBar.style.width = `${width}px`;
+      prefetchBar.setAttribute('data-last', departureTime.toLocaleTimeString());
+    }
+  });
 
 function onMapClick(e) {
   selectRoute(e);
