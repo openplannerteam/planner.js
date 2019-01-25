@@ -189,8 +189,6 @@ describe("[ConnectionsStore]", () => {
       let current = 0;
 
       iteratorView.each((str: IConnection) => {
-        console.log("Read", str.departureTime);
-
         expect(expected[current++]).toBe(str.departureTime);
       });
 

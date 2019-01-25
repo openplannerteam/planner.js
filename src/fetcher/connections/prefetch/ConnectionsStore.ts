@@ -48,7 +48,7 @@ export default class ConnectionsStore {
   /**
    * Add a new [[IConnection]] to the store.
    *
-   * Additionally, this method checks if any forward iterator views can be pushed to or if any backward iterator can be
+   * Additionally, this method checks if any forward iterator views can be expanded or if any backward iterator can be
    * resolved
    */
   public append(connection: IConnection) {
@@ -62,9 +62,7 @@ export default class ConnectionsStore {
           if (connection.departureTime > upperBoundDate) {
             const { iterator } = this.getIteratorView(true, lowerBoundDate, upperBoundDate);
 
-            if (this.context) {
-              this.context.emit(EventType.ConnectionIteratorView, lowerBoundDate, upperBoundDate, true);
-            }
+            this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
 
             resolve(iterator);
             return false;
@@ -95,9 +93,7 @@ export default class ConnectionsStore {
     const { backward } = iteratorOptions;
     let { lowerBoundDate, upperBoundDate } = iteratorOptions;
 
-    if (this.context) {
-      this.context.emit(EventType.ConnectionIteratorView, lowerBoundDate, upperBoundDate, false);
-    }
+    this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
 
     if (this.hasFinished && this.store.length === 0) {
       return new ArrayIterator([]);
@@ -152,10 +148,7 @@ export default class ConnectionsStore {
 
     // Else if the whole interval is available, or the store has finished, return an iterator immediately
     const { iterator } = this.getIteratorView(backward, lowerBoundDate, upperBoundDate);
-
-    if (this.context) {
-      this.context.emit(EventType.ConnectionIteratorView, lowerBoundDate, upperBoundDate, true);
-    }
+    this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
 
     return iterator;
   }
@@ -209,6 +202,8 @@ export default class ConnectionsStore {
           expandingIterator.close();
           iterator.close();
 
+          this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
+
           return false; // Remove from expanding forward views
         }
       },
@@ -241,5 +236,11 @@ export default class ConnectionsStore {
 
   private getUpperBoundIndex(date: Date): number {
     return this.binarySearch.findLastIndex(date.valueOf(), 0, this.store.length - 1);
+  }
+
+  private emitConnectionViewEvent(lowerBoundDate: Date, upperBoundDate: Date, completed: boolean) {
+    if (this.context) {
+      this.context.emit(EventType.ConnectionIteratorView, lowerBoundDate, upperBoundDate, completed);
+    }
   }
 }
