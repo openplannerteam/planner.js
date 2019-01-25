@@ -364,9 +364,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         }
 
         const reachableStopArrival = this.profilesByStop[stop.id].arrivalTime;
+        const arrivalTime = connection.arrivalTime.getTime() + duration + this.query.minimumTransferDuration;
 
-        if (reachableStopArrival > connection.arrivalTime.getTime() + duration) {
-
+        if (reachableStopArrival > arrivalTime) {
           const transferProfile = {
             departureTime: connection.departureTime.getTime(),
             arrivalTime: connection.arrivalTime.getTime() + duration,
