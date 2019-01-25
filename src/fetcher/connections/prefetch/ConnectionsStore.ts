@@ -93,8 +93,6 @@ export default class ConnectionsStore {
     const { backward } = iteratorOptions;
     let { lowerBoundDate, upperBoundDate } = iteratorOptions;
 
-    this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
-
     if (this.hasFinished && this.store.length === 0) {
       return new ArrayIterator([]);
     }
@@ -115,6 +113,8 @@ export default class ConnectionsStore {
         lowerBoundDate = firstDepartureTime;
       }
 
+      this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
+
       // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
       // then return a promise proxy iterator
       if (!this.hasFinished && (!lastDepartureTime || lastDepartureTime <= upperBoundDate)) {
@@ -134,6 +134,8 @@ export default class ConnectionsStore {
       if (!upperBoundDate) {
         upperBoundDate = lastDepartureTime;
       }
+
+      this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
 
       // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
       // then return a an expanding iterator view

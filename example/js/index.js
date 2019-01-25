@@ -63,8 +63,12 @@ resetButton.onclick = e => {
   }
 };
 
+const pxPerMs = .00005;
 const getPrefetchViewWidth = (start, stop) => {
-  const pxPerMs = .00005;
+  if (!start || !stop) {
+    return 0;
+  }
+
   return (stop.valueOf() - start.valueOf()) * pxPerMs;
 };
 
@@ -167,6 +171,9 @@ planner
     }
   })
   .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
+    if (!lowerBound || !upperBound) {
+      return;
+    }
 
     if (!completed) {
       const width = getPrefetchViewWidth(lowerBound, upperBound);
@@ -401,5 +408,7 @@ function runQuery(query) {
           }
         });
     })
-    .catch((error) => console.error(error));
+    .catch((error) => {
+      console.error(error)
+    });
 }
