@@ -1,4 +1,4 @@
-import { AsyncIterator } from "asynciterator";
+import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable, tagged } from "inversify";
 import Context from "../../Context";
 import DropOffType from "../../enums/DropOffType";
@@ -16,6 +16,7 @@ import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Geo from "../../util/Geo";
 import Path from "../Path";
 import Step from "../Step";
 import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
@@ -103,8 +104,12 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   private async calculateJourneys(): Promise<AsyncIterator<IPath>> {
-    await this.initInitialReachableStops();
-    await this.initFinalReachableStops();
+    const hasInitialReachableStops: boolean = await this.initInitialReachableStops();
+    const hasFinalReachableStops: boolean = await this.initFinalReachableStops();
+
+    if (!hasInitialReachableStops || !hasFinalReachableStops) {
+      return Promise.resolve(new ArrayIterator([]));
+    }
 
     this.connectionsIterator = this.connectionsProvider.createIterator();
 
@@ -143,6 +148,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
       const arrivalStopId: string = this.query.to[0].id;
       if (this.profilesByStop[arrivalStopId].arrivalTime <= connection.departureTime.getTime()) {
+        this.connectionsIterator.close();
         done();
       }
 
@@ -182,8 +188,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     const fromLocation: IStop = this.query.from[0] as IStop;
 
     // Making sure the departure location has an id
+    const geoId = Geo.getId(this.query.from[0]);
     if (!fromLocation.id) {
-      this.query.from[0].id = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
+      this.query.from[0].id = geoId;
       this.query.from[0].name = "Departure location";
     }
 
@@ -195,7 +202,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     );
 
     // Abort when we can't reach a single stop.
-    if (this.initialReachableStops.length === 0 && this.context) {
+    if (this.initialReachableStops.length <= 1 && this.initialReachableStops[0].stop.id === geoId && this.context) {
       this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
 
       return false;
@@ -248,8 +255,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private async initFinalReachableStops(): Promise<boolean> {
     const arrivalStop: IStop = this.query.to[0] as IStop;
 
+    const geoId = Geo.getId(this.query.to[0]);
     if (!this.query.to[0].id) {
-      this.query.to[0].id = "geo:" + arrivalStop.latitude + "," + arrivalStop.longitude;
+      this.query.to[0].id = geoId;
       this.query.to[0].name = "Arrival location";
     }
 
@@ -261,7 +269,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         this.query.minimumWalkingSpeed,
       );
 
-    if (this.finalReachableStops.length === 0 && this.context) {
+    if (this.finalReachableStops.length <= 1 && this.finalReachableStops[0].stop.id === geoId && this.context) {
       this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
 
       return false;

@@ -88,7 +88,7 @@ planner
   .on("query", query => {
     console.log("Query", query);
   })
-  .on("query-exponential", query => {
+  .on("sub-query", query => {
     const { minimumDepartureTime, maximumArrivalTime } = query;
 
     console.log(
