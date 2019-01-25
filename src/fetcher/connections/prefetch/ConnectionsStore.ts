@@ -3,8 +3,7 @@ import BinarySearch from "../../../util/BinarySearch";
 import IConnection from "../IConnection";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 
-interface IViewPromise {
-  backward: boolean;
+interface IDeferredBackwardView {
   lowerBoundDate: Date;
   upperBoundDate: Date;
   resolve: (iterator: AsyncIterator<IConnection>) => void;
@@ -21,13 +20,13 @@ interface IViewPromise {
 export default class ConnectionsStore {
   private readonly store: IConnection[];
   private readonly binarySearch: BinarySearch<IConnection>;
-  private viewPromises: IViewPromise[];
+  private deferredBackwardViews: IDeferredBackwardView[];
   private hasFinished: boolean;
 
   constructor() {
     this.store = [];
     this.binarySearch = new BinarySearch<IConnection>(this.store, (connection) => connection.departureTime.valueOf());
-    this.viewPromises = [];
+    this.deferredBackwardViews = [];
     this.hasFinished = false;
   }
 
@@ -40,13 +39,13 @@ export default class ConnectionsStore {
   public append(connection: IConnection) {
     this.store.push(connection);
 
-    // Check if any view promises are satisfied
-    if (this.viewPromises.length) {
-      this.viewPromises = this.viewPromises
-        .filter(({ backward, lowerBoundDate, upperBoundDate, resolve }) => {
+    // Check if any deferred backward view are satisfied
+    if (this.deferredBackwardViews.length) {
+      this.deferredBackwardViews = this.deferredBackwardViews
+        .filter(({ lowerBoundDate, upperBoundDate, resolve }) => {
 
           if (connection.departureTime > upperBoundDate) {
-            const iteratorView = this.getIteratorView(backward, lowerBoundDate, upperBoundDate);
+            const iteratorView = this.getIteratorView(true, lowerBoundDate, upperBoundDate);
 
             resolve(iteratorView);
             return false;
@@ -59,7 +58,7 @@ export default class ConnectionsStore {
 
   /**
    * Signals that the store will no longer be appended.
-   * [[getIterator]] never returns a view promise after this, because those would never get resolved
+   * [[getIterator]] never returns a deferred backward view after this, because those would never get resolved
    */
   public finish(): void {
     this.hasFinished = true;
@@ -102,9 +101,9 @@ export default class ConnectionsStore {
     // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
     // then return a promise
     if (!this.hasFinished && (!lastDepartureTime || lastDepartureTime <= upperBoundDate)) {
-      const { viewPromise, promise } = this.createViewPromise(backward, lowerBoundDate, upperBoundDate);
+      const { deferred, promise } = this.createDeferredBackwardView(lowerBoundDate, upperBoundDate);
 
-      this.viewPromises.push(viewPromise);
+      this.deferredBackwardViews.push(deferred);
 
       return promise;
     }
@@ -113,21 +112,20 @@ export default class ConnectionsStore {
     return Promise.resolve(this.getIteratorView(backward, lowerBoundDate, upperBoundDate));
   }
 
-  private createViewPromise(backward, lowerBoundDate, upperBoundDate):
-    { viewPromise: IViewPromise, promise: Promise<AsyncIterator<IConnection>> } {
+  private createDeferredBackwardView(lowerBoundDate, upperBoundDate):
+    { deferred: IDeferredBackwardView, promise: Promise<AsyncIterator<IConnection>> } {
 
-    const viewPromise: Partial<IViewPromise> = {
-      backward,
+    const deferred: Partial<IDeferredBackwardView> = {
       lowerBoundDate,
       upperBoundDate,
     };
 
     const promise = new Promise<AsyncIterator<IConnection>>((resolve) => {
-      viewPromise.resolve = resolve;
+      deferred.resolve = resolve;
     });
 
     return {
-      viewPromise: viewPromise as IViewPromise,
+      deferred: deferred as IDeferredBackwardView,
       promise,
     };
   }
