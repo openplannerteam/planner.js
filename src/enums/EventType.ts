@@ -9,6 +9,7 @@ enum EventType {
   Warning = "warning",
 
   ConnectionPrefetch = "connection-prefetch",
+  ConnectionIteratorView = "connection-iterator-view",
 
   ConnectionScan = "connection-scan",
   InitialReachableStops = "initial-reachable-stops",

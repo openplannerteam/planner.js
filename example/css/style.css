@@ -86,7 +86,11 @@ body {
   top: 10px;
   left: 54px;
   z-index: 500;
-  height: 18px;
+}
+
+.prefetch-view {
+  height: 6px;
+  margin-bottom: 3px;
   border-radius: 30px;
   background: #3556a9;
   color: #fff;
@@ -95,8 +99,12 @@ body {
   transition: 50ms width ease-in-out;
 }
 
-#prefetch::after {
+.prefetch-view::after {
   content: attr(data-last);
   color: #fff;
   float: right;
+}
+
+#prefetch-bar {
+  height: 18px;
 }

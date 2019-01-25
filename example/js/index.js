@@ -20,13 +20,15 @@ planner.prefetchConnections();
 let plannerResult;
 const resetButton = document.querySelector("#reset");
 const results = document.querySelector("#results");
-const prefetchBar = document.querySelector("#prefetch");
+const prefetchWrapper = document.querySelector("#prefetch");
+const prefetchBar = document.querySelector("#prefetch-bar");
 
 let lines = [];
 let polyLines = [];
 let resultObjects = [];
 let query = [];
 let allStops = [];
+let prefetchViews = [];
 
 let firstPrefetch;
 
@@ -59,6 +61,11 @@ resetButton.onclick = e => {
   if (plannerResult) {
     plannerResult.close();
   }
+};
+
+const getPrefetchViewWidth = (start, stop) => {
+  const pxPerMs = .00005;
+  return (stop.valueOf() - start.valueOf()) * pxPerMs;
 };
 
 planner.getAllStops().then(stops => {
@@ -153,12 +160,39 @@ planner
       prefetchBar.innerHTML = departureTime.toLocaleTimeString();
 
     } else {
-      const pxPerMs = .00005;
-      const width = (departureTime.valueOf() - firstPrefetch.valueOf()) * pxPerMs;
+      const width = getPrefetchViewWidth(firstPrefetch, departureTime);
 
       prefetchBar.style.width = `${width}px`;
       prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
     }
+  })
+  .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
+
+    if (!completed) {
+      const width = getPrefetchViewWidth(lowerBound, upperBound);
+      const offset = getPrefetchViewWidth(firstPrefetch, lowerBound);
+
+      const prefetchView = document.createElement('div');
+      prefetchView.className = 'prefetch-view';
+      prefetchView.style.marginLeft = `${offset}px`;
+      prefetchView.style.width = `${width}px`;
+      prefetchView.style.backgroundColor = 'red';
+
+      prefetchWrapper.appendChild(prefetchView);
+      prefetchViews.push({lowerBound, upperBound, elem: prefetchView});
+
+    } else {
+      const {elem} = prefetchViews
+        .find((view) => view.lowerBound === lowerBound && view.upperBound === upperBound);
+
+      if (!elem) {
+        console.warn('Wut');
+        return;
+      }
+
+      elem.style.backgroundColor = 'limegreen';
+    }
+
   });
 
 function onMapClick(e) {

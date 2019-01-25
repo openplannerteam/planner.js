@@ -43,7 +43,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
     this.context = context;
     this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
-    this.connectionsStore = new ConnectionsStore();
+    this.connectionsStore = new ConnectionsStore(context);
   }
 
   public prefetchConnections(): void {
@@ -90,9 +90,8 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
   public createIterator(): AsyncIterator<IConnection> {
     if (this.startedPrefetching) {
-      return new PromiseProxyIterator(() =>
-        this.connectionsStore.getIterator(this.connectionsIteratorOptions),
-      );
+      return this.connectionsStore
+        .getIterator(this.connectionsIteratorOptions);
     }
 
     throw new Error("TODO");
