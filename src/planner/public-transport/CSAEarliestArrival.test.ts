@@ -61,6 +61,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
         maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
         maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
+        minimumTransferDuration: Defaults.defaultMinimumTransferDuration,
       };
 
       beforeAll(async () => {
@@ -102,6 +103,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
         maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
         maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
+        minimumTransferDuration: Defaults.defaultMinimumTransferDuration,
       };
 
       beforeAll(async () => {
@@ -147,6 +149,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
         maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
         maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
+        minimumTransferDuration: Defaults.defaultMinimumTransferDuration,
       };
 
       beforeAll(async () => {
