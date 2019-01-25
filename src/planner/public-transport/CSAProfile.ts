@@ -15,6 +15,7 @@ import { DurationMs } from "../../interfaces/units";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Geo from "../../util/Geo";
 import Vectors from "../../util/Vectors";
 import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
 import IArrivalTimeByTransfers from "./CSA/data-structure/IArrivalTimeByTransfers";
@@ -231,7 +232,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initDurationToTargetByStop(): Promise<boolean> {
     const arrivalStop: IStop = this.query.to[0] as IStop;
 
-    const geoId = "geo:" + this.query.to[0].latitude + "," + this.query.to[0].longitude;
+    const geoId = Geo.getId(this.query.to[0]);
     if (!this.query.to[0].id) {
       this.query.to[0].id = geoId;
       this.query.to[0].name = "Arrival location";
@@ -269,7 +270,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initInitialReachableStops(): Promise<boolean> {
     const fromLocation: IStop = this.query.from[0] as IStop;
 
-    const geoId = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
+    const geoId = Geo.getId(this.query.from[0]);
     if (!this.query.from[0].id) {
       this.query.from[0].id = geoId;
       this.query.from[0].name = "Departure location";

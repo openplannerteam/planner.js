@@ -16,6 +16,7 @@ import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Geo from "../../util/Geo";
 import Path from "../Path";
 import Step from "../Step";
 import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
@@ -187,7 +188,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     const fromLocation: IStop = this.query.from[0] as IStop;
 
     // Making sure the departure location has an id
-    const geoId = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
+    const geoId = Geo.getId(this.query.from[0]);
     if (!fromLocation.id) {
       this.query.from[0].id = geoId;
       this.query.from[0].name = "Departure location";
@@ -254,7 +255,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private async initFinalReachableStops(): Promise<boolean> {
     const arrivalStop: IStop = this.query.to[0] as IStop;
 
-    const geoId = "geo:" + arrivalStop.latitude + "," + arrivalStop.longitude;
+    const geoId = Geo.getId(this.query.to[0]);
     if (!this.query.to[0].id) {
       this.query.to[0].id = geoId;
       this.query.to[0].name = "Arrival location";

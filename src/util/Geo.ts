@@ -39,4 +39,13 @@ export default class Geo {
   public static getDistanceBetweenStops(start: IStop, stop: IStop) {
     return this.getDistanceBetweenLocations(start as ILocation, stop as ILocation);
   }
+
+  /**
+   * Get the geo id of an [[ILocation]]
+   * @param location
+   * @returns geo id string
+   */
+  public static getId(location: ILocation): string {
+    return `geo:${location.latitude},${location.longitude}`;
+  }
 }
