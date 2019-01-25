@@ -1,6 +1,6 @@
 enum EventType {
   Query = "query",
-  QueryExponential = "query-exponential",
+  SubQuery = "sub-query",
   AbortQuery = "abort-query",
   InvalidQuery = "invalid-query",
 
