@@ -1,14 +1,20 @@
 import { AsyncIterator } from "asynciterator";
-import { inject, injectable, interfaces } from "inversify";
+import { inject, injectable, interfaces, tagged } from "inversify";
 import Context from "../../Context";
 import Defaults from "../../Defaults";
 import EventType from "../../enums/EventType";
+import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import InvalidQueryError from "../../errors/InvalidQueryError";
+import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
+import { DurationMs } from "../../interfaces/units";
 import Path from "../../planner/Path";
+import CSAEarliestArrival from "../../planner/public-transport/CSAEarliestArrival";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
+import JourneyExtractorEarliestArrival from "../../planner/public-transport/JourneyExtractorEarliestArrival";
+import IReachableStopsFinder from "../../planner/stops/IReachableStopsFinder";
 import TYPES from "../../types";
 import FilterUniqueIterator from "../../util/iterators/FilterUniqueIterator";
 import FlatMapIterator from "../../util/iterators/FlatMapIterator";
@@ -16,52 +22,89 @@ import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
-import ExponentialQueryIterator from "./ExponentialQueryIterator";
+import LinearQueryIterator from "./LinearQueryIterator";
 
-/**
- * This exponential query runner only accepts public transport queries (`publicTransportOnly = true`).
- * It uses the registered [[IPublicTransportPlanner]] to execute them.
- *
- * To improve the user perceived performance, the query gets split into subqueries
- * with exponentially increasing time frames:
- *
- * ```
- * minimumDepartureTime + 15 minutes, 30 minutes, 60 minutes, 120 minutes...
- * ```
- *
- * In the current implementation, the `maximumArrivalTime` is ignored
- */
 @injectable()
-export default class QueryRunnerExponential implements IQueryRunner {
+export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
   private readonly locationResolver: ILocationResolver;
   private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
   private readonly context: Context;
+  private earliestArrivalPlanner: CSAEarliestArrival;
 
   constructor(
     @inject(TYPES.Context)
       context: Context,
+    @inject(TYPES.ConnectionsProvider)
+      connectionsProvider: IConnectionsProvider,
     @inject(TYPES.LocationResolver)
       locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlannerFactory)
       publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Initial)
+      initialReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Transfer)
+      transferReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Final)
+      finalReachableStopsFinder: IReachableStopsFinder,
   ) {
     this.context = context;
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
+
+    const journeyExtractorEarliestArrival = new JourneyExtractorEarliestArrival(
+      locationResolver,
+      context,
+    );
+
+    this.earliestArrivalPlanner = new CSAEarliestArrival(
+      connectionsProvider,
+      locationResolver,
+      initialReachableStopsFinder,
+      transferReachableStopsFinder,
+      finalReachableStopsFinder,
+      journeyExtractorEarliestArrival,
+      context,
+    );
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
     const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
     if (baseQuery.publicTransportOnly) {
-      const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
 
-      const subqueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
+      const earliestArrivalIterator = await this.earliestArrivalPlanner.plan(baseQuery);
+
+      const path: IPath = await new Promise((resolve, reject) => {
+        earliestArrivalIterator
+          .take(1)
+          .on("data", (result: IPath) => {
+            resolve(result);
+          })
+          .on("end", () => {
+            reject();
+          });
+      });
+
+      let initialTimeSpan: DurationMs = 15 * 60 * 1000;
+
+      if (path && path.steps && path.steps.length > 0) {
+        initialTimeSpan = path.steps[path.steps.length - 1].stopTime.getTime() -
+          baseQuery.minimumDepartureTime.getTime();
+      }
+
+      const queryIterator = new LinearQueryIterator(baseQuery, initialTimeSpan / 2, initialTimeSpan);
+
+      const subQueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
         queryIterator,
         this.runSubquery.bind(this),
       );
 
-      return new FilterUniqueIterator<IPath>(subqueryIterator, Path.compareEquals);
+      const prependedIterator = subQueryIterator.prepend([path]);
+
+      return new FilterUniqueIterator<IPath>(prependedIterator, Path.compareEquals);
 
     } else {
       throw new InvalidQueryError("Query should have publicTransportOnly = true");
@@ -69,7 +112,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
   }
 
   private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
     this.context.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;

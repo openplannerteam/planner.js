@@ -30,7 +30,7 @@ export default async (logResults) => {
       .on(EventType.Query, (Query) => {
         console.log("Query", Query);
       })
-      .on(EventType.QueryExponential, (query) => {
+      .on(EventType.SubQuery, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;
 
         // logFetch = true;
