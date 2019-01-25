@@ -31,19 +31,19 @@ export default class ReachableStopsFinderBirdsEye implements IReachableStopsFind
 
     // Mode can be ignored since birds eye view distance is identical
 
+    const reachableStops: IReachableStop[] = [{stop: sourceOrTargetStop, duration: 0}];
+
     const allStops = await this.stopsProvider.getAllStops();
 
-    return allStops.map((possibleTarget: IStop): IReachableStop => {
-      if (possibleTarget.id === sourceOrTargetStop.id) {
-        return {stop: sourceOrTargetStop, duration: 0};
-      }
-
+    allStops.forEach((possibleTarget: IStop) => {
       const distance = Geo.getDistanceBetweenStops(sourceOrTargetStop, possibleTarget);
       const duration = Units.toDuration(distance, minimumSpeed);
 
       if (duration <= maximumDuration) {
-        return {stop: possibleTarget, duration};
+        reachableStops.push({stop: possibleTarget, duration});
       }
-    }).filter((reachableStop) => !!reachableStop);
+    });
+
+    return reachableStops;
   }
 }

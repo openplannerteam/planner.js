@@ -48,8 +48,9 @@ export default class Planner implements EventEmitter {
       });
 
       return iterator;
+
     } catch (e) {
-      if (e.eventType) {
+      if (e && e.eventType) {
         this.context.emit(e.eventType, e.message);
       }
 
