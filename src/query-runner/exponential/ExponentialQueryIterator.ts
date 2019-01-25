@@ -31,5 +31,4 @@ export default class ExponentialQueryIterator extends AsyncIterator<IResolvedQue
 
     return Object.assign({}, this.baseQuery, {maximumArrivalTime});
   }
-
 }
