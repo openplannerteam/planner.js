@@ -39,7 +39,6 @@
     "lint"
   ],
   "devDependencies": {
-    "@types/asynciterator": "^1.1.1",
     "@types/haversine": "^1.1.0",
     "@types/jest": "^23.3.7",
     "@types/rdf-js": "^1.0.1",

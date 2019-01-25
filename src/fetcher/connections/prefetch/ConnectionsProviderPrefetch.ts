@@ -1,10 +1,8 @@
 import { AsyncIterator } from "asynciterator";
-import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { inject, injectable } from "inversify";
 import Catalog from "../../../Catalog";
 import Context from "../../../Context";
 import EventType from "../../../enums/EventType";
-import { DurationMs } from "../../../interfaces/units";
 import TYPES, { ConnectionsFetcherFactory } from "../../../types";
 import Units from "../../../util/Units";
 import IConnection from "../IConnection";
@@ -24,6 +22,7 @@ import ConnectionsStore from "./ConnectionsStore";
 export default class ConnectionsProviderPrefetch implements IConnectionsProvider {
 
   private static MAX_CONNECTIONS = 20000;
+  private static REPORTING_THRESHOLD = Units.fromHours(.25);
 
   private readonly context: Context;
   private readonly connectionsFetcher: IConnectionsFetcher;
@@ -43,7 +42,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
     this.context = context;
     this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
-    this.connectionsStore = new ConnectionsStore();
+    this.connectionsStore = new ConnectionsStore(context);
   }
 
   public prefetchConnections(): void {
@@ -59,27 +58,13 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
         this.connectionsFetcher.setIteratorOptions(options);
         this.connectionsIterator = this.connectionsFetcher.createIterator();
 
-        const reportingThreshold = Units.fromHours(.25);
-
         this.connectionsIterator
           .take(ConnectionsProviderPrefetch.MAX_CONNECTIONS)
           .on("end", () => this.connectionsStore.finish())
           .each((connection: IConnection) => {
+
             if (this.context) {
-
-              if (!this.lastReportedDepartureTime) {
-                this.lastReportedDepartureTime = connection.departureTime;
-
-                this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
-
-              } else if (
-                connection.departureTime.valueOf() - this.lastReportedDepartureTime.valueOf() > reportingThreshold
-              ) {
-                this.lastReportedDepartureTime = connection.departureTime;
-
-                this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
-              }
-
+              this.maybeEmitPrefetchEvent(connection);
             }
 
             this.connectionsStore.append(connection);
@@ -90,9 +75,8 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
   public createIterator(): AsyncIterator<IConnection> {
     if (this.startedPrefetching) {
-      return new PromiseProxyIterator(() =>
-        this.connectionsStore.getIterator(this.connectionsIteratorOptions),
-      );
+      return this.connectionsStore
+        .getIterator(this.connectionsIteratorOptions);
     }
 
     throw new Error("TODO");
@@ -100,5 +84,22 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
   public setIteratorOptions(options: IConnectionsIteratorOptions): void {
     this.connectionsIteratorOptions = options;
+  }
+
+  private maybeEmitPrefetchEvent(connection: IConnection): void {
+    if (!this.lastReportedDepartureTime) {
+      this.lastReportedDepartureTime = connection.departureTime;
+
+      this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
+      return;
+    }
+
+    const timeSinceLastEvent = connection.departureTime.valueOf() - this.lastReportedDepartureTime.valueOf();
+
+    if (timeSinceLastEvent > ConnectionsProviderPrefetch.REPORTING_THRESHOLD) {
+      this.lastReportedDepartureTime = connection.departureTime;
+
+      this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
+    }
   }
 }

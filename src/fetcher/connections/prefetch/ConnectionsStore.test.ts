@@ -1,4 +1,4 @@
-import {AsyncIterator} from "asynciterator";
+import { AsyncIterator } from "asynciterator";
 import "jest";
 import IConnection from "../IConnection";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
@@ -21,7 +21,7 @@ describe("[ConnectionsStore]", () => {
       const fakeDepartureTimes = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7];
       // @ts-ignore
       const fakeConnections: IConnection[] = fakeDepartureTimes
-        .map((departureTime) => ({departureTime}));
+        .map((departureTime) => ({ departureTime }));
 
       connectionsStore = new ConnectionsStore();
       for (const connection of fakeConnections) {
@@ -30,7 +30,7 @@ describe("[ConnectionsStore]", () => {
 
       connectionsStore.finish();
 
-      createIterator = async (backward, lowerBoundDate, upperBoundDate): Promise<AsyncIterator<IConnection>> => {
+      createIterator = (backward, lowerBoundDate, upperBoundDate): Promise<AsyncIterator<IConnection>> => {
         const iteratorOptions: IConnectionsIteratorOptions = {
           backward,
         };
@@ -51,7 +51,7 @@ describe("[ConnectionsStore]", () => {
     describe("backward", () => {
 
       it("upperBoundDate is loaded & exists in store", async (done) => {
-        const iteratorView = await createIterator(true, null, 6);
+        const iteratorView = createIterator(true, null, 6);
 
         const expected = [1, 2, 3, 3, 5, 6, 6, 6, 6];
         let current = expected.length - 1;
@@ -67,7 +67,7 @@ describe("[ConnectionsStore]", () => {
       });
 
       it("upperBoundDate is loaded but doesn\'t exist in store", async (done) => {
-        const iteratorView = await createIterator(true, null, 4);
+        const iteratorView = createIterator(true, null, 4);
 
         const expected = [1, 2, 3, 3];
         let current = expected.length - 1;
@@ -87,7 +87,7 @@ describe("[ConnectionsStore]", () => {
     describe("forward", () => {
 
       it("lowerBoundDate is loaded & exists in store", async (done) => {
-        const iteratorView = await createIterator(false, 3, null);
+        const iteratorView = createIterator(false, 3, null);
 
         const expected = [3, 3, 5, 6, 6, 6, 6, 7, 7];
         let current = 0;
@@ -103,7 +103,7 @@ describe("[ConnectionsStore]", () => {
       });
 
       it("lowerBoundDate is loaded but doesn\'t exist in store", async (done) => {
-        const iteratorView = await createIterator(false, 4, null);
+        const iteratorView = createIterator(false, 4, null);
 
         const expected = [5, 6, 6, 6, 6, 7, 7];
         let current = 0;
@@ -123,41 +123,46 @@ describe("[ConnectionsStore]", () => {
   });
 
   describe("Loaded async", () => {
-    jest.setTimeout(10000);
+    jest.setTimeout(1000000);
 
-    const fakeDepartureTimes = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7, 8];
-    // @ts-ignore
-    const fakeConnections: IConnection[] = fakeDepartureTimes
-      .map((departureTime) => ({departureTime}));
+    let connectionsStore;
 
-    const connectionsStore = new ConnectionsStore();
+    beforeEach(() => {
 
-    // Append first few connections sync
-    for (const connection of fakeConnections.slice(0, 6)) {
-      connectionsStore.append(connection);
-    }
+      const fakeDepartureTimes = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7, 8];
+      // @ts-ignore
+      const fakeConnections: IConnection[] = fakeDepartureTimes
+        .map((departureTime) => ({ departureTime }));
 
-    // Append remaining connections async
-    let i = 6;
-    const appendNext = () => {
-      connectionsStore.append(fakeConnections[i++]);
+      connectionsStore = new ConnectionsStore();
 
-      if (i < fakeConnections.length) {
-        setTimeout(appendNext, 100);
-
-      } else {
-        connectionsStore.finish();
+      // Append first few connections sync
+      for (const connection of fakeConnections.slice(0, 6)) {
+        connectionsStore.append(connection);
       }
-    };
 
-    setTimeout(appendNext, 100);
+      // Append remaining connections async
+      let i = 6;
+      const appendNext = () => {
+        connectionsStore.append(fakeConnections[i++]);
 
-    it("iterator view: backward / upperBoundDate isn't loaded at first", async (done) => {
+        if (i < fakeConnections.length) {
+          setTimeout(appendNext, 100);
+
+        } else {
+          connectionsStore.finish();
+        }
+      };
+
+      setTimeout(appendNext, 100);
+    });
+
+    it("backward", async (done) => {
       const iteratorOptions: IConnectionsIteratorOptions = {
         backward: true,
         upperBoundDate: (7 as unknown) as Date,
       };
-      const iteratorView: AsyncIterator<IConnection> = await connectionsStore.getIterator(iteratorOptions);
+      const iteratorView: AsyncIterator<IConnection> = connectionsStore.getIterator(iteratorOptions);
 
       const expected = [1, 2, 3, 3, 5, 6, 6, 6, 6, 7, 7];
       let current = expected.length - 1;
@@ -168,6 +173,27 @@ describe("[ConnectionsStore]", () => {
 
       iteratorView.on("end", () => {
         expect(current).toBe(-1);
+        done();
+      });
+    });
+
+    it("forward", async (done) => {
+      const iteratorOptions: IConnectionsIteratorOptions = {
+        backward: false,
+        lowerBoundDate: (2 as unknown) as Date,
+        upperBoundDate: (7 as unknown) as Date,
+      };
+      const iteratorView: AsyncIterator<IConnection> = connectionsStore.getIterator(iteratorOptions);
+
+      const expected = [2, 3, 3, 5, 6, 6, 6, 6, 7, 7];
+      let current = 0;
+
+      iteratorView.each((str: IConnection) => {
+        expect(expected[current++]).toBe(str.departureTime);
+      });
+
+      iteratorView.on("end", () => {
+        expect(current).toBe(expected.length);
         done();
       });
     });

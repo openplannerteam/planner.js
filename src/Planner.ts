@@ -54,7 +54,7 @@ export default class Planner implements EventEmitter {
         this.context.emit(e.eventType, e.message);
       }
 
-      return Promise.reject();
+      return Promise.reject(e);
     }
   }
 

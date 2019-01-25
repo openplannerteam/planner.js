@@ -20,13 +20,15 @@ planner.prefetchConnections();
 let plannerResult;
 const resetButton = document.querySelector("#reset");
 const results = document.querySelector("#results");
-const prefetchBar = document.querySelector("#prefetch");
+const prefetchWrapper = document.querySelector("#prefetch");
+const prefetchBar = document.querySelector("#prefetch-bar");
 
 let lines = [];
 let polyLines = [];
 let resultObjects = [];
 let query = [];
 let allStops = [];
+let prefetchViews = [];
 
 let firstPrefetch;
 
@@ -59,6 +61,15 @@ resetButton.onclick = e => {
   if (plannerResult) {
     plannerResult.close();
   }
+};
+
+const pxPerMs = .00005;
+const getPrefetchViewWidth = (start, stop) => {
+  if (!start || !stop) {
+    return 0;
+  }
+
+  return (stop.valueOf() - start.valueOf()) * pxPerMs;
 };
 
 planner.getAllStops().then(stops => {
@@ -153,12 +164,42 @@ planner
       prefetchBar.innerHTML = departureTime.toLocaleTimeString();
 
     } else {
-      const pxPerMs = .00005;
-      const width = (departureTime.valueOf() - firstPrefetch.valueOf()) * pxPerMs;
+      const width = getPrefetchViewWidth(firstPrefetch, departureTime);
 
       prefetchBar.style.width = `${width}px`;
       prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
     }
+  })
+  .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
+    if (!lowerBound || !upperBound) {
+      return;
+    }
+
+    if (!completed) {
+      const width = getPrefetchViewWidth(lowerBound, upperBound);
+      const offset = getPrefetchViewWidth(firstPrefetch, lowerBound);
+
+      const prefetchView = document.createElement("div");
+      prefetchView.className = "prefetch-view";
+      prefetchView.style.marginLeft = `${offset}px`;
+      prefetchView.style.width = `${width}px`;
+      prefetchView.style.backgroundColor = "red";
+
+      prefetchWrapper.appendChild(prefetchView);
+      prefetchViews.push({ lowerBound, upperBound, elem: prefetchView });
+
+    } else {
+      const { elem } = prefetchViews
+        .find((view) => view.lowerBound === lowerBound && view.upperBound === upperBound);
+
+      if (!elem) {
+        console.warn("Wut");
+        return;
+      }
+
+      elem.style.backgroundColor = "limegreen";
+    }
+
   });
 
 function onMapClick(e) {
@@ -240,116 +281,134 @@ function runQuery(query) {
     })
     .then(publicTransportResult => {
       plannerResult = publicTransportResult;
-      publicTransportResult.take(4).on("data", path => {
-        console.log("path", path);
 
-        const color = getRandomColor();
+      let i = 0;
+      let amount = 4;
 
-        const pathElement = document.createElement("div");
-        pathElement.className = "path";
+      publicTransportResult.take(amount)
+        .on("data", path => {
+          console.log("path", i, path);
+          i++;
 
-        path.steps.forEach(step => {
-          const stepElement = document.createElement("div");
-          stepElement.className = "step";
+          const color = getRandomColor();
 
-          const travelMode = document.createElement("div");
-          travelMode.className = "travelMode " + step.travelMode;
-          stepElement.appendChild(travelMode);
+          const pathElement = document.createElement("div");
+          pathElement.className = "path";
 
-          const details = document.createElement("div");
-          details.className = "details";
-          stepElement.appendChild(details);
+          path.steps.forEach(step => {
+            const stepElement = document.createElement("div");
+            stepElement.className = "step";
 
-          const startLocation = document.createElement("div");
-          startLocation.className = "startLocation";
-          startLocation.innerHTML =
-            "Start location: " + step.startLocation.name;
-          details.appendChild(startLocation);
+            const travelMode = document.createElement("div");
+            travelMode.className = "travelMode " + step.travelMode;
+            stepElement.appendChild(travelMode);
 
-          if (step.startTime) {
-            const startTime = document.createElement("div");
-            startTime.className = "startTime";
-            startTime.innerHTML = step.startTime;
-            details.appendChild(startTime);
+            const details = document.createElement("div");
+            details.className = "details";
+            stepElement.appendChild(details);
+
+            const startLocation = document.createElement("div");
+            startLocation.className = "startLocation";
+            startLocation.innerHTML =
+              "Start location: " + step.startLocation.name;
+            details.appendChild(startLocation);
+
+            if (step.startTime) {
+              const startTime = document.createElement("div");
+              startTime.className = "startTime";
+              startTime.innerHTML = step.startTime;
+              details.appendChild(startTime);
+            }
+
+            if (step.enterConnectionId) {
+              const enterConnectionId = document.createElement("div");
+              enterConnectionId.className = "enterConnectionId";
+              enterConnectionId.innerHTML =
+                "Enter connection: " + step.enterConnectionId;
+              details.appendChild(enterConnectionId);
+            }
+
+            if (step.duration) {
+              const duration = document.createElement("div");
+              duration.className = "duration";
+              duration.innerHTML =
+                "Duration: minimum " +
+                step.duration.minimum / (60 * 1000) +
+                "min";
+              details.appendChild(duration);
+            }
+
+            const stopLocation = document.createElement("div");
+            stopLocation.className = "stopLocation";
+            stopLocation.innerHTML = "Stop location: " + step.stopLocation.name;
+            details.appendChild(stopLocation);
+
+            if (step.stopTime) {
+              const stopTime = document.createElement("div");
+              stopTime.className = "stopTime";
+              stopTime.innerHTML = step.stopTime;
+              details.appendChild(stopTime);
+            }
+
+            if (step.exitConnectionId) {
+              const exitConnectionId = document.createElement("div");
+              exitConnectionId.className = "exitConnectionId";
+              exitConnectionId.innerHTML =
+                "Exit connection: " + step.exitConnectionId;
+              details.appendChild(exitConnectionId);
+            }
+
+            pathElement.style.borderLeft = "5px solid " + color;
+
+            pathElement.appendChild(stepElement);
+          });
+
+          results.appendChild(pathElement);
+
+          path.steps.forEach(step => {
+            const { startLocation, stopLocation, travelMode } = step;
+
+            const startMarker = L.marker([
+              startLocation.latitude,
+              startLocation.longitude
+            ]).addTo(map);
+
+            startMarker.bindPopup(startLocation.name);
+
+            const stopMarker = L.marker([
+              stopLocation.latitude,
+              stopLocation.longitude
+            ]).addTo(map);
+
+            stopMarker.bindPopup(stopLocation.name);
+            const line = [
+              [startLocation.latitude, startLocation.longitude],
+              [stopLocation.latitude, stopLocation.longitude]
+            ];
+
+            const polyline = new L.Polyline(line, {
+              color,
+              weight: 5,
+              smoothFactor: 1,
+              opacity: 0.7,
+              dashArray: travelMode === "walking" ? "8 8" : null
+            }).addTo(map);
+
+            resultObjects.push(startMarker, stopMarker, polyline);
+          });
+        })
+        .on("end", () => {
+          if (i < amount) {
+            const noMore = document.createElement('div');
+            noMore.className = 'path';
+            noMore.style.padding = '10px';
+            noMore.innerHTML = 'No more results';
+
+            results.appendChild(noMore);
           }
-
-          if (step.enterConnectionId) {
-            const enterConnectionId = document.createElement("div");
-            enterConnectionId.className = "enterConnectionId";
-            enterConnectionId.innerHTML =
-              "Enter connection: " + step.enterConnectionId;
-            details.appendChild(enterConnectionId);
-          }
-
-          if (step.duration) {
-            const duration = document.createElement("div");
-            duration.className = "duration";
-            duration.innerHTML =
-              "Duration: minimum " +
-              step.duration.minimum / (60 * 1000) +
-              "min";
-            details.appendChild(duration);
-          }
-
-          const stopLocation = document.createElement("div");
-          stopLocation.className = "stopLocation";
-          stopLocation.innerHTML = "Stop location: " + step.stopLocation.name;
-          details.appendChild(stopLocation);
-
-          if (step.stopTime) {
-            const stopTime = document.createElement("div");
-            stopTime.className = "stopTime";
-            stopTime.innerHTML = step.stopTime;
-            details.appendChild(stopTime);
-          }
-
-          if (step.exitConnectionId) {
-            const exitConnectionId = document.createElement("div");
-            exitConnectionId.className = "exitConnectionId";
-            exitConnectionId.innerHTML =
-              "Exit connection: " + step.exitConnectionId;
-            details.appendChild(exitConnectionId);
-          }
-
-          pathElement.style.borderLeft = "5px solid " + color;
-
-          pathElement.appendChild(stepElement);
         });
-
-        results.appendChild(pathElement);
-
-        path.steps.forEach(step => {
-          const { startLocation, stopLocation, travelMode } = step;
-
-          const startMarker = L.marker([
-            startLocation.latitude,
-            startLocation.longitude
-          ]).addTo(map);
-
-          startMarker.bindPopup(startLocation.name);
-
-          const stopMarker = L.marker([
-            stopLocation.latitude,
-            stopLocation.longitude
-          ]).addTo(map);
-
-          stopMarker.bindPopup(stopLocation.name);
-          const line = [
-            [startLocation.latitude, startLocation.longitude],
-            [stopLocation.latitude, stopLocation.longitude]
-          ];
-
-          const polyline = new L.Polyline(line, {
-            color,
-            weight: 5,
-            smoothFactor: 1,
-            opacity: 0.7,
-            dashArray: travelMode === "walking" ? "8 8" : null
-          }).addTo(map);
-
-          resultObjects.push(startMarker, stopMarker, polyline);
-        });
-      });
     })
-    .catch((error) => console.error(error));
+    .catch((error) => {
+      console.error(error)
+    });
 }

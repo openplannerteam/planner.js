@@ -22,6 +22,7 @@ import JourneyExtractorProfile from "./planner/public-transport/JourneyExtractor
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
+import ReachableStopsFinderOnlySelf from "./planner/stops/ReachableStopsFinderOnlySelf";
 import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStopsFinderRoadPlannerCached";
 import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
@@ -48,7 +49,7 @@ container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
