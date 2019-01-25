@@ -4,7 +4,7 @@ L.tileLayer(
   "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
   {
     attribution:
-      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
     id: "mapbox.streets",
     accessToken:
@@ -116,31 +116,34 @@ planner
   })
   .on("added-new-transfer-profile", ({ departureStop, arrivalStop, amountOfTransfers }) => {
 
-      const newLine = [
-        [departureStop.latitude, departureStop.longitude],
-        [arrivalStop.latitude, arrivalStop.longitude]
-      ];
+      requestAnimationFrame(() => {
+        const newLine = [
+          [departureStop.latitude, departureStop.longitude],
+          [arrivalStop.latitude, arrivalStop.longitude]
+        ];
 
-      let lineExists = lines.length > 0 && lines
-        .some((line) =>
-             line[0][0] === newLine[0][0]
-          && line[0][1] === newLine[0][1]
-          && line[1][0] === newLine[1][0]
-          && line[1][1] === newLine[1][1]
-      );
+        let lineExists = lines.length > 0 && lines
+          .some((line) =>
+            line[0][0] === newLine[0][0]
+            && line[0][1] === newLine[0][1]
+            && line[1][0] === newLine[1][0]
+            && line[1][1] === newLine[1][1]
+          );
 
-      if (!lineExists) {
-        const polyline = new L.Polyline(newLine, {
-          color: "#000",
-          weight: 1,
-          smoothFactor: 1,
-          opacity: 0.5,
-          dashArray: "10 10"
-        }).addTo(map);
+        if (!lineExists) {
+          const polyline = new L.Polyline(newLine, {
+            color: "#000",
+            weight: 1,
+            smoothFactor: 1,
+            opacity: 0.5,
+            dashArray: "10 10"
+          }).addTo(map);
 
-        lines.push(newLine);
-        polyLines.push(polyline);
-      }
+          lines.push(newLine);
+          polyLines.push(polyline);
+        }
+      });
+
     }
   )
   .on("connection-prefetch", (departureTime) => {
@@ -154,7 +157,7 @@ planner
       const width = (departureTime.valueOf() - firstPrefetch.valueOf()) * pxPerMs;
 
       prefetchBar.style.width = `${width}px`;
-      prefetchBar.setAttribute('data-last', departureTime.toLocaleTimeString());
+      prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
     }
   });
 

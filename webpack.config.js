@@ -16,7 +16,7 @@ const excludeAlias = excludeModules.reduce((alias, moduleName) => {
 
 module.exports = {
   entry: "./src/index.ts",
-  devtool: "cheap-module-source-map",
+  devtool: "source-map",//"cheap-module-source-map",
   module: {
     rules: [
       {

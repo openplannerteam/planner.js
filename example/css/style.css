@@ -92,6 +92,7 @@ body {
   color: #fff;
   font-family: sans-serif;
   padding: 3px 5px;
+  transition: 50ms width ease-in-out;
 }
 
 #prefetch::after {
