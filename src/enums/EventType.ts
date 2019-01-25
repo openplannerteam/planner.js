@@ -8,6 +8,8 @@ enum EventType {
 
   Warning = "warning",
 
+  ConnectionPrefetch = "connection-prefetch",
+
   ConnectionScan = "connection-scan",
   InitialReachableStops = "initial-reachable-stops",
   FinalReachableStops = "final-reachable-stops",
