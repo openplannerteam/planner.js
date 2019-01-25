@@ -19,4 +19,5 @@ export default interface IResolvedQuery {
   minimumTransferDuration?: DurationMs;
   maximumTransferDuration?: DurationMs;
   maximumTransfers?: number;
+  maximumTravelDuration?: DurationMs;
 }

@@ -26,10 +26,17 @@ import LinearQueryIterator from "./LinearQueryIterator";
 
 @injectable()
 export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
+
+  private readonly context: Context;
+  private readonly connectionsProvider: IConnectionsProvider;
   private readonly locationResolver: ILocationResolver;
   private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
-  private readonly context: Context;
-  private earliestArrivalPlanner: CSAEarliestArrival;
+
+  private readonly journeyExtractorEarliestArrival: JourneyExtractorEarliestArrival;
+
+  private readonly initialReachableStopsFinder: IReachableStopsFinder;
+  private readonly transferReachableStopsFinder: IReachableStopsFinder;
+  private readonly finalReachableStopsFinder: IReachableStopsFinder;
 
   constructor(
     @inject(TYPES.Context)
@@ -51,21 +58,16 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
       finalReachableStopsFinder: IReachableStopsFinder,
   ) {
     this.context = context;
+    this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
 
-    const journeyExtractorEarliestArrival = new JourneyExtractorEarliestArrival(
-      locationResolver,
-      context,
-    );
+    this.initialReachableStopsFinder = initialReachableStopsFinder;
+    this.transferReachableStopsFinder = transferReachableStopsFinder;
+    this.finalReachableStopsFinder = finalReachableStopsFinder;
 
-    this.earliestArrivalPlanner = new CSAEarliestArrival(
-      connectionsProvider,
+    this.journeyExtractorEarliestArrival = new JourneyExtractorEarliestArrival(
       locationResolver,
-      initialReachableStopsFinder,
-      transferReachableStopsFinder,
-      finalReachableStopsFinder,
-      journeyExtractorEarliestArrival,
       context,
     );
   }
@@ -75,7 +77,17 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 
     if (baseQuery.publicTransportOnly) {
 
-      const earliestArrivalIterator = await this.earliestArrivalPlanner.plan(baseQuery);
+      const earliestArrivalPlanner = new CSAEarliestArrival(
+        this.connectionsProvider,
+        this.locationResolver,
+        this.initialReachableStopsFinder,
+        this.transferReachableStopsFinder,
+        this.finalReachableStopsFinder,
+        this.journeyExtractorEarliestArrival,
+        this.context,
+      );
+
+      const earliestArrivalIterator = await earliestArrivalPlanner.plan(baseQuery);
 
       const path: IPath = await new Promise((resolve, reject) => {
         earliestArrivalIterator
@@ -88,14 +100,20 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
           });
       });
 
-      let initialTimeSpan: DurationMs = 15 * 60 * 1000;
+      let initialTimeSpan: DurationMs = Units.fromHours(1);
+      let maximumTravelDuration: DurationMs;
 
       if (path && path.steps && path.steps.length > 0) {
         initialTimeSpan = path.steps[path.steps.length - 1].stopTime.getTime() -
           baseQuery.minimumDepartureTime.getTime();
+
+        maximumTravelDuration = path.steps[path.steps.length - 1].stopTime.getTime() -
+          path.steps[0].startTime.getTime();
       }
 
-      const queryIterator = new LinearQueryIterator(baseQuery, initialTimeSpan / 2, initialTimeSpan);
+      baseQuery.maximumTravelDuration = maximumTravelDuration * 2;
+
+      const queryIterator = new LinearQueryIterator(baseQuery, Units.fromHours(1.5), initialTimeSpan);
 
       const subQueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
         queryIterator,

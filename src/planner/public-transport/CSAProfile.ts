@@ -1,4 +1,4 @@
-import { AsyncIterator } from "asynciterator";
+import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable, tagged } from "inversify";
 import Context from "../../Context";
 import DropOffType from "../../enums/DropOffType";
@@ -107,8 +107,12 @@ export default class CSAProfile implements IPublicTransportPlanner {
   }
 
   private async calculateJourneys(): Promise<AsyncIterator<IPath>> {
-    await this.initDurationToTargetByStop();
-    await this.initInitialReachableStops();
+    const hasInitialReachableStops: boolean = await this.initDurationToTargetByStop();
+    const hasFinalReachableStops: boolean = await this.initInitialReachableStops();
+
+    if (!hasInitialReachableStops || !hasFinalReachableStops) {
+      return Promise.resolve(new ArrayIterator([]));
+    }
 
     this.connectionsIterator = this.connectionsProvider.createIterator();
 
@@ -227,8 +231,9 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initDurationToTargetByStop(): Promise<boolean> {
     const arrivalStop: IStop = this.query.to[0] as IStop;
 
+    const geoId = "geo:" + this.query.to[0].latitude + "," + this.query.to[0].longitude;
     if (!this.query.to[0].id) {
-      this.query.to[0].id = "geo:" + this.query.to[0].latitude + "," + this.query.to[0].longitude;
+      this.query.to[0].id = geoId;
       this.query.to[0].name = "Arrival location";
     }
 
@@ -240,7 +245,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
         this.query.minimumWalkingSpeed,
       );
 
-    if (reachableStops.length === 0 && this.context) {
+    if (reachableStops.length <= 1 && reachableStops[0].stop.id === geoId && this.context) {
       this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
 
       return false;
@@ -264,8 +269,9 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initInitialReachableStops(): Promise<boolean> {
     const fromLocation: IStop = this.query.from[0] as IStop;
 
+    const geoId = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
     if (!this.query.from[0].id) {
-      this.query.from[0].id = "geo:" + fromLocation.latitude + "," + fromLocation.longitude;
+      this.query.from[0].id = geoId;
       this.query.from[0].name = "Departure location";
     }
 
@@ -282,7 +288,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
       }
     }
 
-    if (this.initialReachableStops.length === 0 && this.context) {
+    if (this.initialReachableStops.length <= 1 && this.initialReachableStops[0].stop.id === geoId && this.context) {
       this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
 
       return false;
@@ -494,7 +500,11 @@ export default class CSAProfile implements IPublicTransportPlanner {
         const possibleExitConnection = this.earliestArrivalByTrip[connection["gtfs:trip"]]
           [amountOfTransfers].connection || connection;
 
+        const isValidRoute = !this.query.maximumTravelDuration ||
+          (arrivalTimeByTransfers[amountOfTransfers].arrivalTime - departureTime <= this.query.maximumTravelDuration);
+
         if (
+          isValidRoute &&
           arrivalTimeByTransfers[amountOfTransfers].arrivalTime < transferProfile.arrivalTime &&
           connection["gtfs:pickupType"] !== PickupType.NotAvailable &&
           possibleExitConnection["gtfs:dropOfType"] !== DropOffType.NotAvailable

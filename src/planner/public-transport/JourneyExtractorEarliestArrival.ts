@@ -45,7 +45,7 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
     let currentStopId: string = query.to[0].id;
     let currentProfile: ITransferProfile = profilesByStop[currentStopId];
 
-    while (currentStopId !== departureStopId) {
+    while (currentStopId !== departureStopId && (currentProfile.enterConnection || currentProfile.path)) {
       const { enterConnection, exitConnection, path: profilePath } = currentProfile;
 
       if (currentProfile.enterConnection && currentProfile.exitConnection) {
