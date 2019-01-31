@@ -1,4 +1,4 @@
-import { AsyncIterator, BufferedIterator } from "asynciterator";
+import { AsyncIterator } from "asynciterator";
 
 /**
  * This AsyncIterator maps every item of a query AsyncIterator to a result AsyncIterator by passing it through a
@@ -18,16 +18,15 @@ import { AsyncIterator, BufferedIterator } from "asynciterator";
  *                  +-----------------------------------------------+
  * ```
  */
-export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
+export default class FlatMapIterator<Q, R> extends AsyncIterator<R> {
   private queryIterator: AsyncIterator<Q>;
-  private callback: (query: Q) => Promise<AsyncIterator<R>>;
+  private callback: (query: Q) => AsyncIterator<R>;
 
   private currentResultIterator: AsyncIterator<R>;
-  private currentResultPushed: number;
   private isLastResultIterator = false;
 
-  constructor(queryIterator: AsyncIterator<Q>, run: (query: Q) => Promise<AsyncIterator<R>>) {
-    super({maxBufferSize: 1, autoStart: false});
+  constructor(queryIterator: AsyncIterator<Q>, run: (query: Q) => AsyncIterator<R>) {
+    super();
 
     this.queryIterator = queryIterator;
     this.callback = run;
@@ -35,78 +34,57 @@ export default class FlatMapIterator<Q, R> extends BufferedIterator<R> {
     this.queryIterator.once("end", () => {
       this.isLastResultIterator = true;
     });
+
+    this.readable = true;
   }
 
-  public _read(count: number, done: () => void) {
+  public read(): R {
+    if (this.closed) {
+      return null;
+    }
+
     if (!this.currentResultIterator) {
-      const query = this.queryIterator.read();
+      const query: Q = this.queryIterator.read();
 
       if (query) {
-        this.runSubquery(query, done);
+        this.runQuery(query);
 
       } else {
-        this.waitForSubquery(done);
+        this.readable = false;
+        this.queryIterator.once("readable", () => {
+          this.readable = true;
+        });
+      }
+    }
+
+    if (this.currentResultIterator) {
+      const item = this.currentResultIterator.read();
+
+      if (!item) {
+        this.readable = false;
       }
 
-      return;
+      return item;
     }
 
-    this.pushItemsAsync(done);
+    return null;
   }
 
-  private runSubquery(subquery: Q, done: () => void) {
-    const self = this;
+  private runQuery(query: Q) {
+    this.currentResultIterator = this.callback(query);
+    this.readable = this.currentResultIterator.readable;
 
-    this.callback(subquery)
-      .then((resultIterator: AsyncIterator<R>) => {
-        self.currentResultIterator = resultIterator;
-        self.currentResultPushed = 0;
-
-        self.currentResultIterator.once("end", () => {
-          delete self.currentResultIterator;
-
-          // Close if last iterator
-          if (self.isLastResultIterator) {
-            self.close();
-          }
-
-          // Iterator was empty
-          if (self.currentResultPushed === 0 && !this.closed) {
-            self._read(null, done);
-          }
-        });
-
-        this.pushItemsAsync(done);
-      });
-  }
-
-  private waitForSubquery(done: () => void) {
-    this.queryIterator.once("readable", () => {
-      const query = this.queryIterator.read();
-
-      this.runSubquery(query, done);
+    this.currentResultIterator.on("readable", () => {
+      this.readable = true;
     });
-  }
 
-  private pushItemsAsync(done) {
-    this.currentResultIterator.once("readable", () => {
-      this.pushItemsSync();
-      done();
+    this.currentResultIterator.on("end", () => {
+      if (this.isLastResultIterator) {
+        this.close();
+      }
+
+      this.currentResultIterator = null;
+      this.readable = true;
     });
-  }
-
-  private pushItemsSync(): boolean {
-    let item = this.currentResultIterator.read();
-    let hasPushed = false;
-
-    while (item) {
-      this._push(item);
-      this.currentResultPushed++;
-      hasPushed = true;
-
-      item = this.currentResultIterator.read();
-    }
-
-    return hasPushed;
   }
 }

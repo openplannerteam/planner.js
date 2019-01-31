@@ -1,4 +1,5 @@
 import { AsyncIterator } from "asynciterator";
+import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { inject, injectable, interfaces } from "inversify";
 import Context from "../../Context";
 import Defaults from "../../Defaults";
@@ -68,13 +69,13 @@ export default class QueryRunnerExponential implements IQueryRunner {
     }
   }
 
-  private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+  private runSubquery(query: IResolvedQuery): AsyncIterator<IPath> {
     // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
     this.context.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
-    return planner.plan(query);
+    return new PromiseProxyIterator(() => planner.plan(query));
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {

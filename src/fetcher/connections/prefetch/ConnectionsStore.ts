@@ -1,11 +1,12 @@
-import { ArrayIterator, AsyncIterator, IntegerIterator, IntegerIteratorOptions } from "asynciterator";
+import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import Context from "../../../Context";
 import EventType from "../../../enums/EventType";
 import BinarySearch from "../../../util/BinarySearch";
+import ExpandingIterator from "../../../util/iterators/ExpandingIterator";
 import IConnection from "../IConnection";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
-import ExpandingIterator from "./ExpandingIterator";
+import ArrayViewIterator from "./ArrayViewIterator";
 
 interface IDeferredBackwardView {
   lowerBoundDate: Date;
@@ -220,14 +221,11 @@ export default class ConnectionsStore {
     const lowerBoundIndex = this.getLowerBoundIndex(lowerBoundDate);
     const upperBoundIndex = this.getUpperBoundIndex(upperBoundDate);
 
-    const indexIteratorOptions: IntegerIteratorOptions = {
-      start: backward ? upperBoundIndex : lowerBoundIndex,
-      end: backward ? lowerBoundIndex : upperBoundIndex,
-      step: backward ? -1 : 1,
-    };
+    const start = backward ? upperBoundIndex : lowerBoundIndex;
+    const stop = backward ? lowerBoundIndex : upperBoundIndex;
+    const step = backward ? -1 : 1;
 
-    const iterator = new IntegerIterator(indexIteratorOptions)
-      .map((index) => this.store[index]);
+    const iterator = new ArrayViewIterator(this.store, start, stop, step);
 
     return { iterator, lowerBoundIndex, upperBoundIndex };
   }

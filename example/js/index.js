@@ -38,6 +38,7 @@ const removeLines = () => {
   }
 
   polyLines = [];
+  lines = [];
 };
 
 const removeResultObjects = () => {
@@ -127,7 +128,6 @@ planner
   })
   .on("added-new-transfer-profile", ({ departureStop, arrivalStop, amountOfTransfers }) => {
 
-      requestAnimationFrame(() => {
         const newLine = [
           [departureStop.latitude, departureStop.longitude],
           [arrivalStop.latitude, arrivalStop.longitude]
@@ -153,8 +153,6 @@ planner
           lines.push(newLine);
           polyLines.push(polyline);
         }
-      });
-
     }
   )
   .on("connection-prefetch", (departureTime) => {
