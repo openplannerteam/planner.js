@@ -168,17 +168,14 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
           stop.id === connection.departureStop,
         );
 
-        if (initialStop) {
-          await this.updateInitialStopProfile(connection, initialStop, done);
-        }
-
         const departure = connection.departureTime.getTime();
         const arrival = this.profilesByStop[connection.departureStop].arrivalTime;
 
         const transferDuration = departure - arrival;
 
         const canTakeTransfer = (
-          transferDuration >= minimumTransferDuration && transferDuration <= maximumTransferDuration &&
+          (transferDuration >= minimumTransferDuration || initialStop && transferDuration >= 0) &&
+          transferDuration <= maximumTransferDuration &&
           connection["gtfs:pickupType"] !== PickupType.NotAvailable
         );
 
@@ -200,44 +197,6 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     if (!this.connectionsIterator.closed) {
       await this.processNextConnection(done);
     }
-  }
-
-  private async updateInitialStopProfile(connection: IConnection, initialStop: IReachableStop, done: () => void) {
-    const { minimumDepartureTime, minimumTransferDuration } = this.query;
-
-    const departureTime = connection.departureTime.getTime() - minimumTransferDuration - initialStop.duration;
-
-    if (connection.departureTime < minimumDepartureTime) {
-      await this.maybeProcessNextConnection(done);
-      return;
-    }
-
-    const arrivalTime = connection.departureTime.getTime() - minimumTransferDuration;
-
-    this.profilesByStop[initialStop.stop.id] = {
-      departureTime,
-      arrivalTime,
-    };
-
-    if (initialStop.duration > 0) {
-      const path: Path = Path.create();
-
-      const footpath: IStep = Step.create(
-        this.query.from[0],
-        initialStop.stop,
-        TravelMode.Walking,
-        {
-          minimum: arrivalTime - departureTime,
-        },
-        new Date(departureTime + minimumTransferDuration),
-        new Date(arrivalTime + minimumTransferDuration),
-      );
-
-      path.addStep(footpath);
-
-      this.profilesByStop[initialStop.stop.id].path = path;
-    }
-
   }
 
   private async initInitialReachableStops(): Promise<boolean> {

@@ -1,5 +1,6 @@
 import IPath from "../interfaces/IPath";
 import IStep from "../interfaces/IStep";
+import { DurationMs } from "../interfaces/units";
 import Step from "./Step";
 
 /**
@@ -50,5 +51,13 @@ export default class Path implements IPath {
 
   public getStartLocationId(): string {
     return (" " + this.steps[0].startLocation.id).slice(1);
+  }
+
+  public addTime(duration: DurationMs): void {
+    this.steps = this.steps.map((step: IStep) => ({
+      ...step,
+      startTime: new Date(step.startTime.getTime() + duration),
+      stopTime: new Date(step.stopTime.getTime() + duration),
+    }));
   }
 }
