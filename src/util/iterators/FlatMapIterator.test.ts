@@ -12,11 +12,9 @@ describe("[FlatMapIterator]", () => {
     const queryIterator = new QueryIterator([1, 2, 3], 10);
 
     const flatMapIterator = new FlatMapIterator<number, string>(queryIterator, (num) => {
-      return new Promise((resolve) => {
-        const array = Array(num).fill(ALPHABET[num - 1]);
+      const array = Array(num).fill(ALPHABET[num - 1]);
 
-        resolve(new ResultIterator(array, 10));
-      });
+      return new ResultIterator(array, 10);
     });
 
     let current = 0;

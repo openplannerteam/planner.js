@@ -1,12 +1,12 @@
-import { ArrayIterator, AsyncIterator, IntegerIterator, IntegerIteratorOptions } from "asynciterator";
+import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import Context from "../../../Context";
 import EventType from "../../../enums/EventType";
 import BinarySearch from "../../../util/BinarySearch";
+import ExpandingIterator from "../../../util/iterators/ExpandingIterator";
 import IConnection from "../IConnection";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 import ArrayViewIterator from "./ArrayViewIterator";
-import ExpandingIterator from "./ExpandingIterator";
 
 interface IDeferredBackwardView {
   lowerBoundDate: Date;

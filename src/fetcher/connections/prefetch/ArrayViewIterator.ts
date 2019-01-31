@@ -12,8 +12,6 @@ export default class ArrayViewIterator<T> extends AsyncIterator<T> {
   constructor(source: T[], startIndex: number, stopIndex: number, step: -1 | 1) {
     super();
 
-    console.log("ArrayViewIterator");
-
     this.source = source;
     this.startIndex = startIndex;
     this.stopIndex = stopIndex;
