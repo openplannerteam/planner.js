@@ -1,4 +1,5 @@
 import { AsyncIterator } from "asynciterator";
+import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { inject, injectable, interfaces, tagged } from "inversify";
 import Context from "../../Context";
 import Defaults from "../../Defaults";
@@ -129,12 +130,12 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
     }
   }
 
-  private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+  private runSubquery(query: IResolvedQuery): AsyncIterator<IPath> {
     this.context.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
-    return planner.plan(query);
+    return new PromiseProxyIterator(() => planner.plan(query));
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {
