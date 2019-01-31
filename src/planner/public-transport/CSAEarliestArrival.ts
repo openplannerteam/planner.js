@@ -146,7 +146,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     if (connection) {
       this.discoverConnection(connection);
 
-      const {to, minimumDepartureTime, minimumTransferDuration, maximumTransferDuration} = this.query;
+      const { to, minimumDepartureTime, minimumTransferDuration, maximumTransferDuration } = this.query;
 
       const arrivalStopId: string = to[0].id;
       if (this.profilesByStop[arrivalStopId].arrivalTime <= connection.departureTime.getTime()) {
@@ -164,16 +164,16 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
         const canRemainSeated = this.enterConnectionByTrip[tripId];
 
-        const departure = connection.departureTime.getTime();
-        let arrival = this.profilesByStop[connection.departureStop].arrivalTime;
-
-        const isInitialStop = this.initialReachableStops.findIndex(({stop}) =>
+        const initialStop = this.initialReachableStops.find(({ stop }) =>
           stop.id === connection.departureStop,
-        ) > -1;
+        );
 
-        if (isInitialStop) {
-          arrival = departure - minimumTransferDuration;
+        if (initialStop) {
+          await this.updateInitialStopProfile(connection, initialStop, done);
         }
+
+        const departure = connection.departureTime.getTime();
+        const arrival = this.profilesByStop[connection.departureStop].arrivalTime;
 
         const transferDuration = departure - arrival;
 
@@ -200,6 +200,44 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     if (!this.connectionsIterator.closed) {
       await this.processNextConnection(done);
     }
+  }
+
+  private async updateInitialStopProfile(connection: IConnection, initialStop: IReachableStop, done: () => void) {
+    const { minimumDepartureTime, minimumTransferDuration } = this.query;
+
+    const departureTime = connection.departureTime.getTime() - minimumTransferDuration - initialStop.duration;
+
+    if (connection.departureTime < minimumDepartureTime) {
+      await this.maybeProcessNextConnection(done);
+      return;
+    }
+
+    const arrivalTime = connection.departureTime.getTime() - minimumTransferDuration;
+
+    this.profilesByStop[initialStop.stop.id] = {
+      departureTime,
+      arrivalTime,
+    };
+
+    if (initialStop.duration > 0) {
+      const path: Path = Path.create();
+
+      const footpath: IStep = Step.create(
+        this.query.from[0],
+        initialStop.stop,
+        TravelMode.Walking,
+        {
+          minimum: arrivalTime - departureTime,
+        },
+        new Date(departureTime + minimumTransferDuration),
+        new Date(arrivalTime + minimumTransferDuration),
+      );
+
+      path.addStep(footpath);
+
+      this.profilesByStop[initialStop.stop.id].path = path;
+    }
+
   }
 
   private async initInitialReachableStops(): Promise<boolean> {
@@ -398,10 +436,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
           this.profilesByStop[stop.id] = transferProfile;
         }
-
-        this.checkIfArrivalStopIsReachable(connection, reachableStop);
-
       });
+
+      this.checkIfArrivalStopIsReachable(connection, arrivalStop);
 
     } catch (e) {
       if (this.context) {
@@ -410,19 +447,19 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
   }
 
-  private checkIfArrivalStopIsReachable(connection: IConnection, { stop, duration }: IReachableStop): void {
+  private checkIfArrivalStopIsReachable(connection: IConnection, arrivalStop: ILocation): void {
     const canReachArrivalStop = this.finalReachableStops.find((reachableStop: IReachableStop) => {
-      return reachableStop.stop.id === stop.id;
+      return reachableStop.stop.id === arrivalStop.id;
     });
 
     if (canReachArrivalStop && canReachArrivalStop.duration > 0) {
-      const departureTime = connection.arrivalTime.getTime() + duration;
-      const arrivalTime = connection.arrivalTime.getTime() + duration + canReachArrivalStop.duration;
+      const departureTime = connection.arrivalTime.getTime();
+      const arrivalTime = connection.arrivalTime.getTime() + canReachArrivalStop.duration;
 
       const path: Path = Path.create();
 
       const footpath: IStep = Step.create(
-        stop,
+        arrivalStop,
         this.query.to[0],
         TravelMode.Walking,
         {
