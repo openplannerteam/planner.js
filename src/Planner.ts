@@ -1,4 +1,5 @@
 import { AsyncIterator } from "asynciterator";
+import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import Context from "./Context";
@@ -37,25 +38,22 @@ export default class Planner implements EventEmitter {
    * @param query An [[IQuery]] specifying a route planning query
    * @returns An AsyncIterator of [[IPath]] instances
    */
-  public async query(query: IQuery): Promise<AsyncIterator<IPath>> {
+  public query(query: IQuery): AsyncIterator<IPath> {
     this.emit(EventType.Query, query);
 
-    try {
-      const iterator = await this.queryRunner.run(query);
+    const iterator = new PromiseProxyIterator(() => this.queryRunner.run(query));
 
-      this.once(EventType.AbortQuery, () => {
-        iterator.close();
-      });
+    this.once(EventType.AbortQuery, () => {
+      iterator.close();
+    });
 
-      return iterator;
-
-    } catch (e) {
+    iterator.on("error", (e) => {
       if (e && e.eventType) {
-        this.context.emit(e.eventType, e.message);
+        this.emit(e.eventType, e.message);
       }
+    });
 
-      return Promise.reject(e);
-    }
+    return iterator;
   }
 
   public addListener(type: string | symbol, listener: Listener): this {
