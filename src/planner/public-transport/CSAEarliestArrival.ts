@@ -146,13 +146,15 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     if (connection) {
       this.discoverConnection(connection);
 
-      const arrivalStopId: string = this.query.to[0].id;
+      const {to, minimumDepartureTime, minimumTransferDuration, maximumTransferDuration} = this.query;
+
+      const arrivalStopId: string = to[0].id;
       if (this.profilesByStop[arrivalStopId].arrivalTime <= connection.departureTime.getTime()) {
         this.connectionsIterator.close();
         done();
       }
 
-      if (connection.departureTime < this.query.minimumDepartureTime) {
+      if (connection.departureTime < minimumDepartureTime) {
         await this.maybeProcessNextConnection(done);
         return;
       }
@@ -161,8 +163,24 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       for (const tripId of tripIds) {
 
         const canRemainSeated = this.enterConnectionByTrip[tripId];
-        const canTakeTransfer = (this.profilesByStop[connection.departureStop].arrivalTime <=
-          connection.departureTime.getTime() && connection["gtfs:pickupType"] !== PickupType.NotAvailable);
+
+        const departure = connection.departureTime.getTime();
+        let arrival = this.profilesByStop[connection.departureStop].arrivalTime;
+
+        const isInitialStop = this.initialReachableStops.findIndex(({stop}) =>
+          stop.id === connection.departureStop,
+        ) > -1;
+
+        if (isInitialStop) {
+          arrival = departure - minimumTransferDuration;
+        }
+
+        const transferDuration = departure - arrival;
+
+        const canTakeTransfer = (
+          transferDuration >= minimumTransferDuration && transferDuration <= maximumTransferDuration &&
+          connection["gtfs:pickupType"] !== PickupType.NotAvailable
+        );
 
         if (canRemainSeated || canTakeTransfer) {
           this.updateTrips(connection, tripId);
@@ -364,7 +382,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         }
 
         const reachableStopArrival = this.profilesByStop[stop.id].arrivalTime;
-        const arrivalTime = connection.arrivalTime.getTime() + duration + this.query.minimumTransferDuration;
+        const arrivalTime = connection.arrivalTime.getTime() + duration;
 
         if (reachableStopArrival > arrivalTime) {
           const transferProfile = {

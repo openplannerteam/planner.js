@@ -48,6 +48,20 @@ const removeResultObjects = () => {
   resultObjects = [];
 };
 
+const removePrefetchView = () => {
+  const view = document.getElementById("prefetch");
+
+  if(!view.hasChildNodes()) {
+    return;
+  }
+
+  for (const child of [...view.childNodes]) {
+    if (!child.id) {
+      child.parentNode.removeChild(child);
+    }
+  }
+};
+
 resetButton.onclick = e => {
   removeLines();
   removeResultObjects();
@@ -61,6 +75,8 @@ resetButton.onclick = e => {
   if (plannerResult) {
     plannerResult.close();
   }
+
+  removePrefetchView();
 };
 
 const pxPerMs = .00005;
@@ -93,13 +109,14 @@ planner
     console.log("Query", query);
   })
   .on("sub-query", query => {
-    const { minimumDepartureTime, maximumArrivalTime } = query;
+    const { minimumDepartureTime, maximumArrivalTime, maximumTravelDuration } = query;
 
     console.log(
       "[Subquery]",
       minimumDepartureTime,
       maximumArrivalTime,
-      maximumArrivalTime - minimumDepartureTime
+      maximumArrivalTime - minimumDepartureTime,
+      maximumTravelDuration / 1,66667e-5,
     );
 
     removeLines();
@@ -399,16 +416,16 @@ function runQuery(query) {
         })
         .on("end", () => {
           if (i < amount) {
-            const noMore = document.createElement('div');
-            noMore.className = 'path';
-            noMore.style.padding = '10px';
-            noMore.innerHTML = 'No more results';
+            const noMore = document.createElement("div");
+            noMore.className = "path";
+            noMore.style.padding = "10px";
+            noMore.innerHTML = "No more results";
 
             results.appendChild(noMore);
           }
         });
     })
     .catch((error) => {
-      console.error(error)
+      console.error(error);
     });
 }
