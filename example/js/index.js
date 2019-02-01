@@ -37,6 +37,7 @@ const removeLines = () => {
     line.remove();
   }
 
+  lines = [];
   polyLines = [];
   lines = [];
 };
@@ -47,6 +48,20 @@ const removeResultObjects = () => {
   }
 
   resultObjects = [];
+};
+
+const removePrefetchView = () => {
+  const view = document.getElementById("prefetch");
+
+  if (!view.hasChildNodes()) {
+    return;
+  }
+
+  for (const child of [...view.childNodes]) {
+    if (!child.id) {
+      child.parentNode.removeChild(child);
+    }
+  }
 };
 
 resetButton.onclick = e => {
@@ -62,6 +77,8 @@ resetButton.onclick = e => {
   if (plannerResult) {
     plannerResult.close();
   }
+
+  removePrefetchView();
 };
 
 const pxPerMs = .00005;
@@ -94,13 +111,14 @@ planner
     console.log("Query", query);
   })
   .on("sub-query", query => {
-    const { minimumDepartureTime, maximumArrivalTime } = query;
+    const { minimumDepartureTime, maximumArrivalTime, maximumTravelDuration } = query;
 
     console.log(
       "[Subquery]",
       minimumDepartureTime,
       maximumArrivalTime,
-      maximumArrivalTime - minimumDepartureTime
+      maximumArrivalTime - minimumDepartureTime,
+      maximumTravelDuration / 1, 66667e-5
     );
 
     removeLines();
@@ -128,31 +146,31 @@ planner
   })
   .on("added-new-transfer-profile", ({ departureStop, arrivalStop, amountOfTransfers }) => {
 
-        const newLine = [
-          [departureStop.latitude, departureStop.longitude],
-          [arrivalStop.latitude, arrivalStop.longitude]
-        ];
+      const newLine = [
+        [departureStop.latitude, departureStop.longitude],
+        [arrivalStop.latitude, arrivalStop.longitude]
+      ];
 
-        let lineExists = lines.length > 0 && lines
-          .some((line) =>
-            line[0][0] === newLine[0][0]
-            && line[0][1] === newLine[0][1]
-            && line[1][0] === newLine[1][0]
-            && line[1][1] === newLine[1][1]
-          );
+      let lineExists = lines.length > 0 && lines
+        .some((line) =>
+          line[0][0] === newLine[0][0]
+          && line[0][1] === newLine[0][1]
+          && line[1][0] === newLine[1][0]
+          && line[1][1] === newLine[1][1]
+        );
 
-        if (!lineExists) {
-          const polyline = new L.Polyline(newLine, {
-            color: "#000",
-            weight: 1,
-            smoothFactor: 1,
-            opacity: 0.5,
-            dashArray: "10 10"
-          }).addTo(map);
+      if (!lineExists) {
+        const polyline = new L.Polyline(newLine, {
+          color: "#000",
+          weight: 1,
+          smoothFactor: 1,
+          opacity: 0.5,
+          dashArray: "10 10"
+        }).addTo(map);
 
-          lines.push(newLine);
-          polyLines.push(polyline);
-        }
+        lines.push(newLine);
+        polyLines.push(polyline);
+      }
     }
   )
   .on("connection-prefetch", (departureTime) => {
@@ -240,9 +258,9 @@ function selectRoute(e, id) {
 map.on("click", onMapClick);
 
 function getRandomColor() {
-  var letters = "0123456789ABCDEF";
-  var color = "#";
-  for (var i = 0; i < 6; i++) {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
@@ -251,18 +269,20 @@ function getRandomColor() {
 function runQuery(query) {
   console.log(query);
 
+  const maximumWalkingDistance = 200;
+
   const departureCircle = L.circle([query[0].latitude, query[0].longitude], {
     color: "limegreen",
     fillColor: "limegreen",
     fillOpacity: 0.5,
-    radius: 200
+    radius: maximumWalkingDistance
   }).addTo(map);
 
   const arrivalCircle = L.circle([query[1].latitude, query[1].longitude], {
     color: "red",
     fillColor: "red",
     fillOpacity: 0.5,
-    radius: 200
+    radius: maximumWalkingDistance
   }).addTo(map);
 
   resultObjects.push(departureCircle, arrivalCircle);
@@ -273,7 +293,7 @@ function runQuery(query) {
       from: query[0], // Brussels North
       to: query[1], // Ghent-Sint-Pieters
       minimumDepartureTime: new Date(),
-      maximumWalkingDistance: 200,
+      maximumWalkingDistance,
       maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
       minimumWalkingSpeed: 3
     })
@@ -397,16 +417,16 @@ function runQuery(query) {
         })
         .on("end", () => {
           if (i < amount) {
-            const noMore = document.createElement('div');
-            noMore.className = 'path';
-            noMore.style.padding = '10px';
-            noMore.innerHTML = 'No more results';
+            const noMore = document.createElement("div");
+            noMore.className = "path";
+            noMore.style.padding = "10px";
+            noMore.innerHTML = "No more results";
 
             results.appendChild(noMore);
           }
         });
     })
     .catch((error) => {
-      console.error(error)
+      console.error(error);
     });
 }
