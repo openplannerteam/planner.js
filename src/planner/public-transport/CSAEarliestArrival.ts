@@ -175,7 +175,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
         const canTakeTransfer = (
           (transferDuration >= minimumTransferDuration || initialStop && transferDuration >= 0) &&
-          transferDuration <= maximumTransferDuration &&
+          (transferDuration <= maximumTransferDuration || initialStop &&  transferDuration >= 0) &&
           connection["gtfs:pickupType"] !== PickupType.NotAvailable
         );
 
