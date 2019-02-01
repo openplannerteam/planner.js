@@ -62,6 +62,9 @@ export default async (logResults) => {
         console.log("Start query");
       }
 
+      const amount = 3;
+      let i = 0;
+
       planner.query({
         publicTransportOnly: true,
         // from: "https://data.delijn.be/stops/201657",
@@ -75,31 +78,24 @@ export default async (logResults) => {
         minimumDepartureTime: new Date(),
         maximumTransferDuration: Units.fromHours(0.5),
       })
-        .then((publicTransportResult) => {
-
-          const amount = 3;
-          let i = 0;
-
-          publicTransportResult.take(amount)
-            .on("data", (path: IPath) => {
-              ++i;
-
-              if (logResults) {
-                console.log(i);
-                console.log(JSON.stringify(path, null, " "));
-                console.log("\n");
-              }
-
-              if (i === amount) {
-                resolve(true);
-              }
-            })
-            .on("end", () => {
-              resolve(false);
-            });
-
+        .take(amount)
+        .on("error", (error) => {
+          resolve(false);
         })
-        .catch(() => {
+        .on("data", (path: IPath) => {
+          ++i;
+
+          if (logResults) {
+            console.log(i);
+            console.log(JSON.stringify(path, null, " "));
+            console.log("\n");
+          }
+
+          if (i === amount) {
+            resolve(true);
+          }
+        })
+        .on("end", () => {
           resolve(false);
         });
     }));
