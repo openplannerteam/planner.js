@@ -37,7 +37,13 @@ export default class ConnectionsIteratorLazy extends FlatMapIterator<IHydraPage,
     const parsePageConnections = (page: IHydraPage) => {
       const connectionsParser = new ConnectionsPageParser(page.documentIri, page.triples);
 
-      return new ArrayIterator(connectionsParser.getConnections(travelMode));
+      const connections = connectionsParser.getConnections(travelMode);
+
+      if (options.backward) {
+        connections.reverse();
+      }
+
+      return new ArrayIterator(connections);
     };
 
     super(pageIterator, parsePageConnections);

@@ -67,9 +67,17 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
       }
 
       if (profilePath) {
+        currentStopId = profilePath.getStartLocationId();
+
+        if (currentStopId === departureStopId) {
+          const lastStep = path.steps[path.steps.length - 1];
+          const timeToAdd = lastStep.startTime.getTime() - profilePath.steps[0].stopTime.getTime();
+
+          profilePath.addTime(timeToAdd);
+        }
+
         path.addPath(profilePath);
 
-        currentStopId = profilePath.getStartLocationId();
         currentProfile = profilesByStop[currentStopId];
       }
 
