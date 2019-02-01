@@ -144,19 +144,19 @@ export default class CSAProfile implements IPublicTransportPlanner {
     }) as Promise<AsyncIterator<IPath>>;
   }
 
-  private processNextConnection(done: () => void) {
-    const connection = this.connectionsIterator.read();
+  private async processNextConnection(done: () => void) {
+    let connection = this.connectionsIterator.read();
 
-    if (connection) {
-      if (connection.arrivalTime > this.query.maximumArrivalTime) {
-        this.maybeProcessNextConnection(done);
-        return;
+    while (connection) {
+      if (connection.arrivalTime > this.query.maximumArrivalTime && !this.connectionsIterator.closed) {
+        connection = this.connectionsIterator.read();
+        continue;
       }
 
       if (connection.departureTime < this.query.minimumDepartureTime) {
         this.connectionsIterator.close();
         done();
-        return;
+        break;
       }
 
       if (this.context) {
@@ -169,18 +169,15 @@ export default class CSAProfile implements IPublicTransportPlanner {
       this.updateEarliestArrivalByTrip(connection, earliestArrivalTime);
 
       if (!this.isDominated(connection, earliestArrivalTime)) {
-        this.getFootpathsForDepartureStop(connection, earliestArrivalTime)
-          .then(() => this.maybeProcessNextConnection(done));
-
-      } else {
-        this.maybeProcessNextConnection(done);
+        await this.getFootpathsForDepartureStop(connection, earliestArrivalTime);
       }
-    }
-  }
 
-  private maybeProcessNextConnection(done: () => void) {
-    if (!this.connectionsIterator.closed) {
-      this.processNextConnection(done);
+      if (!this.connectionsIterator.closed) {
+        connection = this.connectionsIterator.read();
+        continue;
+      }
+
+      connection = undefined;
     }
   }
 

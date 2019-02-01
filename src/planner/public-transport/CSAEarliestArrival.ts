@@ -141,9 +141,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   private async processNextConnection(done: () => void) {
-    const connection = this.connectionsIterator.read();
+    let connection = this.connectionsIterator.read();
 
-    if (connection) {
+    while (connection) {
       this.discoverConnection(connection);
 
       const { to, minimumDepartureTime, minimumTransferDuration, maximumTransferDuration } = this.query;
@@ -152,11 +152,12 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       if (this.profilesByStop[arrivalStopId].arrivalTime <= connection.departureTime.getTime()) {
         this.connectionsIterator.close();
         done();
+        break;
       }
 
-      if (connection.departureTime < minimumDepartureTime) {
-        await this.maybeProcessNextConnection(done);
-        return;
+      if (connection.departureTime < minimumDepartureTime && !this.connectionsIterator.closed) {
+        connection = this.connectionsIterator.read();
+        continue;
       }
 
       const tripIds = this.getTripIdsFromConnection(connection);
@@ -189,13 +190,12 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
       }
 
-      await this.maybeProcessNextConnection(done);
-    }
-  }
+      if (!this.connectionsIterator.closed) {
+        connection = this.connectionsIterator.read();
+        continue;
+      }
 
-  private async maybeProcessNextConnection(done: () => void) {
-    if (!this.connectionsIterator.closed) {
-      await this.processNextConnection(done);
+      connection = undefined;
     }
   }
 
@@ -312,14 +312,19 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private discoverConnection(connection: IConnection) {
     this.setTripIdsByConnectionId(connection);
 
-    [connection.departureStop, connection.arrivalStop].forEach((stop) => {
-      if (!this.profilesByStop[stop]) {
-        this.profilesByStop[stop] = {
-          departureTime: Infinity,
-          arrivalTime: Infinity,
-        };
-      }
-    });
+    if (!this.profilesByStop[connection.departureStop]) {
+      this.profilesByStop[connection.departureStop] = {
+        departureTime: Infinity,
+        arrivalTime: Infinity,
+      };
+    }
+
+    if (!this.profilesByStop[connection.arrivalStop]) {
+      this.profilesByStop[connection.arrivalStop] = {
+        departureTime: Infinity,
+        arrivalTime: Infinity,
+      };
+    }
   }
 
   private getTripIdsFromConnection(connection: IConnection): string[] {

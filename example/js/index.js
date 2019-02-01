@@ -53,7 +53,7 @@ const removeResultObjects = () => {
 const removePrefetchView = () => {
   const view = document.getElementById("prefetch");
 
-  if(!view.hasChildNodes()) {
+  if (!view.hasChildNodes()) {
     return;
   }
 
@@ -118,7 +118,7 @@ planner
       minimumDepartureTime,
       maximumArrivalTime,
       maximumArrivalTime - minimumDepartureTime,
-      maximumTravelDuration / 1,66667e-5,
+      maximumTravelDuration / 1, 66667e-5
     );
 
     removeLines();
@@ -146,31 +146,31 @@ planner
   })
   .on("added-new-transfer-profile", ({ departureStop, arrivalStop, amountOfTransfers }) => {
 
-        const newLine = [
-          [departureStop.latitude, departureStop.longitude],
-          [arrivalStop.latitude, arrivalStop.longitude]
-        ];
+      const newLine = [
+        [departureStop.latitude, departureStop.longitude],
+        [arrivalStop.latitude, arrivalStop.longitude]
+      ];
 
-        let lineExists = lines.length > 0 && lines
-          .some((line) =>
-            line[0][0] === newLine[0][0]
-            && line[0][1] === newLine[0][1]
-            && line[1][0] === newLine[1][0]
-            && line[1][1] === newLine[1][1]
-          );
+      let lineExists = lines.length > 0 && lines
+        .some((line) =>
+          line[0][0] === newLine[0][0]
+          && line[0][1] === newLine[0][1]
+          && line[1][0] === newLine[1][0]
+          && line[1][1] === newLine[1][1]
+        );
 
-        if (!lineExists) {
-          const polyline = new L.Polyline(newLine, {
-            color: "#000",
-            weight: 1,
-            smoothFactor: 1,
-            opacity: 0.5,
-            dashArray: "10 10"
-          }).addTo(map);
+      if (!lineExists) {
+        const polyline = new L.Polyline(newLine, {
+          color: "#000",
+          weight: 1,
+          smoothFactor: 1,
+          opacity: 0.5,
+          dashArray: "10 10"
+        }).addTo(map);
 
-          lines.push(newLine);
-          polyLines.push(polyline);
-        }
+        lines.push(newLine);
+        polyLines.push(polyline);
+      }
     }
   )
   .on("connection-prefetch", (departureTime) => {
@@ -269,18 +269,20 @@ function getRandomColor() {
 function runQuery(query) {
   console.log(query);
 
+  const maximumWalkingDistance = 200;
+
   const departureCircle = L.circle([query[0].latitude, query[0].longitude], {
     color: "limegreen",
     fillColor: "limegreen",
     fillOpacity: 0.5,
-    radius: 200
+    radius: maximumWalkingDistance
   }).addTo(map);
 
   const arrivalCircle = L.circle([query[1].latitude, query[1].longitude], {
     color: "red",
     fillColor: "red",
     fillOpacity: 0.5,
-    radius: 200
+    radius: maximumWalkingDistance
   }).addTo(map);
 
   resultObjects.push(departureCircle, arrivalCircle);
@@ -291,7 +293,7 @@ function runQuery(query) {
       from: query[0], // Brussels North
       to: query[1], // Ghent-Sint-Pieters
       minimumDepartureTime: new Date(),
-      maximumWalkingDistance: 200,
+      maximumWalkingDistance,
       maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
       minimumWalkingSpeed: 3
     })
