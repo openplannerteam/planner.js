@@ -31,6 +31,7 @@ describe("[ConnectionsStore]", () => {
     createIterator = (backward, lowerBoundDate, upperBoundDate): Promise<AsyncIterator<IConnection>> => {
       return new Promise((resolve) => {
         // Primary push start async, so get iterator async
+        // Running a query is most often initiated by a user event, while prefetching start automatically
         setTimeout(() => {
           const iteratorOptions: IConnectionsIteratorOptions = {
             backward,

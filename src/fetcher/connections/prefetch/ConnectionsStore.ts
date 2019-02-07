@@ -158,21 +158,18 @@ export default class ConnectionsStore {
       }
     }
 
-    if (this.hasFinishedPrimary) {
+    // If the whole interval is part of the prefetched window, return an iterator view
+    // [------ prefetch window ------]
+    //    [-- requested iterator --]
+    if (lowerBoundDate >= firstDepartureTime && upperBoundDate < lastDepartureTime) {
+      const { iterator } = this.getIteratorView(backward, lowerBoundDate, upperBoundDate);
 
-      // If the whole interval is part of the prefetched window, return an iterator view
-      // [------ prefetch window ------]
-      //    [-- requested iterator --]
-      if (lowerBoundDate >= firstDepartureTime && upperBoundDate < lastDepartureTime) {
-        const { iterator } = this.getIteratorView(backward, lowerBoundDate, upperBoundDate);
+      this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
 
-        this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
-
-        return iterator;
-      }
+      return iterator;
     }
 
-    throw new Error("This shouln\'t happen");
+    throw new Error("This shouldn\'t happen");
   }
 
   /**
