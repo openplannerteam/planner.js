@@ -8,18 +8,8 @@ import Units from "../../../util/Units";
 import IConnection from "../IConnection";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 import ArrayViewIterator from "./ArrayViewIterator";
-
-interface IDeferredBackwardView {
-  lowerBoundDate: Date;
-  upperBoundDate: Date;
-  resolve: (iterator: AsyncIterator<IConnection>) => void;
-}
-
-interface IExpandingForwardView {
-  lowerBoundDate: Date;
-  upperBoundDate: Date;
-  tryExpand: (connection: IConnection, index: number) => boolean;
-}
+import IDeferredBackwardView from "./IDeferredBackwardView";
+import IExpandingForwardView from "./IExpandingForwardView";
 
 /**
  * Class used while prefetching [[IConnection]] instances. It allows appending connections
@@ -132,7 +122,8 @@ export default class ConnectionsStore {
       }
 
       if (!upperBoundDate) {
-        upperBoundDate = lastDepartureTime;
+        // Mock +infinity
+        upperBoundDate = new Date(lowerBoundDate.valueOf() + Units.fromHours(24));
       }
 
       this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
@@ -158,9 +149,7 @@ export default class ConnectionsStore {
       }
     }
 
-    // If the whole interval is part of the prefetched window, return an iterator view
-    // [------ prefetch window ------]
-    //    [-- requested iterator --]
+    // If the whole interval fits inside the prefetched window, return an iterator view
     if (lowerBoundDate >= firstDepartureTime && upperBoundDate < lastDepartureTime) {
       const { iterator } = this.getIteratorView(backward, lowerBoundDate, upperBoundDate);
 
@@ -291,6 +280,13 @@ export default class ConnectionsStore {
         }
 
         lastStoreIndex = storeIndex;
+
+        // No need to keep trying to expand if the consumer has closed it
+        if (iterator.closed) {
+          expandingIterator.close();
+
+          return false; // Remove from expanding forward views
+        }
 
         if (connection.departureTime <= upperBoundDate) {
           expandingIterator.write(connection);
