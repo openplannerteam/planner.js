@@ -1,9 +1,10 @@
-import { ArrayIterator, AsyncIterator } from "asynciterator";
+import { AsyncIterator, EmptyIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import Context from "../../../Context";
 import EventType from "../../../enums/EventType";
 import BinarySearch from "../../../util/BinarySearch";
 import ExpandingIterator from "../../../util/iterators/ExpandingIterator";
+import Units from "../../../util/Units";
 import IConnection from "../IConnection";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
 import ArrayViewIterator from "./ArrayViewIterator";
@@ -30,12 +31,19 @@ interface IExpandingForwardView {
  */
 export default class ConnectionsStore {
 
+  private static REPORTING_THRESHOLD = Units.fromHours(.25);
+
   private readonly context: Context;
   private readonly store: IConnection[];
   private readonly binarySearch: BinarySearch<IConnection>;
+
+  private sourceIterator: AsyncIterator<IConnection>;
   private deferredBackwardViews: IDeferredBackwardView[];
   private expandingForwardViews: IExpandingForwardView[];
-  private hasFinished: boolean;
+
+  private hasFinishedPrimary: boolean;
+  private isContinuing: boolean;
+  private lastReportedDepartureTime: Date;
 
   constructor(context?: Context) {
     this.context = context;
@@ -43,7 +51,128 @@ export default class ConnectionsStore {
     this.binarySearch = new BinarySearch<IConnection>(this.store, (connection) => connection.departureTime.valueOf());
     this.deferredBackwardViews = [];
     this.expandingForwardViews = [];
-    this.hasFinished = false;
+    this.hasFinishedPrimary = false;
+  }
+
+  public setSourceIterator(iterator: AsyncIterator<IConnection>): void {
+    this.sourceIterator = iterator;
+  }
+
+  public startPrimaryPush(maxConnections: number): void {
+
+    this.sourceIterator
+      .transform({
+        limit: maxConnections,
+        destroySource: false,
+      })
+      .on("end", () => this.finishPrimaryPush())
+      .each((connection: IConnection) => {
+        if (this.context) {
+          this.maybeEmitPrefetchEvent(connection);
+        }
+
+        this.append(connection);
+      });
+  }
+
+  public getIterator(iteratorOptions: IConnectionsIteratorOptions): AsyncIterator<IConnection> {
+    const { backward } = iteratorOptions;
+    let { lowerBoundDate, upperBoundDate } = iteratorOptions;
+
+    if (this.hasFinishedPrimary && this.store.length === 0) {
+      return new EmptyIterator();
+    }
+
+    const firstConnection = this.store[0];
+    const firstDepartureTime = firstConnection && firstConnection.departureTime;
+
+    const lastConnection = this.store[this.store.length - 1];
+    const lastDepartureTime = lastConnection && lastConnection.departureTime;
+
+    if (lowerBoundDate && lowerBoundDate < firstDepartureTime) {
+      throw new Error("Must supply a lowerBoundDate after the first prefetched connection");
+    }
+
+    if (backward) {
+
+      if (!upperBoundDate) {
+        throw new Error("Must supply upperBoundDate when iterating backward");
+      }
+
+      if (!lowerBoundDate) {
+        lowerBoundDate = firstDepartureTime;
+      }
+
+      this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
+
+      // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
+      // then return a promise proxy iterator
+      const notFinishedScenario = !this.hasFinishedPrimary
+        && (!lastDepartureTime || lastDepartureTime <= upperBoundDate);
+
+      const finishedScenario = this.hasFinishedPrimary
+        && lastDepartureTime < upperBoundDate;
+
+      if (notFinishedScenario || finishedScenario) {
+        const { deferred, promise } = this.createDeferredBackwardView(lowerBoundDate, upperBoundDate);
+
+        this.deferredBackwardViews.push(deferred);
+
+        if (this.hasFinishedPrimary) {
+          this.continueAfterFinishing();
+        }
+
+        return new PromiseProxyIterator(() => promise);
+      }
+
+    } else {
+
+      if (!lowerBoundDate) {
+        throw new Error("Must supply lowerBoundDate when iterating forward");
+      }
+
+      if (!upperBoundDate) {
+        upperBoundDate = lastDepartureTime;
+      }
+
+      this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
+
+      // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
+      // then return a an expanding iterator view
+      const notFinishedScenario = !this.hasFinishedPrimary
+        && (!lastDepartureTime || lastDepartureTime <= upperBoundDate);
+
+      const finishedScenario = this.hasFinishedPrimary
+        && lastDepartureTime < upperBoundDate;
+
+      if (notFinishedScenario || finishedScenario) {
+        const { view, iterator } = this.createExpandingForwardView(lowerBoundDate, upperBoundDate);
+
+        this.expandingForwardViews.push(view);
+
+        if (this.hasFinishedPrimary) {
+          this.continueAfterFinishing();
+        }
+
+        return iterator;
+      }
+    }
+
+    if (this.hasFinishedPrimary) {
+
+      // If the whole interval is part of the prefetched window, return an iterator view
+      // [------ prefetch window ------]
+      //    [-- requested iterator --]
+      if (lowerBoundDate >= firstDepartureTime && upperBoundDate < lastDepartureTime) {
+        const { iterator } = this.getIteratorView(backward, lowerBoundDate, upperBoundDate);
+
+        this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
+
+        return iterator;
+      }
+    }
+
+    throw new Error("This shouln\'t happen");
   }
 
   /**
@@ -51,8 +180,10 @@ export default class ConnectionsStore {
    *
    * Additionally, this method checks if any forward iterator views can be expanded or if any backward iterator can be
    * resolved
+   *
+   * @returns the number of unsatisfied views
    */
-  public append(connection: IConnection) {
+  private append(connection: IConnection): number {
     this.store.push(connection);
 
     // Check if any deferred backward views are satisfied
@@ -76,84 +207,58 @@ export default class ConnectionsStore {
     // Check if any forward views can be expanded
     if (this.expandingForwardViews.length) {
       this.expandingForwardViews = this.expandingForwardViews
-        .filter(({ tryExpand }) =>
-          tryExpand(connection, this.store.length - 1),
-        );
+        .filter(({ tryExpand }) => tryExpand(connection, this.store.length - 1));
     }
+
+    return this.deferredBackwardViews.length + this.expandingForwardViews.length;
   }
 
   /**
    * Signals that the store will no longer be appended.
    * [[getIterator]] never returns a deferred backward view after this, because those would never get resolved
    */
-  public finish(): void {
-    this.hasFinished = true;
+  private finishPrimaryPush(): void {
+    this.hasFinishedPrimary = true;
+    console.log("Finish");
+
+    if (this.deferredBackwardViews.length || this.expandingForwardViews.length) {
+      this.continueAfterFinishing();
+    }
   }
 
-  public getIterator(iteratorOptions: IConnectionsIteratorOptions): AsyncIterator<IConnection> {
-    const { backward } = iteratorOptions;
-    let { lowerBoundDate, upperBoundDate } = iteratorOptions;
+  private finishSecondaryPush(): void {
+    this.isContinuing = false;
+  }
 
-    if (this.hasFinished && this.store.length === 0) {
-      return new ArrayIterator([]);
+  private continueAfterFinishing(): void {
+    if (!this.isContinuing) {
+      this.isContinuing = true;
+
+      setTimeout(() => {
+        console.log("Red", this.deferredBackwardViews);
+        this.startSecondaryPush();
+      }, 0);
     }
+  }
 
-    const firstConnection = this.store[0];
-    const firstDepartureTime = firstConnection && firstConnection.departureTime;
+  private startSecondaryPush(): void {
+    console.log(this.sourceIterator.closed, this.sourceIterator.ended);
 
-    const lastConnection = this.store[this.store.length - 1];
-    const lastDepartureTime = lastConnection && lastConnection.departureTime;
+    const secondaryPushIterator = this.sourceIterator
+      .transform({})
+      .on("end", () => this.finishSecondaryPush());
 
-    if (backward) {
-
-      if (!upperBoundDate) {
-        throw new Error("Must supply upperBoundDate when iterating backward");
+    secondaryPushIterator.each((connection: IConnection) => {
+      if (this.context) {
+        this.maybeEmitPrefetchEvent(connection);
       }
 
-      if (!lowerBoundDate) {
-        lowerBoundDate = firstDepartureTime;
+      const unsatisfiedViewCount = this.append(connection);
+
+      if (unsatisfiedViewCount === 0) {
+        secondaryPushIterator.close();
       }
-
-      this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
-
-      // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
-      // then return a promise proxy iterator
-      if (!this.hasFinished && (!lastDepartureTime || lastDepartureTime <= upperBoundDate)) {
-        const { deferred, promise } = this.createDeferredBackwardView(lowerBoundDate, upperBoundDate);
-
-        this.deferredBackwardViews.push(deferred);
-
-        return new PromiseProxyIterator(() => promise);
-      }
-
-    } else {
-
-      if (!lowerBoundDate) {
-        throw new Error("Must supply lowerBoundDate when iterating forward");
-      }
-
-      if (!upperBoundDate) {
-        upperBoundDate = lastDepartureTime;
-      }
-
-      this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, false);
-
-      // If the store is still empty or the latest departure time isn't later than the upperBoundDate,
-      // then return a an expanding iterator view
-      if (!this.hasFinished && (!lastDepartureTime || lastDepartureTime <= upperBoundDate)) {
-        const { view, iterator } = this.createExpandingForwardView(lowerBoundDate, upperBoundDate);
-
-        this.expandingForwardViews.push(view);
-
-        return iterator;
-      }
-    }
-
-    // Else if the whole interval is available, or the store has finished, return an iterator immediately
-    const { iterator } = this.getIteratorView(backward, lowerBoundDate, upperBoundDate);
-    this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
-
-    return iterator;
+    });
   }
 
   private createDeferredBackwardView(lowerBoundDate, upperBoundDate):
@@ -241,6 +346,23 @@ export default class ConnectionsStore {
   private emitConnectionViewEvent(lowerBoundDate: Date, upperBoundDate: Date, completed: boolean) {
     if (this.context) {
       this.context.emit(EventType.ConnectionIteratorView, lowerBoundDate, upperBoundDate, completed);
+    }
+  }
+
+  private maybeEmitPrefetchEvent(connection: IConnection): void {
+    if (!this.lastReportedDepartureTime) {
+      this.lastReportedDepartureTime = connection.departureTime;
+
+      this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
+      return;
+    }
+
+    const timeSinceLastEvent = connection.departureTime.valueOf() - this.lastReportedDepartureTime.valueOf();
+
+    if (timeSinceLastEvent > ConnectionsStore.REPORTING_THRESHOLD) {
+      this.lastReportedDepartureTime = connection.departureTime;
+
+      this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
     }
   }
 }
