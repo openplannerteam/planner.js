@@ -421,7 +421,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
       const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
         departureStop as IStop,
         ReachableStopsFinderMode.Source,
-        this.query.maximumWalkingDuration,
+        this.query.maximumTransferDuration,
         this.query.minimumWalkingSpeed,
       );
 

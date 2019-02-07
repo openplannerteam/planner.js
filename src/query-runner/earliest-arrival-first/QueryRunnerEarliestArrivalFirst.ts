@@ -159,7 +159,8 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumWalkingDuration, maximumWalkingDistance,
-      minimumTransferDuration, maximumTransferDuration, maximumTransfers,
+      minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
+      maximumTransfers,
       minimumDepartureTime,
       ...other
     } = query;
@@ -179,11 +180,15 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
+
     resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
       Units.toDuration(maximumWalkingDistance, resolvedQuery.minimumWalkingSpeed) || Defaults.defaultWalkingDuration;
 
     resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
-    resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
+    resolvedQuery.maximumTransferDuration = maximumTransferDuration ||
+      Units.toDuration(maximumTransferDistance, resolvedQuery.minimumWalkingSpeed) ||
+      Defaults.defaultMaximumTransferDuration;
+
     resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 
     return resolvedQuery;

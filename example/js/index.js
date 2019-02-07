@@ -301,7 +301,6 @@ function addResultPanel(path, color) {
   const headerElement = document.createElement("div");
   headerElement.className = "header";
 
-  console.log(path, firstStep, lastStep);
   headerElement.innerHTML = `
     Departure: ${dateToTimeString(firstStep.startTime)}<br/>
     Arrival: ${dateToTimeString(lastStep.stopTime)}<br/>
@@ -455,7 +454,6 @@ function runQuery(query) {
       console.error(error);
     })
     .on("data", path => {
-      console.log("path", i, path);
       i++;
 
       const color = getRandomColor();
