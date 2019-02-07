@@ -118,7 +118,7 @@ planner
       minimumDepartureTime,
       maximumArrivalTime,
       maximumArrivalTime - minimumDepartureTime,
-      maximumTravelDuration / 1, 66667e-5
+      maximumTravelDuration,
     );
 
     removeLines();

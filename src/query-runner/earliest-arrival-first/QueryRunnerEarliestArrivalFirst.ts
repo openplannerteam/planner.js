@@ -90,16 +90,20 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 
       const earliestArrivalIterator = await earliestArrivalPlanner.plan(baseQuery);
 
-      const path: IPath = await new Promise((resolve, reject) => {
+      const path: IPath = await new Promise((resolve) => {
         earliestArrivalIterator
           .take(1)
           .on("data", (result: IPath) => {
             resolve(result);
           })
           .on("end", () => {
-            reject();
+            resolve(null);
           });
       });
+
+      if (path === null && this.context) {
+        this.context.emit(EventType.AbortQuery, "This query has no results");
+      }
 
       let initialTimeSpan: DurationMs = Units.fromHours(1);
       let travelDuration: DurationMs;
