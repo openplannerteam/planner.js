@@ -3,11 +3,13 @@ import { AsyncIterator } from "asynciterator";
 export default class ExpandingIterator<T> extends AsyncIterator<T> {
 
   private buffer: T[];
+  private shouldClose: boolean;
 
   constructor() {
     super();
 
     this.buffer = [];
+    this.shouldClose = false;
   }
 
   public read(): T {
@@ -18,6 +20,12 @@ export default class ExpandingIterator<T> extends AsyncIterator<T> {
 
     } else {
       item = null;
+
+      if (this.shouldClose) {
+        this.close();
+
+      }
+
       this.readable = false;
     }
 
@@ -25,7 +33,13 @@ export default class ExpandingIterator<T> extends AsyncIterator<T> {
   }
 
   public write(item: T): void {
-    this.buffer.push(item);
-    this.readable = true;
+    if (!this.shouldClose) {
+      this.buffer.push(item);
+      this.readable = true;
+    }
+  }
+
+  public closeAfterFlush(): void {
+    this.shouldClose = true;
   }
 }

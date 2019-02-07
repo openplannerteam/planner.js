@@ -219,7 +219,6 @@ export default class ConnectionsStore {
    */
   private finishPrimaryPush(): void {
     this.hasFinishedPrimary = true;
-    console.log("Finish");
 
     if (this.deferredBackwardViews.length || this.expandingForwardViews.length) {
       this.continueAfterFinishing();
@@ -234,16 +233,11 @@ export default class ConnectionsStore {
     if (!this.isContinuing) {
       this.isContinuing = true;
 
-      setTimeout(() => {
-        console.log("Red", this.deferredBackwardViews);
-        this.startSecondaryPush();
-      }, 0);
+      setTimeout(() => this.startSecondaryPush(), 0);
     }
   }
 
   private startSecondaryPush(): void {
-    console.log(this.sourceIterator.closed, this.sourceIterator.ended);
-
     const secondaryPushIterator = this.sourceIterator
       .transform({})
       .on("end", () => this.finishSecondaryPush());
@@ -307,8 +301,8 @@ export default class ConnectionsStore {
           return true; // Keep in expanding forward views
 
         } else {
-          expandingIterator.close();
-          iterator.close();
+          expandingIterator.closeAfterFlush();
+          // iterator.close();
 
           this.emitConnectionViewEvent(lowerBoundDate, upperBoundDate, true);
 
