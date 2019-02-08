@@ -25,14 +25,20 @@ planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
   minimumDepartureTime: new Date(),
+  maximumWalkingDistance: 200, // 200 meters
   maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
-}).then((publicTransportResult) => {
-  publicTransportResult.take(15).on('data', (path) => {
+  minimumWalkingSpeed: 3 // 3 km/h
+})
+  .take(3)
+  .on('data', (path) => {
    console.log(path);
+  })
+  .on('end', () => {
+    console.log('No more paths!')
+  })
+  .on('error', (error) => {
+    console.log(error);
   });
-}).catch((reason) => {
-  console.error(reason);
-});
 ```
 
 ## Documentation
@@ -43,4 +49,4 @@ For further instructions, follow the documentation at https://openplannerteam.gi
 
  * Building the docs with typedoc: `npm run doc`
  * Testing with jest: `npm test`
- * Create a new browser version with `npm run browser`
+ * Build a new browser version with `npm run browser`
