@@ -1,7 +1,7 @@
 import { ArrayIterator } from "asynciterator";
 import "jest";
 import AsyncArrayIterator from "./AsyncArrayIterator";
-import MergeIterator from "./MergeIterator";
+import MergeIterator from "./MergeIterator2";
 
 const createSources = (IteratorClass) => {
   const firstIterator = new IteratorClass([1, 8, 10, 13], 10);
