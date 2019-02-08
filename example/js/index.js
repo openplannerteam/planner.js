@@ -214,6 +214,9 @@ planner
 
       elem.style.backgroundColor = "limegreen";
     }
+  })
+  .on("warning", (warning) => {
+    console.warn(warning);
   });
 
 function onMapClick(e) {

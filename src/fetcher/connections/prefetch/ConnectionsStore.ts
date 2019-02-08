@@ -21,7 +21,7 @@ import IExpandingForwardView from "./IExpandingForwardView";
  */
 export default class ConnectionsStore {
 
-  private static REPORTING_THRESHOLD = Units.fromHours(.25);
+  private static REPORTING_THRESHOLD = Units.fromHours(.1);
 
   private readonly context: Context;
   private readonly store: IConnection[];
@@ -42,6 +42,7 @@ export default class ConnectionsStore {
     this.deferredBackwardViews = [];
     this.expandingForwardViews = [];
     this.hasFinishedPrimary = false;
+    this.isContinuing = false;
   }
 
   public setSourceIterator(iterator: AsyncIterator<IConnection>): void {
@@ -225,7 +226,7 @@ export default class ConnectionsStore {
 
   private startSecondaryPush(): void {
     const secondaryPushIterator = this.sourceIterator
-      .transform({})
+      .transform({destroySource: false})
       .on("end", () => this.finishSecondaryPush());
 
     secondaryPushIterator.each((connection: IConnection) => {
