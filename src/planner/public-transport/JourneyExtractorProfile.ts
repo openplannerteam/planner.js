@@ -132,7 +132,7 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
     const path: Path = Path.create();
 
     let currentTransferProfile: ITransferProfile = transferProfile;
-    let departureTime: Date = new Date(transferProfile.departureTime);
+    let departureTime: number = transferProfile.departureTime;
 
     let remainingTransfers: number = transfers;
 
@@ -146,18 +146,24 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
       const exitLocation: ILocation = await this.locationResolver.resolve(exitConnection.arrivalStop);
 
       // Initial or transfer footpath.
-      const transferDepartureTime: Date = enterConnection.departureTime;
+      const transferDepartureTime: number = enterConnection.departureTime.getTime();
 
-      if (departureTime.getTime() !== transferDepartureTime.getTime()) {
+      if (departureTime !== transferDepartureTime) {
+
+        let timeToSubtract = 0;
+        if (path.steps.length > 0) {
+          timeToSubtract = departureTime - path.steps[path.steps.length - 1].stopTime.getTime();
+        }
+
         const footpath: IStep = Step.create(
           currentLocation,
           enterLocation,
           TravelMode.Walking,
           {
-            minimum: transferDepartureTime.getTime() - departureTime.getTime(),
+            minimum: transferDepartureTime - departureTime,
           },
-          departureTime,
-          transferDepartureTime,
+          new Date(departureTime - timeToSubtract),
+          new Date(transferDepartureTime - timeToSubtract),
         );
 
         path.addStep(footpath);
@@ -183,11 +189,11 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
         let profileIndex: number = currentProfiles.length - 1;
 
         currentTransferProfile = currentProfiles[profileIndex].transferProfiles[remainingTransfers];
-        departureTime = new Date(currentTransferProfile.departureTime);
+        departureTime = currentTransferProfile.departureTime;
 
-        while (profileIndex >= 0 && departureTime < exitConnection.arrivalTime) {
+        while (profileIndex >= 0 && departureTime < exitConnection.arrivalTime.getTime()) {
           currentTransferProfile = currentProfiles[--profileIndex].transferProfiles[remainingTransfers];
-          departureTime = new Date(currentTransferProfile.departureTime);
+          departureTime = currentTransferProfile.departureTime;
         }
 
         if (profileIndex === -1) {

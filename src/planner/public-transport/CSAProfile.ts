@@ -243,8 +243,10 @@ export default class CSAProfile implements IPublicTransportPlanner {
         this.query.minimumWalkingSpeed,
       );
 
-    if (reachableStops.length <= 1 && reachableStops[0].stop.id === geoId && this.context) {
-      this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
+    if (reachableStops.length <= 1 && reachableStops[0].stop.id === geoId) {
+      if (this.context) {
+        this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
+      }
 
       return false;
     }
@@ -286,8 +288,10 @@ export default class CSAProfile implements IPublicTransportPlanner {
       }
     }
 
-    if (this.initialReachableStops.length <= 1 && this.initialReachableStops[0].stop.id === geoId && this.context) {
-      this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
+    if (this.initialReachableStops.length <= 1 && this.initialReachableStops[0].stop.id === geoId) {
+      if (this.context) {
+        this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
+      }
 
       return false;
     }
@@ -421,7 +425,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
       const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
         departureStop as IStop,
         ReachableStopsFinderMode.Source,
-        this.query.maximumWalkingDuration,
+        this.query.maximumTransferDuration,
         this.query.minimumWalkingSpeed,
       );
 

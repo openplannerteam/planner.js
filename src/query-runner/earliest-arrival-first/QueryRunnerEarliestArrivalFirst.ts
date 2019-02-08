@@ -90,16 +90,20 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 
       const earliestArrivalIterator = await earliestArrivalPlanner.plan(baseQuery);
 
-      const path: IPath = await new Promise((resolve, reject) => {
+      const path: IPath = await new Promise((resolve) => {
         earliestArrivalIterator
           .take(1)
           .on("data", (result: IPath) => {
             resolve(result);
           })
           .on("end", () => {
-            reject();
+            resolve(null);
           });
       });
+
+      if (path === null && this.context) {
+        this.context.emit(EventType.AbortQuery, "This query has no results");
+      }
 
       let initialTimeSpan: DurationMs = Units.fromHours(1);
       let travelDuration: DurationMs;
@@ -159,7 +163,8 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumWalkingDuration, maximumWalkingDistance,
-      minimumTransferDuration, maximumTransferDuration, maximumTransfers,
+      minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
+      maximumTransfers,
       minimumDepartureTime,
       ...other
     } = query;
@@ -179,11 +184,15 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
+
     resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
       Units.toDuration(maximumWalkingDistance, resolvedQuery.minimumWalkingSpeed) || Defaults.defaultWalkingDuration;
 
     resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
-    resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
+    resolvedQuery.maximumTransferDuration = maximumTransferDuration ||
+      Units.toDuration(maximumTransferDistance, resolvedQuery.minimumWalkingSpeed) ||
+      Defaults.defaultMaximumTransferDuration;
+
     resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 
     return resolvedQuery;

@@ -1,4 +1,4 @@
-import { ArrayIterator, AsyncIterator, SingletonIterator } from "asynciterator";
+import { AsyncIterator, EmptyIterator, SingletonIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Context from "../../Context";
 import ILocation from "../../interfaces/ILocation";
@@ -48,8 +48,20 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
     while (currentStopId !== departureStopId && (currentProfile.enterConnection || currentProfile.path)) {
       const { enterConnection, exitConnection, path: profilePath } = currentProfile;
 
-      if (currentProfile.enterConnection && currentProfile.exitConnection) {
+      if (profilePath) {
+        currentStopId = profilePath.getStartLocationId();
 
+        if (currentStopId === departureStopId) {
+          const lastStep = path.steps[path.steps.length - 1];
+          const timeToAdd = lastStep.startTime.getTime() - profilePath.steps[0].stopTime.getTime();
+
+          profilePath.addTime(timeToAdd);
+        }
+
+        path.addPath(profilePath);
+      }
+
+      if (currentProfile.enterConnection && currentProfile.exitConnection) {
         const enterLocation: ILocation = await this.locationResolver.resolve(enterConnection.departureStop);
         const exitLocation: ILocation = await this.locationResolver.resolve(exitConnection.arrivalStop);
 
@@ -63,28 +75,13 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
         path.addStep(step);
 
         currentStopId = enterConnection.departureStop;
-        currentProfile = profilesByStop[currentStopId];
       }
 
-      if (profilePath) {
-        currentStopId = profilePath.getStartLocationId();
-
-        if (currentStopId === departureStopId) {
-          const lastStep = path.steps[path.steps.length - 1];
-          const timeToAdd = lastStep.startTime.getTime() - profilePath.steps[0].stopTime.getTime();
-
-          profilePath.addTime(timeToAdd);
-        }
-
-        path.addPath(profilePath);
-
-        currentProfile = profilesByStop[currentStopId];
-      }
-
+      currentProfile = profilesByStop[currentStopId];
     }
 
     if (!path.steps.length) {
-      return new ArrayIterator<IPath>([]);
+      return new EmptyIterator();
     }
 
     path.reverse();

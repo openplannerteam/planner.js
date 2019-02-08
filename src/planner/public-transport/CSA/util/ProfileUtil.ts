@@ -17,6 +17,10 @@ export default class ProfileUtil {
         result[stop] = profilesByStop[stop].filter((profile) =>
           profile.departureTime !== Infinity,
         );
+
+        if (result[stop].length === 0) {
+          delete result[stop];
+        }
       }
     }
     return result;
