@@ -189,8 +189,8 @@ export default class CSAProfile implements IPublicTransportPlanner {
       return true;
     }
 
-    for (let amountOfTransfers = 0 ; amountOfTransfers < arrivalTimeByTransfers.length ; amountOfTransfers++) {
-      const isValid: boolean = this.isValidRoute(arrivalTimeByTransfers, amountOfTransfers, departureTime);
+    for (const arrival of arrivalTimeByTransfers) {
+      const isValid: boolean = arrival.arrivalTime - departureTime <= this.query.maximumTravelDuration;
 
       if (isValid) {
         return true;
@@ -198,16 +198,6 @@ export default class CSAProfile implements IPublicTransportPlanner {
     }
 
     return false;
-  }
-
-  private isValidRoute(
-    arrivalTimeByTransfers: IArrivalTimeByTransfers,
-    amountOfTransfers: number,
-    departureTime: number,
-  ): boolean {
-
-    return !this.query.maximumTravelDuration ||
-    (arrivalTimeByTransfers[amountOfTransfers].arrivalTime - departureTime <= this.query.maximumTravelDuration);
   }
 
   private discoverConnection(connection: IConnection) {
