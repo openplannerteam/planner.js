@@ -3,11 +3,11 @@ import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import Context from "../../../Context";
 import EventType from "../../../enums/EventType";
 import BinarySearch from "../../../util/BinarySearch";
+import ArrayViewIterator from "../../../util/iterators/ArrayViewIterator";
 import ExpandingIterator from "../../../util/iterators/ExpandingIterator";
 import Units from "../../../util/Units";
 import IConnection from "../IConnection";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
-import ArrayViewIterator from "./ArrayViewIterator";
 import IDeferredBackwardView from "./IDeferredBackwardView";
 import IExpandingForwardView from "./IExpandingForwardView";
 
