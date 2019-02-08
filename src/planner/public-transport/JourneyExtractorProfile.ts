@@ -79,7 +79,9 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
             );
 
           } catch (e) {
-            this.context.emitWarning(e);
+            if (this.context) {
+              this.context.emitWarning(e);
+            }
           }
         }
       }

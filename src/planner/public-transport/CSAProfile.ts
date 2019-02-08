@@ -389,7 +389,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     const departureProfile = this.profilesByStop[connection.departureStop];
     const earliestProfileEntry = departureProfile[departureProfile.length - 1];
 
-    return earliestProfileEntry.isDominated(arrivalTimeByTransfers);
+    return earliestProfileEntry.isDominated(arrivalTimeByTransfers, connection.departureTime.getTime());
   }
 
   private async getFootpathsForDepartureStop(
@@ -485,7 +485,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     // If arrival times for all numbers of legs are equal to the earliest entry, this
     // entry is redundant
 
-    if (!earliestDepTimeProfile.isDominated(arrivalTimeByTransfers)) {
+    if (!earliestDepTimeProfile.isDominated(arrivalTimeByTransfers, departureTime)) {
       const currentTransferProfiles = earliestDepTimeProfile.transferProfiles;
       const transferProfiles = [];
 
