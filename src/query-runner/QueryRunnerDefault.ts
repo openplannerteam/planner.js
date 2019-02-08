@@ -1,7 +1,6 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Defaults from "../Defaults";
-import InvalidQueryError from "../errors/InvalidQueryError";
 import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
@@ -38,7 +37,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
       return this.publicTransportPlanner.plan(resolvedQuery);
 
     } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true");
+      return Promise.reject("Query not supported");
     }
   }
 
@@ -84,14 +83,8 @@ export default class QueryRunnerDefault implements IQueryRunner {
       resolvedQuery.maximumArrivalTime = newMaximumArrivalTime;
     }
 
-    try {
-      resolvedQuery.from = await this.resolveEndpoint(from);
-      resolvedQuery.to = await this.resolveEndpoint(to);
-
-    } catch (e) {
-      return Promise.reject(new InvalidQueryError(e));
-    }
-
+    resolvedQuery.from = await this.resolveEndpoint(from);
+    resolvedQuery.to = await this.resolveEndpoint(to);
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
 

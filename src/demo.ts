@@ -99,7 +99,6 @@ export default async (logResults) => {
           resolve(false);
         });
     }));
-
 };
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

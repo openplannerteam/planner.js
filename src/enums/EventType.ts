@@ -12,8 +12,8 @@ enum EventType {
   ConnectionIteratorView = "connection-iterator-view",
 
   ConnectionScan = "connection-scan",
-  InitialReachableStops = "initial-reachable-stops",
   FinalReachableStops = "final-reachable-stops",
+  InitialReachableStops = "initial-reachable-stops",
   AddedNewTransferProfile = "added-new-transfer-profile",
 }
 
