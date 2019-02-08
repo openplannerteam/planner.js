@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import Catalog from "../../../Catalog";
 import Context from "../../../Context";
 import TYPES, { ConnectionsFetcherFactory } from "../../../types";
+import ConnectionsProviderMerge from "../ConnectionsProviderMerge";
 import IConnection from "../IConnection";
 import IConnectionsFetcher from "../IConnectionsFetcher";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
@@ -34,10 +35,17 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
     @inject(TYPES.Catalog) catalog: Catalog,
     @inject(TYPES.Context) context: Context,
   ) {
-    const { accessUrl, travelMode } = catalog.connectionsSourceConfigs[0];
 
     this.context = context;
-    this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
+
+    if (catalog.connectionsSourceConfigs.length > 1) {
+      this.connectionsFetcher = new ConnectionsProviderMerge(connectionsFetcherFactory, catalog);
+
+    } else {
+      const { accessUrl, travelMode } = catalog.connectionsSourceConfigs[0];
+      this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
+    }
+
     this.connectionsStore = new ConnectionsStore(context);
   }
 
