@@ -9,15 +9,23 @@ import IStopsProvider from "./IStopsProvider";
 export default class StopsProviderDefault implements IStopsProvider {
 
   private readonly stopsFetchers: IStopsFetcher[];
+  private cachedStops: IStop[];
 
   constructor(
     @inject(TYPES.StopsFetcherFactory) stopsFetcherFactory: StopsFetcherFactory,
     @inject(TYPES.Catalog) catalog: Catalog,
   ) {
     this.stopsFetchers = [];
+    this.cachedStops = [];
 
-    for (const { accessUrl } of catalog.stopsFetcherConfigs) {
+    for (const { accessUrl } of catalog.stopsSourceConfigs) {
       this.stopsFetchers.push(stopsFetcherFactory(accessUrl));
+    }
+  }
+
+  public prefetchStops(): void {
+    for (const stopsFetcher of this.stopsFetchers) {
+      stopsFetcher.prefetchStops();
     }
   }
 
@@ -28,8 +36,16 @@ export default class StopsProviderDefault implements IStopsProvider {
   }
 
   public async getAllStops(): Promise<IStop[]> {
+    if (this.cachedStops.length > 0) {
+      return Promise.resolve(this.cachedStops);
+    }
+
     return Promise.all(this.stopsFetchers
       .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getAllStops()),
-    ).then((results: IStop[][]) => [].concat(...results));
+    ).then((results: IStop[][]) => {
+      this.cachedStops = [].concat(...results);
+
+      return this.cachedStops;
+    });
   }
 }

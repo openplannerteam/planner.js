@@ -1,4 +1,4 @@
-import EventType from "./EventType";
+import EventType from "./enums/EventType";
 import Planner from "./index";
 import IPath from "./interfaces/IPath";
 import Units from "./util/Units";
@@ -7,16 +7,33 @@ export default async (logResults) => {
 
   const planner = new Planner();
 
+  planner.prefetchStops();
+  planner.prefetchConnections();
+
   if (logResults) {
     let scannedPages = 0;
     let scannedConnections = 0;
 
+    // let logFetch = true;
+
+    if (logResults) {
+      console.log("Start prefetch");
+    }
+
     planner
-      .on(EventType.Query, (query) => {
-        console.log("Query", query);
+      .on(EventType.InvalidQuery, (error) => {
+        console.log("InvalidQuery", error);
       })
-      .on(EventType.QueryExponential, (query) => {
+      .on(EventType.AbortQuery, (reason) => {
+        console.log("AbortQuery", reason);
+      })
+      .on(EventType.Query, (Query) => {
+        console.log("Query", Query);
+      })
+      .on(EventType.SubQuery, (query) => {
         const { minimumDepartureTime, maximumArrivalTime } = query;
+
+        // logFetch = true;
 
         console.log("Total scanned pages", scannedPages);
         console.log("Total scanned connections", scannedConnections);
@@ -25,45 +42,63 @@ export default async (logResults) => {
       .on(EventType.LDFetchGet, (url, duration) => {
         scannedPages++;
         console.log(`[GET] ${url} (${duration}ms)`);
+
+        // if (logFetch) {
+        //   console.log(`[GET] ${url} (${duration}ms)`);
+        //   logFetch = false;
+        // }
       })
       .on(EventType.ConnectionScan, (connection) => {
         scannedConnections++;
+      })
+      .on(EventType.Warning, (e) => {
+        console.warn(e);
       });
   }
 
-  const publicTransportResult = await planner.query({
-    publicTransportOnly: true,
-    // from: "https://data.delijn.be/stops/201657",
-    // to: "https://data.delijn.be/stops/205910",
-    // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-    // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
-    // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
-    // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-    from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
-    to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-    minimumDepartureTime: new Date(),
-    maximumTransferDuration: Units.fromHours(0.5),
-  });
+  return wait(5000)
+    .then(() => new Promise((resolve, reject) => {
+      if (logResults) {
+        console.log("Start query");
+      }
 
-  return new Promise((resolve, reject) => {
-    let i = 0;
+      const amount = 3;
+      let i = 0;
 
-    publicTransportResult.take(3)
-      .on("data", (path: IPath) => {
-        ++i;
-
-        if (logResults) {
-          console.log(i);
-          console.log(JSON.stringify(path, null, " "));
-          console.log("\n");
-        }
-
-        if (i === 3) {
-          resolve(true);
-        }
+      planner.query({
+        publicTransportOnly: true,
+        // from: "https://data.delijn.be/stops/201657",
+        // to: "https://data.delijn.be/stops/205910",
+        // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
+        // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
+        // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
+        // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
+        from: "Ingelmunster", // Ingelmunster
+        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+        minimumDepartureTime: new Date(),
+        maximumTransferDuration: Units.fromHours(0.5),
       })
-      .on("end", () => {
-        resolve(false);
-      });
-  });
+        .take(amount)
+        .on("error", (error) => {
+          resolve(false);
+        })
+        .on("data", (path: IPath) => {
+          ++i;
+
+          if (logResults) {
+            console.log(i);
+            console.log(JSON.stringify(path, null, " "));
+            console.log("\n");
+          }
+
+          if (i === amount) {
+            resolve(true);
+          }
+        })
+        .on("end", () => {
+          resolve(false);
+        });
+    }));
 };
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

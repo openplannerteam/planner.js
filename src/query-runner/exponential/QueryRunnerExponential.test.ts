@@ -1,14 +1,14 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Context from "../../Context";
-import ConnectionsFetcherLazy from "../../fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
+import TravelMode from "../../enums/TravelMode";
+import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
-import JourneyExtractorDefault from "../../planner/public-transport/JourneyExtractorDefault";
-import PublicTransportPlannerCSAProfile from "../../planner/public-transport/PublicTransportPlannerCSAProfile";
+import CSAProfile from "../../planner/public-transport/CSAProfile";
+import JourneyExtractorProfile from "../../planner/public-transport/JourneyExtractorProfile";
 import ReachableStopsFinderBirdsEyeCached from "../../planner/stops/ReachableStopsFinderBirdsEyeCached";
-import TravelMode from "../../TravelMode";
 import Units from "../../util/Units";
 import LocationResolverDefault from "../LocationResolverDefault";
 import QueryRunnerExponential from "./QueryRunnerExponential";
@@ -42,13 +42,13 @@ describe("[QueryRunnerExponential]", () => {
     const context = new Context();
 
     const createJourneyExtractor = () => {
-      return new JourneyExtractorDefault(
+      return new JourneyExtractorProfile(
         locationResolver,
       );
     };
 
     const createPlanner = () => {
-      return new PublicTransportPlannerCSAProfile(
+      return new CSAProfile(
         connectionFetcher,
         locationResolver,
         reachableStopsFinder,

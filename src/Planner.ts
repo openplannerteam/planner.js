@@ -1,8 +1,10 @@
 import { AsyncIterator } from "asynciterator";
+import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import Context from "./Context";
-import EventType from "./EventType";
+import EventType from "./enums/EventType";
+import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import IStop from "./fetcher/stops/IStop";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import IPath from "./interfaces/IPath";
@@ -11,12 +13,8 @@ import defaultContainer from "./inversify.config";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
 
-if (!Symbol.asyncIterator) {
-  (Symbol as any).asyncIterator = Symbol.for("Symbol.asyncIterator");
-}
-
 /**
- * Allows to ask route planning queries over our knowledge graphs
+ * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */
 // @ts-ignore
 export default class Planner implements EventEmitter {
@@ -36,17 +34,23 @@ export default class Planner implements EventEmitter {
   }
 
   /**
-   * Given an [[IQuery]], it will evaluate the query and eventually produce an [[IQueryResult]]
+   * Given an [[IQuery]], it will evaluate the query and return a promise for an AsyncIterator of [[IPath]] instances
    * @param query An [[IQuery]] specifying a route planning query
-   * @returns An AsyncIterator of [[IPath]]s
+   * @returns An AsyncIterator of [[IPath]] instances
    */
-  public async query(query: IQuery): Promise<AsyncIterator<IPath>> {
+  public query(query: IQuery): AsyncIterator<IPath> {
     this.emit(EventType.Query, query);
 
-    const iterator = await this.queryRunner.run(query);
+    const iterator = new PromiseProxyIterator(() => this.queryRunner.run(query));
 
-    this.once(EventType.QueryAbort, () => {
+    this.once(EventType.AbortQuery, () => {
       iterator.close();
+    });
+
+    iterator.on("error", (e) => {
+      if (e && e.eventType) {
+        this.emit(e.eventType, e.message);
+      }
     });
 
     return iterator;
@@ -100,13 +104,33 @@ export default class Planner implements EventEmitter {
     return this;
   }
 
-  public getAllStops(): Promise<IStop[]> {
-    const provider = this.context.getContainer().get<IStopsProvider>(TYPES.StopsProvider);
+  public prefetchStops(): void {
+    const container = this.context.getContainer();
+    const stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
 
-    if (provider) {
-      return provider.getAllStops();
+    if (stopsProvider) {
+      stopsProvider.prefetchStops();
+    }
+  }
+
+  public prefetchConnections(): void {
+    const container = this.context.getContainer();
+    const connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
+
+    if (connectionsProvider) {
+      connectionsProvider.prefetchConnections();
+    }
+  }
+
+  public getAllStops(): Promise<IStop[]> {
+    const container = this.context.getContainer();
+    const stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
+
+    if (stopsProvider) {
+      return stopsProvider.getAllStops();
     }
 
     return Promise.reject();
   }
+
 }

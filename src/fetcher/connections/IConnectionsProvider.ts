@@ -1,6 +1,6 @@
 import { AsyncIterator } from "asynciterator";
 import IConnection from "./IConnection";
-import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
+import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 
 /**
  * A IConnectionsProvider serves as interface to other classes that want to use [[IConnection]] instances
@@ -8,6 +8,7 @@ import IConnectionsFetcherConfig from "./IConnectionsFetcherConfig";
  * instances
  */
 export default interface IConnectionsProvider {
+  prefetchConnections: () => void;
   createIterator: () => AsyncIterator<IConnection>;
-  setConfig: (config: IConnectionsFetcherConfig) => void;
+  setIteratorOptions: (options: IConnectionsIteratorOptions) => void;
 }

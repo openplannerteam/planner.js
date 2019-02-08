@@ -3,59 +3,57 @@ import Catalog from "./Catalog";
 import catalogDeLijn from "./catalog.delijn";
 import catalogNmbs from "./catalog.nmbs";
 import Context from "./Context";
+import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
+import TravelMode from "./enums/TravelMode";
+import ConnectionsProviderMerge from "./fetcher/connections/ConnectionsProviderMerge";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
-import ConnectionsFetcherLazy from "./fetcher/connections/ld-fetch/ConnectionsFetcherLazy";
-import ConnectionsProviderMerge from "./fetcher/connections/merge/ConnectionsProviderMerge";
+import ConnectionsFetcherLazy from "./fetcher/connections/lazy/ConnectionsFetcherLazy";
+import ConnectionsProviderPrefetch from "./fetcher/connections/prefetch/ConnectionsProviderPrefetch";
 import LDFetch from "./fetcher/LDFetch";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
+import CSAProfile from "./planner/public-transport/CSAProfile";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
-import JourneyExtractionPhase from "./planner/public-transport/JourneyExtractionPhase";
-import JourneyExtractorDefault from "./planner/public-transport/JourneyExtractorDefault";
-import PublicTransportPlannerCSAProfile from "./planner/public-transport/PublicTransportPlannerCSAProfile";
+import JourneyExtractorProfile from "./planner/public-transport/JourneyExtractorProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
-import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
-import ReachableStopsSearchPhase from "./planner/stops/ReachableStopsSearchPhase";
+import ReachableStopsFinderOnlySelf from "./planner/stops/ReachableStopsFinderOnlySelf";
+import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStopsFinderRoadPlannerCached";
 import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
-import LocationResolverDefault from "./query-runner/LocationResolverDefault";
-import TravelMode from "./TravelMode";
+import LocationResolverConvenience from "./query-runner/LocationResolverConvenience";
 import TYPES from "./types";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
-container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverDefault);
+container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(PublicTransportPlannerCSAProfile);
+  .to(CSAProfile);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
+container.bind<IRoadPlanner>(TYPES.RoadPlanner)
+  .to(RoadPlannerBirdsEye);
+
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
-  .to(JourneyExtractorDefault);
-container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-  .to(RoadPlannerBirdsEye).whenTargetTagged("phase", JourneyExtractionPhase.Initial);
-container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-  .to(RoadPlannerBirdsEye).whenTargetTagged("phase", JourneyExtractionPhase.Transfer);
-container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-  .to(RoadPlannerBirdsEye).whenTargetTagged("phase", JourneyExtractionPhase.Final);
+  .to(JourneyExtractorProfile);
 
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
+  .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
+  .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderMerge).inSingletonScope();
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPrefetch).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(

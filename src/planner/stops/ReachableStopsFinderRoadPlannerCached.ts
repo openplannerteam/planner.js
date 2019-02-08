@@ -1,13 +1,17 @@
 import { inject, injectable } from "inversify";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
+/**
+ * This [[IReachableStopsFinder]] forms a caching layer in front of a [[ReachableStopsFinderRoadPlanner]] instance,
+ * so all the queries don't have to be executed repeatedly
+ */
 @injectable()
 export default class ReachableStopsFinderRoadPlannerCached implements IReachableStopsFinder {
   private readonly reachableStopsFinder: ReachableStopsFinderRoadPlanner;
@@ -25,7 +29,7 @@ export default class ReachableStopsFinderRoadPlannerCached implements IReachable
     sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
-    minimumSpeed: SpeedkmH,
+    minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
 
     const cacheKey = `${sourceOrTargetStop.id} ${mode} ${maximumDuration} ${minimumSpeed}`;

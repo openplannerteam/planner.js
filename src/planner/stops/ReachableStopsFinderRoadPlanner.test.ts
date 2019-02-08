@@ -1,9 +1,9 @@
 import "jest";
 import LDFetch from "ldfetch";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import Units from "../../util/Units";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
@@ -20,7 +20,7 @@ test("[ReachableStopsFinderRoadPlanner] reachable stops", async () => {
 
   expect(sourceStop).toBeDefined();
 
-  // Get reachable stops in 50 km (10h at 5km/h)
+  // Get reachable stops in 5 km (1h at 5km/h)
   const reachableStops = await reachableStopsFinder.findReachableStops(
     sourceStop,
     ReachableStopsFinderMode.Source,

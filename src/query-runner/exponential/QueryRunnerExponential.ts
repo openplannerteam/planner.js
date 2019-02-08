@@ -1,27 +1,42 @@
 import { AsyncIterator } from "asynciterator";
+import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { inject, injectable, interfaces } from "inversify";
 import Context from "../../Context";
 import Defaults from "../../Defaults";
-import EventType from "../../EventType";
+import EventType from "../../enums/EventType";
+import InvalidQueryError from "../../errors/InvalidQueryError";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
+import Path from "../../planner/Path";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import TYPES from "../../types";
-import Emiterator from "../../util/iterators/Emiterator";
+import FilterUniqueIterator from "../../util/iterators/FilterUniqueIterator";
+import FlatMapIterator from "../../util/iterators/FlatMapIterator";
 import Units from "../../util/Units";
 import ILocationResolver from "../ILocationResolver";
 import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
-import FilterUniquePathsIterator from "./FilterUniquePathsIterator";
-import SubqueryIterator from "./SubqueryIterator";
 
+/**
+ * This exponential query runner only accepts public transport queries (`publicTransportOnly = true`).
+ * It uses the registered [[IPublicTransportPlanner]] to execute them.
+ *
+ * To improve the user perceived performance, the query gets split into subqueries
+ * with exponentially increasing time frames:
+ *
+ * ```
+ * minimumDepartureTime + 15 minutes, 30 minutes, 60 minutes, 120 minutes...
+ * ```
+ *
+ * In the current implementation, the `maximumArrivalTime` is ignored
+ */
 @injectable()
 export default class QueryRunnerExponential implements IQueryRunner {
-  private locationResolver: ILocationResolver;
-  private publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
-  private context: Context;
+  private readonly locationResolver: ILocationResolver;
+  private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
+  private readonly context: Context;
 
   constructor(
     @inject(TYPES.Context)
@@ -40,33 +55,27 @@ export default class QueryRunnerExponential implements IQueryRunner {
     const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
     if (baseQuery.publicTransportOnly) {
-
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
-      // const emitQueryIterator = new Emiterator<IResolvedQuery>(
-      // queryIterator,
-      // this.context,
-      // EventType.QueryExponential,
-      // );
 
-      const subqueryIterator = new SubqueryIterator<IResolvedQuery, IPath>(
+      const subqueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
         queryIterator,
         this.runSubquery.bind(this),
       );
 
-      return new FilterUniquePathsIterator(subqueryIterator);
+      return new FilterUniqueIterator<IPath>(subqueryIterator, Path.compareEquals);
 
     } else {
-      return Promise.reject("Query not supported");
+      throw new InvalidQueryError("Query should have publicTransportOnly = true");
     }
   }
 
-  private async runSubquery(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+  private runSubquery(query: IResolvedQuery): AsyncIterator<IPath> {
     // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
-    this.context.emit(EventType.QueryExponential, query);
+    this.context.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 
-    return planner.plan(query);
+    return new PromiseProxyIterator(() => planner.plan(query));
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {
@@ -90,7 +99,8 @@ export default class QueryRunnerExponential implements IQueryRunner {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumWalkingDuration, maximumWalkingDistance,
-      minimumTransferDuration, maximumTransferDuration, maximumTransfers,
+      minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
+      maximumTransfers,
       minimumDepartureTime,
       ...other
     } = query;
@@ -100,15 +110,25 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
 
-    resolvedQuery.from = await this.resolveEndpoint(from);
-    resolvedQuery.to = await this.resolveEndpoint(to);
+    try {
+      resolvedQuery.from = await this.resolveEndpoint(from);
+      resolvedQuery.to = await this.resolveEndpoint(to);
+
+    } catch (e) {
+      return Promise.reject(new InvalidQueryError(e));
+    }
+
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
+
     resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
       Units.toDuration(maximumWalkingDistance, resolvedQuery.minimumWalkingSpeed) || Defaults.defaultWalkingDuration;
 
     resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
-    resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
+    resolvedQuery.maximumTransferDuration = maximumTransferDuration ||
+      Units.toDuration(maximumTransferDistance, resolvedQuery.minimumWalkingSpeed) ||
+      Defaults.defaultMaximumTransferDuration;
+
     resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 
     return resolvedQuery;

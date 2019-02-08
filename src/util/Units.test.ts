@@ -1,12 +1,12 @@
 import "jest";
-import { DistanceM, DurationMs, SpeedkmH } from "../interfaces/units";
+import { DistanceM, DurationMs, SpeedKmH } from "../interfaces/units";
 import Units from "./Units";
 
 test("[Units] toSpeed", () => {
 
   const distance: DistanceM = 10000;
   const duration: DurationMs = 3600000;
-  const speed: SpeedkmH = Units.toSpeed(distance, duration);
+  const speed: SpeedKmH = Units.toSpeed(distance, duration);
 
   expect(speed).toBeDefined();
   expect(speed).toEqual(10);
@@ -15,7 +15,7 @@ test("[Units] toSpeed", () => {
 test("[Units] toDuration", () => {
 
   const distance: DistanceM = 10000;
-  const speed: SpeedkmH = 10;
+  const speed: SpeedKmH = 10;
   const duration: DurationMs = Units.toDuration(distance, speed);
 
   expect(duration).toBeDefined();
@@ -25,7 +25,7 @@ test("[Units] toDuration", () => {
 test("[Units] toDistance", () => {
 
   const duration: DurationMs = 3600000;
-  const speed: SpeedkmH = 10;
+  const speed: SpeedKmH = 10;
   const distance: DistanceM = Units.toDistance(speed, duration);
 
   expect(distance).toBeDefined();

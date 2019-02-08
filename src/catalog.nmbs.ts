@@ -1,8 +1,9 @@
 import Catalog from "./Catalog";
-import TravelMode from "./TravelMode";
+import TravelMode from "./enums/TravelMode";
 
-const catalog = new Catalog();
-catalog.addStopsFetcher("https://irail.be/stations/NMBS");
-catalog.addConnectionsFetcher("https://graph.irail.be/sncb/connections", TravelMode.Train);
+const catalogNmbs = new Catalog();
 
-export default catalog;
+catalogNmbs.addStopsSource("https://irail.be/stations/NMBS");
+catalogNmbs.addConnectionsSource("https://graph.irail.be/sncb/connections", TravelMode.Train);
+
+export default catalogNmbs;

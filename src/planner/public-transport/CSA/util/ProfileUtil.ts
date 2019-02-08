@@ -1,4 +1,4 @@
-import DropOffType from "../../../../fetcher/connections/DropOffType";
+import DropOffType from "../../../../enums/DropOffType";
 import IConnection from "../../../../fetcher/connections/IConnection";
 import { DurationMs } from "../../../../interfaces/units";
 import IArrivalTimeByTransfers from "../data-structure/IArrivalTimeByTransfers";
@@ -17,6 +17,10 @@ export default class ProfileUtil {
         result[stop] = profilesByStop[stop].filter((profile) =>
           profile.departureTime !== Infinity,
         );
+
+        if (result[stop].length === 0) {
+          delete result[stop];
+        }
       }
     }
     return result;

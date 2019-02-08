@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import LDFetchBase from "ldfetch";
 import { Triple } from "rdf-js";
 import Context from "../Context";
-import EventType from "../EventType";
+import EventType from "../enums/EventType";
 import TYPES from "../types";
 
 export interface ILDFetchResponse {

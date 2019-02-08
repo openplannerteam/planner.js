@@ -1,6 +1,8 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
+import { cat } from "shelljs";
 import Defaults from "../Defaults";
+import InvalidQueryError from "../errors/InvalidQueryError";
 import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
@@ -11,6 +13,12 @@ import ILocationResolver from "./ILocationResolver";
 import IQueryRunner from "./IQueryRunner";
 import IResolvedQuery from "./IResolvedQuery";
 
+/**
+ * This default query runner only accepts public transport queries (`publicTransportOnly = true`).
+ * It uses the registered [[IPublicTransportPlanner]] to execute them.
+ *
+ * The default `minimumDepartureTime` is *now*. The default `maximumArrivalTime` is `minimumDepartureTime + 2 hours`.
+ */
 @injectable()
 export default class QueryRunnerDefault implements IQueryRunner {
   private locationResolver: ILocationResolver;
@@ -31,7 +39,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
       return this.publicTransportPlanner.plan(resolvedQuery);
 
     } else {
-      return Promise.reject("Query not supported");
+      throw new InvalidQueryError("Query should have publicTransportOnly = true");
     }
   }
 
@@ -56,7 +64,8 @@ export default class QueryRunnerDefault implements IQueryRunner {
       from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumWalkingDuration, maximumWalkingDistance,
-      minimumTransferDuration, maximumTransferDuration, maximumTransfers,
+      minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
+      maximumTransfers,
       minimumDepartureTime, maximumArrivalTime,
       ...other
     } = query;
@@ -76,15 +85,25 @@ export default class QueryRunnerDefault implements IQueryRunner {
       resolvedQuery.maximumArrivalTime = newMaximumArrivalTime;
     }
 
-    resolvedQuery.from = await this.resolveEndpoint(from);
-    resolvedQuery.to = await this.resolveEndpoint(to);
+    try {
+      resolvedQuery.from = await this.resolveEndpoint(from);
+      resolvedQuery.to = await this.resolveEndpoint(to);
+
+    } catch (e) {
+      return Promise.reject(new InvalidQueryError(e));
+    }
+
     resolvedQuery.minimumWalkingSpeed = minimumWalkingSpeed || walkingSpeed || Defaults.defaultMinimumWalkingSpeed;
     resolvedQuery.maximumWalkingSpeed = maximumWalkingSpeed || walkingSpeed || Defaults.defaultMaximumWalkingSpeed;
+
     resolvedQuery.maximumWalkingDuration = maximumWalkingDuration ||
       Units.toDuration(maximumWalkingDistance, resolvedQuery.minimumWalkingSpeed) || Defaults.defaultWalkingDuration;
 
     resolvedQuery.minimumTransferDuration = minimumTransferDuration || Defaults.defaultMinimumTransferDuration;
-    resolvedQuery.maximumTransferDuration = maximumTransferDuration || Defaults.defaultMaximumTransferDuration;
+    resolvedQuery.maximumTransferDuration = maximumTransferDuration ||
+      Units.toDuration(maximumTransferDistance, resolvedQuery.minimumWalkingSpeed) ||
+      Defaults.defaultMaximumTransferDuration;
+
     resolvedQuery.maximumTransfers = maximumTransfers || Defaults.defaultMaximumTransfers;
 
     return resolvedQuery;

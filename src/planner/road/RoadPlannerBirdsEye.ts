@@ -1,20 +1,27 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { injectable } from "inversify";
+import TravelMode from "../../enums/TravelMode";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
-import TravelMode from "../../TravelMode";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
+import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
 
 @injectable()
 export default class RoadPlannerBirdsEye implements IRoadPlanner {
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    const { from: fromLocations, to: toLocations, minimumWalkingSpeed, maximumWalkingSpeed} = query;
+    const {
+      from: fromLocations,
+      to: toLocations,
+      minimumWalkingSpeed,
+      maximumWalkingSpeed,
+      maximumWalkingDuration,
+    } = query;
 
     const paths = [];
 
@@ -22,7 +29,18 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
 
       for (const from of fromLocations) {
         for (const to of toLocations) {
-          paths.push(this.getPathBetweenLocations(from, to, minimumWalkingSpeed, maximumWalkingSpeed));
+
+          const path = this.getPathBetweenLocations(
+            from,
+            to,
+            minimumWalkingSpeed,
+            maximumWalkingSpeed,
+            maximumWalkingDuration,
+          );
+
+          if (path) {
+            paths.push(path);
+          }
         }
       }
     }
@@ -33,8 +51,9 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
   private getPathBetweenLocations(
     from: ILocation,
     to: ILocation,
-    minWalkingSpeed: SpeedkmH,
-    maxWalkingSpeed: SpeedkmH,
+    minWalkingSpeed: SpeedKmH,
+    maxWalkingSpeed: SpeedKmH,
+    maxWalkingDuration: DurationMs,
   ): IPath {
 
     const distance = Geo.getDistanceBetweenLocations(from, to);
@@ -47,14 +66,16 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
       average: (minDuration + maxDuration) / 2,
     };
 
-    return {
-      steps: [{
-        startLocation: from,
-        stopLocation: to,
-        duration,
-        distance,
-        travelMode: TravelMode.Walking,
-      }],
-    };
+    if (duration.maximum > maxWalkingDuration) {
+      return;
+    }
+
+    return new Path([{
+      startLocation: from,
+      stopLocation: to,
+      duration,
+      distance,
+      travelMode: TravelMode.Walking,
+    }]);
   }
 }

@@ -1,10 +1,14 @@
+import TravelMode from "../enums/TravelMode";
 import IConnection from "../fetcher/connections/IConnection";
 import ILocation from "../interfaces/ILocation";
 import IProbabilisticValue from "../interfaces/IProbabilisticValue";
 import IStep from "../interfaces/IStep";
 import { DistanceM, DurationMs } from "../interfaces/units";
-import TravelMode from "../TravelMode";
 
+/**
+ * This Step class serves as an implementation of the [[IStep]] interface and as a home for some helper functions
+ * related to [[IStep]] instances
+ */
 export default class Step implements IStep {
 
   public static create(
@@ -46,6 +50,10 @@ export default class Step implements IStep {
     );
   }
 
+  /**
+   * Compare two [[IStep]] instances
+   * @returns true if the two steps are the same
+   */
   public static compareEquals(step: IStep, otherStep: IStep): boolean {
     if (otherStep.travelMode !== step.travelMode) {
       return false;

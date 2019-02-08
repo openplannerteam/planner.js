@@ -1,13 +1,17 @@
 import { inject, injectable } from "inversify";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
-import { DurationMs, SpeedkmH } from "../../interfaces/units";
+import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
+/**
+ * This [[IReachableStopsFinder]] determines its reachable stops based on the birds's-eye distance
+ * to the source or target stop.
+ */
 @injectable()
 export default class ReachableStopsFinderBirdsEye implements IReachableStopsFinder {
   private readonly stopsProvider: IStopsProvider;
@@ -22,24 +26,24 @@ export default class ReachableStopsFinderBirdsEye implements IReachableStopsFind
     sourceOrTargetStop: IStop,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
-    minimumSpeed: SpeedkmH,
+    minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
 
     // Mode can be ignored since birds eye view distance is identical
 
+    const reachableStops: IReachableStop[] = [{stop: sourceOrTargetStop, duration: 0}];
+
     const allStops = await this.stopsProvider.getAllStops();
 
-    return allStops.map((possibleTarget: IStop): IReachableStop => {
-      if (possibleTarget.id === sourceOrTargetStop.id) {
-        return {stop: sourceOrTargetStop, duration: 0};
-      }
-
+    allStops.forEach((possibleTarget: IStop) => {
       const distance = Geo.getDistanceBetweenStops(sourceOrTargetStop, possibleTarget);
       const duration = Units.toDuration(distance, minimumSpeed);
 
       if (duration <= maximumDuration) {
-        return {stop: possibleTarget, duration};
+        reachableStops.push({stop: possibleTarget, duration});
       }
-    }).filter((reachableStop) => !!reachableStop);
+    });
+
+    return reachableStops;
   }
 }

@@ -8,6 +8,6 @@ const isDebugging = process && process.argv.includes("--debug");
   }
 
   runDemo(true)
-    .then(() => console.log("Success"))
+    .then((success) => console.log(success ? "Success" : "Fail"))
     .catch((e) => console.error(e));
 })();

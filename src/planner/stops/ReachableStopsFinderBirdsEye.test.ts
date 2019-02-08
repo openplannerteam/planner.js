@@ -1,9 +1,9 @@
 import "jest";
 import LDFetch from "ldfetch";
+import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import Units from "../../util/Units";
 import ReachableStopsFinderBirdsEye from "./ReachableStopsFinderBirdsEye";
-import ReachableStopsFinderMode from "./ReachableStopsFinderMode";
 
 const DE_LIJN_STOPS_URLS = [
   "http://openplanner.ilabt.imec.be/delijn/Antwerpen/stops",

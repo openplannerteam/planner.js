@@ -1,6 +1,6 @@
-import TravelMode from "../../../../TravelMode";
-import DropOffType from "../../DropOffType";
-import PickupType from "../../PickupType";
+import DropOffType from "../../../../enums/DropOffType";
+import PickupType from "../../../../enums/PickupType";
+import TravelMode from "../../../../enums/TravelMode";
 
 const connections = [
   {
