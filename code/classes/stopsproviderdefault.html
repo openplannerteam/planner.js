@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -918,6 +920,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="stopsproviderdefault.html#getstopbyid" class="tsd-kind-icon">get<wbr>Stop<wbr>ById</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="stopsproviderdefault.html#prefetchstops" class="tsd-kind-icon">prefetch<wbr>Stops</a>
 				</li>
 			</ul>
 		</li>
@@ -954,6 +959,7 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="stopsproviderdefault.html#getallstops" class="tsd-kind-icon">get<wbr>All<wbr>Stops</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="stopsproviderdefault.html#getstopbyid" class="tsd-kind-icon">get<wbr>Stop<wbr>ById</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="stopsproviderdefault.html#prefetchstops" class="tsd-kind-icon">prefetch<wbr>Stops</a></li>
 						</ul>
 					</section>
 				</div>
@@ -965,19 +971,19 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Stops<wbr>Provider<wbr>Default<span class="tsd-signature-symbol">(</span>stopsFetcherFactory<span class="tsd-signature-symbol">: </span><a href="../globals.html#stopsfetcherfactory" class="tsd-signature-type">StopsFetcherFactory</a>, catalog<span class="tsd-signature-symbol">: </span><a href="catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="stopsproviderdefault.html" class="tsd-signature-type">StopsProviderDefault</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Stops<wbr>Provider<wbr>Default<span class="tsd-signature-symbol">(</span>stopsFetcherFactory<span class="tsd-signature-symbol">: </span><a href="../globals.html#types.stopsfetcherfactory" class="tsd-signature-type">StopsFetcherFactory</a>, catalog<span class="tsd-signature-symbol">: </span><a href="catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="stopsproviderdefault.html" class="tsd-signature-type">StopsProviderDefault</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/stops/StopsProviderDefault.ts#L11">fetcher/stops/StopsProviderDefault.ts:11</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/stops/StopsProviderDefault.ts#L12">fetcher/stops/StopsProviderDefault.ts:12</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>stopsFetcherFactory: <a href="../globals.html#stopsfetcherfactory" class="tsd-signature-type">StopsFetcherFactory</a></h5>
+								<h5>stopsFetcherFactory: <a href="../globals.html#types.stopsfetcherfactory" class="tsd-signature-type">StopsFetcherFactory</a></h5>
 							</li>
 							<li>
 								<h5>catalog: <a href="catalog.html" class="tsd-signature-type">Catalog</a></h5>
@@ -1000,7 +1006,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/stops/StopsProviderDefault.ts#L30">fetcher/stops/StopsProviderDefault.ts:30</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/stops/StopsProviderDefault.ts#L38">fetcher/stops/StopsProviderDefault.ts:38</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1017,7 +1023,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/stops/StopsProviderDefault.ts#L24">fetcher/stops/StopsProviderDefault.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/stops/StopsProviderDefault.ts#L32">fetcher/stops/StopsProviderDefault.ts:32</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1027,6 +1033,23 @@ img { max-width: 100%; }
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="prefetchstops" class="tsd-anchor"></a>
+				<h3>prefetch<wbr>Stops</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Stops<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/stops/StopsProviderDefault.ts#L26">fetcher/stops/StopsProviderDefault.ts:26</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
 			</section>

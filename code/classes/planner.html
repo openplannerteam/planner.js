@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -935,6 +937,12 @@ img { max-width: 100%; }
 					<a href="planner.html#once" class="tsd-kind-icon">once</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="planner.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="planner.html#prefetchstops" class="tsd-kind-icon">prefetch<wbr>Stops</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="planner.html#query" class="tsd-kind-icon">query</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -955,7 +963,7 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
-					<p>Allows to ask route planning queries over our knowledge graphs</p>
+					<p>Allows to ask route planning queries. Emits events defined in <a href="../enums/eventtype.html">EventType</a></p>
 				</div>
 			</div>
 		</section>
@@ -993,6 +1001,8 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#listeners" class="tsd-kind-icon">listeners</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#on" class="tsd-kind-icon">on</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#once" class="tsd-kind-icon">once</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#prefetchstops" class="tsd-kind-icon">prefetch<wbr>Stops</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#query" class="tsd-kind-icon">query</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="planner.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
@@ -1014,7 +1024,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L24">Planner.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L22">Planner.ts:22</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1050,7 +1060,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L55">Planner.ts:55</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L59">Planner.ts:59</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1076,7 +1086,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L61">Planner.ts:61</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L65">Planner.ts:65</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1102,7 +1112,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L103">Planner.ts:103</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L125">Planner.ts:125</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1119,7 +1129,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L65">Planner.ts:65</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L69">Planner.ts:69</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1142,7 +1152,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L69">Planner.ts:69</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L73">Planner.ts:73</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1165,7 +1175,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L73">Planner.ts:73</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L77">Planner.ts:77</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1191,7 +1201,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L79">Planner.ts:79</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L83">Planner.ts:83</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1208,21 +1218,55 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="query" class="tsd-anchor"></a>
-				<h3>query</h3>
+				<a name="prefetchconnections" class="tsd-anchor"></a>
+				<h3>prefetch<wbr>Connections</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../interfaces/iquery.html" class="tsd-signature-type">IQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Connections<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L43">Planner.ts:43</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L116">Planner.ts:116</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="prefetchstops" class="tsd-anchor"></a>
+				<h3>prefetch<wbr>Stops</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Stops<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L107">Planner.ts:107</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="query" class="tsd-anchor"></a>
+				<h3>query</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../interfaces/iquery.html" class="tsd-signature-type">IQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L41">Planner.ts:41</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Given an <a href="../interfaces/iquery.html">IQuery</a>, it will evaluate the query and eventually produce an [[IQueryResult]]</p>
+								<p>Given an <a href="../interfaces/iquery.html">IQuery</a>, it will evaluate the query and return a promise for an AsyncIterator of <a href="../interfaces/ipath.html">IPath</a> instances</p>
 							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1234,8 +1278,8 @@ img { max-width: 100%; }
 								</div>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						<p>An AsyncIterator of <a href="../interfaces/ipath.html">IPath</a>s</p>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ipath.html" class="tsd-signature-type">IPath</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>An AsyncIterator of <a href="../interfaces/ipath.html">IPath</a> instances</p>
 					</li>
 				</ul>
 			</section>
@@ -1249,7 +1293,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L85">Planner.ts:85</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L89">Planner.ts:89</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1272,7 +1316,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L91">Planner.ts:91</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L95">Planner.ts:95</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1298,7 +1342,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Planner.ts#L97">Planner.ts:97</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Planner.ts#L101">Planner.ts:101</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -928,6 +930,13 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Utility class with functions dealing with rdf triples</p>
+				</div>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -964,9 +973,14 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/util/Rdf.ts#L37">util/Rdf.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/util/Rdf.ts#L83">util/Rdf.ts:83</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Log an array of triples to the console as a table with three columns: subject, predicate and object</p>
+							</div>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -981,25 +995,41 @@ img { max-width: 100%; }
 				<a name="matchestriple" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> matches<wbr>Triple</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">matches<wbr>Triple<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></li>
+					<li class="tsd-signature tsd-kind-icon">matches<wbr>Triple<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/util/Rdf.ts#L5">util/Rdf.ts:5</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/util/Rdf.ts#L19">util/Rdf.ts:19</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Creates a triple matcher callback function for use in e.g. an Array#filter() expression</p>
+							</div>
+							<p>For example:</p>
+							<pre><code>tripleArray.filter(<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Rdf</span>.</span></span>matches<span class="hljs-constructor">Triple('<span class="hljs-params">someSubject</span>', <span class="hljs-params">null</span>, <span class="hljs-params">null</span>)</span>);</code></pre>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>subject: <span class="tsd-signature-type">string</span></h5>
+								<h5>subject: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>can be null if not wanting to match by subject</p>
+								</div>
 							</li>
 							<li>
-								<h5>predicate: <span class="tsd-signature-type">string</span></h5>
+								<h5>predicate: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>can be null if not wanting to match by predicate</p>
+								</div>
 							</li>
 							<li>
-								<h5>object: <span class="tsd-signature-type">string</span></h5>
+								<h5>object: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>can be null if not wanting to match by object</p>
+								</div>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span></h4>
@@ -1034,9 +1064,20 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/util/Rdf.ts#L30">util/Rdf.ts:30</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/util/Rdf.ts#L73">util/Rdf.ts:73</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Rename the object of a triple based on a map with original objects as keys and
+								replacement objects as values</p>
+							</div>
+							<p>For example:</p>
+							<pre><code><span class="hljs-attribute">const transformedTriple</span> = Rdf.transformObject({
+  <span class="hljs-string">"oldObject1"</span>: <span class="hljs-string">"newObject1"</span>,
+  <span class="hljs-string">"oldObject2"</span>: <span class="hljs-string">"newObject2"</span>,
+}, someTriple));</code></pre>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
@@ -1065,9 +1106,20 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/util/Rdf.ts#L23">util/Rdf.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/util/Rdf.ts#L54">util/Rdf.ts:54</a></li>
 							</ul>
 						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Rename the predicate of a triple based on a map with original predicates as keys and
+								replacement predicates as values</p>
+							</div>
+							<p>For example:</p>
+							<pre><code><span class="hljs-attribute">const transformedTriple</span> = Rdf.transformPredicate({
+  <span class="hljs-string">"oldPredicate1"</span>: <span class="hljs-string">"newPredicate1"</span>,
+  <span class="hljs-string">"oldPredicate2"</span>: <span class="hljs-string">"newPredicate2"</span>,
+}, someTriple));</code></pre>
+						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>

@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -918,6 +920,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="context.html#emit" class="tsd-kind-icon">emit</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="context.html#emitwarning" class="tsd-kind-icon">emit<wbr>Warning</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="context.html#getcontainer" class="tsd-kind-icon">get<wbr>Container</a>
@@ -955,10 +960,10 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
-					<p>The Context serves as event pass through and holder of the inversify container object.
-						Proxies an internal EventEmitter because ´decorate(injectable(), EventEmitter)´ causes
-					errors when running tests in Jest</p>
+					<p>The Context serves as event pass through and holder of the inversify container object.</p>
 				</div>
+				<p>It proxies an internal EventEmitter (instead of extending EventEmitter) because
+				´decorate(injectable(), EventEmitter)´ causes errors when running tests in Jest</p>
 			</div>
 		</section>
 		<section class="tsd-panel tsd-hierarchy">
@@ -990,6 +995,7 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.html#emit" class="tsd-kind-icon">emit</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.html#emitwarning" class="tsd-kind-icon">emit<wbr>Warning</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.html#getcontainer" class="tsd-kind-icon">get<wbr>Container</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.html#listenercount" class="tsd-kind-icon">listener<wbr>Count</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="context.html#listeners" class="tsd-kind-icon">listeners</a></li>
@@ -1016,7 +1022,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L14">Context.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L16">Context.ts:16</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <a href="context.html" class="tsd-signature-type">Context</a></h4>
@@ -1036,7 +1042,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L28">Context.ts:28</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L30">Context.ts:30</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1062,7 +1068,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L34">Context.ts:34</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L36">Context.ts:36</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1070,6 +1076,29 @@ img { max-width: 100%; }
 							<li>
 								<h5>type: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></h5>
 							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="emitwarning" class="tsd-anchor"></a>
+				<h3>emit<wbr>Warning</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">emit<wbr>Warning<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L40">Context.ts:40</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
 							<li>
 								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
 							</li>
@@ -1088,7 +1117,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L24">Context.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L26">Context.ts:26</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Container</span></h4>
@@ -1105,7 +1134,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L38">Context.ts:38</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L44">Context.ts:44</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1128,7 +1157,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L42">Context.ts:42</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L48">Context.ts:48</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1151,7 +1180,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L46">Context.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L52">Context.ts:52</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1177,7 +1206,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L52">Context.ts:52</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L58">Context.ts:58</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1203,7 +1232,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L58">Context.ts:58</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L64">Context.ts:64</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1226,7 +1255,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L64">Context.ts:64</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L70">Context.ts:70</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1252,7 +1281,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L20">Context.ts:20</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L22">Context.ts:22</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1275,7 +1304,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Context.ts#L70">Context.ts:70</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Context.ts#L76">Context.ts:76</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

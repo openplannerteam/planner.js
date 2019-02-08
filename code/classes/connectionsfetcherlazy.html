@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -914,19 +916,22 @@ img { max-width: 100%; }
 					<a href="connectionsfetcherlazy.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a href="connectionsfetcherlazy.html#config" class="tsd-kind-icon">config</a>
+					<a href="connectionsfetcherlazy.html#ldfetch" class="tsd-kind-icon">ld<wbr>Fetch</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a href="connectionsfetcherlazy.html#ldfetch" class="tsd-kind-icon">ld<wbr>Fetch</a>
+					<a href="connectionsfetcherlazy.html#options" class="tsd-kind-icon">options</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="connectionsfetcherlazy.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="connectionsfetcherlazy.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="connectionsfetcherlazy.html#setaccessurl" class="tsd-kind-icon">set<wbr>Access<wbr>Url</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="connectionsfetcherlazy.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a>
+					<a href="connectionsfetcherlazy.html#setiteratoroptions" class="tsd-kind-icon">set<wbr>Iterator<wbr>Options</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="connectionsfetcherlazy.html#settravelmode" class="tsd-kind-icon">set<wbr>Travel<wbr>Mode</a>
@@ -976,16 +981,17 @@ img { max-width: 100%; }
 					<section class="tsd-index-section tsd-is-private-protected">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="connectionsfetcherlazy.html#config" class="tsd-kind-icon">config</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="connectionsfetcherlazy.html#ldfetch" class="tsd-kind-icon">ld<wbr>Fetch</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="connectionsfetcherlazy.html#options" class="tsd-kind-icon">options</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsfetcherlazy.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsfetcherlazy.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsfetcherlazy.html#setaccessurl" class="tsd-kind-icon">set<wbr>Access<wbr>Url</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsfetcherlazy.html#setconfig" class="tsd-kind-icon">set<wbr>Config</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsfetcherlazy.html#setiteratoroptions" class="tsd-kind-icon">set<wbr>Iterator<wbr>Options</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsfetcherlazy.html#settravelmode" class="tsd-kind-icon">set<wbr>Travel<wbr>Mode</a></li>
 						</ul>
 					</section>
@@ -998,19 +1004,19 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Connections<wbr>Fetcher<wbr>Lazy<span class="tsd-signature-symbol">(</span>ldFetch<span class="tsd-signature-symbol">: </span><a href="ldfetch.html" class="tsd-signature-type">LDFetch</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectionsfetcherlazy.html" class="tsd-signature-type">ConnectionsFetcherLazy</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Connections<wbr>Fetcher<wbr>Lazy<span class="tsd-signature-symbol">(</span>ldFetch<span class="tsd-signature-symbol">: </span><a href="../globals.html#types.ldfetch" class="tsd-signature-type">LDFetch</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectionsfetcherlazy.html" class="tsd-signature-type">ConnectionsFetcherLazy</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts#L21">fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts:21</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L21">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:21</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>ldFetch: <a href="ldfetch.html" class="tsd-signature-type">LDFetch</a></h5>
+								<h5>ldFetch: <a href="../globals.html#types.ldfetch" class="tsd-signature-type">LDFetch</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="connectionsfetcherlazy.html" class="tsd-signature-type">ConnectionsFetcherLazy</a></h4>
@@ -1021,22 +1027,22 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-				<a name="config" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagProtected">Protected</span> config</h3>
-				<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iconnectionsfetcherconfig.html" class="tsd-signature-type">IConnectionsFetcherConfig</a></div>
+				<a name="ldfetch" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> ld<wbr>Fetch</h3>
+				<div class="tsd-signature tsd-kind-icon">ld<wbr>Fetch<span class="tsd-signature-symbol">:</span> <a href="../globals.html#types.ldfetch" class="tsd-signature-type">LDFetch</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts#L19">fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L18">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-				<a name="ldfetch" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagProtected">Protected</span> ld<wbr>Fetch</h3>
-				<div class="tsd-signature tsd-kind-icon">ld<wbr>Fetch<span class="tsd-signature-symbol">:</span> <a href="ldfetch.html" class="tsd-signature-type">LDFetch</a></div>
+				<a name="options" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> options</h3>
+				<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts#L18">fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L19">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:19</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1053,10 +1059,27 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts#L35">fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts:35</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L39">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:39</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="prefetchconnections" class="tsd-anchor"></a>
+				<h3>prefetch<wbr>Connections</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Connections<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L35">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:35</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1070,7 +1093,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts#L31">fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts:31</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L31">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:31</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1084,22 +1107,22 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="setconfig" class="tsd-anchor"></a>
-				<h3>set<wbr>Config</h3>
+				<a name="setiteratoroptions" class="tsd-anchor"></a>
+				<h3>set<wbr>Iterator<wbr>Options</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">set<wbr>Config<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnectionsfetcherconfig.html" class="tsd-signature-type">IConnectionsFetcherConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">set<wbr>Iterator<wbr>Options<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts#L44">fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts:44</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L48">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:48</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>config: <a href="../interfaces/iconnectionsfetcherconfig.html" class="tsd-signature-type">IConnectionsFetcherConfig</a></h5>
+								<h5>options: <a href="../interfaces/iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1110,19 +1133,19 @@ img { max-width: 100%; }
 				<a name="settravelmode" class="tsd-anchor"></a>
 				<h3>set<wbr>Travel<wbr>Mode</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">set<wbr>Travel<wbr>Mode<span class="tsd-signature-symbol">(</span>travelMode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TravelMode</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">set<wbr>Travel<wbr>Mode<span class="tsd-signature-symbol">(</span>travelMode<span class="tsd-signature-symbol">: </span><a href="../enums/travelmode.html" class="tsd-signature-type">TravelMode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts#L27">fetcher/connections/ld-fetch/ConnectionsFetcherLazy.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/lazy/ConnectionsFetcherLazy.ts#L27">fetcher/connections/lazy/ConnectionsFetcherLazy.ts:27</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>travelMode: <span class="tsd-signature-type">TravelMode</span></h5>
+								<h5>travelMode: <a href="../enums/travelmode.html" class="tsd-signature-type">TravelMode</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>

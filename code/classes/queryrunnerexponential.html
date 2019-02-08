@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -922,6 +924,17 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>This exponential query runner only accepts public transport queries (<code>publicTransportOnly = true</code>).
+					It uses the registered <a href="../interfaces/ipublictransportplanner.html">IPublicTransportPlanner</a> to execute them.</p>
+				</div>
+				<p>To improve the user perceived performance, the query gets split into subqueries
+				with exponentially increasing time frames:</p>
+				<pre><code>minimumDepartureTime + <span class="hljs-number">15</span> minutes, <span class="hljs-number">30</span> minutes, <span class="hljs-number">60</span> minutes, <span class="hljs-number">120</span> minutes...</code></pre><p>In the current implementation, the <code>maximumArrivalTime</code> is ignored</p>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -967,7 +980,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/query-runner/exponential/QueryRunnerExponential.ts#L24">query-runner/exponential/QueryRunnerExponential.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/query-runner/exponential/QueryRunnerExponential.ts#L39">query-runner/exponential/QueryRunnerExponential.ts:39</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1000,7 +1013,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/iqueryrunner.html">IQueryRunner</a>.<a href="../interfaces/iqueryrunner.html#run">run</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/query-runner/exponential/QueryRunnerExponential.ts#L39">query-runner/exponential/QueryRunnerExponential.ts:39</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/query-runner/exponential/QueryRunnerExponential.ts#L54">query-runner/exponential/QueryRunnerExponential.ts:54</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -922,6 +924,14 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>This <a href="../interfaces/ireachablestopsfinder.html">IReachableStopsFinder</a> forms a caching layer in front of a <a href="reachablestopsfinderbirdseye.html">ReachableStopsFinderBirdsEye</a> instance,
+					so all the distances don&#39;t have to be calculated repeatedly</p>
+				</div>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -967,7 +977,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/planner/stops/ReachableStopsFinderBirdsEyeCached.ts#L13">planner/stops/ReachableStopsFinderBirdsEyeCached.ts:13</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/planner/stops/ReachableStopsFinderBirdsEyeCached.ts#L17">planner/stops/ReachableStopsFinderBirdsEyeCached.ts:17</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -987,13 +997,13 @@ img { max-width: 100%; }
 				<a name="findreachablestops" class="tsd-anchor"></a>
 				<h3>find<wbr>Reachable<wbr>Stops</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">find<wbr>Reachable<wbr>Stops<span class="tsd-signature-symbol">(</span>sourceOrTargetStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReachableStopsFinderMode</span>, maximumDuration<span class="tsd-signature-symbol">: </span><a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a>, minimumSpeed<span class="tsd-signature-symbol">: </span><a href="../globals.html#speedkmh" class="tsd-signature-type">SpeedkmH</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ireachablestop.html" class="tsd-signature-type">IReachableStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">find<wbr>Reachable<wbr>Stops<span class="tsd-signature-symbol">(</span>sourceOrTargetStop<span class="tsd-signature-symbol">: </span><a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a>, mode<span class="tsd-signature-symbol">: </span><a href="../enums/reachablestopsfindermode.html" class="tsd-signature-type">ReachableStopsFinderMode</a>, maximumDuration<span class="tsd-signature-symbol">: </span><a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a>, minimumSpeed<span class="tsd-signature-symbol">: </span><a href="../globals.html#speedkmh" class="tsd-signature-type">SpeedKmH</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ireachablestop.html" class="tsd-signature-type">IReachableStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/planner/stops/ReachableStopsFinderBirdsEyeCached.ts#L22">planner/stops/ReachableStopsFinderBirdsEyeCached.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/planner/stops/ReachableStopsFinderBirdsEyeCached.ts#L26">planner/stops/ReachableStopsFinderBirdsEyeCached.ts:26</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1002,13 +1012,13 @@ img { max-width: 100%; }
 								<h5>sourceOrTargetStop: <a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a></h5>
 							</li>
 							<li>
-								<h5>mode: <span class="tsd-signature-type">ReachableStopsFinderMode</span></h5>
+								<h5>mode: <a href="../enums/reachablestopsfindermode.html" class="tsd-signature-type">ReachableStopsFinderMode</a></h5>
 							</li>
 							<li>
 								<h5>maximumDuration: <a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></h5>
 							</li>
 							<li>
-								<h5>minimumSpeed: <a href="../globals.html#speedkmh" class="tsd-signature-type">SpeedkmH</a></h5>
+								<h5>minimumSpeed: <a href="../globals.html#speedkmh" class="tsd-signature-type">SpeedKmH</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ireachablestop.html" class="tsd-signature-type">IReachableStop</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>

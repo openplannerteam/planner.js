@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -922,6 +924,15 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>This default query runner only accepts public transport queries (<code>publicTransportOnly = true</code>).
+					It uses the registered <a href="../interfaces/ipublictransportplanner.html">IPublicTransportPlanner</a> to execute them.</p>
+				</div>
+				<p>The default <code>minimumDepartureTime</code> is <em>now</em>. The default <code>maximumArrivalTime</code> is <code>minimumDepartureTime + 2 hours</code>.</p>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -967,7 +978,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/query-runner/QueryRunnerDefault.ts#L17">query-runner/QueryRunnerDefault.ts:17</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/query-runner/QueryRunnerDefault.ts#L25">query-runner/QueryRunnerDefault.ts:25</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -997,7 +1008,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/iqueryrunner.html">IQueryRunner</a>.<a href="../interfaces/iqueryrunner.html#run">run</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/query-runner/QueryRunnerDefault.ts#L27">query-runner/QueryRunnerDefault.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/query-runner/QueryRunnerDefault.ts#L35">query-runner/QueryRunnerDefault.ts:35</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

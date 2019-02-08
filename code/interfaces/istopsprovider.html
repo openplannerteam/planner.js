@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -915,6 +917,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="istopsprovider.html#getstopbyid" class="tsd-kind-icon">get<wbr>Stop<wbr>ById</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="istopsprovider.html#prefetchstops" class="tsd-kind-icon">prefetch<wbr>Stops</a>
 				</li>
 			</ul>
 		</li>
@@ -966,6 +971,7 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="istopsprovider.html#getallstops" class="tsd-kind-icon">get<wbr>All<wbr>Stops</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="istopsprovider.html#getstopbyid" class="tsd-kind-icon">get<wbr>Stop<wbr>ById</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="istopsprovider.html#prefetchstops" class="tsd-kind-icon">prefetch<wbr>Stops</a></li>
 						</ul>
 					</section>
 				</div>
@@ -979,7 +985,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">get<wbr>All<wbr>Stops<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/stops/IStopsProvider.ts#L11">fetcher/stops/IStopsProvider.ts:11</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/stops/IStopsProvider.ts#L12">fetcher/stops/IStopsProvider.ts:12</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1004,7 +1010,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">get<wbr>Stop<wbr>ById<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/stops/IStopsProvider.ts#L10">fetcher/stops/IStopsProvider.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/stops/IStopsProvider.ts#L11">fetcher/stops/IStopsProvider.ts:11</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1023,6 +1029,31 @@ img { max-width: 100%; }
 										</li>
 									</ul>
 									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="prefetchstops" class="tsd-anchor"></a>
+				<h3>prefetch<wbr>Stops</h3>
+				<div class="tsd-signature tsd-kind-icon">prefetch<wbr>Stops<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/stops/IStopsProvider.ts#L10">fetcher/stops/IStopsProvider.ts:10</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 								</li>
 							</ul>
 						</li>

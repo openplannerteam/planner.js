@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -911,16 +913,16 @@ img { max-width: 100%; }
 			<a href="catalog.html" class="tsd-kind-icon">Catalog</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
-					<a href="catalog.html#connectionsfetcherconfigs" class="tsd-kind-icon">connections<wbr>Fetcher<wbr>Configs</a>
+					<a href="catalog.html#connectionssourceconfigs" class="tsd-kind-icon">connections<wbr>Source<wbr>Configs</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
-					<a href="catalog.html#stopsfetcherconfigs" class="tsd-kind-icon">stops<wbr>Fetcher<wbr>Configs</a>
+					<a href="catalog.html#stopssourceconfigs" class="tsd-kind-icon">stops<wbr>Source<wbr>Configs</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="catalog.html#addconnectionsfetcher" class="tsd-kind-icon">add<wbr>Connections<wbr>Fetcher</a>
+					<a href="catalog.html#addconnectionssource" class="tsd-kind-icon">add<wbr>Connections<wbr>Source</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="catalog.html#addstopsfetcher" class="tsd-kind-icon">add<wbr>Stops<wbr>Fetcher</a>
+					<a href="catalog.html#addstopssource" class="tsd-kind-icon">add<wbr>Stops<wbr>Source</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a href="catalog.html#combine" class="tsd-kind-icon">combine</a>
@@ -931,6 +933,15 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>A Catalog instance holds the stops source and connections source configs.
+						These configs get passed to the <a href="../globals.html#types.stopsfetcherfactory">StopsFetcherFactory</a> and <a href="../globals.html#types.connectionsfetcherfactory">ConnectionsFetcherFactory</a> to construct
+					respectively <a href="../interfaces/istopsfetcher.html">IStopsFetcher</a> and <a href="../interfaces/iconnectionsfetcher.html">IConnectionsFetcher</a> instances</p>
+				</div>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -946,15 +957,15 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="catalog.html#connectionsfetcherconfigs" class="tsd-kind-icon">connections<wbr>Fetcher<wbr>Configs</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="catalog.html#stopsfetcherconfigs" class="tsd-kind-icon">stops<wbr>Fetcher<wbr>Configs</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="catalog.html#connectionssourceconfigs" class="tsd-kind-icon">connections<wbr>Source<wbr>Configs</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="catalog.html#stopssourceconfigs" class="tsd-kind-icon">stops<wbr>Source<wbr>Configs</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="catalog.html#addconnectionsfetcher" class="tsd-kind-icon">add<wbr>Connections<wbr>Fetcher</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="catalog.html#addstopsfetcher" class="tsd-kind-icon">add<wbr>Stops<wbr>Fetcher</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="catalog.html#addconnectionssource" class="tsd-kind-icon">add<wbr>Connections<wbr>Source</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="catalog.html#addstopssource" class="tsd-kind-icon">add<wbr>Stops<wbr>Source</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="catalog.html#combine" class="tsd-kind-icon">combine</a></li>
 						</ul>
 					</section>
@@ -964,22 +975,22 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-				<a name="connectionsfetcherconfigs" class="tsd-anchor"></a>
-				<h3>connections<wbr>Fetcher<wbr>Configs</h3>
-				<div class="tsd-signature tsd-kind-icon">connections<wbr>Fetcher<wbr>Configs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
+				<a name="connectionssourceconfigs" class="tsd-anchor"></a>
+				<h3>connections<wbr>Source<wbr>Configs</h3>
+				<div class="tsd-signature tsd-kind-icon">connections<wbr>Source<wbr>Configs<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iconnectionssourceconfig.html" class="tsd-signature-type">IConnectionsSourceConfig</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Catalog.ts#L17">Catalog.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Catalog.ts#L22">Catalog.ts:22</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-				<a name="stopsfetcherconfigs" class="tsd-anchor"></a>
-				<h3>stops<wbr>Fetcher<wbr>Configs</h3>
-				<div class="tsd-signature tsd-kind-icon">stops<wbr>Fetcher<wbr>Configs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
+				<a name="stopssourceconfigs" class="tsd-anchor"></a>
+				<h3>stops<wbr>Source<wbr>Configs</h3>
+				<div class="tsd-signature tsd-kind-icon">stops<wbr>Source<wbr>Configs<span class="tsd-signature-symbol">:</span> <a href="../interfaces/istopssourceconfig.html" class="tsd-signature-type">IStopsSourceConfig</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Catalog.ts#L16">Catalog.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Catalog.ts#L21">Catalog.ts:21</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -987,16 +998,16 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="addconnectionsfetcher" class="tsd-anchor"></a>
-				<h3>add<wbr>Connections<wbr>Fetcher</h3>
+				<a name="addconnectionssource" class="tsd-anchor"></a>
+				<h3>add<wbr>Connections<wbr>Source</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">add<wbr>Connections<wbr>Fetcher<span class="tsd-signature-symbol">(</span>accessUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, travelMode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TravelMode</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">add<wbr>Connections<wbr>Source<span class="tsd-signature-symbol">(</span>accessUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, travelMode<span class="tsd-signature-symbol">: </span><a href="../enums/travelmode.html" class="tsd-signature-type">TravelMode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Catalog.ts#L23">Catalog.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Catalog.ts#L28">Catalog.ts:28</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1005,7 +1016,7 @@ img { max-width: 100%; }
 								<h5>accessUrl: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>travelMode: <span class="tsd-signature-type">TravelMode</span></h5>
+								<h5>travelMode: <a href="../enums/travelmode.html" class="tsd-signature-type">TravelMode</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1013,16 +1024,16 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="addstopsfetcher" class="tsd-anchor"></a>
-				<h3>add<wbr>Stops<wbr>Fetcher</h3>
+				<a name="addstopssource" class="tsd-anchor"></a>
+				<h3>add<wbr>Stops<wbr>Source</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">add<wbr>Stops<wbr>Fetcher<span class="tsd-signature-symbol">(</span>accessUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">add<wbr>Stops<wbr>Source<span class="tsd-signature-symbol">(</span>accessUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Catalog.ts#L19">Catalog.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Catalog.ts#L24">Catalog.ts:24</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1045,7 +1056,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/Catalog.ts#L5">Catalog.ts:5</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/Catalog.ts#L10">Catalog.ts:10</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

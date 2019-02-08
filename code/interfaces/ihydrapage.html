@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -911,9 +913,6 @@ img { max-width: 100%; }
 			<a href="ihydrapage.html" class="tsd-kind-icon">IHydra<wbr>Page</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="ihydrapage.html#connections" class="tsd-kind-icon">connections</a>
-				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="ihydrapage.html#documentiri" class="tsd-kind-icon">document<wbr>Iri</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -924,6 +923,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="ihydrapage.html#previouspageiri" class="tsd-kind-icon">previous<wbr>Page<wbr>Iri</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="ihydrapage.html#triples" class="tsd-kind-icon">triples</a>
 				</li>
 			</ul>
 		</li>
@@ -946,11 +948,11 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihydrapage.html#connections" class="tsd-kind-icon">connections</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihydrapage.html#documentiri" class="tsd-kind-icon">document<wbr>Iri</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihydrapage.html#index" class="tsd-kind-icon">index</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihydrapage.html#nextpageiri" class="tsd-kind-icon">next<wbr>Page<wbr>Iri</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihydrapage.html#previouspageiri" class="tsd-kind-icon">previous<wbr>Page<wbr>Iri</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ihydrapage.html#triples" class="tsd-kind-icon">triples</a></li>
 						</ul>
 					</section>
 				</div>
@@ -959,22 +961,12 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="connections" class="tsd-anchor"></a>
-				<h3>connections</h3>
-				<div class="tsd-signature tsd-kind-icon">connections<span class="tsd-signature-symbol">:</span> <a href="iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">[]</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/IHydraPage.ts#L8">fetcher/connections/ld-fetch/IHydraPage.ts:8</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="documentiri" class="tsd-anchor"></a>
 				<h3>document<wbr>Iri</h3>
 				<div class="tsd-signature tsd-kind-icon">document<wbr>Iri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/IHydraPage.ts#L5">fetcher/connections/ld-fetch/IHydraPage.ts:5</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/hydra/IHydraPage.ts#L5">fetcher/connections/hydra/IHydraPage.ts:5</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -984,7 +976,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/IHydraPage.ts#L4">fetcher/connections/ld-fetch/IHydraPage.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/hydra/IHydraPage.ts#L4">fetcher/connections/hydra/IHydraPage.ts:4</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -994,7 +986,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">next<wbr>Page<wbr>Iri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/IHydraPage.ts#L6">fetcher/connections/ld-fetch/IHydraPage.ts:6</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/hydra/IHydraPage.ts#L6">fetcher/connections/hydra/IHydraPage.ts:6</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1004,7 +996,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">previous<wbr>Page<wbr>Iri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/29dfd6a/src/fetcher/connections/ld-fetch/IHydraPage.ts#L7">fetcher/connections/ld-fetch/IHydraPage.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/hydra/IHydraPage.ts#L7">fetcher/connections/hydra/IHydraPage.ts:7</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="triples" class="tsd-anchor"></a>
+				<h3>triples</h3>
+				<div class="tsd-signature tsd-kind-icon">triples<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Triple</span><span class="tsd-signature-symbol">[]</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/a474193/src/fetcher/connections/hydra/IHydraPage.ts#L8">fetcher/connections/hydra/IHydraPage.ts:8</a></li>
 					</ul>
 				</aside>
 			</section>
