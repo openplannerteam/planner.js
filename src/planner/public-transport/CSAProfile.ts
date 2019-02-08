@@ -120,7 +120,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     const self = this;
 
     return new Promise((resolve, reject) => {
-      let isDone = false;
+      let isDone: boolean = false;
 
       const done = () => {
         if (!isDone) {
@@ -145,7 +145,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   }
 
   private async processNextConnection(done: () => void) {
-    let connection = this.connectionsIterator.read();
+    let connection: IConnection = this.connectionsIterator.read();
 
     while (connection) {
       if (connection.arrivalTime > this.query.maximumArrivalTime && !this.connectionsIterator.closed) {
@@ -165,10 +165,13 @@ export default class CSAProfile implements IPublicTransportPlanner {
 
       this.discoverConnection(connection);
 
-      const earliestArrivalTime = this.calculateEarliestArrivalTime(connection);
+      const earliestArrivalTime: IArrivalTimeByTransfers = this.calculateEarliestArrivalTime(connection);
       this.updateEarliestArrivalByTrip(connection, earliestArrivalTime);
 
-      if (!this.isDominated(connection, earliestArrivalTime)) {
+      if (
+        !this.isDominated(connection, earliestArrivalTime) &&
+        this.hasValidRoute(earliestArrivalTime, connection.departureTime.getTime())
+      ) {
         await this.getFootpathsForDepartureStop(connection, earliestArrivalTime);
       }
 
@@ -181,14 +184,42 @@ export default class CSAProfile implements IPublicTransportPlanner {
     }
   }
 
+  private hasValidRoute(arrivalTimeByTransfers: IArrivalTimeByTransfers, departureTime: number): boolean {
+    if (!this.query.maximumTravelDuration) {
+      return true;
+    }
+
+    for (let amountOfTransfers = 0 ; amountOfTransfers < arrivalTimeByTransfers.length ; amountOfTransfers++) {
+      const isValid: boolean = this.isValidRoute(arrivalTimeByTransfers, amountOfTransfers, departureTime);
+
+      if (isValid) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private isValidRoute(
+    arrivalTimeByTransfers: IArrivalTimeByTransfers,
+    amountOfTransfers: number,
+    departureTime: number,
+  ): boolean {
+
+    return !this.query.maximumTravelDuration ||
+    (arrivalTimeByTransfers[amountOfTransfers].arrivalTime - departureTime <= this.query.maximumTravelDuration);
+  }
+
   private discoverConnection(connection: IConnection) {
     this.gtfsTripByConnection[connection.id] = connection["gtfs:trip"];
 
-    [connection.departureStop, connection.arrivalStop].forEach((stop) => {
-      if (!this.profilesByStop[stop]) {
-        this.profilesByStop[stop] = [Profile.create(this.query.maximumTransfers)];
-      }
-    });
+    if (!this.profilesByStop[connection.departureStop]) {
+      this.profilesByStop[connection.departureStop] = [Profile.create(this.query.maximumTransfers)];
+    }
+
+    if (!this.profilesByStop[connection.arrivalStop]) {
+      this.profilesByStop[connection.arrivalStop] = [Profile.create(this.query.maximumTransfers)];
+    }
 
     if (!this.earliestArrivalByTrip[connection["gtfs:trip"]]) {
       this.earliestArrivalByTrip[connection["gtfs:trip"]] = EarliestArrivalByTransfers.create(
@@ -198,16 +229,17 @@ export default class CSAProfile implements IPublicTransportPlanner {
   }
 
   private getTripIdsFromConnection(connection: IConnection): string[] {
-    const tripIds = [connection["gtfs:trip"]];
+    const tripIds: string[] = [connection["gtfs:trip"]];
 
     if (!connection.nextConnection) {
       return tripIds;
     }
 
     for (const connectionId of connection.nextConnection) {
-      const tripId = this.gtfsTripByConnection[connectionId];
-      if (tripIds.indexOf(tripId) === -1) {
-        tripIds.push(this.gtfsTripByConnection[connectionId]);
+      const tripId: string = this.gtfsTripByConnection[connectionId];
+
+      if (tripIds.indexOf(tripId) === -1 && tripId) {
+        tripIds.push(tripId);
       }
     }
 
@@ -229,7 +261,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initDurationToTargetByStop(): Promise<boolean> {
     const arrivalStop: IStop = this.query.to[0] as IStop;
 
-    const geoId = Geo.getId(this.query.to[0]);
+    const geoId: string = Geo.getId(this.query.to[0]);
     if (!this.query.to[0].id) {
       this.query.to[0].id = geoId;
       this.query.to[0].name = "Arrival location";
@@ -269,7 +301,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private async initInitialReachableStops(): Promise<boolean> {
     const fromLocation: IStop = this.query.from[0] as IStop;
 
-    const geoId = Geo.getId(this.query.from[0]);
+    const geoId: string = Geo.getId(this.query.from[0]);
     if (!this.query.from[0].id) {
       this.query.from[0].id = geoId;
       this.query.from[0].name = "Departure location";
@@ -304,7 +336,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   }
 
   private walkToTarget(connection: IConnection): IArrivalTimeByTransfers {
-    const walkingTimeToTarget = this.durationToTargetByStop[connection.arrivalStop];
+    const walkingTimeToTarget: DurationMs = this.durationToTargetByStop[connection.arrivalStop];
 
     if (
       walkingTimeToTarget === undefined || connection["gtfs:dropOfType"] === "gtfs:NotAvailable" ||
@@ -323,15 +355,15 @@ export default class CSAProfile implements IPublicTransportPlanner {
   }
 
   private remainSeated(connection: IConnection): IArrivalTimeByTransfers {
-    const tripIds = this.getTripIdsFromConnection(connection);
+    const tripIds: string[] = this.getTripIdsFromConnection(connection);
     const earliestArrivalTimeByTransfers: IArrivalTimeByTransfers = [];
 
     for (let amountOfTransfers = 0; amountOfTransfers < this.query.maximumTransfers + 1; amountOfTransfers++) {
       const earliestArrivalTime = earliestArrivalTimeByTransfers[amountOfTransfers];
-      let minimumArrivalTime = earliestArrivalTime && earliestArrivalTime.arrivalTime;
+      let minimumArrivalTime: number = earliestArrivalTime && earliestArrivalTime.arrivalTime;
 
       for (const tripId of tripIds) {
-        const tripArrivalTime = this.earliestArrivalByTrip[tripId][amountOfTransfers].arrivalTime;
+        const tripArrivalTime: number = this.earliestArrivalByTrip[tripId][amountOfTransfers].arrivalTime;
 
         if (!minimumArrivalTime || tripArrivalTime < minimumArrivalTime) {
           earliestArrivalTimeByTransfers[amountOfTransfers] = {
@@ -367,11 +399,12 @@ export default class CSAProfile implements IPublicTransportPlanner {
     connection: IConnection,
     arrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): void {
-    const tripIds = this.getTripIdsFromConnection(connection);
+    const tripIds: string[] = this.getTripIdsFromConnection(connection);
 
     const earliestArrivalByTransfers: IEarliestArrivalByTransfers = arrivalTimeByTransfers.map(
       (arrivalTime, amountOfTransfers: number) => {
         const tripId: string = arrivalTime["gtfs:trip"];
+
         return this.earliestArrivalByTrip[tripId][amountOfTransfers];
       },
     );
@@ -449,8 +482,12 @@ export default class CSAProfile implements IPublicTransportPlanner {
 
   private async emitTransferProfile(transferProfile: ITransferProfile, amountOfTransfers: number): Promise<void> {
     try {
-      const departureStop = await this.locationResolver.resolve(transferProfile.enterConnection.departureStop);
-      const arrivalStop = await this.locationResolver.resolve(transferProfile.exitConnection.arrivalStop);
+      const departureStop: ILocation = await this.locationResolver.resolve(
+        transferProfile.enterConnection.departureStop,
+      );
+      const arrivalStop: ILocation = await this.locationResolver.resolve(
+        transferProfile.exitConnection.arrivalStop,
+      );
 
       this.context.emit(EventType.AddedNewTransferProfile, {
         departureStop,
@@ -469,25 +506,27 @@ export default class CSAProfile implements IPublicTransportPlanner {
     stop: IStop,
     arrivalTimeByTransfers: IArrivalTimeByTransfers,
   ): void {
-    const departureTime = connection.departureTime.getTime() - duration;
+    const departureTime: DurationMs = connection.departureTime.getTime() - duration;
 
-    if (departureTime < this.query.minimumDepartureTime.getTime()) {
+    const hasValidRoute: boolean = this.hasValidRoute(arrivalTimeByTransfers, departureTime);
+
+    if (departureTime < this.query.minimumDepartureTime.getTime() || !hasValidRoute) {
       return;
     }
 
-    let profilesByDepartureStop = this.profilesByStop[stop.id];
+    let profilesByDepartureStop: Profile[] = this.profilesByStop[stop.id];
 
     if (!profilesByDepartureStop) {
       profilesByDepartureStop = this.profilesByStop[stop.id] = [Profile.create(this.query.maximumTransfers)];
     }
-    const earliestDepTimeProfile = profilesByDepartureStop[profilesByDepartureStop.length - 1];
+    const earliestDepTimeProfile: Profile = profilesByDepartureStop[profilesByDepartureStop.length - 1];
 
     // If arrival times for all numbers of legs are equal to the earliest entry, this
     // entry is redundant
 
     if (!earliestDepTimeProfile.isDominated(arrivalTimeByTransfers, departureTime)) {
-      const currentTransferProfiles = earliestDepTimeProfile.transferProfiles;
-      const transferProfiles = [];
+      const currentTransferProfiles: ITransferProfile[] = earliestDepTimeProfile.transferProfiles;
+      const transferProfiles: ITransferProfile[] = [];
 
       for (let amountOfTransfers = 0; amountOfTransfers < currentTransferProfiles.length; amountOfTransfers++) {
         const transferProfile: ITransferProfile = currentTransferProfiles[amountOfTransfers];
@@ -499,14 +538,10 @@ export default class CSAProfile implements IPublicTransportPlanner {
           departureTime: Infinity,
         };
 
-        const possibleExitConnection = this.earliestArrivalByTrip[connection["gtfs:trip"]]
+        const possibleExitConnection: IConnection = this.earliestArrivalByTrip[connection["gtfs:trip"]]
           [amountOfTransfers].connection || connection;
 
-        const isValidRoute = !this.query.maximumTravelDuration ||
-          (arrivalTimeByTransfers[amountOfTransfers].arrivalTime - departureTime <= this.query.maximumTravelDuration);
-
         if (
-          isValidRoute &&
           arrivalTimeByTransfers[amountOfTransfers].arrivalTime < transferProfile.arrivalTime &&
           connection["gtfs:pickupType"] !== PickupType.NotAvailable &&
           possibleExitConnection["gtfs:dropOfType"] !== DropOffType.NotAvailable
@@ -532,20 +567,28 @@ export default class CSAProfile implements IPublicTransportPlanner {
         transferProfiles.push(newTransferProfile);
       }
 
+      const profileIsValid: boolean = transferProfiles.reduce((memo, {arrivalTime}) =>
+        memo || (arrivalTime && arrivalTime !== Infinity)
+        , false);
+
+      if (!profileIsValid) {
+        return;
+      }
+
       const newProfile: Profile = Profile.createFromTransfers(departureTime, transferProfiles);
 
-      let i = profilesByDepartureStop.length - 1;
-      let earliestProfile = profilesByDepartureStop[i];
+      let profileIndex: number = profilesByDepartureStop.length - 1;
+      let earliestProfile: Profile = profilesByDepartureStop[profileIndex];
 
       if (earliestProfile.departureTime === Infinity) {
-        profilesByDepartureStop[i] = newProfile;
+        profilesByDepartureStop[profileIndex] = newProfile;
       } else {
-        while (i > 0 && earliestProfile.departureTime < departureTime) {
-          profilesByDepartureStop[i + 1] = earliestProfile;
-          i--;
-          earliestProfile = profilesByDepartureStop[i];
+        while (profileIndex > 0 && earliestProfile.departureTime < departureTime) {
+          profilesByDepartureStop[profileIndex + 1] = earliestProfile;
+          profileIndex--;
+          earliestProfile = profilesByDepartureStop[profileIndex];
         }
-        profilesByDepartureStop[i + 1] = newProfile;
+        profilesByDepartureStop[profileIndex + 1] = newProfile;
       }
     }
   }

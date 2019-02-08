@@ -17,4 +17,5 @@ export default interface IQuery {
   maximumTransferDuration?: DurationMs;
   maximumTransferDistance?: DistanceM;
   maximumTransfers?: number;
+  maximumTravelDuration?: DurationMs;
 }
