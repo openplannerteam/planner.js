@@ -96,7 +96,7 @@ body {
     position: absolute;
     top: 10px;
     left: 54px;
-    right: 170px;
+    max-width: calc(100% - 225px);
     z-index: 500;
 }
 
@@ -119,11 +119,7 @@ body {
 }
 
 #prefetch-bar {
-    height: 18px;
+    height: 17px;
     max-width: 100%;
     overflow: hidden;
-}
-
-.prefetch-view {
-    max-width: 100%;
 }

@@ -65,7 +65,7 @@ const removePrefetchView = () => {
   }
 };
 
-resetButton.onclick = e => {
+resetButton.onclick = (e) => {
   removeLines();
   removeResultObjects();
   query = [];
@@ -119,7 +119,7 @@ planner
       minimumDepartureTime,
       maximumArrivalTime,
       maximumArrivalTime - minimumDepartureTime,
-      maximumTravelDuration,
+      maximumTravelDuration
     );
 
     removeLines();
@@ -182,16 +182,15 @@ planner
     } else {
       const width = getPrefetchViewWidth(firstPrefetch, departureTime);
 
-      prefetchBarWidth = width;
+      prefetchBarWidth = width + 10;
+
+      const prefetch = document.getElementById("prefetch");
+      prefetch.style.width = `${prefetchBarWidth}px`;
 
       prefetchBar.style.width = `${width}px`;
       prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
 
-      for (const prefetchView of prefetchViews) {
-        const viewWidth = getPrefetchViewWidth(prefetchView.lowerBound, prefetchView.upperBound);
-
-        prefetchView.elem.style.width = `${viewWidth * 100 / prefetchBarWidth}%`;
-      }
+      drawPrefetchViews();
     }
   })
   .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
@@ -217,9 +216,10 @@ planner
         .find((view) => view.lowerBound === lowerBound && view.upperBound === upperBound);
 
       if (!elem) {
-        console.warn("Wut");
         return;
       }
+
+      drawPrefetchViews();
 
       elem.style.backgroundColor = "limegreen";
     }
@@ -227,6 +227,16 @@ planner
   .on("warning", (warning) => {
     console.warn(warning);
   });
+
+function drawPrefetchViews() {
+  for (const prefetchView of prefetchViews) {
+    const viewWidth = getPrefetchViewWidth(prefetchView.lowerBound, prefetchView.upperBound);
+    const offset = getPrefetchViewWidth(firstPrefetch, prefetchView.lowerBound);
+
+    prefetchView.elem.style.width = `${viewWidth * 100 / prefetchBarWidth}%`;
+    prefetchView.elem.style.marginLeft = `${offset}px`;
+  }
+}
 
 function onMapClick(e) {
   selectRoute(e);
