@@ -12,12 +12,15 @@ import IQuery from "./interfaces/IQuery";
 import defaultContainer from "./inversify.config";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
+import Units from "./util/Units";
 
 /**
  * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */
 // @ts-ignore
 export default class Planner implements EventEmitter {
+  public static Units = Units;
+
   private context: Context;
   private queryRunner: IQueryRunner;
 

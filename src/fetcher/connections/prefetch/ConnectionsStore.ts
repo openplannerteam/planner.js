@@ -21,7 +21,7 @@ import IExpandingForwardView from "./IExpandingForwardView";
  */
 export default class ConnectionsStore {
 
-  private static REPORTING_THRESHOLD = Units.fromHours(.1);
+  private static REPORTING_THRESHOLD = Units.fromMinutes(6);
 
   private readonly context: Context;
   private readonly store: IConnection[];

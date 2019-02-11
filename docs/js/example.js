@@ -468,7 +468,7 @@ function runQuery(query) {
       to: query[1],
       minimumDepartureTime: new Date(),
       maximumWalkingDistance,
-      maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
+      maximumTransferDuration: Planner.Units.fromMinutes(30), // 30 minutes
       minimumWalkingSpeed: 3
     })
     .take(amount)
