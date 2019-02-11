@@ -10,150 +10,135 @@
 <body>
 <div class="container container-main">
     <div class="content-wrap">
-        <div class="tsd-panel tsd-typography">
-            <h1>Planner.js</h1>
-            <p>The ultimate JavaScript framework for journey planning</p>
-            <p>Your next steps:
-                <nav>
-                    <ul>
-                        <li>Check out the fullscreen <a href="example.html">example</a> or <a href="#demo">the demo</a> below</li>
-                        <li>Read the <a href="code/">TypeDoc documentation</a></li>
-                        <li>Get to understand the <a href="#architecture">architecture</a></li>
-                        <li>Clone the <a href="https://github.com/openplannerteam/planner.js">repository</a> or reads
-                            its getting started README.md
-                        </li>
-                    </ul>
-                </nav>
+        <div class="tsd-panel" style="padding: 45px">
+            <h1 style="padding-bottom: 10px;margin-bottom: 16px">Planner.js</h1>
+            <p>The ultimate JavaScript framework for journey planning. A level playing field for Mobility as a Service
+                actors.</p>
+            <p>
+                Everyone should be able to set up their own route planner with their specific needs.
+                Before Planner.js, it used to be expensive to set up your own route planner:
+                you first need to find the right data dumps, need to integrate them manually into your own format,
+                and then you need to connect them to a route planning system.
+                The real-time data then should be handled with a different system if is available at all.
             </p>
-            <section>
-                <h2 id="demo">Demo</h2>
-                <h3>Table</h3>
-                <p
-                        data-height="398"
-                        data-theme-id="light"
-                        data-slug-hash="bQZMoj"
-                        data-default-tab="js,result"
-                        data-user="maximtmartin"
-                        data-pen-title="Using the new JavaScript route planner (work in progress)"
-                        class="codepen"
-                >
-                    See the Pen <a href="https://codepen.io/maximtmartin/pen/bQZMoj">Using the new JavaScript route
-                    planner</a> on <a href="https://codepen.io">CodePen</a>.
-                </p>
-            </section>
-            <!--<section>
-                <h2 id="philosophy">Principles</h2>
-                <h3>A level playing field for Mobility as a Service actors</h3>
-                <p>
-                    Everyone should be able to set up their own route planner with their specific needs.
-                    Before Planner.js, it used to be expensive to set up your own route planner:
-                    you first need to find the right data dumps, need to integrate them manually into your own format,
-                    and then you need to connect them to a route planning system.
-                    The real-time data then should be handled with a different system if is available at all.
-                </p>
-                <p>
-                    If we want to create a level playing field, these steps should be automated.
-                    Planner.js gives everyone the tools to start working with route planning data in no time.
-                </p>
-                <h3>Federated querying for data published close to the source</h3>
-                <p>
 
-                </p>
-                <h3>Client-side execution of the route planning algorithms</h3>
-                <p>
+            <h2>Getting Started</h2>
+            <ul>
+                <li>Check out the fullscreen <a href="example.html">example</a> or <a href="#demo">the demo</a> below
+                </li>
+                <li>Read the <a href="code/">TypeDoc documentation</a></li>
+                <li>Get to understand the <a href="#architecture">architecture</a></li>
+                <li>Clone the <a href="https://github.com/openplannerteam/planner.js">repository</a> or read
+                    the getting started <a href="https://github.com/openplannerteam/planner.js">README.md</a>
+                </li>
+            </ul>
 
-                </p>
-            </section>-->
-            <section>
-                <h2 id="architecture">Architecture</h2>
-                <p>
-                    Planner.js makes heavy use of <a href="http://inversify.io/">inversify</a>, a dependency injection
-                    framework.
-                    This allows anyone to make a quick custom build of a route planner, with specific needs.
-                    Configuration of what classes should be injected where, happens by inside an inversify Container.
-                    The default Container (used by the CDN version) can be found
-                    <a href="https://github.com/openplannerteam/planner.js/blob/dev/src/inversify.config.ts">in inversify.config.ts</a>
-                </p>
-                <h3>Different Interfaces</h3>
-                <p>
-                    For a full overview, please consult our <a href="code">code documentation</a>.
-                    The interfaces for the Planner are split in:
-                </p>
-                <h4>Providers</h4>
-                <p>
-                    Providers serve as data interfaces for all fetchers of the same type (registered in the inversify
-                    Container).
-                    When a class needs some data, it injects a Provider of the right type.
-                    The Provider determines the right fetcher and passes any data requests through to that fetcher.
-                </p>
-                <p>
-                    Right now, there are two types of data, so there are two types of providers:
-                    <a href="code/interfaces/iconnectionsprovider.html">connections providers</a> and
-                    <a href="code/interfaces/istopsprovider.html">stops providers</a>
-                </p>
-                <h4>Fetchers</h4>
-                <p>
-                    These are ways to fetch data from different sources. Each fetcher corresponds to one source.
-                    We will use the Comunica framework to fetch the data as an intelligent agent.
-                    For now, we are just using the Linked Data Fetch NPM package and manually implement the routable
-                    tiles and Linked Connections specification.
-                </p>
-                <p>
-                    Right now, there are two types of data, so there are two types of fetchers:
-                    <a href="code/interfaces/iconnectionsfetcher.html">connections fetchers</a> and
-                    <a href="code/interfaces/istopsprovider.html">stops fetchers</a>
-                </p>
-                <h4>Planners</h4>
-                <p>These represent the core algorithms of this library. There are
-                    <a href="code/interfaces/iroadplanner.html">road planners</a> and
-                    <a href="code/interfaces/ipublictransportplanner.html">public-transport planners</a>.
-                    Additionally, there are
-                    <a href="code/interfaces/ireachablestopsfinder.html">reachable stops finders</a>,
-                    which are used in certain steps of public-transport planner algorithms
-                </p>
+            <h2 id="demo">Demo</h2>
+            <p
+                    data-height="398"
+                    data-theme-id="light"
+                    data-slug-hash="bQZMoj"
+                    data-default-tab="js,result"
+                    data-user="maximtmartin"
+                    data-pen-title="Using the new JavaScript route planner (work in progress)"
+                    class="codepen"
+            >
+                See the Pen <a href="https://codepen.io/maximtmartin/pen/bQZMoj">Using the new JavaScript route
+                planner</a> on <a href="https://codepen.io">CodePen</a>.
+            </p>
 
-                <h3>Creating your own Planner version</h3>
-                <p>
-                    <i>We still need to properly write this part of the documentation.</i>
-                    However, the code may help you out understanding how it currently works.
-                    By default, the file inversify.config.ts is going to be used to build the Planner.
-                    The Planner instance must be instantiated with the dependencies container.
-                    If you bundle a different dependencies container with your Planner,
-                    your specific Planner will be able to act differently.
-                </p>
-                <h4>Phases</h4>
-                <p>
-                    To allow maximum flexibility, some algorithms allow injecting multiple implementations of the same interface,
-                    depending on the <b>phase</b> of the algorithm. For example:
-                </p>
-                <pre><code class="typescript">container.bind&lt;IJourneyExtractor&gt;(TYPES.JourneyExtractor).to(JourneyExtractorDefault);
+            <h2 id="architecture">Architecture</h2>
+            <p>
+                Planner.js makes heavy use of <a href="http://inversify.io/">inversify</a>, a dependency injection
+                framework.
+                This allows anyone to make a quick custom build of a route planner, with specific needs.
+                Configuration of what classes should be injected where, happens by inside an inversify Container.
+                The default Container (used by the CDN version) can be found
+                <a href="https://github.com/openplannerteam/planner.js/blob/dev/src/inversify.config.ts">in
+                    inversify.config.ts</a>
+            </p>
+            <h3>Different Interfaces</h3>
+            <p>
+                For a full overview, please consult our <a href="code">code documentation</a>.
+                The interfaces for the Planner are split in:
+            </p>
+            <h4>Providers</h4>
+            <p>
+                Providers serve as data interfaces for all fetchers of the same type (registered in the inversify
+                Container).
+                When a class needs some data, it injects a Provider of the right type.
+                The Provider determines the right fetcher and passes any data requests through to that fetcher.
+            </p>
+            <p>
+                Right now, there are two types of data, so there are two types of providers:
+                <a href="code/interfaces/iconnectionsprovider.html">connections providers</a> and
+                <a href="code/interfaces/istopsprovider.html">stops providers</a>
+            </p>
+            <h4>Fetchers</h4>
+            <p>
+                These are ways to fetch data from different sources. Each fetcher corresponds to one source.
+                We will use the Comunica framework to fetch the data as an intelligent agent.
+                For now, we are just using the Linked Data Fetch NPM package and manually implement the routable
+                tiles and Linked Connections specification.
+            </p>
+            <p>
+                Right now, there are two types of data, so there are two types of fetchers:
+                <a href="code/interfaces/iconnectionsfetcher.html">connections fetchers</a> and
+                <a href="code/interfaces/istopsprovider.html">stops fetchers</a>
+            </p>
+            <h4>Planners</h4>
+            <p>These represent the core algorithms of this library. There are
+                <a href="code/interfaces/iroadplanner.html">road planners</a> and
+                <a href="code/interfaces/ipublictransportplanner.html">public-transport planners</a>.
+                Additionally, there are
+                <a href="code/interfaces/ireachablestopsfinder.html">reachable stops finders</a>,
+                which are used in certain steps of public-transport planner algorithms
+            </p>
+
+            <h3>Creating your own Planner version</h3>
+            <p>
+                <i>We still need to properly write this part of the documentation.</i>
+                However, the code may help you out understanding how it currently works.
+                By default, the file inversify.config.ts is going to be used to build the Planner.
+                The Planner instance must be instantiated with the dependencies container.
+                If you bundle a different dependencies container with your Planner,
+                your specific Planner will be able to act differently.
+            </p>
+            <h4>Phases</h4>
+            <p>
+                To allow maximum flexibility, some algorithms allow injecting multiple implementations of the same
+                interface,
+                depending on the <b>phase</b> of the algorithm. For example:
+            </p>
+            <pre><code class="typescript">container.bind&lt;IJourneyExtractor&gt;(TYPES.JourneyExtractor).to(JourneyExtractorDefault);
 container.bind&lt;IRoadPlanner&gt;(TYPES.RoadPlanner).to(RoadPlannerBirdsEye).whenTargetTagged(&quot;phase&quot;, JourneyExtractionPhase.Initial);
 container.bind&lt;IRoadPlanner&gt;(TYPES.RoadPlanner).to(RoadPlannerBirdsEye).whenTargetTagged(&quot;phase&quot;, JourneyExtractionPhase.Transfer);
 container.bind&lt;IRoadPlanner&gt;(TYPES.RoadPlanner).to(RoadPlannerBirdsEye).whenTargetTagged(&quot;phase&quot;, JourneyExtractionPhase.Final);</code></pre>
-                <p>
-                    This example is pointless right now, because only one road planner is implemented
-                </p>
-                <h4>Catalog</h4>
-                <p>
-                    Each container should have a Catalog which holds the access URLs (and other meta data) of all data sources.
-                    For example, a planner that should only plan NMBS routes could have this catalog:
-                </p>
-                <pre><code class="typescript">const catalog = new Catalog();
+            <p>
+                This example is pointless right now, because only one road planner is implemented
+            </p>
+            <h4>Catalog</h4>
+            <p>
+                Each container should have a Catalog which holds the access URLs (and other meta data) of all data
+                sources.
+                For example, a planner that should only plan NMBS routes could have this catalog:
+            </p>
+            <pre><code class="typescript">const catalog = new Catalog();
 catalog.addStopsFetcher(&quot;http://irail.be/stations/NMBS/&quot;, &quot;https://irail.be/stations/NMBS&quot;);
 catalog.addConnectionsFetcher(&quot;https://graph.irail.be/sncb/connections&quot;, TravelMode.Train);
 
 container.bind&lt;Catalog&gt;(TYPES.Catalog).toConstantValue(catalog);</code></pre>
-                <p></p>
-                <h4>Factories</h4>
-                <p>
-                    Providers create all the necessary fetchers based on the data sources configured in the catalog.
-                    Factories form the glue between all these parts: they create a fetcher based on a catalog entry on
-                    behalf of a provider. <b>Warning: subject to change</b>
-                </p>
-                <p>
-                    For example:
-                </p>
-                <pre><code class="typescript">container.bind&lt;IConnectionsProvider&gt;(TYPES.ConnectionsProvider).to(ConnectionsProviderPassthrough).inSingletonScope();
+            <p></p>
+            <h4>Factories</h4>
+            <p>
+                Providers create all the necessary fetchers based on the data sources configured in the catalog.
+                Factories form the glue between all these parts: they create a fetcher based on a catalog entry on
+                behalf of a provider. <b>Warning: subject to change</b>
+            </p>
+            <p>
+                For example:
+            </p>
+            <pre><code class="typescript">container.bind&lt;IConnectionsProvider&gt;(TYPES.ConnectionsProvider).to(ConnectionsProviderPassthrough).inSingletonScope();
 container.bind&lt;IConnectionsFetcher&gt;(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
 container.bind&lt;interfaces.Factory&lt;IConnectionsFetcher&gt;&gt;(TYPES.ConnectionsFetcherFactory)
   .toFactory&lt;IConnectionsFetcher&gt;(
@@ -167,20 +152,23 @@ container.bind&lt;interfaces.Factory&lt;IConnectionsFetcher&gt;&gt;(TYPES.Connec
         return fetcher;
       },
   );</code></pre>
-                <p></p>
-                <h4>Possibilities</h4>
-                <p>
-                    One could make a dependency container specifically for shared bikes and public transport.
-                </p>
-                <p>
-                    Another example would be to create a dependency container for public transport systems only.
-                    In this case, we would change the RoadPlanner to just using RoadPlannerBirdsEye, in order to
-                    understand where we can transfer.
-                </p>
-            </section>
+            <p></p>
+            <h4>Possibilities</h4>
+            <p>
+                One could make a dependency container specifically for shared bikes and public transport.
+            </p>
+            <p>
+                Another example would be to create a dependency container for public transport systems only.
+                In this case, we would change the RoadPlanner to just using RoadPlannerBirdsEye, in order to
+                understand where we can transfer.
+            </p>
+            <h2>License</h2>
+            <p>This project is licensed under the MIT License - see the <a href="https://github.com/openplannerteam/planner.js/blob/master/LICENSE">LICENSE.md</a> file for details</p>
         </div>
     </div>
 </div>
+
 <script>hljs.initHighlightingOnLoad();</script>
+
 </body>
 </html>
