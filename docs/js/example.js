@@ -22,6 +22,7 @@ const resetButton = document.querySelector("#reset");
 const results = document.querySelector("#results");
 const prefetchWrapper = document.querySelector("#prefetch");
 const prefetchBar = document.querySelector("#prefetch-bar");
+let prefetchBarWidth = 0;
 
 let lines = [];
 let polyLines = [];
@@ -181,8 +182,16 @@ planner
     } else {
       const width = getPrefetchViewWidth(firstPrefetch, departureTime);
 
+      prefetchBarWidth = width;
+
       prefetchBar.style.width = `${width}px`;
       prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
+
+      for (const prefetchView of prefetchViews) {
+        const viewWidth = getPrefetchViewWidth(prefetchView.lowerBound, prefetchView.upperBound);
+
+        prefetchView.elem.style.width = `${viewWidth * 100 / prefetchBarWidth}%`;
+      }
     }
   })
   .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
@@ -197,7 +206,7 @@ planner
       const prefetchView = document.createElement("div");
       prefetchView.className = "prefetch-view";
       prefetchView.style.marginLeft = `${offset}px`;
-      prefetchView.style.width = `${width}px`;
+      prefetchView.style.width = `${width * 100 / prefetchBarWidth}%`;
       prefetchView.style.backgroundColor = "red";
 
       prefetchWrapper.appendChild(prefetchView);
