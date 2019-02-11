@@ -22,7 +22,7 @@
     "webpack": "webpack --config webpack.config.js --mode=production",
     "webpack-stats": "npm run webpack -- --display-modules --json > stats.json",
     "typedoc": "typedoc --options typedoc.config.js",
-    "doc-bundle": "npm run browser && cp dist/bundle.js docs/js/planner-latest.js && cp dist/bundle.js.map docs/js/planner-latest.js.map",
+    "doc-bundle": "npm run browser && cp dist/bundle.js docs/js/planner-latest.js && cp dist/bundle.js.map docs/js/bundle.js.map",
     "doc": "npm run typedoc && npm run doc-bundle"
   },
   "dependencies": {
