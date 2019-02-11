@@ -445,8 +445,8 @@ function runQuery(query) {
   planner
     .query({
       publicTransportOnly: true,
-      from: query[0], // Brussels North
-      to: query[1], // Ghent-Sint-Pieters
+      from: query[0],
+      to: query[1],
       minimumDepartureTime: new Date(),
       maximumWalkingDistance,
       maximumTransferDuration: 30 * 60 * 1000, // 30 minutes

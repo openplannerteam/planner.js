@@ -11,7 +11,6 @@ describe("[BurstArrayIterator]", () => {
     let current = 0;
 
     filterUniqueIterator.each((str: number) => {
-      console.log(str);
       expect(expected[current++]).toBe(str);
     });
 
@@ -29,7 +28,6 @@ describe("[BurstArrayIterator]", () => {
     let current = 0;
 
     filterUniqueIterator.each((str: number) => {
-      console.log(str);
       expect(expected[current++]).toBe(str);
     });
 
