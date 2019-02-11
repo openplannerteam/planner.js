@@ -1,7 +1,8 @@
 import { ArrayIterator } from "asynciterator";
 import "jest";
 import AsyncArrayIterator from "./AsyncArrayIterator";
-import MergeIterator from "./MergeIterator2";
+import BurstArrayIterator from "./BurstArrayIterator";
+import MergeIterator from "./MergeIterator";
 
 const createSources = (IteratorClass) => {
   const firstIterator = new IteratorClass([1, 8, 10, 13], 10);
@@ -73,7 +74,6 @@ describe("[MergeIterator]", () => {
   });
 
   describe("async sources", () => {
-    jest.setTimeout(5000000);
 
     it("uncondensed", (done) => {
       const mergeIterator = new MergeIterator<number>(createSources(AsyncArrayIterator), uncondensedSelector, false);
@@ -99,4 +99,29 @@ describe("[MergeIterator]", () => {
 
   });
 
+  describe("mixed sources", () => {
+
+    it("uncondensed", (done) => {
+      const mergeIterator = new MergeIterator<number>(createSources(BurstArrayIterator), uncondensedSelector, false);
+      let current = 0;
+
+      mergeIterator.each((str) => {
+        expect(expected[current++]).toBe(str);
+      });
+
+      mergeIterator.on("end", () => done());
+    });
+
+    it("condensed", (done) => {
+      const mergeIterator = new MergeIterator<number>(createSources(BurstArrayIterator), condensedSelector, true);
+      let current = 0;
+
+      mergeIterator.each((str) => {
+        expect(expected[current++]).toBe(str);
+      });
+
+      mergeIterator.on("end", () => done());
+    });
+
+  });
 });
