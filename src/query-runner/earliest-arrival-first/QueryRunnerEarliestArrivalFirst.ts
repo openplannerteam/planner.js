@@ -25,6 +25,19 @@ import IQueryRunner from "../IQueryRunner";
 import IResolvedQuery from "../IResolvedQuery";
 import LinearQueryIterator from "./LinearQueryIterator";
 
+/**
+ * The query runner earliest arrival first only accepts public transport queries (`publicTransportOnly = true`).
+ *
+ * An earliest Arrival first connection scan is started to determine the maximumTravelDuration and the scanned period
+ * needed to get at least one result.
+ *
+ * The registered [[IPublicTransportPlanner]] is used to execute the sub queries.
+ * The maximumTravelDuration is set to the earliest arrival travel duration multiplied by 2.
+ * The scanned period is set by a [[LinearQueryIterator]]. Where parameter a is set to 1.5 hours and b
+ * is the initially the scanned period.
+ *
+ * In the current implementation, the `maximumArrivalTime` is ignored
+ */
 @injectable()
 export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 

@@ -32,7 +32,7 @@ test("[ReachableStopsFinderBirdsEye] reachable stops", async () => {
   const reachableStops = await reachableStopsFinder.findReachableStops(
     sourceStop,
     ReachableStopsFinderMode.Source,
-    Units.fromHours(0.25),
+    Units.fromMinutes(15),
     4,
   );
 

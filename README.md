@@ -1,10 +1,10 @@
 # Planner.js: A JS library for route planning
 
-🛸 [![Build Status](https://travis-ci.org/openplannerteam/planner.js.svg?branch=dev)](https://travis-ci.org/openplannerteam/planner.js) 🚴‍♂️ [![MIT License](https://img.shields.io/github/license/openplannerteam/planner.js.svg?maxAge=2592000)](https://github.com/openplannerteam/planner.js/blob/master/LICENSE) 🚉
+🛸️ [![Build Status](https://travis-ci.org/openplannerteam/planner.js.svg?branch=dev)](https://travis-ci.org/openplannerteam/planner.js) 🚴 [![MIT License](https://img.shields.io/github/license/openplannerteam/planner.js.svg?maxAge=2592000)](https://github.com/openplannerteam/planner.js/blob/master/LICENSE) 🚉  [![npm version](https://badge.fury.io/js/plannerjs.svg)](https://badge.fury.io/js/plannerjs) 🚀
 
-Current status: _to be launched in February_ 🚀
-
-For now: clone the repository, run `npm install` and `npm build`. Afterwards you can use it as follows:
+```
+$ npm install plannerjs
+```
 
 Include it in the browser:
 ```html
@@ -13,26 +13,46 @@ Include it in the browser:
 
 Include it in your JavaScript project:
 ```javascript
-// Not yet published on NPM...
 const Planner = require('plannerjs').default;
+
+// or
+
+import Planner              from 'plannerjs';
 ```
 
 Use it in both environments:
 ```javascript
 const planner = new Planner();
+
 planner.query({
-  publicTransportOnly: true,
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-  minimumDepartureTime: new Date(),
-  maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
-}).then((publicTransportResult) => {
-  publicTransportResult.take(15).on('data', (path) => {
+  minimumDepartureTime: new Date("Mon Feb 11 2019 16:00:00"),
+  maximumArrivalTime: new Date("Mon Feb 11 2019 19:00:00"),
+  publicTransportOnly: true,
+  
+  walkingSpeed: 3, // KmH
+  minimumWalkingSpeed: 3, // KmH
+ 
+  maximumWalkingDistance: 200, // meters
+  
+  minimumTransferDuration: Planner.Units.fromMinutes(1),
+  maximumTransferDuration: Planner.Units.fromMinutes(30),
+  
+  maximumTravelDuration: Planner.Units.fromHours(1.5),
+  
+  maximumTransfers: 4,
+})
+  .take(3)
+  .on('data', (path) => {
    console.log(path);
+  })
+  .on('end', () => {
+    console.log('No more paths!')
+  })
+  .on('error', (error) => {
+    console.error(error);
   });
-}).catch((reason) => {
-  console.error(reason);
-});
 ```
 
 ## Documentation
@@ -43,4 +63,5 @@ For further instructions, follow the documentation at https://planner.js.org/
 
  * Building the docs with typedoc: `npm run doc`
  * Testing with jest: `npm test`
- * Create a new browser version with `npm run browser`
+ * Build a new browser version with `npm run browser`
+ * Bundle the latest planner for the docs example `npm run doc-bundle`

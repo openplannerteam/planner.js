@@ -6,6 +6,7 @@ import IConnection from "../../fetcher/connections/IConnection";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
+import { DurationMs } from "../../interfaces/units";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
@@ -18,9 +19,8 @@ import ProfileUtil from "./CSA/util/ProfileUtil";
 import IJourneyExtractor from "./IJourneyExtractor";
 
 /**
- * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
+ * Creates journeys based on the profiles and query from [[CSAProfile]].
  * A journey is an [[IPath]] that consist of several [[IStep]]s.
- * The [[JourneyExtractor]] takes care of initial, intermediate and final footpaths.
  *
  * @property bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.
  */
@@ -79,7 +79,9 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
             );
 
           } catch (e) {
-            this.context.emitWarning(e);
+            if (this.context) {
+              this.context.emitWarning(e);
+            }
           }
         }
       }
@@ -93,20 +95,19 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
     departureLocation: ILocation,
     arrivalLocation: ILocation,
   ): boolean {
-
-    const canArrive = transferProfile.arrivalTime < Infinity;
+    const canArrive: boolean = transferProfile.arrivalTime < Infinity;
 
     if (!canArrive) {
       return false;
     }
 
-    const bestArrivalTimesOfDepartureStop = this.bestArrivalTime[departureLocation.id];
+    const bestArrivalTimesOfDepartureStop: number[] = this.bestArrivalTime[departureLocation.id];
 
     if (!bestArrivalTimesOfDepartureStop) {
       return true;
     }
 
-    const bestArrivalTime = bestArrivalTimesOfDepartureStop[arrivalLocation.id];
+    const bestArrivalTime: number = bestArrivalTimesOfDepartureStop[arrivalLocation.id];
 
     if (!bestArrivalTime) {
       return true;
@@ -150,7 +151,7 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
 
       if (departureTime !== transferDepartureTime) {
 
-        let timeToSubtract = 0;
+        let timeToSubtract: DurationMs = 0;
         if (path.steps.length > 0) {
           timeToSubtract = departureTime - path.steps[path.steps.length - 1].stopTime.getTime();
         }

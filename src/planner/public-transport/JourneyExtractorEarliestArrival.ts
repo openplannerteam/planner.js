@@ -14,11 +14,9 @@ import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
 import IJourneyExtractor from "./IJourneyExtractor";
 
 /**
- * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
+ * The earliest arrival journey based on the profiles and query from [[CSAEarliestArrival]].
  * A journey is an [[IPath]] that consist of several [[IStep]]s.
- * The [[JourneyExtractor]] takes care of initial, intermediate and final footpaths.
  *
- * @property bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.
  */
 @injectable()
 export default class JourneyExtractorEarliestArrival implements IJourneyExtractor {

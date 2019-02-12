@@ -34,17 +34,17 @@ export default class ProfileUtil {
     maximumTransferDuration: DurationMs,
   ): IArrivalTimeByTransfers {
     const { arrivalStop, arrivalTime } = connection;
-    const trip = connection["gtfs:trip"];
+    const trip: string = connection["gtfs:trip"];
 
     if (connection["gtfs:dropOffType"] !== DropOffType.NotAvailable) {
 
-      let profileIndex = profilesByStop[arrivalStop].length - 1;
+      let profileIndex: number = profilesByStop[arrivalStop].length - 1;
       while (profileIndex >= 0) {
 
         const departure: number = profilesByStop[arrivalStop][profileIndex].departureTime;
         const arrival: number = arrivalTime.getTime();
 
-        const transferDuration = departure - arrival;
+        const transferDuration: DurationMs = departure - arrival;
 
         if (transferDuration >= minimumTransferDuration && transferDuration <= maximumTransferDuration) {
           const arrivalTimeByTransfers = profilesByStop[arrivalStop][profileIndex].getArrivalTimeByTransfers(trip);
@@ -57,7 +57,7 @@ export default class ProfileUtil {
 
     return Array(maxLegs + 1).fill({
       "arrivalTime": Infinity,
-      "gtfs:trip": connection["gtfs:trip"],
+      "gtfs:trip": trip,
     });
   }
 }

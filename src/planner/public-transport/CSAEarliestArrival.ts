@@ -27,13 +27,17 @@ import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 /**
- * An implementation of the Connection Scan Algorithm (CSA).
+ * An implementation of the Earliest Arrival Connection Scan Algorithm.
+ * The earliest arrival connection scan algorithm takes the initial, transfer and final footpaths into account.
+ *
+ * Doesn't support the maximumTravelDuration and maximumTransfers query parameters.
  *
  * @implements [[IPublicTransportPlanner]]
  * @property profilesByStop Describes the CSA profiles for each scanned stop.
  * @property enterConnectionByTrip Describes the connection you should enter at a departure location for each trip.
+ * @property gtfsTripByConnection Stores the gtfs:trip's a connection is part of. Used for splitting and joining.
  *
- * @returns multiple [[IPath]]s that consist of several [[IStep]]s.
+ * @returns one [[IPath]] that consist of several [[IStep]]s.
  */
 @injectable()
 export default class CSAEarliestArrival implements IPublicTransportPlanner {

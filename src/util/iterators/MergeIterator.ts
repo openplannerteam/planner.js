@@ -1,22 +1,25 @@
-import { AsyncIterator, BufferedIterator } from "asynciterator";
+import { AsyncIterator } from "asynciterator";
 
 /**
  * AsyncIterator that merges a number of source asynciterators based on the passed selector function.
+ *
  * The selector function gets passed an array of values read from each of the asynciterators.
  * Values can be undefined if their respective source iterator has ended.
  * The selector function should return the index in that array of the value to select.
- * @param condensed When true, undefined values are filtered from the array passed to the selector function
  */
-export default class MergeIterator<T> extends BufferedIterator<T> {
+export default class MergeIterator<T> extends AsyncIterator<T> {
   private readonly sourceIterators: Array<AsyncIterator<T>>;
   private readonly selector: (values: T[]) => number;
   private readonly condensed: boolean;
 
   private values: T[];
-  private lastPushedIndex: number;
-  private endedSources: number;
-  private shouldClose: boolean;
+  private waitingForFill: boolean[];
 
+  /**
+   * @param sourceIterators
+   * @param selector
+   * @param condensed When true, undefined values are filtered from the array passed to the selector function
+   */
   constructor(sourceIterators: Array<AsyncIterator<T>>, selector: (values: T[]) => number, condensed?: boolean) {
     super();
 
@@ -24,20 +27,38 @@ export default class MergeIterator<T> extends BufferedIterator<T> {
     this.selector = selector;
     this.condensed = condensed;
 
-    this.endedSources = 0;
-
+    this.values = Array(this.sourceIterators.length).fill(undefined);
+    this.waitingForFill = Array(this.sourceIterators.length).fill(false);
+    this.readable = true;
     this.addListeners();
   }
 
-  public _read(count: number, done: () => void): void {
-    if (!this.values) {
-      this.fillFirstValues(done);
-      return;
+  public read(): T {
+    const allFilled = this.fillValues();
+
+    if (!allFilled) {
+      this.readable = false;
+
+      return null;
     }
 
-    this.fillValue(this.lastPushedIndex, () => {
-      this.doPush(done);
-    });
+    let selectedIndex: number;
+
+    if (this.condensed) {
+      const { values, indexMap } = this.getCondensedValues();
+
+      selectedIndex = indexMap[this.selector(values)];
+
+    } else {
+      selectedIndex = this.selector(this.values);
+    }
+
+    const item = this.values[selectedIndex];
+    this.values[selectedIndex] = undefined;
+
+    this.readable = false;
+
+    return item;
   }
 
   public close() {
@@ -48,31 +69,56 @@ export default class MergeIterator<T> extends BufferedIterator<T> {
     super.close();
   }
 
-  private fillFirstValues(done) {
-    this.values = Array(this.sourceIterators.length).fill(undefined);
+  private fillValues(): boolean {
+
+    const allWaiting = this.waitingForFill.every((waiting) => waiting);
+
+    if (allWaiting) {
+      return false;
+    }
+
+    const allFilled = this.values.every((value) => value !== undefined);
+
+    if (allFilled) {
+      return true;
+    }
+
+    const allEnded = this.sourceIterators.every((iterator) => iterator.ended);
+
+    if (allEnded) {
+      return false;
+    }
+
     let filledValues = 0;
 
     const filled = () => {
       filledValues++;
 
       if (filledValues === this.sourceIterators.length) {
-        this.doPush(done);
+        this.readable = true;
       }
     };
 
-    for (let i = 0; i < this.sourceIterators.length; i++) {
-      this.fillValue(i, filled);
+    for (let sourceIndex = 0; sourceIndex < this.sourceIterators.length; sourceIndex++) {
+
+      if (this.sourceIterators[sourceIndex].ended) {
+        filled();
+        continue;
+      }
+
+      if (this.values[sourceIndex] !== undefined) {
+        filled();
+
+      } else {
+        this.fillValue(sourceIndex, filled);
+      }
     }
+
+    return filledValues === this.sourceIterators.length;
   }
 
   private fillValue(sourceIndex: number, filled: () => void) {
     const iterator = this.sourceIterators[sourceIndex];
-
-    if (iterator.ended) {
-      filled();
-      return;
-    }
-
     const value = iterator.read();
 
     if (value) {
@@ -80,31 +126,36 @@ export default class MergeIterator<T> extends BufferedIterator<T> {
       filled();
 
     } else {
-      iterator.once("readable", () => {
-        this.values[sourceIndex] = iterator.read();
-        filled();
-      });
+      const shouldWait = !this.waitingForFill[sourceIndex];
+
+      if (shouldWait) {
+        this.waitingForFill[sourceIndex] = true;
+
+        this.waitForValue(sourceIndex, filled);
+      }
     }
   }
 
-  private doPush(done: () => void) {
-    if (this.condensed) {
-      const { values, indexMap } = this.getCondensedValues();
+  private waitForValue(sourceIndex, filled: () => void) {
+    const iterator = this.sourceIterators[sourceIndex];
 
-      this.lastPushedIndex = indexMap[this.selector(values)];
-
-    } else {
-      this.lastPushedIndex = this.selector(this.values);
+    if (iterator.ended) {
+      filled();
+      return;
     }
 
-    this._push(this.values[this.lastPushedIndex]);
-    this.values[this.lastPushedIndex] = undefined;
+    iterator.once("readable", () => {
+      const value = iterator.read();
 
-    done();
+      if (value === null) {
+        this.waitForValue(sourceIndex, filled);
 
-    if (this.shouldClose) {
-      this.close();
-    }
+      } else {
+        this.values[sourceIndex] = value;
+        this.waitingForFill[sourceIndex] = false;
+        filled();
+      }
+    });
   }
 
   private getCondensedValues() {
@@ -127,10 +178,10 @@ export default class MergeIterator<T> extends BufferedIterator<T> {
 
     for (const iterator of this.sourceIterators) {
       iterator.on("end", () => {
-        self.endedSources++;
+        const allEnded = this.sourceIterators.every((iter) => iter.ended);
 
-        if (self.endedSources === self.sourceIterators.length) {
-          self.shouldClose = true;
+        if (allEnded) {
+          this.close();
         }
       });
     }

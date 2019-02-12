@@ -96,10 +96,12 @@ body {
     position: absolute;
     top: 10px;
     left: 54px;
+    max-width: calc(100% - 225px);
     z-index: 500;
 }
 
 .prefetch-view {
+    width: 0px;
     height: 6px;
     margin-bottom: 3px;
     border-radius: 30px;
@@ -117,5 +119,7 @@ body {
 }
 
 #prefetch-bar {
-    height: 18px;
+    height: 17px;
+    max-width: 100%;
+    overflow: hidden;
 }

@@ -22,6 +22,7 @@ const resetButton = document.querySelector("#reset");
 const results = document.querySelector("#results");
 const prefetchWrapper = document.querySelector("#prefetch");
 const prefetchBar = document.querySelector("#prefetch-bar");
+let prefetchBarWidth = 0;
 
 let lines = [];
 let polyLines = [];
@@ -64,7 +65,7 @@ const removePrefetchView = () => {
   }
 };
 
-resetButton.onclick = e => {
+resetButton.onclick = (e) => {
   removeLines();
   removeResultObjects();
   query = [];
@@ -118,7 +119,7 @@ planner
       minimumDepartureTime,
       maximumArrivalTime,
       maximumArrivalTime - minimumDepartureTime,
-      maximumTravelDuration,
+      maximumTravelDuration
     );
 
     removeLines();
@@ -181,8 +182,15 @@ planner
     } else {
       const width = getPrefetchViewWidth(firstPrefetch, departureTime);
 
+      prefetchBarWidth = width + 10;
+
+      const prefetch = document.getElementById("prefetch");
+      prefetch.style.width = `${prefetchBarWidth}px`;
+
       prefetchBar.style.width = `${width}px`;
       prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
+
+      drawPrefetchViews();
     }
   })
   .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
@@ -197,7 +205,7 @@ planner
       const prefetchView = document.createElement("div");
       prefetchView.className = "prefetch-view";
       prefetchView.style.marginLeft = `${offset}px`;
-      prefetchView.style.width = `${width}px`;
+      prefetchView.style.width = `${width * 100 / prefetchBarWidth}%`;
       prefetchView.style.backgroundColor = "red";
 
       prefetchWrapper.appendChild(prefetchView);
@@ -208,13 +216,27 @@ planner
         .find((view) => view.lowerBound === lowerBound && view.upperBound === upperBound);
 
       if (!elem) {
-        console.warn("Wut");
         return;
       }
 
+      drawPrefetchViews();
+
       elem.style.backgroundColor = "limegreen";
     }
+  })
+  .on("warning", (warning) => {
+    console.warn(warning);
   });
+
+function drawPrefetchViews() {
+  for (const prefetchView of prefetchViews) {
+    const viewWidth = getPrefetchViewWidth(prefetchView.lowerBound, prefetchView.upperBound);
+    const offset = getPrefetchViewWidth(firstPrefetch, prefetchView.lowerBound);
+
+    prefetchView.elem.style.width = `${viewWidth * 100 / prefetchBarWidth}%`;
+    prefetchView.elem.style.marginLeft = `${offset}px`;
+  }
+}
 
 function onMapClick(e) {
   selectRoute(e);
@@ -442,11 +464,11 @@ function runQuery(query) {
   planner
     .query({
       publicTransportOnly: true,
-      from: query[0], // Brussels North
-      to: query[1], // Ghent-Sint-Pieters
+      from: query[0],
+      to: query[1],
       minimumDepartureTime: new Date(),
       maximumWalkingDistance,
-      maximumTransferDuration: 30 * 60 * 1000, // 30 minutes
+      maximumTransferDuration: Planner.Units.fromMinutes(30), // 30 minutes
       minimumWalkingSpeed: 3
     })
     .take(amount)

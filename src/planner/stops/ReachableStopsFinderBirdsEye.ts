@@ -39,7 +39,7 @@ export default class ReachableStopsFinderBirdsEye implements IReachableStopsFind
       const distance = Geo.getDistanceBetweenStops(sourceOrTargetStop, possibleTarget);
       const duration = Units.toDuration(distance, minimumSpeed);
 
-      if (duration <= maximumDuration) {
+      if (duration >= 0 && duration <= maximumDuration) {
         reachableStops.push({stop: possibleTarget, duration});
       }
     });

@@ -76,7 +76,7 @@ export default async (logResults) => {
         from: "Ingelmunster", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         minimumDepartureTime: new Date(),
-        maximumTransferDuration: Units.fromHours(0.5),
+        maximumTransferDuration: Units.fromMinutes(30),
       })
         .take(amount)
         .on("error", (error) => {
