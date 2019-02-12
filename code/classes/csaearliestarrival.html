@@ -927,8 +927,10 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
-					<p>An implementation of the Connection Scan Algorithm (CSA).</p>
+					<p>An implementation of the Earliest Arrival Connection Scan Algorithm.
+					The earliest arrival connection scan algorithm takes the initial, transfer and final footpaths into account.</p>
 				</div>
+				<p>Doesn&#39;t support the maximumTravelDuration and maximumTransfers query parameters.</p>
 				<dl class="tsd-comment-tags">
 					<dt>implements</dt>
 					<dd><p><a href="../interfaces/ipublictransportplanner.html">IPublicTransportPlanner</a></p>
@@ -939,8 +941,11 @@ img { max-width: 100%; }
 					<dt>property</dt>
 					<dd><p>enterConnectionByTrip Describes the connection you should enter at a departure location for each trip.</p>
 					</dd>
+					<dt>property</dt>
+					<dd><p>gtfsTripByConnection Stores the gtfs:trip&#39;s a connection is part of. Used for splitting and joining.</p>
+					</dd>
 					<dt>returns</dt>
-					<dd><p>multiple <a href="../interfaces/ipath.html">IPath</a>s that consist of several <a href="../interfaces/istep.html">IStep</a>s.</p>
+					<dd><p>one <a href="../interfaces/ipath.html">IPath</a> that consist of several <a href="../interfaces/istep.html">IStep</a>s.</p>
 					</dd>
 				</dl>
 			</div>
@@ -990,7 +995,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bfb4c1c/src/planner/public-transport/CSAEarliestArrival.ts#L56">planner/public-transport/CSAEarliestArrival.ts:56</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/9a90b95/src/planner/public-transport/CSAEarliestArrival.ts#L60">planner/public-transport/CSAEarliestArrival.ts:60</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1034,7 +1039,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bfb4c1c/src/planner/public-transport/CSAEarliestArrival.ts#L86">planner/public-transport/CSAEarliestArrival.ts:86</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/9a90b95/src/planner/public-transport/CSAEarliestArrival.ts#L90">planner/public-transport/CSAEarliestArrival.ts:90</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

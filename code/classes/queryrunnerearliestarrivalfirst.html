@@ -924,6 +924,20 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The query runner earliest arrival first only accepts public transport queries (<code>publicTransportOnly = true</code>).</p>
+				</div>
+				<p>An earliest Arrival first connection scan is started to determine the maximumTravelDuration and the scanned period
+				needed to get at least one result.</p>
+				<p>The registered <a href="../interfaces/ipublictransportplanner.html">IPublicTransportPlanner</a> is used to execute the sub queries.
+					The maximumTravelDuration is set to the earliest arrival travel duration multiplied by 2.
+					The scanned period is set by a <a href="linearqueryiterator.html">LinearQueryIterator</a>. Where parameter a is set to 1.5 hours and b
+				is the initially the scanned period.</p>
+				<p>In the current implementation, the <code>maximumArrivalTime</code> is ignored</p>
+			</div>
+		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -969,7 +983,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bfb4c1c/src/query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts#L40">query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts:40</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/9a90b95/src/query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts#L53">query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts:53</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1014,7 +1028,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/iqueryrunner.html">IQueryRunner</a>.<a href="../interfaces/iqueryrunner.html#run">run</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bfb4c1c/src/query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts#L76">query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts:76</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/9a90b95/src/query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts#L89">query-runner/earliest-arrival-first/QueryRunnerEarliestArrivalFirst.ts:89</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
