@@ -8,7 +8,7 @@ For now: clone the repository, run `npm install` and `npm build`. Afterwards you
 
 Include it in the browser:
 ```html
-<script src="https://openplannerteam.github.io/planner.js/js/planner-latest.js"></script>
+<script src="https://planner.js.org/js/planner-latest.js"></script>
 ```
 
 Include it in your JavaScript project:
@@ -37,7 +37,7 @@ planner.query({
 
 ## Documentation
 
-For further instructions, follow the documentation at https://openplannerteam.github.io/planner.js/
+For further instructions, follow the documentation at https://planner.js.org/
 
 ## Developing
 
