@@ -11,7 +11,7 @@ module.exports = {
   mode: 'file',
   excludePrivate: true,
   excludeNotExported: false,
-  excludeExternals: false,
-  includeDeclarations: false,
+  excludeExternals: true,
+  includeDeclarations: true,
   theme: 'minimal',
 };
