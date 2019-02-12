@@ -39,7 +39,7 @@ export default class Planner implements EventEmitter {
   /**
    * Given an [[IQuery]], it will evaluate the query and return a promise for an AsyncIterator of [[IPath]] instances
    * @param query An [[IQuery]] specifying a route planning query
-   * @returns An AsyncIterator of [[IPath]] instances
+   * @returns An [[AsyncIterator]] of [[IPath]] instances
    */
   public query(query: IQuery): AsyncIterator<IPath> {
     this.emit(EventType.Query, query);
