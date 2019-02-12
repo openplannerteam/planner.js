@@ -59,7 +59,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
       const distance = Geo.getDistanceBetweenStops(sourceOrTargetStop, stop);
       const duration = Units.toDuration(distance, minimumSpeed);
 
-      if (duration <= maximumDuration) {
+      if (duration >= 0 && duration <= maximumDuration) {
         stopsInsideCircleArea.push(stop);
       }
     }

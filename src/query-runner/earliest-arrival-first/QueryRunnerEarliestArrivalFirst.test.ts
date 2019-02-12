@@ -22,7 +22,7 @@ describe("[QueryRunnerExponential]", () => {
     from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
     minimumDepartureTime: new Date(),
-    maximumTransferDuration: Units.fromHours(.5),
+    maximumTransferDuration: Units.fromHours(30),
   };
 
   const createEarliestArrivalQueryRunner = () => {

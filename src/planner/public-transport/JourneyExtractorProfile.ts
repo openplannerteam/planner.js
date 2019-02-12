@@ -19,9 +19,8 @@ import ProfileUtil from "./CSA/util/ProfileUtil";
 import IJourneyExtractor from "./IJourneyExtractor";
 
 /**
- * Creates journeys based on the profiles and query from [[PublicTransportPlannerCSAProfile]].
+ * Creates journeys based on the profiles and query from [[CSAProfile]].
  * A journey is an [[IPath]] that consist of several [[IStep]]s.
- * The [[JourneyExtractor]] takes care of initial, intermediate and final footpaths.
  *
  * @property bestArrivalTime Stores the best arrival time for each pair of departure-arrival stops.
  */

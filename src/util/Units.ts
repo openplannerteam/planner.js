@@ -22,6 +22,10 @@ export default class Units {
     return hours * 3600000;
   }
 
+  public static fromMinutes(minutes: number): DurationMs {
+    return minutes * 60000;
+  }
+
   public static fromSeconds(seconds: number): DurationMs {
     return seconds * 1000;
   }

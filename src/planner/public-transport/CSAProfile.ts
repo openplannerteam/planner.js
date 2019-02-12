@@ -30,12 +30,15 @@ import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 
 /**
- * An implementation of the Connection Scan Algorithm (CSA).
+ * An implementation of the Profile Connection Scan Algorithm.
+ * The profile connection scan algorithm takes the amount of transfers and initial, transfer and final footpaths
+ * into account.
  *
  * @implements [[IPublicTransportPlanner]]
  * @property profilesByStop Describes the CSA profiles for each scanned stop.
  * @property earliestArrivalByTrip Describes the earliest arrival time for each scanned trip.
  * @property durationToTargetByStop Describes the walking duration to the target stop for a scanned stop.
+ * @property gtfsTripByConnection Stores the gtfs:trip's a connection is part of. Used for splitting and joining.
  *
  * @returns multiple [[IPath]]s that consist of several [[IStep]]s.
  */
