@@ -27,6 +27,7 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
     @inject(TYPES.LDFetch) ldFetch: LDFetch,
   ) {
     this.ldFetch = ldFetch;
+    // FIXME does this ever do something?
     this.loadStops();
   }
 

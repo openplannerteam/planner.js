@@ -17,7 +17,7 @@ export default async (logResults) => {
     // let logFetch = true;
 
     if (logResults) {
-      console.log("Start prefetch");
+      console.log(`${new Date()} Start prefetch`);
     }
 
     planner
@@ -59,7 +59,7 @@ export default async (logResults) => {
   return wait(5000)
     .then(() => new Promise((resolve, reject) => {
       if (logResults) {
-        console.log("Start query");
+        console.log(`${new Date()} Start query`);
       }
 
       const amount = 3;
@@ -86,6 +86,7 @@ export default async (logResults) => {
           ++i;
 
           if (logResults) {
+            console.log(new Date());
             console.log(i);
             console.log(JSON.stringify(path, null, " "));
             console.log("\n");
