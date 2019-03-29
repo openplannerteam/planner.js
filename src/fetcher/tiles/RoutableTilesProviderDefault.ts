@@ -1,6 +1,5 @@
-import { inject, injectable } from "inversify";
-import Catalog from "../../Catalog";
-import TYPES, { StopsFetcherFactory, RoutableTilesFetcherFactory } from "../../types";
+/*import { inject, injectable } from "inversify";
+import TYPES, { RoutableTilesFetcherFactory } from "../../types";
 import IRoutableTilesProvider from "./IRoutableTilesProvider";
 import IRoutableTileFetcher from "./IRoutableTilesFetcher";
 import IRoutableTilesNode from "./IRoutableTilesNode";
@@ -48,3 +47,4 @@ export default class RoutableTilesProviderDefault implements IRoutableTilesProvi
     });
   }
 }
+*/

@@ -29,6 +29,7 @@ const TYPES = {
   ReachableStopsFinder: Symbol("ReachableStopsFinder"),
   JourneyExtractor: Symbol("JourneyExtractor"),
   LDFetch: Symbol("LDFetch"),
+  LDLoader: Symbol("LDLoader"),
   Catalog: Symbol("Catalog"),
 };
 

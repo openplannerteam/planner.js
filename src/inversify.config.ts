@@ -17,8 +17,8 @@ import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
 import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTilesFetcher";
-import IRoutableTileProvider from "./fetcher/tiles/IRoutableTilesProvider";
-import RoutableTileFetcherLDFetch from "./fetcher/tiles/ld-fetch/RoutableTilesLDFetch";
+import RoutableTileFetcherDefault from "./fetcher/tiles/RoutableTilesFetcherDefault";
+import { LDLoader } from "./loader/ldloader";
 import CSAProfile from "./planner/public-transport/CSAProfile";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
@@ -84,17 +84,7 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-//container.bind<IRoutableTileProvider>(TYPES.RoutableTilesProvider).to().inSingletonScope();
-container.bind<IRoutableTileFetcher>(TYPES.RoutableTilesFetcher).to(RoutableTileFetcherLDFetch);
-container.bind<interfaces.Factory<IRoutableTileFetcher>>(TYPES.RoutableTilesFetcherFactory)
-  .toFactory<IRoutableTileFetcher>(
-    (context: interfaces.Context) =>
-      (accessUrl: string) => {
-        const fetcher = context.container.get<RoutableTileFetcherLDFetch>(TYPES.RoutableTilesFetcher);
-        fetcher.setAccessUrl(accessUrl);
-        return fetcher;
-      },
-  );
+container.bind<IRoutableTileFetcher>(TYPES.RoutableTilesFetcher).to(RoutableTileFetcherDefault);
 
 // Bind catalog
 container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
@@ -104,5 +94,7 @@ container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();
+
+container.bind<LDLoader>(TYPES.LDLoader).to(LDLoader);
 
 export default container;
