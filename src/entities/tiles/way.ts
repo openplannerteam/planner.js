@@ -6,7 +6,7 @@ export class RoutableTileWay {
     }
 
     public id: string;
-    public segments: RoutableTileNode[][];
+    public segments: string[][];
     public label: string;
 
     constructor(id: string) {

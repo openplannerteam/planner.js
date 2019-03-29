@@ -1,10 +1,10 @@
 import "jest";
 import LDFetch from "ldfetch";
-import RoutableTileFetcherDefault from "./RoutableTilesFetcherDefault";
+import RoutableTileFetcherDefault from "./RoutableTileFetcherDefault";
 
 const fetcher = new RoutableTileFetcherDefault(new LDFetch({ headers: { Accept: "application/ld+json" } }));
 
-test("[RoutableTileLDFetch] data completeness", async () => {
+test("[RoutableTileFetcherDefault] data completeness", async () => {
   jest.setTimeout(15000);
 
   const expectedNodes = new Set();

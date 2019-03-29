@@ -1,7 +1,7 @@
 import TravelMode from "./enums/TravelMode";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
-import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTilesFetcher";
+import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTileFetcher";
 
 const TYPES = {
   Context: Symbol("Context"),
@@ -16,9 +16,8 @@ const TYPES = {
   StopsFetcher: Symbol("StopsFetcher"),
   StopsFetcherFactory: Symbol("StopsFetcherFactory"),
 
-  RoutableTilesProvider: Symbol("TilesProvider"),
-  RoutableTilesFetcher: Symbol("TilesFetcher"),
-  RoutableTilesFetcherFactory: Symbol("TilesFetcherFactory"),
+  RoutableTileProvider: Symbol("TileProvider"),
+  RoutableTileFetcher: Symbol("TileFetcher"),
 
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
   PublicTransportPlannerFactory: Symbol("PublicTransportPlannerFactory"),

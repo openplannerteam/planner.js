@@ -1,4 +1,6 @@
-export class RoutableTileNode {
+import ILocation from "../../interfaces/ILocation";
+
+export class RoutableTileNode implements ILocation {
     public static create(id: string) {
         return new RoutableTileNode(id);
     }

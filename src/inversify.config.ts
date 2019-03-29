@@ -16,8 +16,10 @@ import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
-import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTilesFetcher";
-import RoutableTileFetcherDefault from "./fetcher/tiles/RoutableTilesFetcherDefault";
+import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTileFetcher";
+import IRoutableTileProvider from "./fetcher/tiles/IRoutableTileProvider";
+import RoutableTileFetcherDefault from "./fetcher/tiles/RoutableTileFetcherDefault";
+import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDefault";
 import { LDLoader } from "./loader/ldloader";
 import CSAProfile from "./planner/public-transport/CSAProfile";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
@@ -84,7 +86,8 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-container.bind<IRoutableTileFetcher>(TYPES.RoutableTilesFetcher).to(RoutableTileFetcherDefault);
+container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherDefault);
+container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider).to(RoutableTileProviderDefault);
 
 // Bind catalog
 container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);

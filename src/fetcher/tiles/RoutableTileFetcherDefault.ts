@@ -8,10 +8,10 @@ import { IndexThingView } from "../../loader/views";
 import TYPES from "../../types";
 import { GEO, OSM, RDF, RDFS } from "../../uri/constants";
 import URI from "../../uri/uri";
-import IRoutableTilesFetcher from "./IRoutableTilesFetcher";
+import IRoutableTileFetcher from "./IRoutableTileFetcher";
 
 @injectable()
-export default class RoutableTileFetcherDefault implements IRoutableTilesFetcher {
+export default class RoutableTileFetcherDefault implements IRoutableTileFetcher {
 
   private ldFetch: LDFetch;
   private ldLoader: LDLoader;
@@ -22,20 +22,6 @@ export default class RoutableTileFetcherDefault implements IRoutableTilesFetcher
     this.ldFetch = ldFetch;
     this.ldLoader = new LDLoader();
     this.ldLoader.defineCollection(URI.inNS(OSM, "nodes")); // unordered collection
-  }
-
-  public fetchByCoords(zoom: number, latitude: number, longitude: number): Promise<RoutableTile> {
-    const latitudeTile = this.lat2tile(latitude, zoom);
-    const longitudeTile = this.long2tile(longitude, zoom);
-    return this.fetchByTileCoords(zoom, latitudeTile, longitudeTile);
-  }
-
-  public async fetchByTileCoords(zoom: number, latitudeTile: number, longitudeTile: number): Promise<RoutableTile> {
-    const url = `https://tiles.openplanner.team/planet/${zoom}/${latitudeTile}/${longitudeTile}`;
-    const tile = await this.get(url);
-    tile.latitude = latitudeTile;  // todo, move these
-    tile.longitude = longitudeTile;
-    return tile;
   }
 
   public async get(url: string): Promise<RoutableTile> {
@@ -71,14 +57,5 @@ export default class RoutableTileFetcherDefault implements IRoutableTilesFetcher
     waysView.addMapping(URI.inNS(OSM, "nodes"), "segments"); // todo mapping to segments
     waysView.addMapping(URI.inNS(RDFS, "label"), "label");
     return waysView;
-  }
-
-  private long2tile(lon: number, zoom: number) {
-    return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom)));
-  }
-
-  private lat2tile(lat: number, zoom: number) {
-    return (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1
-      / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)));
   }
 }
