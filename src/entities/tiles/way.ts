@@ -8,9 +8,22 @@ export class RoutableTileWay {
     public id: string;
     public segments: string[][];
     public label: string;
+    public reachable?: boolean;
 
     constructor(id: string) {
         this.id = id;
+    }
+
+    public mergeDefinitions(other: RoutableTileWay): RoutableTileWay {
+        const result = new RoutableTileWay(this.id);
+        result.label = this.label || other.label;
+        if (this.reachable === false || other.reachable === false) {
+            result.reachable = false;
+        }
+        result.segments = [];
+        result.segments.concat(this.segments);
+        result.segments.concat(other.segments);
+        return result;
     }
 }
 

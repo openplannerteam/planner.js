@@ -3,14 +3,33 @@ import { IRoutableTileNodeIndex } from "./node";
 import { RoutableTile } from "./tile";
 import { IRoutableTileWayIndex } from "./way";
 
-export class RoutableTileSet {
+export class RoutableTileSet extends RoutableTile {
     public tiles: RoutableTile[];
-    private nodes: IRoutableTileNodeIndex;
-    private ways: IRoutableTileWayIndex;
-    private edgeGraph: RoutableTileEdgeGraph;
 
-    constructor(tiles: RoutableTile[]) {
+    constructor(tiles: RoutableTile[], id?: string) {
+        super(id, undefined, undefined);  // super legit
         this.tiles = tiles;
+    }
+
+    public getWays(): IRoutableTileWayIndex {
+        if (!this.ways) {
+            const result: IRoutableTileWayIndex = {};
+            for (const tile of this.tiles) {
+                for (const way of Object.values(tile.getWays())) {
+                    if (!result[way.id]) {
+                        result[way.id] = way;
+                    } else {
+                        // creates a new Way instance
+                        // avoids overwriting data from the individual tile definitions
+                        // otherwise ways might refer to tiles that aren't in the tile
+                        result[way.id] = way.mergeDefinitions(result[way.id]);
+                    }
+                }
+            }
+
+            this.ways = result;
+        }
+        return this.ways;
     }
 
     public getNodes(): IRoutableTileNodeIndex {
@@ -18,7 +37,7 @@ export class RoutableTileSet {
             // todo, make this a reduce
             const result: IRoutableTileNodeIndex = {};
             for (const tile of this.tiles) {
-                Object.assign(result, tile.nodes);
+                Object.assign(result, tile.getNodes());
             }
 
             this.nodes = result;

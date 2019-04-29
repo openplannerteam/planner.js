@@ -20,14 +20,14 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
   }
 
   public getByLocation(zoom: number, location: ILocation): Promise<RoutableTile> {
-    const latitudeTile = this.lat2tile(location.latitude, zoom);
-    const longitudeTile = this.long2tile(location.longitude, zoom);
-    const coordinate = new RoutableTileCoordinate(zoom, latitudeTile, longitudeTile);
+    const y = this.lat2tile(location.latitude, zoom);
+    const x = this.long2tile(location.longitude, zoom);
+    const coordinate = new RoutableTileCoordinate(zoom, x, y);
     return this.getByTileCoords(coordinate);
   }
 
   public async getByTileCoords(coordinate: RoutableTileCoordinate): Promise<RoutableTile> {
-    const { zoom: z, longitude: x, latitude: y } = coordinate;
+    const { zoom: z, x: x, y: y } = coordinate;
     const url = `https://tiles.openplanner.team/planet/${z}/${x}/${y}`;
     const tile = await this.getByUrl(url);
     tile.coordinate = coordinate;  // todo, get these from server response
@@ -36,13 +36,10 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
 
   public async getByUrl(url: string): Promise<RoutableTile> {
     if (!this.tiles[url]) {
-      const tile = await this.fetcher.get(url);
-      this.tiles[url] = tile;
+      this.tiles[url] = this.fetcher.get(url);
     }
 
-    console.log(new Date(), Object.values(this.tiles).length, url);
-
-    return this.tiles[url];
+    return await this.tiles[url];
   }
 
   public async getMultipleByUrl(urls: string[]): Promise<RoutableTileSet> {

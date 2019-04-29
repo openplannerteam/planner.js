@@ -8,10 +8,10 @@ import { IRoutableTileWayIndex } from "./way";
 export class RoutableTile {
     public id: string;
     public coordinate?: RoutableTileCoordinate;
-    public nodes: IRoutableTileNodeIndex;
-    public ways: IRoutableTileWayIndex;
+    protected nodes: IRoutableTileNodeIndex;
+    protected ways: IRoutableTileWayIndex;
 
-    private edgeGraph: RoutableTileEdgeGraph;
+    protected edgeGraph: RoutableTileEdgeGraph;
 
     constructor(id: string, nodes: IRoutableTileNodeIndex, ways: IRoutableTileWayIndex) {
         this.id = id;
@@ -19,19 +19,34 @@ export class RoutableTile {
         this.ways = ways;
     }
 
+    public getWays() {
+        return this.ways;
+    }
+
+    public getNodes() {
+        return this.nodes;
+    }
+
     public getEdgeGraph() {
         if (!this.edgeGraph) {
             const result = new RoutableTileEdgeGraph(this.nodes);
 
             for (const way of Object.values(this.ways)) {
-                for (const segment of way.segments) {
-                    for (let i = 0; i < segment.length - 1; i++) {
-                        const nodeA = segment[i];
-                        const from: ILocation = this.nodes[nodeA];
-                        const nodeB = segment[i + 1];
-                        const to: ILocation = this.nodes[nodeB];
-                        const distance = Geo.getDistanceBetweenLocations(from, to);
-                        result.addEdge(nodeA, nodeB, distance);
+                if (way.reachable !== false) {
+                    for (const segment of way.segments) {
+                        for (let i = 0; i < segment.length - 1; i++) {
+                            const nodeA = segment[i];
+                            const from: ILocation = this.nodes[nodeA];
+                            const nodeB = segment[i + 1];
+                            const to: ILocation = this.nodes[nodeB];
+
+                            if (!from || !to) {
+                                continue;
+                            }
+
+                            const distance = Geo.getDistanceBetweenLocations(from, to);
+                            result.addEdge(nodeA, nodeB, distance);
+                        }
                     }
                 }
             }
@@ -43,5 +58,5 @@ export class RoutableTile {
 }
 
 export interface IRoutableTileIndex {
-    [id: string]: RoutableTile;
+    [id: string]: Promise<RoutableTile>;
 }

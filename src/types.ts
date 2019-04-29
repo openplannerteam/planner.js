@@ -19,11 +19,14 @@ const TYPES = {
   RoutableTileProvider: Symbol("TileProvider"),
   RoutableTileFetcher: Symbol("TileFetcher"),
 
+  FootpathsProvider: Symbol("FootpathsProvider"),
+
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
   PublicTransportPlannerFactory: Symbol("PublicTransportPlannerFactory"),
 
   RoadPlanner: Symbol("RoadPlanner"),
   RoadPlannerFactory: Symbol("RoadPlannerFactory"),
+  Pathfinder: Symbol("Pathfinder"),
 
   ReachableStopsFinder: Symbol("ReachableStopsFinder"),
   JourneyExtractor: Symbol("JourneyExtractor"),

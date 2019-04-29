@@ -1,4 +1,4 @@
-import haversine from "haversine";
+import { haversine_distance } from "wasm-haversine";
 import IStop from "../fetcher/stops/IStop";
 import ILocation from "../interfaces/ILocation";
 import { DistanceM } from "../interfaces/units";
@@ -21,15 +21,11 @@ export default class Geo {
       return Number.POSITIVE_INFINITY;
     }
 
-    return haversine({
-      latitude: depLatitude,
-      longitude: depLongitude,
-    }, {
-      latitude: arrLatitude,
-      longitude: arrLongitude,
-    }, {
-      unit: "meter",
-    });
+    return haversine_distance(
+      depLatitude,
+      depLongitude,
+      arrLatitude,
+      arrLongitude);
   }
 
   /**

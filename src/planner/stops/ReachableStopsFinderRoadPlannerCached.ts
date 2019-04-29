@@ -2,8 +2,10 @@ import { inject, injectable } from "inversify";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
+import ILocation from "../../interfaces/ILocation";
 import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import TYPES from "../../types";
+import Geo from "../../util/Geo";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
@@ -26,13 +28,14 @@ export default class ReachableStopsFinderRoadPlannerCached implements IReachable
   }
 
   public async findReachableStops(
-    sourceOrTargetStop: IStop,
+    location: ILocation,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
 
-    const cacheKey = `${sourceOrTargetStop.id} ${mode} ${maximumDuration} ${minimumSpeed}`;
+    const id = location.id || Geo.getId(location);
+    const cacheKey = `${id} ${mode} ${maximumDuration} ${minimumSpeed}`;
     const cacheItem = this.reachableStopsCache[cacheKey];
 
     if (cacheItem) {
@@ -40,7 +43,7 @@ export default class ReachableStopsFinderRoadPlannerCached implements IReachable
     }
 
     const reachableStops = await this.reachableStopsFinder
-      .findReachableStops(sourceOrTargetStop, mode, maximumDuration, minimumSpeed);
+      .findReachableStops(location, mode, maximumDuration, minimumSpeed);
 
     this.reachableStopsCache[cacheKey] = reachableStops;
     return reachableStops;

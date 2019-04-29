@@ -29,6 +29,17 @@ export class LDLoader {
         return views.map((view) => view.getContents());
     }
 
+    public disambiguateBlankNodes(triples, scope: string) {
+        for (const triple of triples) {
+            if (triple.subject.termType === "BlankNode") {
+                triple.subject.value = `${scope}#${triple.subject.value}`;
+            }
+            if (triple.object.termType === "BlankNode") {
+                triple.object.value = `${scope}#${triple.object.value}`;
+            }
+        }
+    }
+
     private _parseValue(entities, triple) {
         const tripleObject = triple.object;
         const rawValue = tripleObject.value;

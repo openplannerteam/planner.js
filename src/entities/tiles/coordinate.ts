@@ -1,11 +1,11 @@
 export class RoutableTileCoordinate {
     public zoom: number;
-    public longitude: number;
-    public latitude: number;
+    public x: number;
+    public y: number;
 
-    constructor(zoom: number, longitude: number, latitude: number) {
+    constructor(zoom: number, x: number, y: number) {
         this.zoom = zoom;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.x = x;
+        this.y = y;
     }
 }

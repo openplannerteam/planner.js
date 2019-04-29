@@ -5,6 +5,8 @@ export default class URI {
         const lastChar = ns[ns.length - 1];
         if (lastChar === "/") {
             return `${ns}${id}`;
+        } else if (lastChar === "#") {
+            return `${ns}${id}`;
         } else {
             return `${ns}#${id}`;
         }
