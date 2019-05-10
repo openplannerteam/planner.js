@@ -22,4 +22,5 @@ export default interface IReachableStopsFinder {
 export interface IReachableStop {
   stop: IStop;
   duration: DurationMs;
+  id?: string;
 }

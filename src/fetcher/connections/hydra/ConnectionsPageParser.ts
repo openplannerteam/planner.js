@@ -68,7 +68,7 @@ export default class ConnectionsPageParser {
       "http://semweb.mmlab.be/ns/linkedconnections#nextConnection": "nextConnection",
 
       "http://vocab.gtfs.org/terms#route": "gtfs:route",
-      "http://vocab.gtfs.org/terms#trip": "gtfs:trip",
+      "http://vocab.gtfs.org/terms#trip": "tripId",
       "http://vocab.gtfs.org/terms#dropOffType": "gtfs:dropOffType",
       "http://vocab.gtfs.org/terms#pickupType": "gtfs:pickupType",
       "http://vocab.gtfs.org/terms#headsign": "gtfs:headsign",

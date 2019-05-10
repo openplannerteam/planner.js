@@ -360,8 +360,8 @@ export default class CSAProfile implements IPublicTransportPlanner {
 
         if (!minimumArrivalTime || tripArrivalTime < minimumArrivalTime) {
           earliestArrivalTimeByTransfers[amountOfTransfers] = {
-            "arrivalTime": tripArrivalTime,
-            "gtfs:trip": tripId,
+            arrivalTime: tripArrivalTime,
+            tripId,
           };
           minimumArrivalTime = tripArrivalTime;
         }

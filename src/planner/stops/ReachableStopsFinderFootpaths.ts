@@ -29,7 +29,7 @@ export default class ReachableStopsFinderFootpaths implements IReachableStopsFin
     minimumSpeed: SpeedKmH,
   ): Promise<IReachableStop[]> {
 
-    const reachableStops: IReachableStop[] = [];
+    const reachableStops: IReachableStop[] = [{ stop: sourceOrTargetStop, duration: 0 }];
 
     const footpaths = await this.footpathsProvider.get();
     for (const footpath of Object.values(footpaths)) {
@@ -43,7 +43,7 @@ export default class ReachableStopsFinderFootpaths implements IReachableStopsFin
 
         if (otherStop) {
             const duration = Units.toDuration(footpath.distance, minimumSpeed);
-            reachableStops.push({stop: otherStop, duration});
+            reachableStops.push({stop: otherStop, duration, id: footpath.id});
         }
     }
 

@@ -26,6 +26,8 @@ import { LDLoader } from "./loader/ldloader";
 import { Dijkstra } from "./pathfinding/dijkstra/dijkstra-js";
 import { DijkstraWasm } from "./pathfinding/dijkstra/dijkstra-wasm";
 import { IPathfinder } from "./pathfinding/pathfinder";
+import CSAEarliestArrival from "./planner/public-transport/CSAEarliestArrival";
+import CSAEarliestArrival2 from "./planner/public-transport/CSAEarliestArrival2";
 import CSAProfile from "./planner/public-transport/CSAProfile";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
@@ -34,6 +36,7 @@ import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import RoadPlannerPathfinding from "./planner/road/RoadPlannerPathfinding";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
+import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
 import ReachableStopsFinderFootpaths from "./planner/stops/ReachableStopsFinderFootpaths";
 import ReachableStopsFinderOnlySelf from "./planner/stops/ReachableStopsFinderOnlySelf";
 import ReachableStopsFinderRoadPlanner from "./planner/stops/ReachableStopsFinderRoadPlanner";
@@ -50,7 +53,7 @@ container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(CSAProfile);
+  .to(CSAEarliestArrival2);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
@@ -63,11 +66,20 @@ container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
+  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
+
+/*
+container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderFootpaths).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
+*/
 
 container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPrefetch).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
