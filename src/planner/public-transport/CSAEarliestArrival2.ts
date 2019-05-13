@@ -19,7 +19,9 @@ import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsF
 import IProfileByStop from "./CSA/data-structure/stops/IProfileByStop";
 import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
 import IEnterConnectionByTrip from "./CSA/data-structure/trips/IEnterConnectionByTrip";
+import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
+import JourneyExtractor2 from "./JourneyExtractor2";
 
 @injectable()
 export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
@@ -32,6 +34,8 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
   private enterConnectionByTrip: IEnterConnectionByTrip = {}; // T
 
   private connectionsIterator: AsyncIterator<IConnection>;
+
+  private journeyExtractor: IJourneyExtractor;
 
   constructor(
     @inject(TYPES.ConnectionsProvider)
@@ -48,6 +52,7 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
     this.locationResolver = locationResolver;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.context = context;
+    this.journeyExtractor = new JourneyExtractor2(locationResolver);
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
@@ -79,6 +84,7 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
       const done = () => {
         if (!isDone) {
           self.connectionsIterator.close();
+          self.connectionsIterator._end();
 
           self.extractJourneys(query)
             .then((resultIterator) => {
@@ -99,16 +105,17 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
   }
 
   private async extractJourneys(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    return;
+    return this.journeyExtractor.extractJourneys(this.profilesByStop, query);
   }
 
   private async processConnections(query: IResolvedQuery, resolve: () => void) {
-    const {to, minimumDepartureTime} = query;
+    const {from, to, minimumDepartureTime} = query;
+    const departureStopId: string = from[0].id;
     const arrivalStopId: string = to[0].id;
 
     let connection: IConnection = this.connectionsIterator.read();
 
-    while (connection) {
+    while (connection && !this.connectionsIterator.closed) {
 
       if (connection.departureTime < minimumDepartureTime && !this.connectionsIterator.closed) {
         // starting criterion
@@ -128,7 +135,10 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
 
       const canRemainSeated = this.enterConnectionByTrip[tripId];
       const canTakeTransfer = (
-        this.getProfile(connection.departureStop).arrivalTime <= departureTime &&
+        (
+          connection.departureStop === departureStopId ||
+          this.getProfile(connection.departureStop).arrivalTime <= departureTime
+        ) &&
         connection["gtfs:pickupType"] !== PickupType.NotAvailable
       );
 
