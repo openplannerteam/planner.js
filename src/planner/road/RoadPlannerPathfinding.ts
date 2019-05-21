@@ -1,7 +1,6 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import inBBox from "tiles-in-bbox";
-import Context from "../../Context";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import { RoutableTileNode } from "../../entities/tiles/node";
 import { RoutableTileSet } from "../../entities/tiles/set";
@@ -10,7 +9,6 @@ import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
-import IStep from "../../interfaces/IStep";
 import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import { IPathfinder } from "../../pathfinding/pathfinder";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
@@ -19,6 +17,13 @@ import Geo from "../../util/Geo";
 import Units from "../../util/Units";
 import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
+
+interface IPointEmbedding {
+    point: ILocation; // point that's embedded into the road network
+    intersection: ILocation; // closest point on the road segment closest to the point
+    segA: RoutableTileNode; // one side of the road segment closest to the point
+    segB: RoutableTileNode; // other side of the road segment closest to the point
+}
 
 @injectable()
 export default class RoadPlannerPathfinding implements IRoadPlanner {
@@ -41,22 +46,22 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
             maximumWalkingSpeed,
         } = query;
 
-        let paths = [];
+        const paths = [];
 
         if (fromLocations && toLocations && fromLocations.length && toLocations.length) {
 
             for (const from of fromLocations) {
                 for (const to of toLocations) {
 
-                    const newPaths = await this.getPathBetweenLocations(
+                    const newPath = await this.getPathBetweenLocations(
                         from,
                         to,
                         minimumWalkingSpeed,
                         maximumWalkingSpeed,
                     );
 
-                    if (newPaths) {
-                        paths = paths.concat(newPaths);
+                    if (newPath) {
+                        paths.push(newPath);
                     }
                 }
             }
@@ -70,7 +75,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         to: ILocation,
         minWalkingSpeed: SpeedKmH,
         maxWalkingSpeed: SpeedKmH,
-    ): Promise<IPath[]> {
+    ): Promise<IPath> {
         const padding = 0.02;
         const zoom = 14;
 
@@ -108,32 +113,19 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
             this.tileProvider.getMultipleByTileCoords(toTileCoords),
             this.tileProvider.getMultipleByTileCoords(betweenTileCoords)]);
 
-        const fromPaths = this.embedLocation(from, fromTileset, minWalkingSpeed, maxWalkingSpeed);
-        const toPaths = this.embedLocation(to, toTileset, minWalkingSpeed, maxWalkingSpeed, true);
+        this.embedLocation(from, fromTileset);
+        this.embedLocation(to, toTileset, true);
 
-        const result: IPath[] = [];
-        for (const fromPath of fromPaths) {
-            for (const toPath of toPaths) {
-                const node1 = fromPath.steps[fromPath.steps.length - 1].stopLocation as RoutableTileNode;
-                const node2 = toPath.steps[toPath.steps.length - 2].startLocation as RoutableTileNode;
-                const path = this._innerPath(node1, node2, minWalkingSpeed, maxWalkingSpeed);
-                if (path && path.steps.length) {
-                    let totalPath = fromPath.steps.concat(path.steps);
-                    totalPath = totalPath.concat(toPath.steps);
-                    result.push({steps: totalPath});
-                }
-            }
-        }
-        return result;
+        return this._innerPath(from, to, minWalkingSpeed, maxWalkingSpeed);
     }
 
     private _innerPath(
-        start: RoutableTileNode,
-        stop: RoutableTileNode,
+        start: ILocation,
+        stop: ILocation,
         minWalkingSpeed: SpeedKmH,
         maxWalkingSpeed: SpeedKmH,
     ): IPath {
-        const distance = this.pathfinder.queryDistance(start.id, stop.id);
+        const distance = this.pathfinder.queryDistance(Geo.getId(start), Geo.getId(stop));
         const minDuration = Units.toDuration(distance, maxWalkingSpeed);
         const maxDuration = Units.toDuration(distance, minWalkingSpeed);
 
@@ -152,29 +144,9 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         }]);
     }
 
-    private createStep(from, to, distance, minSpeed, maxSpeed): IStep {
-        const minDuration = Units.toDuration(distance, maxSpeed);
-        const maxDuration = Units.toDuration(distance, minSpeed);
-
-        const duration: IProbabilisticValue<DurationMs> = {
-            minimum: minDuration,
-            maximum: maxDuration,
-            average: (minDuration + maxDuration) / 2,
-        };
-
-        return {
-            startLocation: from,
-            stopLocation: to,
-            distance,
-            duration,
-            travelMode: TravelMode.Walking,
-        };
-
-    }
-
-    private embedLocation(p: ILocation, tileset: RoutableTileSet, minSpeed, maxSpeed, invert = false): IPath[] {
+    private embedLocation(p: ILocation, tileset: RoutableTileSet, invert = false) {
         let bestDistance = Infinity;
-        let paths: IPath[];
+        let bestEmbedding: IPointEmbedding;
 
         for (const way of Object.values(tileset.getWays())) {
             if (way.reachable === false) {
@@ -196,46 +168,36 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
                     const [distance, intersection] = this.segmentDistToPoint(from, to, p);
                     if (distance < bestDistance) {
                         bestDistance = distance;
-
-                        if (invert) {
-                            const intersectionStep = this.createStep(intersection, p, distance, minSpeed, maxSpeed);
-
-                            const stepA = this.createStep(from,
-                                intersection,
-                                Geo.getDistanceBetweenLocations(intersection, from),
-                                minSpeed, maxSpeed);
-                            const stepB = this.createStep(to,
-                                intersection,
-                                Geo.getDistanceBetweenLocations(intersection, from),
-                                minSpeed, maxSpeed);
-
-                            paths = [
-                                { steps: [stepA, intersectionStep] },
-                                { steps: [stepB, intersectionStep] },
-                            ];
-                        } else {
-                            const intersectionStep = this.createStep(p, intersection, distance, minSpeed, maxSpeed);
-
-                            const stepA = this.createStep(intersection,
-                                from,
-                                Geo.getDistanceBetweenLocations(intersection, from),
-                                minSpeed, maxSpeed);
-                            const stepB = this.createStep(intersection,
-                                to,
-                                Geo.getDistanceBetweenLocations(intersection, from),
-                                minSpeed, maxSpeed);
-
-                            paths = [
-                                { steps: [intersectionStep, stepA] },
-                                { steps: [intersectionStep, stepB] },
-                            ];
-                        }
+                        bestEmbedding = {
+                            point: p,
+                            segA: from,
+                            segB: to,
+                            intersection,
+                        };
                     }
                 }
             }
         }
 
-        return paths;
+        if (bestEmbedding) {
+            const intersection = bestEmbedding.intersection;
+            const segA = bestEmbedding.segA;
+            const segB = bestEmbedding.segB;
+
+            const pointId = Geo.getId(bestEmbedding.point);
+            const intersectionId = Geo.getId(bestEmbedding.intersection);
+
+            if (!invert) {
+                // todo, account for one-direction streets
+                this.pathfinder.addEdge(pointId, intersectionId, bestDistance);
+                this.pathfinder.addEdge(intersectionId, segA.id, Geo.getDistanceBetweenLocations(intersection, segA));
+                this.pathfinder.addEdge(intersectionId, segB.id, Geo.getDistanceBetweenLocations(intersection, segB));
+            } else {
+                this.pathfinder.addEdge(intersectionId, pointId, bestDistance);
+                this.pathfinder.addEdge(segA.id, intersectionId, Geo.getDistanceBetweenLocations(intersection, segA));
+                this.pathfinder.addEdge(segB.id, intersectionId, Geo.getDistanceBetweenLocations(intersection, segB));
+            }
+        }
     }
 
     private segmentDistToPoint(segA: ILocation, segB: ILocation, p: ILocation): [number, ILocation] {

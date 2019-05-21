@@ -46,6 +46,10 @@ export default class Geo {
    * @returns geo id string
    */
   public static getId(location: ILocation): string {
+    if ("id" in location) {
+      return location.id;
+    }
+
     return `geo:${location.latitude},${location.longitude}`;
   }
 }
