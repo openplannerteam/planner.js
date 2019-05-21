@@ -70,7 +70,7 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderFootpaths).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
+  .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
 /*
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)

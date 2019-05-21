@@ -26,14 +26,20 @@ import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
 import JourneyExtractor2 from "./JourneyExtractor2";
 
+interface IFinalReachableStops {
+  [stop: string]: IReachableStop;
+}
+
 @injectable()
 export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
   private readonly connectionsProvider: IConnectionsProvider;
   private readonly locationResolver: ILocationResolver;
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
   private readonly initialReachableStopsFinder: IReachableStopsFinder;
+  private readonly finalReachableStopsFinder: IReachableStopsFinder;
   private readonly context: Context;
 
+  private finalReachableStops: IFinalReachableStops = {};
   private profilesByStop: IProfileByStop = {}; // S
   private enterConnectionByTrip: IEnterConnectionByTrip = {}; // T
 
@@ -52,6 +58,9 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Initial)
     initialReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Final)
+    finalReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.Context)
     context?: Context,
   ) {
@@ -59,6 +68,7 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
     this.locationResolver = locationResolver;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.initialReachableStopsFinder = initialReachableStopsFinder;
+    this.finalReachableStopsFinder = finalReachableStopsFinder;
     this.context = context;
     this.journeyExtractor = new JourneyExtractor2(locationResolver);
   }
@@ -85,9 +95,12 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
     const connectionsIterator = this.connectionsProvider.createIterator();
     this.connectionsQueue = new MultiConnectionQueue(connectionsIterator);
 
-    const hasInitialReachableStops: boolean = await this.initInitialReachableStops(query);
+    const [hasInitialReachableStops, hasFinalReachableStops] = await Promise.all([
+      this.initInitialReachableStops(query),
+      this.initFinalReachableStops(query),
+    ]);
 
-    if (!hasInitialReachableStops) {
+    if (!hasInitialReachableStops || !hasFinalReachableStops) {
       return Promise.resolve(new ArrayIterator([]));
     }
 
@@ -223,11 +236,15 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
         query.minimumWalkingSpeed,
       );
 
+      if (this.finalReachableStops[arrivalStop.id]) {
+        reachableStops.push(this.finalReachableStops[arrivalStop.id]);
+      }
+
       for (const reachableStop of reachableStops) {
         const { stop: stop, duration: duration } = reachableStop;
         const transferTentativeArrival = this.getProfile(stop.id).arrivalTime;
 
-        if (duration && transferTentativeArrival > sourceConnection.arrivalTime.getTime()) {
+        if (duration && transferTentativeArrival > sourceConnection.arrivalTime.getTime() && stop.id) {
           // create a connection that resembles a footpath
           // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
           const transferConnection: IConnection = {
@@ -299,5 +316,45 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
     }
 
     return true;
+  }
+
+  private async initFinalReachableStops(query: IResolvedQuery): Promise<boolean> {
+    const toLocation: ILocation = query.to[0];
+
+    // Making sure the departure location has an id
+    const geoId = Geo.getId(toLocation);
+    if (!toLocation.id) {
+      query.to[0].id = geoId;
+      query.to[0].name = "Arrival location";
+    }
+
+    const reachableStops = await this.finalReachableStopsFinder.findReachableStops(
+      toLocation,
+      ReachableStopsFinderMode.Target,
+      query.maximumWalkingDuration,
+      query.minimumWalkingSpeed,
+    );
+
+    // Abort when we can't reach a single stop.
+    if (reachableStops.length === 0) {
+      this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
+
+      return false;
+    }
+
+    if (this.context) {
+      this.context.emit(EventType.FinalReachableStops, reachableStops);
+    }
+
+    for (const reachableStop of reachableStops) {
+      if (reachableStop.duration > 0) {
+        this.finalReachableStops[reachableStop.stop.id] = {
+          stop: toLocation as IStop,
+          duration: reachableStop.duration,
+        };
+      }
+    }
+
+    return Object.keys(this.finalReachableStops).length > 0;
   }
 }
