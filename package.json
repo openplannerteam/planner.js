@@ -28,6 +28,7 @@
   "dependencies": {
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
+    "d3-delaunay": "^4.1.5",
     "haversine": "^1.1.0",
     "inversify": "^5.0.1",
     "isomorphic-fetch": "^2.2.1",
