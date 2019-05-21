@@ -30,6 +30,10 @@ export default class MultiConnectionQueue {
     }
 
     public pop(): IConnection {
+        if (!this.asyncIterator.readable) {
+            return;
+        }
+
         if (!this.next) {
             this.next = this.asyncIterator.read();
         }
