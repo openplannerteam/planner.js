@@ -36,6 +36,7 @@
     "reflect-metadata": "^0.1.12",
     "source-map-support": "^0.5.11",
     "tiles-in-bbox": "^1.0.2",
+    "tinyqueue": "^2.0.2",
     "uritemplate": "^0.3.4",
     "wasm-dijkstra": "^0.1.5"
   },

@@ -66,9 +66,9 @@ container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
+  .to(ReachableStopsFinderRoadPlannerCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
+  .to(ReachableStopsFinderFootpaths).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
