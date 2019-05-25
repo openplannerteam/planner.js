@@ -1,7 +1,9 @@
 import { Container, interfaces } from "inversify";
 import Catalog from "./Catalog";
 import catalogDeLijn from "./catalog.delijn";
+import catalogMivb from "./catalog.mivb";
 import catalogNmbs from "./catalog.nmbs";
+import catalogTec from "./catalog.tec";
 import Context from "./Context";
 import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
 import TravelMode from "./enums/TravelMode";
@@ -107,10 +109,10 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
 container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
 
 // Bind catalog
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
+// container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
 
-// const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn);
-// container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
+const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();
