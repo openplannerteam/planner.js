@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/node";
+import RoutableTileRegistry from "../entities/tiles/registry";
 import { RoutableTileSet } from "../entities/tiles/set";
 import { IRoutableTileWayIndex } from "../entities/tiles/way";
 import ILocation from "../interfaces/ILocation";
@@ -18,13 +19,16 @@ interface IPointEmbedding {
 export default class PathfinderProvider {
   private shortestPath: IShortestPathAlgorithm;
   private shortestPathTree: IShortestPathTreeAlgorithm;
+  private routableTileRegistry: RoutableTileRegistry;
 
   constructor(
     @inject(TYPES.ShortestPathTreeAlgorithm) shortestPathTree: IShortestPathTreeAlgorithm,
     @inject(TYPES.ShortestPathAlgorithm) pointToPoint: IShortestPathAlgorithm,
+    @inject(TYPES.RoutableTileRegistry) routableTileRegistry: RoutableTileRegistry,
   ) {
     this.shortestPath = pointToPoint;
     this.shortestPathTree = shortestPathTree;
+    this.routableTileRegistry = routableTileRegistry;
   }
 
   public getShortestPathAlgorithm(): IShortestPathAlgorithm {
@@ -56,7 +60,9 @@ export default class PathfinderProvider {
     let bestDistance = Infinity;
     let bestEmbedding: IPointEmbedding;
 
-    for (const way of Object.values(tileset.getWays())) {
+    for (const wayId of tileset.getWays()) {
+      const way = this.routableTileRegistry.getWay(wayId);
+
       if (way.reachable === false) {
         continue;
       }
@@ -64,9 +70,9 @@ export default class PathfinderProvider {
       for (const segment of way.segments) {
         for (let i = 0; i < segment.length - 1; i++) {
           const nodeA = segment[i];
-          const from = tileset.getNodes()[nodeA];
+          const from = this.routableTileRegistry.getNode(nodeA);
           const nodeB = segment[i + 1];
-          const to = tileset.getNodes()[nodeB];
+          const to = this.routableTileRegistry.getNode(nodeB);
 
           if (!from || !to) {
             // FIXME, caused by bug in data

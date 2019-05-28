@@ -59,14 +59,6 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
 
     const tile = await this.tiles[url];
 
-    for (const node of Object.values(tile.getNodes())) {
-      this.registry.registerNode(node);
-    }
-
-    for (const way of Object.values(tile.getWays())) {
-      this.registry.registerWay(way);
-    }
-
     return await this.tiles[url];
   }
 

@@ -1,17 +1,22 @@
 import "jest";
 import LDFetch from "ldfetch";
+import RoutableTileRegistry from "../../entities/tiles/registry";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import RoutableTileFetcherDefault from "./RoutableTileFetcherDefault";
 
-const fetcher = new RoutableTileFetcherDefault(new LDFetch({ headers: { Accept: "application/ld+json" } }),
-  new PathfinderProvider(undefined, undefined));
+const registry = new RoutableTileRegistry();
+const fetcher = new RoutableTileFetcherDefault(
+  new LDFetch({ headers: { Accept: "application/ld+json" } }),
+  new PathfinderProvider(undefined, undefined, registry),
+  registry);
 
 test("[RoutableTileFetcherDefault] data completeness", async () => {
   jest.setTimeout(15000);
 
   const expectedNodes = new Set();
   const tile = await fetcher.get("https://tiles.openplanner.team/planet/14/8361/5482/");
-  for (const way of Object.values(tile.getWays())) {
+  for (const wayId of tile.getWays()) {
+    const way = registry.getWay(wayId);
     for (const segment of way.segments) {
       for (const node of segment) {
         expectedNodes.add(node);
@@ -20,6 +25,6 @@ test("[RoutableTileFetcherDefault] data completeness", async () => {
   }
 
   for (const id of expectedNodes) {
-    expect(tile.getNodes()[id]).toBeDefined();
+    expect(tile.getNodes().has(id));
   }
 });

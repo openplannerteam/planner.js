@@ -1,8 +1,10 @@
+import { Delaunay } from "d3-delaunay";
 import "isomorphic-fetch";
 import "reflect-metadata";
 import inBBox from "tiles-in-bbox";
 import Context from "../../Context";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
+import { RoutableTileNode } from "../../entities/tiles/node";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ILocation from "../../interfaces/ILocation";
@@ -66,9 +68,33 @@ export default class IsochroneGenerator {
         const result = [];
         for (const [id, cost] of Object.entries(pathTree)) {
             const node = this.registry.getNode(id);
-            result.push({node, cost});
+            result.push({ node, cost });
         }
 
+        this.createIsochrone(pathTree, maxCost);
+
+        return result;
+    }
+
+    private createIsochrone(pathTree: IPathTree, maxCost: number) {
+        const nodes = [];
+        const costs = {};
+        for (const [id, cost] of Object.entries(pathTree)) {
+            const node = this.registry.getNode(id);
+            if (node) {
+                nodes.push(node);
+                costs[node.id] = cost;
+            }
+        }
+
+        const triangles = this.createTriangulation(nodes);
+        const outerEdges = this.createOuterEdges(costs, maxCost, triangles);
+        const rings = this.createOuterRings(outerEdges);
+
+        const result = [];
+        for (const ring of rings) {
+            result.push(ring.map((nodeId) => this.registry.getNode(nodeId)));
+        }
         return result;
     }
 
@@ -171,6 +197,108 @@ export default class IsochroneGenerator {
         };
 
         return Geo.getDistanceBetweenLocations(firstPoint, secondPoint);
+    }
+
+    private createTriangulation(nodes: RoutableTileNode[]): RoutableTileNode[][] {
+        function getX(p: ILocation) {
+            return p.longitude;
+        }
+
+        function getY(p: ILocation) {
+            return p.latitude;
+        }
+
+        const triangles = [];
+        const { triangles: edges } = Delaunay.from(nodes, getX, getY);
+        for (let i = 0; i < edges.length / 3; i++) {
+            const firstIndex = edges[i * 3];
+            const secondIndex = edges[i * 3 + 1];
+            const thirdIndex = edges[i * 3 + 2];
+
+            triangles.push([nodes[firstIndex], nodes[secondIndex], nodes[thirdIndex]]);
+        }
+
+        return triangles;
+    }
+
+    private createOuterEdges(costs, maxCost: number, triangles: RoutableTileNode[][]) {
+        const result = {};
+
+        function addOuterEdge(first, second) {
+            if (result[first]) {
+                result[first].push(second);
+            } else {
+                result[first] = [second];
+            }
+
+            if (result[second]) {
+                result[second].push(first);
+            } else {
+                result[second] = [first];
+            }
+        }
+
+        for (const triangle of triangles) {
+            const [firstNode, secondNode, thirdNode] = triangle;
+
+            const isFirstInternal = costs[firstNode.id] < maxCost;
+            const isSecondInternal = costs[secondNode.id] < maxCost;
+            const isThirdInternal = costs[thirdNode.id] < maxCost;
+
+            if (isFirstInternal && isSecondInternal && !isThirdInternal) {
+                addOuterEdge(firstNode.id, secondNode.id);
+            } else if (isFirstInternal && !isSecondInternal && isThirdInternal) {
+                addOuterEdge(firstNode.id, thirdNode.id);
+            } else if (!isFirstInternal && isSecondInternal && isThirdInternal) {
+                addOuterEdge(secondNode.id, thirdNode.id);
+            }
+        }
+
+        return result;
+    }
+
+    private createOuterRings(outerEdges: object) {
+        const todoNodeVisits = {};
+        for (const [nodeId, edges] of Object.entries(outerEdges)) {
+            todoNodeVisits[nodeId] = edges.length;
+        }
+
+        const rings = [];
+        while (Object.keys(todoNodeVisits).length) {
+            const currentRing = [];
+            const firstNode = new Array(...Object.keys(todoNodeVisits))[0];
+
+            currentRing.push(firstNode);
+            todoNodeVisits[firstNode] -= 1;
+            let currentNode = firstNode;
+
+            while (currentRing.length === 1 || firstNode !== currentNode) {
+                const lengthBefore = currentRing.length;
+                const connectedNodes = outerEdges[currentNode];
+                for (const otherNode of connectedNodes) {
+                    if (todoNodeVisits[otherNode]) {
+                        currentRing.push(otherNode);
+                        todoNodeVisits[currentNode] -= 1;
+                        todoNodeVisits[otherNode] -= 1;
+                        if (todoNodeVisits[currentNode] < 1) {
+                            delete todoNodeVisits[currentNode];
+                        }
+                        currentNode = otherNode;
+                        break;
+                    }
+                }
+                const lengthAfter = currentRing.length;
+                if (lengthBefore === lengthAfter) {
+                    console.log("stuck in a loop");
+                    // stuck in a loop :(
+                    break;
+                }
+            }
+
+            rings.push(currentRing);
+        }
+
+        return rings;
     }
 
     private long_to_tile(lon: number, zoom: number) {
