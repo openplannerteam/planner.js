@@ -71,9 +71,37 @@ export default class IsochroneGenerator {
             result.push({ node, cost });
         }
 
-        this.createIsochrone(pathTree, maxCost);
+        /*
+        https://mapbox.github.io/delaunator/
 
-        return result;
+        triangulate nodes
+
+        iterate over all points:
+        point is internal if < cost
+        point is border node if it's internal and one of its neighbors isn't
+        point is external if > cost
+
+        iterate over all border nodes:
+        union(node, neighbors)
+
+        create clusters
+
+        for cluster:
+
+            iterate over all triangles:
+            triangle is a border triangle if:
+                at least one border node
+                the rest are external
+
+            ring = []
+            create todo set of border triangles
+            pick a random triangle
+            until empty:
+            add circumference point to ring
+            move to neighboring border triangle
+      */
+
+        return this.createIsochrone(pathTree, maxCost);
     }
 
     private createIsochrone(pathTree: IPathTree, maxCost: number) {
@@ -226,15 +254,15 @@ export default class IsochroneGenerator {
 
         function addOuterEdge(first, second) {
             if (result[first]) {
-                result[first].push(second);
+                result[first].add(second);
             } else {
-                result[first] = [second];
+                result[first] = new Set([second]);
             }
 
             if (result[second]) {
-                result[second].push(first);
+                result[second].add(first);
             } else {
-                result[second] = [first];
+                result[second] = new Set([first]);
             }
         }
 
@@ -257,36 +285,92 @@ export default class IsochroneGenerator {
         return result;
     }
 
+    private selectOutgoingNode(ring: string[], currentNodeId: string, candidates: string[]): string {
+        let bestAngle = Infinity;
+        let bestCandidate: string;
+
+        if (candidates.length === 1) {
+            return candidates[0];
+        }
+
+        if (ring.length < 2) {
+            return candidates[0];
+        }
+
+        const upscale = 100000;
+
+        const previousNodeId = ring[ring.length - 2];
+        const previousNode = this.registry.getNode(previousNodeId);
+        const currentNode = this.registry.getNode(currentNodeId);
+
+        const previousVector = [
+            previousNode.latitude * upscale - currentNode.latitude * upscale,
+            previousNode.longitude * upscale - currentNode.longitude * upscale,
+        ];
+
+        for (const candidateId of candidates) {
+            const candidate = this.registry.getNode(candidateId);
+            const candidateVector = [
+                candidate.latitude * upscale - currentNode.latitude * upscale,
+                candidate.longitude * upscale - currentNode.longitude * upscale,
+            ];
+
+            let angle = Math.atan2(candidateVector[0] - previousVector[0], candidateVector[1] - previousVector[1]);
+            if (angle < 0) {
+                angle += Math.PI * 2;
+            }
+
+            if (angle < bestAngle) {
+                bestAngle = angle;
+                bestCandidate = candidateId;
+            }
+        }
+
+        return bestCandidate;
+    }
+
     private createOuterRings(outerEdges: object) {
-        const todoNodeVisits = {};
+        const todoEdges = new Set<string>();
+        const todoNodes = new Set<string>();
         for (const [nodeId, edges] of Object.entries(outerEdges)) {
-            todoNodeVisits[nodeId] = edges.length;
+            for (const edge of edges) {
+                todoEdges.add([nodeId, edge].sort().toString());
+            }
+            todoNodes.add(nodeId);
         }
 
         const rings = [];
-        while (Object.keys(todoNodeVisits).length) {
+        while (todoNodes.size) {
             const currentRing = [];
-            const firstNode = new Array(...Object.keys(todoNodeVisits))[0];
+            const firstNode: string = new Array(...todoNodes)[0];
 
             currentRing.push(firstNode);
-            todoNodeVisits[firstNode] -= 1;
+            todoNodes.delete(firstNode);
             let currentNode = firstNode;
 
             while (currentRing.length === 1 || firstNode !== currentNode) {
                 const lengthBefore = currentRing.length;
                 const connectedNodes = outerEdges[currentNode];
+                let candidates = [];
                 for (const otherNode of connectedNodes) {
-                    if (todoNodeVisits[otherNode]) {
-                        currentRing.push(otherNode);
-                        todoNodeVisits[currentNode] -= 1;
-                        todoNodeVisits[otherNode] -= 1;
-                        if (todoNodeVisits[currentNode] < 1) {
-                            delete todoNodeVisits[currentNode];
-                        }
-                        currentNode = otherNode;
-                        break;
+                    const edge = [currentNode, otherNode].sort().toString();
+                    if (todoEdges.has(edge)) {
+                        candidates.push(otherNode);
                     }
                 }
+
+                if (!candidates.length) {
+                    candidates = connectedNodes;
+                }
+
+                const bestCandidate = this.selectOutgoingNode(currentRing, currentNode, candidates);
+                currentRing.push(bestCandidate);
+                todoNodes.delete(bestCandidate);
+
+                const bestEdge = [currentNode, bestCandidate].sort().toString();
+                todoEdges.delete(bestEdge);
+
+                currentNode = bestCandidate;
                 const lengthAfter = currentRing.length;
                 if (lengthBefore === lengthAfter) {
                     console.log("stuck in a loop");
