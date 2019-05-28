@@ -18,6 +18,7 @@ const TYPES = {
 
   RoutableTileProvider: Symbol("TileProvider"),
   RoutableTileFetcher: Symbol("TileFetcher"),
+  RoutableTileRegistry: Symbol("RoutableTileRegistry"),
 
   FootpathsProvider: Symbol("FootpathsProvider"),
 
@@ -26,7 +27,9 @@ const TYPES = {
 
   RoadPlanner: Symbol("RoadPlanner"),
   RoadPlannerFactory: Symbol("RoadPlannerFactory"),
-  Pathfinder: Symbol("Pathfinder"),
+  PathfinderProvider: Symbol("PathfinderProvider"),
+  ShortestPathAlgorithm: Symbol("ShortestPathAlgorithm"),
+  ShortestPathTreeAlgorithm: Symbol("ShortestPathTreeAlgorithm"),
 
   ReachableStopsFinder: Symbol("ReachableStopsFinder"),
   JourneyExtractor: Symbol("JourneyExtractor"),

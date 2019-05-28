@@ -1,10 +1,10 @@
 import "jest";
 import LDFetch from "ldfetch";
-import { Dijkstra } from "../../pathfinding/dijkstra/dijkstra-js";
+import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import RoutableTileFetcherDefault from "./RoutableTileFetcherDefault";
 
 const fetcher = new RoutableTileFetcherDefault(new LDFetch({ headers: { Accept: "application/ld+json" } }),
-  new Dijkstra());
+  new PathfinderProvider(undefined, undefined));
 
 test("[RoutableTileFetcherDefault] data completeness", async () => {
   jest.setTimeout(15000);

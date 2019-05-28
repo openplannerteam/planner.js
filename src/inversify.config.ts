@@ -5,6 +5,7 @@ import catalogMivb from "./catalog.mivb";
 import catalogNmbs from "./catalog.nmbs";
 import catalogTec from "./catalog.tec";
 import Context from "./Context";
+import RoutableTileRegistry from "./entities/tiles/registry";
 import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
 import TravelMode from "./enums/TravelMode";
 import ConnectionsProviderMerge from "./fetcher/connections/ConnectionsProviderMerge";
@@ -25,9 +26,11 @@ import RoutableTileFetcherDefault from "./fetcher/tiles/RoutableTileFetcherDefau
 import RoutableTileFetcherExtended from "./fetcher/tiles/RoutableTileFetcherExtended";
 import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDefault";
 import { LDLoader } from "./loader/ldloader";
+import DijkstraTree from "./pathfinding/dijkstra-tree/dijkstra-tree-js";
 import { Dijkstra } from "./pathfinding/dijkstra/dijkstra-js";
 import { DijkstraWasm } from "./pathfinding/dijkstra/dijkstra-wasm";
-import { IPathfinder } from "./pathfinding/pathfinder";
+import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "./pathfinding/pathfinder";
+import PathfinderProvider from "./pathfinding/PathfinderProvider";
 import CSAEarliestArrival from "./planner/public-transport/CSAEarliestArrival";
 import CSAEarliestArrival2 from "./planner/public-transport/CSAEarliestArrival2";
 import CSAProfile from "./planner/public-transport/CSAProfile";
@@ -63,7 +66,9 @@ container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTranspor
 container.bind<IRoadPlanner>(TYPES.RoadPlanner)
   .to(RoadPlannerPathfinding);
 
-container.bind<IPathfinder>(TYPES.Pathfinder).to(DijkstraWasm).inSingletonScope();
+container.bind<IShortestPathTreeAlgorithm>(TYPES.ShortestPathTreeAlgorithm).to(DijkstraTree).inSingletonScope();
+container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(Dijkstra).inSingletonScope();
+container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvider).inSingletonScope();
 
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
@@ -102,9 +107,10 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherExtended);
+container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherDefault);
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope();
+container.bind<RoutableTileRegistry>(TYPES.RoutableTileRegistry).to(RoutableTileRegistry).inSingletonScope();
 
 container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
 

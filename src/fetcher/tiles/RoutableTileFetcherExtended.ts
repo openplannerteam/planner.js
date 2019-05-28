@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
 import { RoutableTile } from "../../entities/tiles/tile";
-import { IPathfinder } from "../../pathfinding/pathfinder";
+import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import TYPES from "../../types";
 import { ROUTE } from "../../uri/constants";
 import URI from "../../uri/uri";
@@ -12,7 +12,7 @@ export default class RoutableTileFetcherExtended extends RoutableTileFetcherDefa
 
   constructor(
     @inject(TYPES.LDFetch) ldFetch: LDFetch,
-    @inject(TYPES.Pathfinder) pathfinder: IPathfinder,
+    @inject(TYPES.PathfinderProvider) pathfinder: PathfinderProvider,
   ) {
     super(ldFetch, pathfinder);
   }
@@ -45,7 +45,7 @@ export default class RoutableTileFetcherExtended extends RoutableTileFetcherDefa
       this.getWaysView(),
     ]);
 
-    this.registerEdges(ways, nodes);
+    this.pathfinderProvider.registerEdges(ways, nodes);
 
     return new RoutableTile(url, nodes, ways);
   }

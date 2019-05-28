@@ -39,5 +39,8 @@ module.exports = {
     library: "Planner",
     libraryTarget: "umd",
     libraryExport: "default"
+  },
+  node: {
+    fs: "empty"
   }
 };

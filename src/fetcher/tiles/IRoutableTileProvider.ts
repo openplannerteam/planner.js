@@ -4,6 +4,11 @@ import { RoutableTile } from "../../entities/tiles/tile";
 import ILocation from "../../interfaces/ILocation";
 
 export default interface IRoutableTileProvider {
+    wait(): Promise<void>;
+
+    getIdForLocation(zoom: number, location: ILocation): string;
+    getIdForTileCoords(coordinate: RoutableTileCoordinate): string;
+
     getByUrl(url: string): Promise<RoutableTile>;
     getByLocation(zoom: number, location: ILocation): Promise<RoutableTile>;
     getByTileCoords(coordinate: RoutableTileCoordinate): Promise<RoutableTile>;

@@ -11,6 +11,12 @@ export class RoutableTileSet extends RoutableTile {
         this.tiles = tiles;
     }
 
+    public addTile(tile: RoutableTile) {
+        this.tiles.push(tile);
+        this.ways = undefined;
+        this.nodes = undefined;
+    }
+
     public getWays(): IRoutableTileWayIndex {
         if (!this.ways) {
             const result: IRoutableTileWayIndex = {};

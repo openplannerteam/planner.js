@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
 import Graph from "node-dijkstra";
-import { IPathfinder } from "../pathfinder";
+import { IShortestPathAlgorithm } from "../pathfinder";
 
 @injectable()
-export class Dijkstra implements IPathfinder {
+export class Dijkstra implements IShortestPathAlgorithm {
     private contents = {};
 
     public addEdge(from: string, to: string, weight: number) {
