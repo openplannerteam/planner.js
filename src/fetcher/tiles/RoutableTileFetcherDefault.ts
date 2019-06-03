@@ -27,7 +27,7 @@ export default class RoutableTileFetcherDefault implements IRoutableTileFetcher 
   ) {
     this.ldFetch = ldFetch;
     this.ldLoader = new LDLoader();
-    this.ldLoader.defineCollection(URI.inNS(OSM, "nodes")); // unordered collection
+    this.ldLoader.defineCollection(URI.inNS(OSM, "hasNodes")); // unordered collection
     this.pathfinderProvider = pathfinderProvider;
     this.routableTileRegistry = routableTileRegistry;
   }
@@ -76,7 +76,7 @@ export default class RoutableTileFetcherDefault implements IRoutableTileFetcher 
     waysView.addFilter((entity) =>
       entity[URI.inNS(RDF, "type")] === URI.inNS(OSM, "Way"),
     );
-    waysView.addMapping(URI.inNS(OSM, "nodes"), "segments"); // todo mapping to segments
+    waysView.addMapping(URI.inNS(OSM, "hasNodes"), "segments"); // todo mapping to segments
     waysView.addMapping(URI.inNS(RDFS, "label"), "label");
     return waysView;
   }
