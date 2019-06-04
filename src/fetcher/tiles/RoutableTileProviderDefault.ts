@@ -57,8 +57,6 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
       this.tiles[url] = this.fetcher.get(url);
     }
 
-    const tile = await this.tiles[url];
-
     return await this.tiles[url];
   }
 

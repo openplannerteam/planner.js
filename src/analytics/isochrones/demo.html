@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Isochrone demo</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <style>
+        .container {
+            display: flex;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+        }
+        #map { width: 1024px; height: 800px; }
+        body { font: 16px/1.4 "Helvetica Neue", Arial, sans-serif; }
+        .ghbtns { position: relative; top: 4px; margin-left: 5px; }
+        a { color: #0077ff; }
+        div {float: left; margin-right: auto;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="margin-right: 20px">
+        <p>
+            Latitude:<br>
+            <input id="latitude" type="text" name="latitude" value="51.0262973"><br>
+            Longitude:<br>
+            <input id="longitude" type="text" name="longitude" value="3.7110885"><br><br>
+            <button onclick="newMap()">Move</button>
+        </p>
+        <p>
+            Distance (m):<br>
+            <input id="distance" type="text" name="distance" value="1200"><br><br>
+            <button onclick="addIsochrone()">Add Isochrone</button>
+        </p>
+    </div> 
+    <br>
+    <div id="map">
+        
+    </div>
+</div>
+
+<script src="../../../dist/bundle.js"></script>
+<script>
+
+let map;
+let generator;
+
+async function drawIsochrone(distance, color) {
+    const data = await generator.then((x) => x.getIsochrone(distance, true));
+    const isochrones = data.isochrones;
+    
+    for (const isochrone of isochrones) {
+        const polygonData = [];
+
+        for (const ring of isochrone) {
+            if (ring.length === 0) {
+                continue;
+            }
+            polygonData.push(ring.map((p) => [p.latitude, p.longitude]));
+        }
+
+        if (polygonData.length > 0) {
+            var firstpolyline = new L.polygon(polygonData, {smoothFactor: 2, weight: 1, color: color});
+            firstpolyline.addTo(map);
+        }
+        
+    }
+}
+
+async function initialize(focus) {
+    if (map) {
+        map.off();
+        map.remove();
+    } 
+
+    map = L.map('map').setView(focus, 13);   
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: 'pk.eyJ1IjoiaGRlbHZhIiwiYSI6ImNqd2dxNzl3MzBib3Q0YmxiMWdjMWpjM2wifQ.e6piOGj3MqwIpW2ymafjGQ'
+    }).addTo(map); 
+
+    const point = { latitude: focus[0], longitude: focus[1] };
+    const x = new Planner.IsochroneGenerator();
+
+    await x.init(point)
+    return x
+}
+
+function newMap() {
+    const latitudeRaw = document.getElementById("latitude").value;
+    const longitudeRaw = document.getElementById("longitude").value;
+
+    const latitude = parseFloat(latitudeRaw);
+    const longitude = parseFloat(longitudeRaw);
+    
+    if (latitude && longitude) {
+        generator = initialize([latitude, longitude])
+    }
+}
+
+function addIsochrone() {
+    const distanceRaw = document.getElementById("distance").value;
+    const distance = parseFloat(distanceRaw);
+    if (distance) {
+        drawIsochrone(distance, "#b10026")
+    }
+}
+
+newMap()
+drawIsochrone(1000, "#fc4e2a").then(() => {
+    drawIsochrone(2000, "#b10026")
+})
+
+</script>
+</body>
+</html>
