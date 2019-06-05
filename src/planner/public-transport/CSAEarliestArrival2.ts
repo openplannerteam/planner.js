@@ -355,6 +355,6 @@ export default class CSAEarliestArrival2 implements IPublicTransportPlanner {
       }
     }
 
-    return Object.keys(this.finalReachableStops).length > 0;
+    return true;
   }
 }

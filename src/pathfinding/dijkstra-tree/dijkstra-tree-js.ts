@@ -1,58 +1,55 @@
 import { injectable } from "inversify";
 import TinyQueue from "tinyqueue";
+import { DistanceM, DurationMs } from "../../interfaces/units";
+import PathfindingGraph from "../graph";
 import { IPathTree, IShortestPathTreeAlgorithm } from "../pathfinder";
-
-interface IEdge {
-  node: number;
-  cost: number;
-}
-
-interface INodeMap {
-  [label: string]: number;
-}
 
 interface IState {
   position: number;
+  distance: DistanceM;
+  duration: DurationMs;
   cost: number;
 }
 
 @injectable()
 export default class DijkstraTree implements IShortestPathTreeAlgorithm {
-  private nodes: INodeMap;
-  private labels: string[];
-  private adjacencyList: IEdge[][];
-
   private nextQueue: IState[];
   private costs: number[];
+  private graph: PathfindingGraph;
+  private useWeightedCost: boolean;
 
   constructor() {
-    this.nodes = {};
-    this.labels = [];
-    this.adjacencyList = [];
+    this.graph = new PathfindingGraph();
+    this.useWeightedCost = true;
   }
 
-  public addEdge(from: string, to: string, cost: number) {
-    const fromIndex = this.getNodeIndex(from);
-    const toIndex = this.getNodeIndex(to);
-    this.adjacencyList[fromIndex].push({ node: toIndex, cost });
+  public setUseWeightedCost(useWeightedCost: boolean) {
+    this.useWeightedCost = useWeightedCost;
+  }
+
+  public setGraph(graph: PathfindingGraph) {
+    this.graph = graph;
   }
 
   public start(from: string, maxCost: number): IPathTree {
-    this.costs = [...Array(this.adjacencyList.length)].map((_) => Infinity);
+    this.costs = [];
 
-    const fromIndex = this.getNodeIndex(from);
+    const fromIndex = this.graph.getNodeIndex(from);
     this.costs[fromIndex] = 0;
-    this.nextQueue = [{ cost: 0, position: fromIndex }];
+    this.nextQueue = [{ distance: 0, duration: 0, cost: 0, position: fromIndex }];
 
     return this.continue(maxCost);
   }
 
   public continue(maxCost: number): IPathTree {
+    const missingCosts = this.graph.getAdjacencyList().length - this.costs.length;
+    this.costs = this.costs.concat([...Array(missingCosts)].map((_) => Infinity));
+
     const queue = new TinyQueue(this.nextQueue, (a, b) => a.cost - b.cost);
     this.nextQueue = [];
 
     while (queue.length) {
-      const { cost, position } = queue.pop();
+      const { position, distance, duration, cost } = queue.pop();
 
       if (cost > this.costs[position]) {
         // we have already found a better way
@@ -61,10 +58,15 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
 
       if (cost > maxCost) {
         // remember this state for subsequent calls
-        this.nextQueue.push({ cost, position });
+        this.nextQueue.push({ duration, distance, cost, position });
       } else {
-        for (const edge of this.adjacencyList[position]) {
-          const next = { cost: cost + edge.cost, position: edge.node };
+        for (const edge of this.graph.getAdjacencyList()[position]) {
+          const next = {
+            distance: distance + edge.distance,
+            duration: duration + edge.duration,
+            cost: cost + edge.cost,
+            position: edge.node,
+          };
 
           if (next.cost < this.costs[next.position]) {
             queue.push(next);
@@ -78,27 +80,11 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
 
     for (const [position, cost] of this.costs.entries()) {
       if (cost !== Infinity) {
-        const label = this.labels[position];
+        const label = this.graph.getLabels()[position];
         result[label] = cost;
       }
     }
 
     return result;
-  }
-
-  private getNodeIndex(label: string) {
-    if (!this.nodes[label]) {
-      const index = this.adjacencyList.length;
-      this.nodes[label] = index;
-      this.labels.push(label);
-      this.adjacencyList.push([]);
-
-      if (this.costs) {
-        // adding a node during tree construction
-        this.costs.push(Infinity);
-      }
-    }
-
-    return this.nodes[label];
   }
 }

@@ -2,12 +2,14 @@ import "jest";
 import LDFetch from "ldfetch";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
+import ProfileProvider from "../../profile/ProfileProvider";
 import RoutableTileFetcherDefault from "./RoutableTileFetcherDefault";
 
 const registry = new RoutableTileRegistry();
+const profileProvider = new ProfileProvider();
 const fetcher = new RoutableTileFetcherDefault(
   new LDFetch({ headers: { Accept: "application/ld+json" } }),
-  new PathfinderProvider(undefined, undefined, registry),
+  new PathfinderProvider(undefined, undefined, registry, profileProvider),
   registry);
 
 test("[RoutableTileFetcherDefault] data completeness", async () => {

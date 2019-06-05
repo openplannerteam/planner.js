@@ -21,6 +21,7 @@ export default async (logResults) => {
     }
 
     planner
+      .setProfileID("PEDESTRIAN")
       .on(EventType.InvalidQuery, (error) => {
         console.log("InvalidQuery", error);
       })
@@ -56,13 +57,13 @@ export default async (logResults) => {
       });
   }
 
-  return wait(5000)
+  return wait(10000)
     .then(() => new Promise((resolve, reject) => {
       if (logResults) {
         console.log(`${new Date()} Start query`);
       }
 
-      const amount = 3;
+      const amount = 1;
       let i = 0;
 
       planner.query({
@@ -75,6 +76,10 @@ export default async (logResults) => {
         // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
         from: "Ingelmunster", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+        // from: { latitude: 50.93278, longitude: 5.32665 }, // Pita Aladin, Hasselt
+        // to: { latitude: 50.7980187, longitude: 3.1877779 }, // Burger Pita Pasta, Menen
+        // from: "Hasselt",
+        // to: "Kortrijk",
         minimumDepartureTime: new Date(),
         maximumTransferDuration: Units.fromMinutes(30),
       })

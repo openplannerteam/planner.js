@@ -76,8 +76,10 @@ export default class RoutableTileFetcherDefault implements IRoutableTileFetcher 
     waysView.addFilter((entity) =>
       entity[URI.inNS(RDF, "type")] === URI.inNS(OSM, "Way"),
     );
-    waysView.addMapping(URI.inNS(OSM, "hasNodes"), "segments"); // todo mapping to segments
+    waysView.addMapping(URI.inNS(OSM, "hasNodes"), "segments"); // todo: mapping to segments
     waysView.addMapping(URI.inNS(RDFS, "label"), "label");
+    waysView.addMapping(URI.inNS(OSM, "maxspeed"), "maxSpeed");
+    waysView.addMapping(URI.inNS(OSM, "highway"), "highwayKind");
     return waysView;
   }
 }

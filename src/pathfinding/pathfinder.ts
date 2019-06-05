@@ -1,16 +1,23 @@
-import ILocation from "../interfaces/ILocation";
-import { DistanceM } from "../interfaces/units";
+import { DistanceM, DurationMs } from "../interfaces/units";
+import PathfindingGraph from "./graph";
 
 export interface IPathTree {
     [node: string]: DistanceM;
 }
 
+export interface IPathSummary {
+    distance: DistanceM;
+    duration: DurationMs;
+    cost: number;
+}
+
 interface IPathfinder {
-    addEdge(from: string, to: string, weight: number): void;
+    setGraph(graph: PathfindingGraph): void;
+    setUseWeightedCost(useWeightedCost: boolean): void;
 }
 
 export interface IShortestPathAlgorithm extends IPathfinder {
-    queryDistance(from: string, to: string): number;
+    queryPathSummary(from: string, to: string): IPathSummary;
 }
 
 export interface IShortestPathTreeAlgorithm extends IPathfinder {

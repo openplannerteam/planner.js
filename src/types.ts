@@ -25,6 +25,7 @@ const TYPES = {
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
   PublicTransportPlannerFactory: Symbol("PublicTransportPlannerFactory"),
 
+  ProfileProvider: Symbol("ProfileProvider"),
   RoadPlanner: Symbol("RoadPlanner"),
   RoadPlannerFactory: Symbol("RoadPlannerFactory"),
   PathfinderProvider: Symbol("PathfinderProvider"),

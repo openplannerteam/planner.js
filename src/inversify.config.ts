@@ -47,6 +47,7 @@ import ReachableStopsFinderFootpaths from "./planner/stops/ReachableStopsFinderF
 import ReachableStopsFinderOnlySelf from "./planner/stops/ReachableStopsFinderOnlySelf";
 import ReachableStopsFinderRoadPlanner from "./planner/stops/ReachableStopsFinderRoadPlanner";
 import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStopsFinderRoadPlannerCached";
+import ProfileProvider from "./profile/ProfileProvider";
 import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
@@ -69,6 +70,7 @@ container.bind<IRoadPlanner>(TYPES.RoadPlanner)
 container.bind<IShortestPathTreeAlgorithm>(TYPES.ShortestPathTreeAlgorithm).to(DijkstraTree).inSingletonScope();
 container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(Dijkstra).inSingletonScope();
 container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvider).inSingletonScope();
+container.bind<ProfileProvider>(TYPES.ProfileProvider).to(ProfileProvider).inSingletonScope();
 
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
@@ -118,7 +120,7 @@ container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderD
 // container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
 
 const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();

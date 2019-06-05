@@ -10,6 +10,7 @@ import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import IPath from "./interfaces/IPath";
 import IQuery from "./interfaces/IQuery";
 import defaultContainer from "./inversify.config";
+import ProfileProvider from "./profile/ProfileProvider";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
 import Units from "./util/Units";
@@ -23,6 +24,7 @@ export default class Planner implements EventEmitter {
 
   private context: Context;
   private queryRunner: IQueryRunner;
+  private profileProvider: ProfileProvider;
 
   /**
    * Initializes a new Planner
@@ -34,6 +36,7 @@ export default class Planner implements EventEmitter {
     this.context.setContainer(container);
 
     this.queryRunner = container.get<IQueryRunner>(TYPES.QueryRunner);
+    this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
   }
 
   /**
@@ -125,7 +128,15 @@ export default class Planner implements EventEmitter {
     }
   }
 
+  public setProfileID(profileID: string) {
+    this.profileProvider.setActiveProfileID(profileID);
+
+    return this;
+  }
+
   public getAllStops(): Promise<IStop[]> {
+    // fixme, why is this here?
+    // is this just for visualizations?
     const container = this.context.getContainer();
     const stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
 

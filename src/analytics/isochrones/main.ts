@@ -63,6 +63,7 @@ export default class IsochroneGenerator {
         this.tileFrontier = {};
 
         let pathTree: IPathTree;
+        pathfinder.setUseWeightedCost(false); // we want the raw durations
         if (reset) {
             pathTree = pathfinder.start(Geo.getId(this.startPoint), maxCost);
         } else {

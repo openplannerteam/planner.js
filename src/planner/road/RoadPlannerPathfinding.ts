@@ -2,7 +2,6 @@ import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import inBBox from "tiles-in-bbox";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
-import { RoutableTileNode } from "../../entities/tiles/node";
 import TravelMode from "../../enums/TravelMode";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ILocation from "../../interfaces/ILocation";
@@ -13,7 +12,6 @@ import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
-import Units from "../../util/Units";
 import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
 
@@ -34,8 +32,6 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         const {
             from: fromLocations,
             to: toLocations,
-            minimumWalkingSpeed,
-            maximumWalkingSpeed,
         } = query;
 
         const paths = [];
@@ -48,8 +44,6 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
                     const newPath = await this.getPathBetweenLocations(
                         from,
                         to,
-                        minimumWalkingSpeed,
-                        maximumWalkingSpeed,
                     );
 
                     if (newPath) {
@@ -65,8 +59,6 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
     private async getPathBetweenLocations(
         from: ILocation,
         to: ILocation,
-        minWalkingSpeed: SpeedKmH,
-        maxWalkingSpeed: SpeedKmH,
     ): Promise<IPath> {
         const padding = 0.02;
         const zoom = 14;
@@ -108,30 +100,24 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         this.pathfinderProvider.embedLocation(from, fromTileset);
         this.pathfinderProvider.embedLocation(to, toTileset, true);
 
-        return this._innerPath(from, to, minWalkingSpeed, maxWalkingSpeed);
+        return this._innerPath(from, to);
     }
 
     private _innerPath(
         start: ILocation,
         stop: ILocation,
-        minWalkingSpeed: SpeedKmH,
-        maxWalkingSpeed: SpeedKmH,
     ): IPath {
         const pathfinder = this.pathfinderProvider.getShortestPathAlgorithm();
-        const distance = pathfinder.queryDistance(Geo.getId(start), Geo.getId(stop));
-        const minDuration = Units.toDuration(distance, maxWalkingSpeed);
-        const maxDuration = Units.toDuration(distance, minWalkingSpeed);
+        const summary = pathfinder.queryPathSummary(Geo.getId(start), Geo.getId(stop));
 
         const duration: IProbabilisticValue<DurationMs> = {
-            minimum: minDuration,
-            maximum: maxDuration,
-            average: (minDuration + maxDuration) / 2,
+            average: summary.duration,
         };
 
         return new Path([{
             startLocation: start,
             stopLocation: stop,
-            distance,
+            distance: summary.distance,
             duration,
             travelMode: TravelMode.Walking,
         }]);

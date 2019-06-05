@@ -34,4 +34,12 @@ export default class RoutableTileRegistry {
     public getWay(id: string): RoutableTileWay {
         return this.ways[id];
     }
+
+    public getNodes(): RoutableTileNode[] {
+        return Object.values(this.nodes);
+    }
+
+    public getWays(): RoutableTileWay[] {
+        return Object.values(this.ways);
+    }
 }

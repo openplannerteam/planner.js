@@ -61,6 +61,9 @@ export class LDLoader {
             if (valueType === URI.inNS(XMLS, "double")) {
                 return parseFloat(rawValue);
             }
+            if (valueType === URI.inNS(XMLS, "integer")) {
+                return parseInt(rawValue, 10);
+            }
         }
 
         return rawValue;
