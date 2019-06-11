@@ -26,8 +26,8 @@ export class RoutableTileWay {
             result.reachable = false;
         }
         result.segments = [];
-        result.segments.concat(this.segments);
-        result.segments.concat(other.segments);
+        result.segments = result.segments.concat(this.segments);
+        result.segments = result.segments.concat(other.segments);
         return result;
     }
 

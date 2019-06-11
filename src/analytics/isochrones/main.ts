@@ -1,3 +1,5 @@
+// @ts-ignore
+import { EventEmitter, Listener } from "events";
 import "isomorphic-fetch";
 import "reflect-metadata";
 import inBBox from "tiles-in-bbox";
@@ -9,24 +11,22 @@ import ILocation from "../../interfaces/ILocation";
 import defaultContainer from "../../inversify.config";
 import { IPathTree } from "../../pathfinding/pathfinder";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
+import ProfileProvider from "../../profile/ProfileProvider";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
-import { getDistanceBetweenTiles, getNeighborTiles, toTileCoordinate } from "./util";
+import { toTileCoordinate } from "./util";
 import { visualizeIsochrone } from "./visualize";
 
-interface ITileFrontier {
-    [id: string]: [RoutableTileCoordinate, number];
-}
-
-export default class IsochroneGenerator {
+// @ts-ignore
+export default class IsochroneGenerator implements EventEmitter {
     private context: Context;
 
     private pathfinderProvider: PathfinderProvider;
     private tileProvider: IRoutableTileProvider;
     private reachedTiles: Set<string>;
-    private tileFrontier: ITileFrontier;
     private startPoint: ILocation;
     private registry: RoutableTileRegistry;
+    private profileProvider: ProfileProvider;
 
     constructor(container = defaultContainer) {
         this.context = container.get<Context>(TYPES.Context);
@@ -34,95 +34,118 @@ export default class IsochroneGenerator {
         this.tileProvider = container.get<IRoutableTileProvider>(TYPES.RoutableTileProvider);
         this.pathfinderProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
         this.registry = container.get<RoutableTileRegistry>(TYPES.RoutableTileRegistry);
+        this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
         this.reachedTiles = new Set();
-        this.tileFrontier = {};
+    }
+
+    public addListener(type: string | symbol, listener: Listener): this {
+        this.context.addListener(type, listener);
+
+        return this;
+    }
+
+    public emit(type: string | symbol, ...args: any[]): boolean {
+        return this.context.emit(type, ...args);
+    }
+
+    public listenerCount(type: string | symbol): number {
+        return this.context.listenerCount(type);
+    }
+
+    public listeners(type: string | symbol): Listener[] {
+        return this.context.listeners(type);
+    }
+
+    public on(type: string | symbol, listener: Listener): this {
+        this.context.on(type, listener);
+
+        return this;
+    }
+
+    public once(type: string | symbol, listener: Listener): this {
+        this.context.once(type, listener);
+
+        return this;
+    }
+
+    public removeAllListeners(type?: string | symbol): this {
+        this.context.removeAllListeners(type);
+
+        return this;
+    }
+
+    public removeListener(type: string | symbol, listener: Listener): this {
+        this.context.removeListener(type, listener);
+
+        return this;
+    }
+
+    public setMaxListeners(n: number): this {
+        this.context.setMaxListeners(n);
+
+        return this;
     }
 
     public async init(point: ILocation) {
         this.startPoint = point;
         await this.fetchInitialTiles(point);
-        const initialTile = toTileCoordinate(point.latitude, point.longitude);
-        const tileId = this.tileProvider.getIdForTileCoords(initialTile);
-        this.tileFrontier[tileId] = [initialTile, 0];
     }
 
-    public async getIsochrone(maxCost: number, reset = true) {
-        // TODO, make the cost a duration instead of a distance
-        // TODO, properly support incremental isochrone computation
+    public async getIsochrone(maxDuration: number, reset = true) {
         const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm();
-
-        // load more data as needed, depending on how far the previous iteration got
-        for (const [_, tileData] of Object.entries(this.tileFrontier)) {
-            const [tile, tileCost] = tileData;
-            this.growFromTile(tile, maxCost - tileCost);
-        }
 
         // wait for all data to arrive
         await this.tileProvider.wait();
 
-        this.tileFrontier = {};
-
         let pathTree: IPathTree;
         pathfinder.setUseWeightedCost(false); // we want the raw durations
         if (reset) {
-            pathTree = pathfinder.start(Geo.getId(this.startPoint), maxCost);
+            pathTree = await pathfinder.start(Geo.getId(this.startPoint), maxDuration);
         } else {
-            pathTree = pathfinder.continue(maxCost);
+            pathTree = await pathfinder.continue(maxDuration);
         }
 
         const result = [];
         for (const [id, cost] of Object.entries(pathTree)) {
             const node = this.registry.getNode(id);
-
-            if (cost >= maxCost) {
-                const reachedTile = toTileCoordinate(node.latitude, node.longitude);
-                const tileId = this.tileProvider.getIdForTileCoords(reachedTile);
-
-                if (!this.tileFrontier[tileId] || this.tileFrontier[tileId][1] > cost) {
-                    // remember how fast we can reach every tile
-                    // future calls can use this to determine which additional tiles are needed
-                    this.tileFrontier[tileId] = [reachedTile, cost];
-                }
-            }
             result.push({ node, cost });
         }
 
-        return visualizeIsochrone(this.registry, pathTree, maxCost);
+        return visualizeIsochrone(this.registry, pathTree, maxDuration);
     }
 
-    private growFromTile(tileCoordinates: RoutableTileCoordinate, distance: number) {
-        // use flood fill to determine which tiles are needed
-        // slightly overkill, but conceptionally pretty simple
-        const done = new Set();
-        const queue = new Array();
+    private async fetchTile(coordinate: RoutableTileCoordinate) {
+        const tileId = this.tileProvider.getIdForTileCoords(coordinate);
+        if (!this.reachedTiles.has(tileId)) {
+            this.emit("TILE", coordinate);
+            this.reachedTiles.add(tileId);
 
-        for (const neighbor of getNeighborTiles(tileCoordinates)) {
-            queue.push(neighbor);
-        }
+            const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm();
+            const tile = await this.tileProvider.getByTileCoords(coordinate);
+            const boundaryNodes = new Set();
 
-        while (queue.length) {
-            const candidate = queue.pop();
-
-            const candidateId = this.tileProvider.getIdForTileCoords(candidate);
-            if (!done.has(candidateId)) {
-                done.add(candidateId);
-                if (distance - getDistanceBetweenTiles(tileCoordinates, candidate) > 0) {
-                    for (const neighbor of getNeighborTiles(candidate)) {
-                        queue.push(neighbor);
-                    }
+            for (const nodeId of tile.getNodes()) {
+                pathfinder.removeBreakPoint(nodeId);
+                const node = this.registry.getNode(nodeId);
+                if (tile.contains(node)) {
+                    boundaryNodes.add(nodeId);
                 }
             }
 
-            if (!this.reachedTiles.has(candidateId)) {
-                this.tileProvider.getByTileCoords(candidate);
-                this.reachedTiles.add(candidateId);
+            const self = this;
+            for (const nodeId of boundaryNodes) {
+                pathfinder.setBreakPoint(nodeId, async (on: string) => {
+                    const node = self.registry.getNode(on);
+                    const boundaryTileCoordinate = toTileCoordinate(node.latitude, node.longitude);
+                    await self.fetchTile(boundaryTileCoordinate);
+                });
             }
         }
     }
 
     private async fetchInitialTiles(from: ILocation) {
         const zoom = 14;
-        const padding = 0.02;
+        const padding = 0.01;
 
         const fromBBox = {
             top: from.latitude + padding,
@@ -133,12 +156,12 @@ export default class IsochroneGenerator {
 
         const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
             const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
-            this.growFromTile(coordinate, 1000); // a bit of prefetching
+            this.fetchTile(coordinate);
             return coordinate;
         });
 
-        // this 'get' won't do anything the prefetching hasn't already done
-        // but we need the tile set to embed the starting location
+        // this won't download anything new
+        // but we need the tile data to embed the starting location
         const fromTileset = await this.tileProvider.getMultipleByTileCoords(fromTileCoords);
         this.pathfinderProvider.embedLocation(from, fromTileset);
     }

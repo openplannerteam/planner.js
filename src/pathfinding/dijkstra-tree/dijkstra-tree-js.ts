@@ -11,16 +11,22 @@ interface IState {
   cost: number;
 }
 
+interface IBreakPointIndex {
+  [position: number]: (on: string) => Promise<void>;
+}
+
 @injectable()
 export default class DijkstraTree implements IShortestPathTreeAlgorithm {
   private nextQueue: IState[];
   private costs: number[];
   private graph: PathfindingGraph;
   private useWeightedCost: boolean;
+  private breakPoints: IBreakPointIndex;
 
   constructor() {
     this.graph = new PathfindingGraph();
     this.useWeightedCost = true;
+    this.breakPoints = {};
   }
 
   public setUseWeightedCost(useWeightedCost: boolean) {
@@ -31,8 +37,18 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
     this.graph = graph;
   }
 
-  public start(from: string, maxCost: number): IPathTree {
-    this.costs = [];
+  public setBreakPoint(on: string, callback: (on: string) => Promise<void>): void {
+    const position = this.graph.getNodeIndex(on);
+    this.breakPoints[position] = callback;
+  }
+
+  public removeBreakPoint(on: string): void {
+    const position = this.graph.getNodeIndex(on);
+    delete this.breakPoints[position];
+  }
+
+  public async start(from: string, maxCost: number): Promise<IPathTree> {
+    this.costs = [...Array(this.graph.getAdjacencyList().length)].fill(Infinity);
 
     const fromIndex = this.graph.getNodeIndex(from);
     this.costs[fromIndex] = 0;
@@ -41,19 +57,20 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
     return this.continue(maxCost);
   }
 
-  public continue(maxCost: number): IPathTree {
-    const missingCosts = this.graph.getAdjacencyList().length - this.costs.length;
-    this.costs = this.costs.concat([...Array(missingCosts)].map((_) => Infinity));
-
-    const queue = new TinyQueue(this.nextQueue, (a, b) => a.cost - b.cost);
+  public async continue(maxCost: number): Promise<IPathTree> {
+    const queue = new TinyQueue(this.nextQueue, (a, b) => a.duration - b.duration);
     this.nextQueue = [];
 
     while (queue.length) {
       const { position, distance, duration, cost } = queue.pop();
 
-      if (cost > this.costs[position]) {
+      if (duration > this.getCost(position)) {
         // we have already found a better way
         continue;
+      }
+
+      if (this.breakPoints[position]) {
+        await this.breakPoints[position](this.graph.getLabel(position));
       }
 
       if (cost > maxCost) {
@@ -68,9 +85,9 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
             position: edge.node,
           };
 
-          if (next.cost < this.costs[next.position]) {
+          if (next.duration < this.getCost(next.position)) {
             queue.push(next);
-            this.costs[next.position] = next.cost;
+            this.costs[next.position] = next.duration;
           }
         }
       }
@@ -80,11 +97,19 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
 
     for (const [position, cost] of this.costs.entries()) {
       if (cost !== Infinity) {
-        const label = this.graph.getLabels()[position];
+        const label = this.graph.getLabel(position);
         result[label] = cost;
       }
     }
 
     return result;
+  }
+
+  private getCost(position: number): number {
+    if (position >= this.costs.length) {
+      const missingCosts = this.graph.getAdjacencyList().length - this.costs.length;
+      this.costs = this.costs.concat([...Array(missingCosts)].fill(Infinity));
+    }
+    return this.costs[position];
   }
 }

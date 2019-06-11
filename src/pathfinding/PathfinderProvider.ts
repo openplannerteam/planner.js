@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/node";
 import RoutableTileRegistry from "../entities/tiles/registry";
-import { RoutableTileSet } from "../entities/tiles/set";
+import { RoutableTile } from "../entities/tiles/tile";
 import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/way";
 import ILocation from "../interfaces/ILocation";
 import Profile from "../profile/Profile";
@@ -86,7 +86,7 @@ export default class PathfinderProvider {
     }
   }
 
-  public embedLocation(p: ILocation, tileset: RoutableTileSet, invert = false) {
+  public embedLocation(p: ILocation, tileset: RoutableTile, invert = false) {
     for (const profile of this.profileProvider.getProfiles()) {
       let bestDistance = Infinity;
       let bestEmbedding: IPointEmbedding;

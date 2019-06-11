@@ -2,7 +2,7 @@ import { DistanceM, DurationMs } from "../interfaces/units";
 import PathfindingGraph from "./graph";
 
 export interface IPathTree {
-    [node: string]: DistanceM;
+    [node: string]: DurationMs;
 }
 
 export interface IPathSummary {
@@ -14,6 +14,9 @@ export interface IPathSummary {
 interface IPathfinder {
     setGraph(graph: PathfindingGraph): void;
     setUseWeightedCost(useWeightedCost: boolean): void;
+
+    setBreakPoint(on: string, callback: (on: string) => Promise<void>): void;
+    removeBreakPoint(on: string): void;
 }
 
 export interface IShortestPathAlgorithm extends IPathfinder {
@@ -21,6 +24,6 @@ export interface IShortestPathAlgorithm extends IPathfinder {
 }
 
 export interface IShortestPathTreeAlgorithm extends IPathfinder {
-    start(from: string, maxCost: number): IPathTree;
-    continue(maxCost: number): IPathTree;
+    start(from: string, maxCost: number): Promise<IPathTree>;
+    continue(maxCost: number): Promise<IPathTree>;
 }

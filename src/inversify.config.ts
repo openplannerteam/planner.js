@@ -117,8 +117,6 @@ container.bind<RoutableTileRegistry>(TYPES.RoutableTileRegistry).to(RoutableTile
 container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
 
 // Bind catalog
-// container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
-
 const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
 container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
 

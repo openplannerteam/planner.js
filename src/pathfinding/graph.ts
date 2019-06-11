@@ -30,8 +30,8 @@ export default class PathfindingGraph {
         return this.nodes;
     }
 
-    public getLabels() {
-        return this.labels;
+    public getLabel(position: number) {
+        return this.labels[position];
     }
 
     public getAdjacencyList() {
