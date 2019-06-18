@@ -105,13 +105,6 @@ export default class IsochroneGenerator implements EventEmitter {
             pathTree = await pathfinder.continue(maxDuration);
         }
 
-        const result = [];
-        for (const [id, branch] of Object.entries(pathTree)) {
-            const { duration, previousNode } = branch;
-            const node = this.registry.getNode(id);
-            result.push({ node, duration });
-        }
-
         return visualizeIsochrone(this.registry, pathTree, maxDuration);
     }
 
