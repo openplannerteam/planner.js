@@ -189,6 +189,8 @@ export default class PathfinderProvider {
   }
 
   private addEdge(profile: Profile, from: ILocation, to: ILocation, way: RoutableTileWay, graph?: PathfindingGraph) {
+    // this specifically adds an edge that corresponds to an actual street
+    // if you need to add any other edge, you'll need to create a different method
     graph = graph || this.getGraphForProfile(profile);
     const distance = profile.getDistance(from, to, way);
     const duration = profile.getDuration(from, to, way);

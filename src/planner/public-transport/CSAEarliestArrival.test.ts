@@ -1,5 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
+import Context from "../../Context";
 import Defaults from "../../Defaults";
 import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
@@ -11,13 +12,14 @@ import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetc
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import IStep from "../../interfaces/IStep";
+import defaultContainer from "../../inversify.config";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
+import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import CSAEarliestArrival from "./CSAEarliestArrival";
-import JourneyExtractorEarliestArrival from "./JourneyExtractorEarliestArrival";
 
 describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
   describe("mock data", () => {
@@ -34,9 +36,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorEarliestArrival(
-        locationResolver,
-      );
 
       return new CSAEarliestArrival(
         connectionFetcher,
@@ -44,7 +43,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        journeyExtractor,
+        defaultContainer.get<Context>(TYPES.Context),
       );
     };
 
@@ -188,9 +187,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
 
       const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
-      const journeyExtractor = new JourneyExtractorEarliestArrival(
-        locationResolver,
-      );
 
       const CSA = new CSAEarliestArrival(
         connectionFetcher,
@@ -198,7 +194,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        journeyExtractor,
+        defaultContainer.get<Context>(TYPES.Context),
       );
 
       return new QueryRunnerDefault(locationResolver, CSA);

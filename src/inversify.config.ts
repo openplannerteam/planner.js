@@ -32,7 +32,6 @@ import { DijkstraWasm } from "./pathfinding/dijkstra/dijkstra-wasm";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "./pathfinding/pathfinder";
 import PathfinderProvider from "./pathfinding/PathfinderProvider";
 import CSAEarliestArrival from "./planner/public-transport/CSAEarliestArrival";
-import CSAEarliestArrival2 from "./planner/public-transport/CSAEarliestArrival2";
 import CSAProfile from "./planner/public-transport/CSAProfile";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
@@ -60,7 +59,7 @@ container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(CSAEarliestArrival2);
+  .to(CSAEarliestArrival);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
