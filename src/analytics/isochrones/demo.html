@@ -92,20 +92,6 @@
                 }
             }
 
-            /*
-            for (const isochrone of isochrones) {
-        
-                for (const ring of isochrone) {
-                    if (ring.length === 0) {
-                        continue;
-                    }
-                    polygonData = ring.map((p) => [p.latitude, p.longitude]);
-                    var firstpolyline = new L.polyline(polygonData);
-                    firstpolyline.addTo(map);
-                }
-            }
-            */
-
             const points = data.points || [];
             for (const p of points) {
                 var firstpolyline = new L.marker([p.latitude, p.longitude]);

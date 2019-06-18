@@ -2,7 +2,12 @@ import { DistanceM, DurationMs } from "../interfaces/units";
 import PathfindingGraph from "./graph";
 
 export interface IPathTree {
-    [node: string]: DurationMs;
+    [node: string]: IPathTreeBranch;
+}
+
+export interface IPathTreeBranch {
+    duration: DurationMs;
+    previousNode: string;
 }
 
 export interface IPathSummary {

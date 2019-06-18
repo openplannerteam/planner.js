@@ -19,6 +19,7 @@ interface IBreakPointIndex {
 export default class DijkstraTree implements IShortestPathTreeAlgorithm {
   private nextQueue: IState[];
   private costs: number[];
+  private previousNodes: number[];
   private graph: PathfindingGraph;
   private useWeightedCost: boolean;
   private breakPoints: IBreakPointIndex;
@@ -49,6 +50,7 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
 
   public async start(from: string, maxCost: number): Promise<IPathTree> {
     this.costs = [...Array(this.graph.getAdjacencyList().length)].fill(Infinity);
+    this.previousNodes = [...Array(this.graph.getAdjacencyList().length)].fill(undefined);
 
     const fromIndex = this.graph.getNodeIndex(from);
     this.costs[fromIndex] = 0;
@@ -83,11 +85,13 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
             duration: duration + edge.duration,
             cost: cost + edge.cost,
             position: edge.node,
+            previousPosition: position,
           };
 
           if (next.duration < this.getCost(next.position)) {
             queue.push(next);
             this.costs[next.position] = next.duration;
+            this.previousNodes[next.position] = position;
           }
         }
       }
@@ -96,10 +100,9 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
     const result: IPathTree = {};
 
     for (const [position, cost] of this.costs.entries()) {
-      if (cost !== Infinity) {
-        const label = this.graph.getLabel(position);
-        result[label] = cost;
-      }
+      const label = this.graph.getLabel(position);
+      const previousLabel = this.graph.getLabel(this.previousNodes[position]);
+      result[label] = { duration: cost, previousNode: previousLabel };
     }
 
     return result;
@@ -109,6 +112,7 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
     if (position >= this.costs.length) {
       const missingCosts = this.graph.getAdjacencyList().length - this.costs.length;
       this.costs = this.costs.concat([...Array(missingCosts)].fill(Infinity));
+      this.previousNodes = this.previousNodes.concat([...Array(missingCosts)].fill(undefined));
     }
     return this.costs[position];
   }

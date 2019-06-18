@@ -32,11 +32,12 @@ export function visualizeIsochrone(registry: RoutableTileRegistry, pathTree: IPa
 
     const nodes: NodeList = [];
     const costs = {};
-    for (const [id, cost] of Object.entries(pathTree)) {
+    for (const [id, branch] of Object.entries(pathTree)) {
+        const { duration } = branch;
         const node = registry.getNode(id);
-        if (node) {
+        if (node && duration !== Infinity) {
             nodes.push(node);
-            costs[node.id] = cost;
+            costs[node.id] = duration;
         }
     }
 
@@ -126,6 +127,7 @@ function createPolygon(
     // the others will form holes
     for (const externalNodes of externalClusters) {
         const borderLocations: ILocation[] = [];
+        const borderNodeIds = new Set();
         for (const nodeIndex of Array(nodes.length).keys()) {
             if (!externalNodes.has(nodeIndex) && internalNodes.has(nodeIndex)) {
                 for (const neighbor of delaunay.neighbors(nodeIndex)) {
