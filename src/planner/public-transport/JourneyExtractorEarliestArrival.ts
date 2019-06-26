@@ -13,11 +13,6 @@ import IProfileByStop from "./CSA/data-structure/stops/IProfileByStop";
 import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
 import IJourneyExtractor from "./IJourneyExtractor";
 
-/**
- * The earliest arrival journey based on the profiles and query from [[CSAEarliestArrival]].
- * A journey is an [[IPath]] that consist of several [[IStep]]s.
- *
- */
 @injectable()
 export default class JourneyExtractorEarliestArrival implements IJourneyExtractor {
   private readonly locationResolver: ILocationResolver;
@@ -26,7 +21,7 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
 
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.Context)context?: Context,
+    @inject(TYPES.Context) context?: Context,
   ) {
     this.locationResolver = locationResolver;
     this.context = context;
@@ -39,43 +34,38 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
     const path: Path = Path.create();
 
     const departureStopId: string = query.from[0].id;
-
     let currentStopId: string = query.to[0].id;
-    let currentProfile: ITransferProfile = profilesByStop[currentStopId];
 
-    while (currentStopId !== departureStopId && (currentProfile.enterConnection || currentProfile.path)) {
-      const { enterConnection, exitConnection, path: profilePath } = currentProfile;
+    while (currentStopId !== departureStopId &&
+      profilesByStop[currentStopId] &&
+      profilesByStop[currentStopId].exitConnection) {
 
-      if (profilePath) {
-        currentStopId = profilePath.getStartLocationId();
+      const currentProfile: ITransferProfile = profilesByStop[currentStopId];
+      const { enterConnection, exitConnection } = currentProfile;
+      const promises = [
+        this.locationResolver.resolve(enterConnection.departureStop),
+        this.locationResolver.resolve(exitConnection.arrivalStop),
+      ];
+      const [enterLocation, exitLocation] = await Promise.all(promises);
 
-        if (currentStopId === departureStopId) {
-          const lastStep = path.steps[path.steps.length - 1];
-          const timeToAdd = lastStep.startTime.getTime() - profilePath.steps[0].stopTime.getTime();
+      const arrivalTime = exitConnection.arrivalTime;
+      const departureTime = enterConnection.departureTime;
+      const duration = arrivalTime.getTime() - departureTime.getTime();
 
-          profilePath.addTime(timeToAdd);
-        }
+      const step = new Step(
+        enterLocation,
+        exitLocation,
+        exitConnection.travelMode,
+        { average: duration },
+        departureTime,
+        arrivalTime,
+        undefined,
+        enterConnection.id,
+        exitConnection.id,
+      );
 
-        path.addPath(profilePath);
-      }
-
-      if (currentProfile.enterConnection && currentProfile.exitConnection) {
-        const enterLocation: ILocation = await this.locationResolver.resolve(enterConnection.departureStop);
-        const exitLocation: ILocation = await this.locationResolver.resolve(exitConnection.arrivalStop);
-
-        const step: IStep = Step.createFromConnections(
-          enterConnection,
-          exitConnection,
-        );
-
-        step.startLocation = enterLocation;
-        step.stopLocation = exitLocation;
-        path.addStep(step);
-
-        currentStopId = enterConnection.departureStop;
-      }
-
-      currentProfile = profilesByStop[currentStopId];
+      path.addStep(step);
+      currentStopId = enterConnection.departureStop;
     }
 
     if (!path.steps.length) {

@@ -76,10 +76,24 @@ export default class RoutableTileFetcherDefault implements IRoutableTileFetcher 
     waysView.addFilter((entity) =>
       entity[URI.inNS(RDF, "type")] === URI.inNS(OSM, "Way"),
     );
-    waysView.addMapping(URI.inNS(OSM, "hasNodes"), "segments"); // todo: mapping to segments
-    waysView.addMapping(URI.inNS(RDFS, "label"), "label");
-    waysView.addMapping(URI.inNS(OSM, "maxspeed"), "maxSpeed");
+    waysView.addMapping(URI.inNS(OSM, "hasNodes"), "segments");
+    waysView.addMapping(URI.inNS(OSM, "name"), "name");
+    waysView.addMapping(URI.inNS(OSM, "access"), "accessRestrictions");
+    waysView.addMapping(URI.inNS(OSM, "bicycle"), "bicycleAccessRestrictions");
+    waysView.addMapping(URI.inNS(OSM, "construction"), "constructionKind");
+    waysView.addMapping(URI.inNS(OSM, "crossing"), "crossingKind");
+    waysView.addMapping(URI.inNS(OSM, "cycleway"), "cyclewayKind");
+    waysView.addMapping(URI.inNS(OSM, "footway"), "footwayKind");
     waysView.addMapping(URI.inNS(OSM, "highway"), "highwayKind");
+    waysView.addMapping(URI.inNS(OSM, "maxspeed"), "maxSpeed");
+    waysView.addMapping(URI.inNS(OSM, "motor_vehicle"), "motorVehicleAccessRestrictions");
+    waysView.addMapping(URI.inNS(OSM, "motorcar"), "motorcarAccessRestrictions");
+    waysView.addMapping(URI.inNS(OSM, "oneway_bicycle"), "onewayBicycleKind");
+    waysView.addMapping(URI.inNS(OSM, "oneway"), "onewayKind");
+    waysView.addMapping(URI.inNS(OSM, "smoothness"), "smoothnessKind");
+    waysView.addMapping(URI.inNS(OSM, "surface"), "surfaceKind");
+    waysView.addMapping(URI.inNS(OSM, "tracktype"), "trackType");
+    waysView.addMapping(URI.inNS(OSM, "vehicle"), "vehicleAccessRestrictions");
     return waysView;
   }
 }

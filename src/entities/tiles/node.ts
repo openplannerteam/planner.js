@@ -1,3 +1,4 @@
+import Barrier from "../../enums/Barrier";
 import ILocation from "../../interfaces/ILocation";
 
 export class RoutableTileNode implements ILocation {
@@ -8,6 +9,8 @@ export class RoutableTileNode implements ILocation {
     public latitude: number;
     public longitude: number;
     public id: string;
+
+    public barrierKind?: Barrier;
 
     constructor(id: string) {
         this.id = id;

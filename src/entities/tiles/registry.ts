@@ -22,7 +22,7 @@ export default class RoutableTileRegistry {
         } else {
             // creates a new Way instance
             // avoids overwriting data from the individual tile definitions
-            // otherwise ways might refer to tiles that aren't in the tile
+            // otherwise ways might refer to nodes that aren't in the tile
             this.ways[way.id] = way.mergeDefinitions(this.ways[way.id]);
         }
     }

@@ -24,7 +24,7 @@ import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
 import IEnterConnectionByTrip from "./CSA/data-structure/trips/IEnterConnectionByTrip";
 import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
-import JourneyExtractor2 from "./JourneyExtractor2";
+import JourneyExtractorEarliestArrival from "./JourneyExtractorEarliestArrival";
 
 interface IFinalReachableStops {
   [stop: string]: IReachableStop;
@@ -70,7 +70,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     this.initialReachableStopsFinder = initialReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
     this.context = context;
-    this.journeyExtractor = new JourneyExtractor2(locationResolver);
+    this.journeyExtractor = new JourneyExtractorEarliestArrival(locationResolver);
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {

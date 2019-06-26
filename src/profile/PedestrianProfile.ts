@@ -1,6 +1,6 @@
 import { RoutableTileNode } from "../entities/tiles/node";
 import { RoutableTileWay } from "../entities/tiles/way";
-import HighwayKind from "../enums/HighwayKind";
+import Highway from "../enums/Highway";
 import { DistanceM, DurationMs } from "../interfaces/units";
 import Geo from "../util/Geo";
 import Profile from "./Profile";
@@ -15,13 +15,13 @@ export default class PedestrianProfile extends Profile {
     }
 
     public hasAccess(way: RoutableTileWay): boolean {
-        if (way.highwayKind === HighwayKind.Motorway) {
+        if (way.highwayKind === Highway.Motorway) {
             return false;
-        } else if (way.highwayKind === HighwayKind.MotorwayLink) {
+        } else if (way.highwayKind === Highway.MotorwayLink) {
             return false;
-        } else if (way.highwayKind === HighwayKind.Trunk) {
+        } else if (way.highwayKind === Highway.Trunk) {
             return false;
-        } else if (way.highwayKind === HighwayKind.TrunkLink) {
+        } else if (way.highwayKind === Highway.TrunkLink) {
             return false;
         }
 
@@ -52,31 +52,31 @@ export default class PedestrianProfile extends Profile {
     }
 
     public getMultiplier(way: RoutableTileWay): number {
-        if (way.highwayKind === HighwayKind.Motorway) {
+        if (way.highwayKind === Highway.Motorway) {
             return 1.3;
-        } else if (way.highwayKind === HighwayKind.MotorwayLink) {
+        } else if (way.highwayKind === Highway.MotorwayLink) {
             return 1.3;
-        } else if (way.highwayKind === HighwayKind.Trunk) {
+        } else if (way.highwayKind === Highway.Trunk) {
             return 1.3;
-        } else if (way.highwayKind === HighwayKind.TrunkLink) {
+        } else if (way.highwayKind === Highway.TrunkLink) {
             return 1.3;
-        } else if (way.highwayKind === HighwayKind.Service) {
+        } else if (way.highwayKind === Highway.Service) {
             return 1.1;
-        } else if (way.highwayKind === HighwayKind.Tertiary) {
+        } else if (way.highwayKind === Highway.Tertiary) {
             return 1.1;
-        } else if (way.highwayKind === HighwayKind.TertiaryLink) {
+        } else if (way.highwayKind === Highway.TertiaryLink) {
             return 1.1;
-        } else if (way.highwayKind === HighwayKind.Secondary) {
+        } else if (way.highwayKind === Highway.Secondary) {
             return 1.1;
-        } else if (way.highwayKind === HighwayKind.SecondaryLink) {
+        } else if (way.highwayKind === Highway.SecondaryLink) {
             return 1.1;
-        } else if (way.highwayKind === HighwayKind.Primary) {
+        } else if (way.highwayKind === Highway.Primary) {
             return 1.1;
-        } else if (way.highwayKind === HighwayKind.PrimaryLink) {
+        } else if (way.highwayKind === Highway.PrimaryLink) {
             return 1.1;
-        } else if (way.highwayKind === HighwayKind.LivingStreet) {
+        } else if (way.highwayKind === Highway.LivingStreet) {
             return 0.8;
-        } else if (way.highwayKind === HighwayKind.Footway) {
+        } else if (way.highwayKind === Highway.Footway) {
             return 0.8;
         }
 
