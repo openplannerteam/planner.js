@@ -28,7 +28,6 @@ import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDef
 import { LDLoader } from "./loader/ldloader";
 import DijkstraTree from "./pathfinding/dijkstra-tree/dijkstra-tree-js";
 import { Dijkstra } from "./pathfinding/dijkstra/dijkstra-js";
-import { DijkstraWasm } from "./pathfinding/dijkstra/dijkstra-wasm";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "./pathfinding/pathfinder";
 import PathfinderProvider from "./pathfinding/PathfinderProvider";
 import CSAEarliestArrival from "./planner/public-transport/CSAEarliestArrival";
