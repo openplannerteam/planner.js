@@ -30,6 +30,8 @@ interface IFinalReachableStops {
   [stop: string]: IReachableStop;
 }
 
+// Implementation is as close as possible to the original paper: https://arxiv.org/pdf/1703.05997.pdf
+
 @injectable()
 export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private readonly connectionsProvider: IConnectionsProvider;
