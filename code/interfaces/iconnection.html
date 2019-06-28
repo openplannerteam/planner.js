@@ -941,9 +941,6 @@ img { max-width: 100%; }
 					<a href="iconnection.html#gtfs_route" class="tsd-kind-icon">gtfs:route</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="iconnection.html#gtfs_trip" class="tsd-kind-icon">gtfs:trip</a>
-				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="iconnection.html#id" class="tsd-kind-icon">id</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -951,6 +948,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="iconnection.html#travelmode" class="tsd-kind-icon">travel<wbr>Mode</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="iconnection.html#tripid" class="tsd-kind-icon">trip<wbr>Id</a>
 				</li>
 			</ul>
 		</li>
@@ -970,7 +970,7 @@ img { max-width: 100%; }
 				</div>
 				<dl class="tsd-comment-tags">
 					<dt>property</dt>
-					<dd><p>&quot;gtfs:trip&quot; (optional) an identifier for the trip this vehicle is making with this connection</p>
+					<dd><p>&quot;tripId&quot; (optional) an identifier for the trip this vehicle is making with this connection</p>
 					</dd>
 					<dt>property</dt>
 					<dd><p>nextConnection (optional) an identifier for the next connection the vehicle is going to make</p>
@@ -1006,10 +1006,10 @@ img { max-width: 100%; }
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#gtfs_headsign" class="tsd-kind-icon">gtfs:headsign</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#gtfs_pickuptype" class="tsd-kind-icon">gtfs:pickup<wbr>Type</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#gtfs_route" class="tsd-kind-icon">gtfs:route</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#gtfs_trip" class="tsd-kind-icon">gtfs:trip</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#id" class="tsd-kind-icon">id</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#nextconnection" class="tsd-kind-icon">next<wbr>Connection</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#travelmode" class="tsd-kind-icon">travel<wbr>Mode</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnection.html#tripid" class="tsd-kind-icon">trip<wbr>Id</a></li>
 						</ul>
 					</section>
 				</div>
@@ -1023,7 +1023,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">arrival<wbr>Delay<span class="tsd-signature-symbol">:</span> <a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L23">fetcher/connections/IConnection.ts:23</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L23">fetcher/connections/IConnection.ts:23</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1033,7 +1033,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">arrival<wbr>Stop<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L22">fetcher/connections/IConnection.ts:22</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L22">fetcher/connections/IConnection.ts:22</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1043,7 +1043,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">arrival<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L21">fetcher/connections/IConnection.ts:21</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L21">fetcher/connections/IConnection.ts:21</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1053,7 +1053,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">departure<wbr>Delay<span class="tsd-signature-symbol">:</span> <a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L27">fetcher/connections/IConnection.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L27">fetcher/connections/IConnection.ts:27</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1063,7 +1063,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">departure<wbr>Stop<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L26">fetcher/connections/IConnection.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L26">fetcher/connections/IConnection.ts:26</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1073,7 +1073,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">departure<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L25">fetcher/connections/IConnection.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L25">fetcher/connections/IConnection.ts:25</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1083,7 +1083,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">gtfs:drop<wbr>Off<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="../enums/dropofftype.html" class="tsd-signature-type">DropOffType</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L33">fetcher/connections/IConnection.ts:33</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L33">fetcher/connections/IConnection.ts:33</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1093,7 +1093,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">gtfs:headsign<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L35">fetcher/connections/IConnection.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L35">fetcher/connections/IConnection.ts:35</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1103,7 +1103,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">gtfs:pickup<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="../enums/pickuptype.html" class="tsd-signature-type">PickupType</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L34">fetcher/connections/IConnection.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L34">fetcher/connections/IConnection.ts:34</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1113,17 +1113,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">gtfs:route<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L31">fetcher/connections/IConnection.ts:31</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="gtfs_trip" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> gtfs:trip</h3>
-				<div class="tsd-signature tsd-kind-icon">gtfs:trip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L32">fetcher/connections/IConnection.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L32">fetcher/connections/IConnection.ts:32</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1133,7 +1123,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L18">fetcher/connections/IConnection.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L18">fetcher/connections/IConnection.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1143,7 +1133,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">next<wbr>Connection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L29">fetcher/connections/IConnection.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L29">fetcher/connections/IConnection.ts:29</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1153,7 +1143,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">travel<wbr>Mode<span class="tsd-signature-symbol">:</span> <a href="../enums/travelmode.html" class="tsd-signature-type">TravelMode</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/fetcher/connections/IConnection.ts#L19">fetcher/connections/IConnection.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L19">fetcher/connections/IConnection.ts:19</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="tripid" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> trip<wbr>Id</h3>
+				<div class="tsd-signature tsd-kind-icon">trip<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5667365/src/fetcher/connections/IConnection.ts#L30">fetcher/connections/IConnection.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
