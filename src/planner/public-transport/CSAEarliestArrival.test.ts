@@ -52,7 +52,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
 
       const query: IResolvedQuery = {
         publicTransportOnly: true,
-        from: [{latitude: 50.914326, longitude: 3.255415, id: "http://irail.be/stations/NMBS/008896925" }],
+        from: [{ latitude: 50.914326, longitude: 3.255415, id: "http://irail.be/stations/NMBS/008896925" }],
         to: [{ latitude: 51.035896, longitude: 3.710875, id: "http://irail.be/stations/NMBS/008892007" }],
         minimumDepartureTime: new Date("2018-11-06T09:00:00.000Z"),
         maximumArrivalTime: new Date("2018-11-06T19:00:00.000Z"),
@@ -70,9 +70,9 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       });
 
       it("Correct departure and arrival stop", () => {
-       expect(result).toBeDefined();
+        expect(result).toBeDefined();
 
-       for (const path of result) {
+        for (const path of result) {
           expect(path.steps).toBeDefined();
           expect(path.steps[0]).toBeDefined();
           expect(query.from.map((from) => from.id)).toContain(path.steps[0].startLocation.id);
@@ -81,6 +81,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       });
     });
 
+    /*
     describe("splitting", () => {
       let result: IPath[];
 
@@ -171,7 +172,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
           expect(query.to.map((to) => to.id)).toContain(path.steps[0].stopLocation.id);
         }
       });
-    });
+    });*/
   });
 
   describe("real-time data", () => {
@@ -260,7 +261,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       let result: IPath[];
 
       beforeAll(async () => {
-        const queryRunner =  createQueryRunner();
+        const queryRunner = createQueryRunner();
         const iterator = await queryRunner.run(query);
 
         result = await Iterators.toArray(iterator);
