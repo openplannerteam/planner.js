@@ -116,7 +116,7 @@ export default class IsochroneGenerator implements EventEmitter {
 
             const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm();
             const tile = await this.tileProvider.getByTileCoords(coordinate);
-            const boundaryNodes = new Set();
+            const boundaryNodes: Set<string> = new Set();
 
             for (const nodeId of tile.getNodes()) {
                 pathfinder.removeBreakPoint(nodeId);

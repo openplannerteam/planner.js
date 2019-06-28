@@ -15,7 +15,7 @@ const fetcher = new RoutableTileFetcherDefault(
 test("[RoutableTileFetcherDefault] data completeness", async () => {
   jest.setTimeout(15000);
 
-  const expectedNodes = new Set();
+  const expectedNodes: Set<string> = new Set();
   const tile = await fetcher.get("https://tiles.openplanner.team/planet/14/8361/5482/");
   for (const wayId of tile.getWays()) {
     const way = registry.getWay(wayId);
