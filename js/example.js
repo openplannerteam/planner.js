@@ -12,7 +12,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new Planner.Planner();
+const planner = new Planner();
 
 planner.prefetchStops();
 planner.prefetchConnections();
@@ -293,7 +293,7 @@ function getRandomColor() {
 }
 
 function getTravelTime(path) {
-  return path.steps.reduce((time, step) => time + step.duration.average, 0) / 60000;
+  return path.steps.reduce((time, step) => time + step.duration.minimum, 0) / 60000;
 }
 
 function getTransferTime(path) {
@@ -369,9 +369,9 @@ function addResultPanel(path, color) {
       const duration = document.createElement("div");
       duration.className = "duration";
       duration.innerHTML =
-        "Duration: average " +
-        step.duration.average / (60 * 1000) +
-        " min";
+        "Duration: minimum " +
+        step.duration.minimum / (60 * 1000) +
+        "min";
       details.appendChild(duration);
     }
 
@@ -468,7 +468,7 @@ function runQuery(query) {
       to: query[1],
       minimumDepartureTime: new Date(),
       maximumWalkingDistance,
-      maximumTransferDuration: Planner.Planner.Units.fromMinutes(30), // 30 minutes
+      maximumTransferDuration: Planner.Units.fromMinutes(30), // 30 minutes
       minimumWalkingSpeed: 3
     })
     .take(amount)
