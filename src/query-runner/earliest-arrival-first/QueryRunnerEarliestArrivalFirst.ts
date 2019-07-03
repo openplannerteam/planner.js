@@ -97,7 +97,6 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
         this.initialReachableStopsFinder,
         this.transferReachableStopsFinder,
         this.finalReachableStopsFinder,
-        this.journeyExtractorEarliestArrival,
         this.context,
       );
 

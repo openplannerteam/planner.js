@@ -8,7 +8,7 @@ $ npm install plannerjs
 
 Include it in the browser:
 ```html
-<script src="https://openplannerteam.github.io/planner.js/js/planner-latest.js"></script>
+<script src="https://planner.js.org/js/planner-latest.js"></script>
 ```
 
 Include it in your JavaScript project:
@@ -22,7 +22,7 @@ import Planner              from 'plannerjs';
 
 Use it in both environments:
 ```javascript
-const planner = new Planner();
+const planner = new Planner.Planner();
 
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
@@ -36,10 +36,10 @@ planner.query({
  
   maximumWalkingDistance: 200, // meters
   
-  minimumTransferDuration: Planner.Units.fromMinutes(1),
-  maximumTransferDuration: Planner.Units.fromMinutes(30),
+  minimumTransferDuration: Planner.Planner.Units.fromMinutes(1),
+  maximumTransferDuration: Planner.Planner.Units.fromMinutes(30),
   
-  maximumTravelDuration: Planner.Units.fromHours(1.5),
+  maximumTravelDuration: Planner.Planner.Units.fromHours(1.5),
   
   maximumTransfers: 4,
 })
@@ -57,7 +57,7 @@ planner.query({
 
 ## Documentation
 
-For further instructions, follow the documentation at https://openplannerteam.github.io/planner.js/
+For further instructions, follow the documentation at https://planner.js.org/
 
 ## Developing
 

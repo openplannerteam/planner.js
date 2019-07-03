@@ -29,6 +29,10 @@ export default class ExponentialQueryIterator extends AsyncIterator<IResolvedQue
 
     this.timespan *= 2;
 
+    if (this.timespan > 2 * 24 * 60 * 60 * 1000) {
+      this.close();
+    }
+
     return Object.assign({}, this.baseQuery, {maximumArrivalTime});
   }
 }

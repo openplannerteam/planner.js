@@ -34,7 +34,7 @@ export default class ProfileUtil {
     maximumTransferDuration: DurationMs,
   ): IArrivalTimeByTransfers {
     const { arrivalStop, arrivalTime } = connection;
-    const trip: string = connection["gtfs:trip"];
+    const trip: string = connection.tripId;
 
     if (connection["gtfs:dropOffType"] !== DropOffType.NotAvailable) {
 
@@ -56,8 +56,8 @@ export default class ProfileUtil {
     }
 
     return Array(maxLegs + 1).fill({
-      "arrivalTime": Infinity,
-      "gtfs:trip": trip,
+      arrivalTime: Infinity,
+      tripId: trip,
     });
   }
 }

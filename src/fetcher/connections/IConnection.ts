@@ -10,7 +10,7 @@ import { DurationMs } from "../../interfaces/units";
  * for the actual arrival and departureTime.
  * The arrivalDelay and departureDelay then again contain the duration in which these times deviate
  * from the planned time.
- * @property "gtfs:trip" (optional) an identifier for the trip this vehicle is making with this connection
+ * @property "tripId" (optional) an identifier for the trip this vehicle is making with this connection
  * @property nextConnection (optional) an identifier for the next connection the vehicle is going to make
  * @property TravelMode The type of vehicle that is used, chosen from an enum [[TravelMode]]
  */
@@ -27,9 +27,9 @@ export default interface IConnection {
   departureDelay?: DurationMs;
 
   nextConnection?: string[];
+  tripId?: string;
 
   "gtfs:route"?: string;
-  "gtfs:trip"?: string;
   "gtfs:dropOffType"?: DropOffType;
   "gtfs:pickupType"?: PickupType;
   "gtfs:headsign"?: string;

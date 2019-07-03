@@ -54,7 +54,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
 
   private profilesByStop: IProfilesByStop = {}; // S
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
-  private durationToTargetByStop: DurationMs[] = [];
+  private durationToTargetByStop = {};
   private gtfsTripByConnection = {};
   private initialReachableStops: IReachableStop[] = [];
 
@@ -268,7 +268,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
         this.query.minimumWalkingSpeed,
       );
 
-    if (reachableStops.length <= 1 && reachableStops[0].stop.id === geoId) {
+    if (reachableStops.length < 1) {
       if (this.context) {
         this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
       }
@@ -313,7 +313,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
       }
     }
 
-    if (this.initialReachableStops.length <= 1 && this.initialReachableStops[0].stop.id === geoId) {
+    if (this.initialReachableStops.length < 1) {
       if (this.context) {
         this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
       }
@@ -360,8 +360,8 @@ export default class CSAProfile implements IPublicTransportPlanner {
 
         if (!minimumArrivalTime || tripArrivalTime < minimumArrivalTime) {
           earliestArrivalTimeByTransfers[amountOfTransfers] = {
-            "arrivalTime": tripArrivalTime,
-            "gtfs:trip": tripId,
+            arrivalTime: tripArrivalTime,
+            tripId,
           };
           minimumArrivalTime = tripArrivalTime;
         }

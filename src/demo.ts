@@ -1,11 +1,11 @@
+import Planner from ".";
 import EventType from "./enums/EventType";
-import Planner from "./index";
 import IPath from "./interfaces/IPath";
 import Units from "./util/Units";
 
 export default async (logResults) => {
 
-  const planner = new Planner();
+  const planner = new Planner.Planner();
 
   planner.prefetchStops();
   planner.prefetchConnections();
@@ -17,10 +17,11 @@ export default async (logResults) => {
     // let logFetch = true;
 
     if (logResults) {
-      console.log("Start prefetch");
+      console.log(`${new Date()} Start prefetch`);
     }
 
     planner
+      .setProfileID("PEDESTRIAN")
       .on(EventType.InvalidQuery, (error) => {
         console.log("InvalidQuery", error);
       })
@@ -56,13 +57,13 @@ export default async (logResults) => {
       });
   }
 
-  return wait(5000)
+  return wait(10000)
     .then(() => new Promise((resolve, reject) => {
       if (logResults) {
-        console.log("Start query");
+        console.log(`${new Date()} Start query`);
       }
 
-      const amount = 3;
+      const amount = 1;
       let i = 0;
 
       planner.query({
@@ -75,6 +76,10 @@ export default async (logResults) => {
         // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
         from: "Ingelmunster", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+        // from: { latitude: 50.93278, longitude: 5.32665 }, // Pita Aladin, Hasselt
+        // to: { latitude: 50.7980187, longitude: 3.1877779 }, // Burger Pita Pasta, Menen
+        // from: "Hasselt",
+        // to: "Kortrijk",
         minimumDepartureTime: new Date(),
         maximumTransferDuration: Units.fromMinutes(30),
       })
@@ -86,6 +91,7 @@ export default async (logResults) => {
           ++i;
 
           if (logResults) {
+            console.log(new Date());
             console.log(i);
             console.log(JSON.stringify(path, null, " "));
             console.log("\n");

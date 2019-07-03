@@ -26,8 +26,19 @@ export default class LocationResolverConvenience implements ILocationResolver {
   }
 
   public async resolve(input: ILocation | IStop | string): Promise<ILocation> {
-
     if (typeof input === "string" && !this.isId(input)) {
+
+      if (input.includes("geo:")) {
+        const expression = /geo:([0-9.]+),([0-9.]+)/;
+        const result = expression.exec(input);
+
+        if (result && result.length) {
+          return {
+            latitude: parseFloat(result[1]),
+            longitude: parseFloat(result[2]),
+          };
+        }
+      }
 
       if (!this.allStops) {
         this.allStops = await this.stopsProvider.getAllStops();

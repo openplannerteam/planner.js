@@ -60,8 +60,8 @@ export default class Profile implements IProfile {
 
   public getArrivalTimeByTransfers(tripId?: string): IArrivalTimeByTransfers {
     return this.transferProfiles.map((transfer: ITransferProfile) => ({
-      "arrivalTime": transfer.arrivalTime,
-      "gtfs:trip": tripId,
+      arrivalTime: transfer.arrivalTime,
+      tripId,
     }));
   }
 }
