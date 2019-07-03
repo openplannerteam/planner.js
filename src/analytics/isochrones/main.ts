@@ -121,7 +121,7 @@ export default class IsochroneGenerator implements EventEmitter {
             for (const nodeId of tile.getNodes()) {
                 pathfinder.removeBreakPoint(nodeId);
                 const node = this.registry.getNode(nodeId);
-                if (tile.contains(node)) {
+                if (!tile.contains(node)) {
                     boundaryNodes.add(nodeId);
                 }
             }
