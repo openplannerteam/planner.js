@@ -14,7 +14,7 @@ const excludeAlias = excludeModules.reduce((alias, moduleName) => {
   return alias;
 }, {});
 
-module.exports = {
+const browserConfig = {
   entry: "./src/index.ts",
   devtool: "source-map",//"cheap-module-source-map",
   module: {
@@ -44,3 +44,17 @@ module.exports = {
     fs: "empty"
   }
 };
+
+const nodeConfig = {
+    ...browserConfig,
+    target: "node",
+    output: {
+        filename: "bundle.node.js",
+        path: path.resolve(__dirname, "dist"),
+        library: "Planner",
+        libraryTarget: "umd",
+        libraryExport: "default"
+    }
+};
+
+module.exports = [ browserConfig, nodeConfig ];
