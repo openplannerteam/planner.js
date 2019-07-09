@@ -26,8 +26,10 @@
     "doc": "npm run typedoc && npm run doc-bundle"
   },
   "dependencies": {
+    "@types/concaveman": "^1.1.3",
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
+    "concaveman": "^1.1.1",
     "d3-delaunay": "^4.1.5",
     "haversine": "^1.1.0",
     "inversify": "^5.0.1",

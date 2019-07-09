@@ -16,6 +16,10 @@ import ConnectionsProviderPrefetch from "./fetcher/connections/prefetch/Connecti
 import FootpathsProviderDefault from "./fetcher/footpaths/FootpathsProviderDefault";
 import IFootpathsFetcher from "./fetcher/footpaths/IFootpathsProvider";
 import LDFetch from "./fetcher/LDFetch";
+import IProfileFetcher from "./fetcher/profiles/IProfileFetcher";
+import IProfileProvider from "./fetcher/profiles/IProfileProvider";
+import ProfileFetcherDefault from "./fetcher/profiles/ProfileFetcherDefault";
+import ProfileProviderDefault from "./fetcher/profiles/ProfileProviderDefault";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
@@ -45,7 +49,6 @@ import ReachableStopsFinderFootpaths from "./planner/stops/ReachableStopsFinderF
 import ReachableStopsFinderOnlySelf from "./planner/stops/ReachableStopsFinderOnlySelf";
 import ReachableStopsFinderRoadPlanner from "./planner/stops/ReachableStopsFinderRoadPlanner";
 import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStopsFinderRoadPlannerCached";
-import ProfileProvider from "./profile/ProfileProvider";
 import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
@@ -68,7 +71,8 @@ container.bind<IRoadPlanner>(TYPES.RoadPlanner)
 container.bind<IShortestPathTreeAlgorithm>(TYPES.ShortestPathTreeAlgorithm).to(DijkstraTree).inSingletonScope();
 container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(Dijkstra).inSingletonScope();
 container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvider).inSingletonScope();
-container.bind<ProfileProvider>(TYPES.ProfileProvider).to(ProfileProvider).inSingletonScope();
+container.bind<IProfileFetcher>(TYPES.ProfileFetcher).to(ProfileFetcherDefault).inSingletonScope();
+container.bind<IProfileProvider>(TYPES.ProfileProvider).to(ProfileProviderDefault).inSingletonScope();
 
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);

@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
+import Profile from "../entities/profile/Profile";
 import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/node";
 import RoutableTileRegistry from "../entities/tiles/registry";
 import { RoutableTile } from "../entities/tiles/tile";
 import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/way";
+import ProfileProvider from "../fetcher/profiles/ProfileProviderDefault";
 import ILocation from "../interfaces/ILocation";
-import Profile from "../profile/Profile";
-import ProfileProvider from "../profile/ProfileProvider";
 import TYPES from "../types";
 import Geo from "../util/Geo";
 import PathfindingGraph from "./graph";
@@ -59,10 +59,10 @@ export default class PathfinderProvider {
     return this.shortestPathTree;
   }
 
-  public registerEdges(ways: IRoutableTileWayIndex, nodes: IRoutableTileNodeIndex): void {
+  public async registerEdges(ways: IRoutableTileWayIndex, nodes: IRoutableTileNodeIndex): Promise<void> {
     // add new edges to existing graphs
     for (const profileId of Object.keys(this.graphs)) {
-      const profile = this.profileProvider.getProfile(profileId);
+      const profile = await this.profileProvider.getProfile(profileId);
 
       for (const way of Object.values(ways)) {
         if (!profile.hasAccess(way)) {
@@ -86,8 +86,8 @@ export default class PathfinderProvider {
     }
   }
 
-  public embedLocation(p: ILocation, tileset: RoutableTile, invert = false) {
-    for (const profile of this.profileProvider.getProfiles()) {
+  public async embedLocation(p: ILocation, tileset: RoutableTile, invert = false) {
+    for (const profile of await this.profileProvider.getProfiles()) {
       let bestDistance = Infinity;
       let bestEmbedding: IPointEmbedding;
 

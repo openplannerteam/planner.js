@@ -97,8 +97,10 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
             this.tileProvider.getMultipleByTileCoords(toTileCoords),
             this.tileProvider.getMultipleByTileCoords(betweenTileCoords)]);
 
-        this.pathfinderProvider.embedLocation(from, fromTileset);
-        this.pathfinderProvider.embedLocation(to, toTileset, true);
+        await Promise.all([
+            this.pathfinderProvider.embedLocation(from, fromTileset),
+            this.pathfinderProvider.embedLocation(to, toTileset, true),
+        ]);
 
         return this._innerPath(from, to);
     }

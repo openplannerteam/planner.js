@@ -6,16 +6,16 @@ import inBBox from "tiles-in-bbox";
 import Context from "../../Context";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";
+import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ILocation from "../../interfaces/ILocation";
 import defaultContainer from "../../inversify.config";
 import { IPathTree } from "../../pathfinding/pathfinder";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
-import ProfileProvider from "../../profile/ProfileProvider";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import { toTileCoordinate } from "./util";
-import { visualizeIsochrone } from "./visualize";
+import { visualizeConcaveIsochrone, visualizeIsochrone } from "./visualize";
 
 // @ts-ignore
 export default class IsochroneGenerator implements EventEmitter {
@@ -28,7 +28,9 @@ export default class IsochroneGenerator implements EventEmitter {
     private registry: RoutableTileRegistry;
     private profileProvider: ProfileProvider;
 
-    constructor(container = defaultContainer) {
+    private loaded: Promise<boolean>;
+
+    constructor(point: ILocation, container = defaultContainer) {
         this.context = container.get<Context>(TYPES.Context);
         this.context.setContainer(container);
         this.tileProvider = container.get<IRoutableTileProvider>(TYPES.RoutableTileProvider);
@@ -36,6 +38,9 @@ export default class IsochroneGenerator implements EventEmitter {
         this.registry = container.get<RoutableTileRegistry>(TYPES.RoutableTileRegistry);
         this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
         this.reachedTiles = new Set();
+        this.startPoint = point;
+
+        this.setProfileID("http://hdelva.be/profile/car");
     }
 
     public addListener(type: string | symbol, listener: Listener): this {
@@ -86,12 +91,17 @@ export default class IsochroneGenerator implements EventEmitter {
         return this;
     }
 
-    public async init(point: ILocation) {
-        this.startPoint = point;
-        await this.fetchInitialTiles(point);
+    public async setProfileID(profileID: string) {
+        this.loaded = this.profileProvider.setActiveProfileID(profileID).then(() => {
+            return this.embedBeginPoint(this.startPoint);
+        }).then(() => {
+            return true;
+        });
     }
 
     public async getIsochrone(maxDuration: number, reset = true) {
+        await this.loaded;
+
         const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm();
 
         // wait for all data to arrive
@@ -105,7 +115,7 @@ export default class IsochroneGenerator implements EventEmitter {
             pathTree = await pathfinder.continue(maxDuration);
         }
 
-        return visualizeIsochrone(this.registry, pathTree, maxDuration);
+        return visualizeConcaveIsochrone(this.registry, pathTree, maxDuration);
     }
 
     private async fetchTile(coordinate: RoutableTileCoordinate) {
@@ -137,7 +147,7 @@ export default class IsochroneGenerator implements EventEmitter {
         }
     }
 
-    private async fetchInitialTiles(from: ILocation) {
+    private async embedBeginPoint(from: ILocation) {
         const zoom = 14;
         const padding = 0.01;
 
@@ -157,6 +167,6 @@ export default class IsochroneGenerator implements EventEmitter {
         // this won't download anything new
         // but we need the tile data to embed the starting location
         const fromTileset = await this.tileProvider.getMultipleByTileCoords(fromTileCoords);
-        this.pathfinderProvider.embedLocation(from, fromTileset);
+        await this.pathfinderProvider.embedLocation(from, fromTileset);
     }
 }
