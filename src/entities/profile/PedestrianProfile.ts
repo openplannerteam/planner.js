@@ -1,8 +1,8 @@
-import { RoutableTileNode } from "../entities/tiles/node";
-import { RoutableTileWay } from "../entities/tiles/way";
-import Highway from "../enums/Highway";
-import { DistanceM, DurationMs } from "../interfaces/units";
-import Geo from "../util/Geo";
+import Highway from "../../enums/Highway";
+import { DistanceM, DurationMs } from "../../interfaces/units";
+import Geo from "../../util/Geo";
+import { RoutableTileNode } from "../tiles/node";
+import { RoutableTileWay } from "../tiles/way";
 import Profile from "./Profile";
 
 export default class PedestrianProfile extends Profile {

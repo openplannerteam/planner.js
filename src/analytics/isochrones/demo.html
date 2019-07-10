@@ -47,6 +47,10 @@
     <div class="container">
         <div style="margin-right: 20px">
             <p>
+                <input id="profile" type="text" name="profile" value="http://hdelva.be/profile/car"><br><br>
+                <button onclick="setProfile()">Set Profile</button>
+            </p>
+            <p>
                 Latitude:<br>
                 <input id="latitude" type="text" name="latitude" value="51.0262973"><br>
                 Longitude:<br>
@@ -55,7 +59,7 @@
             </p>
             <p>
                 Time (s):<br>
-                <input id="time" type="text" name="time" value="1000"><br><br>
+                <input id="time" type="text" name="time" value="50"><br><br>
                 <button onclick="addIsochrone()">Add Isochrone</button>
             </p>
         </div>
@@ -72,9 +76,8 @@
         let generator;
 
         async function drawIsochrone(distance, color) {
-            const data = await generator.then((x) => x.getIsochrone(distance, true));
+            const data = await generator.getIsochrone(distance, true);
             const isochrones = data.isochrones;
-
 
             for (const isochrone of isochrones) {
                 const polygonData = [];
@@ -99,7 +102,7 @@
             }
         }
 
-        async function initialize(focus) {
+        function initialize(focus) {
             if (map) {
                 map.off();
                 map.remove();
@@ -114,15 +117,14 @@
             }).addTo(map);
 
             const point = { latitude: focus[0], longitude: focus[1] };
-            const x = new Planner.IsochroneGenerator();
+            const x = new Planner.IsochroneGenerator(point);
 
             x.on("TILE", (coord) => {
                 const bounds = getTileBoundingBox(coord);
                 L.rectangle(bounds, { color: 'blue', weight: 1, fillOpacity: 0 }).addTo(map);
             })
 
-            await x.init(point)
-            return x
+            return x;
         }
 
         function newMap() {
@@ -172,10 +174,14 @@
             return [[top, left], [bottom, right]];
         }
 
-        newMap()
-        drawIsochrone(1000000, "#fc4e2a").then(() => {
+        async function setProfile() {
+            const profileId = document.getElementById("profile").value;
+            generator.setProfileID(profileId);
+        }
 
-        })
+        newMap();
+        setProfile();
+        addIsochrone();
 
     </script>
 </body>

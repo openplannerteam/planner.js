@@ -1,3 +1,4 @@
+import concaveman = require("concaveman");
 import { Delaunay } from "d3-delaunay";
 import { RoutableTileNode } from "../../entities/tiles/node";
 import RoutableTileRegistry from "../../entities/tiles/registry";
@@ -22,6 +23,30 @@ type Ring = ILocation[];
 // A polygon is represented as a list of rings.
 // The first being the outer ring, the others being holes.
 type Polygon = Ring[];
+
+export function visualizeConcaveIsochrone(registry: RoutableTileRegistry, pathTree: IPathTree, maxCost: number) {
+    const nodes: NodeList = [];
+    const costs = {};
+    for (const [id, branch] of Object.entries(pathTree)) {
+        const { duration } = branch;
+        const node = registry.getNode(id);
+        if (node && duration !== Infinity) {
+            nodes.push(node);
+            costs[node.id] = duration;
+        }
+    }
+
+    const internalNodes = nodes
+        .filter((node) => costs[node.id] < maxCost)
+        .map((n) => [n.longitude, n.latitude]);
+
+    const shell = concaveman(internalNodes);
+    return {
+        isochrones: [[shell.map((point) => {
+            return { longitude: point[0], latitude: point[1] };
+        })]],
+    };
+}
 
 export function visualizeIsochrone(registry: RoutableTileRegistry, pathTree: IPathTree, maxCost: number) {
     /**
@@ -54,6 +79,7 @@ export function visualizeIsochrone(registry: RoutableTileRegistry, pathTree: IPa
     const delaunay = createTriangulation(nodes);
     const internalNodes: NodeLabelList = nodes.map((node) => costs[node.id] < maxCost);
     const externalNodes: NodeLabelList = internalNodes.map((v) => !v);
+
     const internalClusters = clusterNodes(nodes, internalNodes, delaunay);
     const externalClusters = clusterNodes(nodes, externalNodes, delaunay);
 

@@ -4,6 +4,7 @@ import { IRoutableTileNodeIndex, RoutableTileNode } from "../../entities/tiles/n
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import { RoutableTile } from "../../entities/tiles/tile";
 import { IRoutableTileWayIndex, RoutableTileWay } from "../../entities/tiles/way";
+import getOsmTagMapping from "../../enums/OSMTags";
 import { LDLoader } from "../../loader/ldloader";
 import { IndexThingView } from "../../loader/views";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
@@ -68,6 +69,11 @@ export default class RoutableTileFetcherDefault implements IRoutableTileFetcher 
     );
     nodesView.addMapping(URI.inNS(GEO, "lat"), "latitude");
     nodesView.addMapping(URI.inNS(GEO, "long"), "longitude");
+
+    for (const [tag, field] of Object.entries(getOsmTagMapping())) {
+      nodesView.addMapping(tag, field);
+    }
+
     return nodesView;
   }
 
@@ -76,24 +82,14 @@ export default class RoutableTileFetcherDefault implements IRoutableTileFetcher 
     waysView.addFilter((entity) =>
       entity[URI.inNS(RDF, "type")] === URI.inNS(OSM, "Way"),
     );
+
     waysView.addMapping(URI.inNS(OSM, "hasNodes"), "segments");
     waysView.addMapping(URI.inNS(OSM, "name"), "name");
-    waysView.addMapping(URI.inNS(OSM, "access"), "accessRestrictions");
-    waysView.addMapping(URI.inNS(OSM, "bicycle"), "bicycleAccessRestrictions");
-    waysView.addMapping(URI.inNS(OSM, "construction"), "constructionKind");
-    waysView.addMapping(URI.inNS(OSM, "crossing"), "crossingKind");
-    waysView.addMapping(URI.inNS(OSM, "cycleway"), "cyclewayKind");
-    waysView.addMapping(URI.inNS(OSM, "footway"), "footwayKind");
-    waysView.addMapping(URI.inNS(OSM, "highway"), "highwayKind");
-    waysView.addMapping(URI.inNS(OSM, "maxspeed"), "maxSpeed");
-    waysView.addMapping(URI.inNS(OSM, "motor_vehicle"), "motorVehicleAccessRestrictions");
-    waysView.addMapping(URI.inNS(OSM, "motorcar"), "motorcarAccessRestrictions");
-    waysView.addMapping(URI.inNS(OSM, "oneway_bicycle"), "onewayBicycleKind");
-    waysView.addMapping(URI.inNS(OSM, "oneway"), "onewayKind");
-    waysView.addMapping(URI.inNS(OSM, "smoothness"), "smoothnessKind");
-    waysView.addMapping(URI.inNS(OSM, "surface"), "surfaceKind");
-    waysView.addMapping(URI.inNS(OSM, "tracktype"), "trackType");
-    waysView.addMapping(URI.inNS(OSM, "vehicle"), "vehicleAccessRestrictions");
+
+    for (const [tag, field] of Object.entries(getOsmTagMapping())) {
+      waysView.addMapping(tag, field);
+    }
+
     return waysView;
   }
 }
