@@ -89,8 +89,6 @@
                     polygonData.push(ring.map((p) => [p.latitude, p.longitude]));
                 }
 
-                console.log(polygonData);
-
                 if (polygonData.length > 0) {
                     var firstpolyline = new L.polygon(polygonData, { smoothFactor: 2, weight: 1, color: color });
                     firstpolyline.addTo(map);
