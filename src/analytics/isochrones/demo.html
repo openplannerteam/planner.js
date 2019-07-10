@@ -79,7 +79,6 @@
             const data = await generator.getIsochrone(distance, true);
             const isochrones = data.isochrones;
 
-
             for (const isochrone of isochrones) {
                 const polygonData = [];
 
@@ -89,6 +88,8 @@
                     }
                     polygonData.push(ring.map((p) => [p.latitude, p.longitude]));
                 }
+
+                console.log(polygonData);
 
                 if (polygonData.length > 0) {
                     var firstpolyline = new L.polygon(polygonData, { smoothFactor: 2, weight: 1, color: color });
