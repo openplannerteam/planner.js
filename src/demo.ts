@@ -67,6 +67,7 @@ export default async (logResults) => {
       let i = 0;
 
       planner.query({
+        // roadNetworkOnly: true,  // don't mix with publicTranspotOnly, for obvious reasons
         publicTransportOnly: true,
         // from: "https://data.delijn.be/stops/201657",
         // to: "https://data.delijn.be/stops/205910",

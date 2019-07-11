@@ -58,7 +58,7 @@ describe("[QueryRunnerExponential]", () => {
       );
     };
 
-    return new QueryRunnerExponential(context, locationResolver, createPlanner);
+    return new QueryRunnerExponential(context, locationResolver, createPlanner, undefined);
   };
 
   const result: IPath[] = [];

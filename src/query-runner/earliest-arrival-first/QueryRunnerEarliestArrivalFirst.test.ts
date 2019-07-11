@@ -65,6 +65,7 @@ describe("[QueryRunnerExponential]", () => {
       reachableStopsFinder,
       reachableStopsFinder,
       reachableStopsFinder,
+      undefined,
     );
   };
 

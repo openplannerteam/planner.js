@@ -60,19 +60,6 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         return new ArrayIterator<IPath>(paths);
     }
 
-    public async setDevelopmentProfile(blob: object) {
-        const profileID = await this.profileProvider.setDevelopmentProfile(blob);
-        this.profileProvider.setActiveProfileID(profileID);
-
-        return this;
-    }
-
-    public setProfileID(profileID: string) {
-        this.profileProvider.setActiveProfileID(profileID);
-
-        return this;
-    }
-
     private async getPathBetweenLocations(
         from: ILocation,
         to: ILocation,

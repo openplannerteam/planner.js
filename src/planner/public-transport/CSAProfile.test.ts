@@ -198,7 +198,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         journeyExtractor,
       );
 
-      return new QueryRunnerDefault(locationResolver, CSA);
+      return new QueryRunnerDefault(locationResolver, CSA, undefined);
     };
 
     const checkStops = (result, query) => {

@@ -15,6 +15,7 @@ import Path from "../../planner/Path";
 import CSAEarliestArrival from "../../planner/public-transport/CSAEarliestArrival";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractorEarliestArrival from "../../planner/public-transport/JourneyExtractorEarliestArrival";
+import IRoadPlanner from "../../planner/road/IRoadPlanner";
 import IReachableStopsFinder from "../../planner/stops/IReachableStopsFinder";
 import TYPES from "../../types";
 import FilterUniqueIterator from "../../util/iterators/FilterUniqueIterator";
@@ -45,6 +46,7 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
   private readonly connectionsProvider: IConnectionsProvider;
   private readonly locationResolver: ILocationResolver;
   private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
+  private readonly roadPlanner: IRoadPlanner;
 
   private readonly journeyExtractorEarliestArrival: JourneyExtractorEarliestArrival;
 
@@ -70,6 +72,8 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Final)
       finalReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.RoadPlanner)
+      roadPlanner: IRoadPlanner,
   ) {
     this.context = context;
     this.connectionsProvider = connectionsProvider;
@@ -79,6 +83,8 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
     this.initialReachableStopsFinder = initialReachableStopsFinder;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
+
+    this.roadPlanner = roadPlanner;
 
     this.journeyExtractorEarliestArrival = new JourneyExtractorEarliestArrival(
       locationResolver,
@@ -141,8 +147,10 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 
       return new FilterUniqueIterator<IPath>(prependedIterator, Path.compareEquals);
 
+    } else if (baseQuery.roadNetworkOnly) {
+      return this.roadPlanner.plan(baseQuery);
     } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true");
+      throw new InvalidQueryError("Query should have publicTransportOnly = true or roadNetworkOnly = true");
     }
   }
 
