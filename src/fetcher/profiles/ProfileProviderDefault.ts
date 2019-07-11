@@ -1,4 +1,4 @@
-import { inject, injectable, interfaces } from "inversify";
+import { inject, injectable } from "inversify";
 import PedestrianProfile from "../../entities/profile/PedestrianProfile";
 import Profile from "../../entities/profile/Profile";
 import TYPES from "../../types";
