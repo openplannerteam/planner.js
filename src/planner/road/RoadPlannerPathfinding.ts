@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import inBBox from "tiles-in-bbox";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import TravelMode from "../../enums/TravelMode";
+import IProfileProvider from "../../fetcher/profiles/IProfileProvider";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -19,13 +20,16 @@ import IRoadPlanner from "./IRoadPlanner";
 export default class RoadPlannerPathfinding implements IRoadPlanner {
     private tileProvider: IRoutableTileProvider;
     private pathfinderProvider: PathfinderProvider;
+    private profileProvider: IProfileProvider;
 
     constructor(
         @inject(TYPES.RoutableTileProvider) tileProvider: IRoutableTileProvider,
         @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
+        @inject(TYPES.ProfileProvider) profileProvider: IProfileProvider,
     ) {
         this.tileProvider = tileProvider;
         this.pathfinderProvider = pathfinderProvider;
+        this.profileProvider = profileProvider;
     }
 
     public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
@@ -54,6 +58,19 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         }
 
         return new ArrayIterator<IPath>(paths);
+    }
+
+    public async setDevelopmentProfile(blob: object) {
+        const profileID = await this.profileProvider.setDevelopmentProfile(blob);
+        this.profileProvider.setActiveProfileID(profileID);
+
+        return this;
+    }
+
+    public setProfileID(profileID: string) {
+        this.profileProvider.setActiveProfileID(profileID);
+
+        return this;
     }
 
     private async getPathBetweenLocations(
