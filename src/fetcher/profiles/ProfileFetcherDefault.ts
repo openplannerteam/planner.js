@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import jsonld = require("jsonld");
 import LDFetch from "ldfetch";
 import DynamicProfile from "../../entities/profile/DynamicProfile";
 import Profile from "../../entities/profile/Profile";
@@ -30,6 +31,18 @@ export default class ProfileFetcherDefault implements IProfileFetcher {
     this.ldLoader.defineCollection(URI.inNS(PROFILE, "hasSpeedRules"));
     this.ldLoader.defineCollection(URI.inNS(PROFILE, "hasPriorityRules"));
     this.ldLoader.defineCollection(URI.inNS(PROFILE, "hasObstacleRules"));
+  }
+
+  public async parseProfileBlob(blob: object, id: string): Promise<Profile> {
+    const triples = await jsonld.toRDF(blob);
+
+    const [profile] = this.ldLoader.process(triples, [
+      this.getView(),
+    ]);
+
+    profile.id = id;
+
+    return profile;
   }
 
   public async get(url: string): Promise<Profile> {

@@ -128,6 +128,13 @@ export default class Planner implements EventEmitter {
     }
   }
 
+  public async setDevelopmentProfile(blob: object) {
+    const profileID = await this.profileProvider.setDevelopmentProfile(blob);
+    this.profileProvider.setActiveProfileID(profileID);
+
+    return this;
+  }
+
   public setProfileID(profileID: string) {
     this.profileProvider.setActiveProfileID(profileID);
 

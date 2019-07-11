@@ -91,6 +91,15 @@ export default class IsochroneGenerator implements EventEmitter {
         return this;
     }
 
+    public async setDevelopmentProfile(blob: object) {
+        const id = await this.profileProvider.setDevelopmentProfile(blob);
+        this.loaded = this.profileProvider.setActiveProfileID(id).then(() => {
+            return this.embedBeginPoint(this.startPoint);
+        }).then(() => {
+            return true;
+        });
+    }
+
     public async setProfileID(profileID: string) {
         this.loaded = this.profileProvider.setActiveProfileID(profileID).then(() => {
             return this.embedBeginPoint(this.startPoint);

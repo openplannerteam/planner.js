@@ -4,6 +4,7 @@ export default interface IProfileProvider {
   setActiveProfile(profile: Profile): void;
   setActiveProfileID(profileId: string): void;
 
+  setDevelopmentProfile(blob: object): Promise<string>;
   addProfile(profile: Profile): void;
 
   getActiveProfile(): Profile;

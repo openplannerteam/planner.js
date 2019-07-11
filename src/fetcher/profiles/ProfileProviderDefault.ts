@@ -19,12 +19,17 @@ export default class ProfileProviderDefault implements IProfileProvider {
   private activeProfile: Profile;
   private fetcher: IProfileFetcher;
 
+  private developmentProfile: Profile; // does not have a persistent id, will change often
+  private developmentProfileCounter: number;
+
   constructor(
     @inject(TYPES.ProfileFetcher) fetcher: IProfileFetcher,
   ) {
     this.profiles = {};
     this.activeProfile = undefined;
     this.fetcher = fetcher;
+    this.developmentProfile = undefined;
+    this.developmentProfileCounter = 0;
 
     // some placeholders
     const pedestrian = new PedestrianProfile();
@@ -46,6 +51,18 @@ export default class ProfileProviderDefault implements IProfileProvider {
 
   public getActiveProfile(): Profile {
     return this.activeProfile;
+  }
+
+  public async setDevelopmentProfile(blob: object): Promise<string> {
+    this.developmentProfileCounter += 1;
+    const newProfile = await this.fetcher.parseProfileBlob(blob, "" + this.developmentProfileCounter);
+    if (this.developmentProfile) {
+      delete this.profiles[this.developmentProfile.getID()];
+    }
+    this.developmentProfile = newProfile;
+    this.profiles[this.developmentProfile.getID()] = Promise.resolve(newProfile);
+    this.activeProfile = newProfile;
+    return newProfile.getID();
   }
 
   public addProfile(profile: Profile) {
