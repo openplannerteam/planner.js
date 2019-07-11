@@ -198,7 +198,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         defaultContainer.get<Context>(TYPES.Context),
       );
 
-      return new QueryRunnerDefault(locationResolver, CSA);
+      return new QueryRunnerDefault(locationResolver, CSA, undefined);
     };
 
     const checkStops = (result, query) => {

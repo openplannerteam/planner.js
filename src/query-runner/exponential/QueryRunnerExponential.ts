@@ -10,6 +10,7 @@ import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
 import Path from "../../planner/Path";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
+import IRoadPlanner from "../../planner/road/IRoadPlanner";
 import TYPES from "../../types";
 import FilterUniqueIterator from "../../util/iterators/FilterUniqueIterator";
 import FlatMapIterator from "../../util/iterators/FlatMapIterator";
@@ -37,6 +38,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
   private readonly locationResolver: ILocationResolver;
   private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
   private readonly context: Context;
+  private readonly roadPlanner: IRoadPlanner;
 
   constructor(
     @inject(TYPES.Context)
@@ -45,10 +47,13 @@ export default class QueryRunnerExponential implements IQueryRunner {
       locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlannerFactory)
       publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
+    @inject(TYPES.RoadPlanner)
+      roadPlanner: IRoadPlanner,
   ) {
     this.context = context;
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
+    this.roadPlanner = roadPlanner;
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
@@ -63,9 +68,10 @@ export default class QueryRunnerExponential implements IQueryRunner {
       );
 
       return new FilterUniqueIterator<IPath>(subqueryIterator, Path.compareEquals);
-
+    } else if (baseQuery.roadNetworkOnly) {
+      return this.roadPlanner.plan(baseQuery);
     } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true");
+      throw new InvalidQueryError("Query should have publicTransportOnly = true or roadNetworkOnly = true");
     }
   }
 

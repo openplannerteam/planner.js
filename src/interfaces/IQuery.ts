@@ -8,6 +8,7 @@ export default interface IQuery {
   maximumArrivalTime?: Date;
   roadOnly?: boolean;
   publicTransportOnly?: boolean;
+  roadNetworkOnly?: boolean;
   walkingSpeed?: SpeedKmH;
   minimumWalkingSpeed?: SpeedKmH;
   maximumWalkingSpeed?: SpeedKmH;
