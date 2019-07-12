@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import jsonld = require("jsonld");
 import LDFetch from "ldfetch";
-import DynamicProfile from "../../entities/profile/DynamicProfile";
+import CharacteristicProfile from "../../entities/profile/CharacteresticProfile";
 import Profile from "../../entities/profile/Profile";
 import ProfileConclusion from "../../entities/profile/ProfileConclusion";
 import ProfileCondition from "../../entities/profile/ProfileCondition";
@@ -59,7 +59,7 @@ export default class ProfileFetcherDefault implements IProfileFetcher {
   }
 
   protected getView() {
-    const view = new ThingView(DynamicProfile.create);
+    const view = new ThingView(CharacteristicProfile.create);
     view.addFilter((entity) =>
       entity[URI.inNS(PROFILE, "hasAccessRules")] !== undefined ||
       entity[URI.inNS(PROFILE, "hasOnewayRules")] !== undefined ||
