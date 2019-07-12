@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import RoutableTileRegistry from "../entities/tiles/registry";
 import LocationResolverError from "../errors/LocationResolverError";
 import IStop from "../fetcher/stops/IStop";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
@@ -20,9 +21,10 @@ export default class LocationResolverConvenience implements ILocationResolver {
 
   constructor(
     @inject(TYPES.StopsProvider) stopsProvider: IStopsProvider,
+    @inject(TYPES.RoutableTileRegistry) tileRegistry: RoutableTileRegistry,
   ) {
     this.stopsProvider = stopsProvider;
-    this.defaultLocationResolver = new LocationResolverDefault(this.stopsProvider);
+    this.defaultLocationResolver = new LocationResolverDefault(this.stopsProvider, tileRegistry);
   }
 
   public async resolve(input: ILocation | IStop | string): Promise<ILocation> {

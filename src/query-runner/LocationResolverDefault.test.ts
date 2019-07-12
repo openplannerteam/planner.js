@@ -1,5 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
+import RoutableTileRegistry from "../entities/tiles/registry";
 import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import LocationResolverDefault from "./LocationResolverDefault";
 
@@ -8,7 +9,7 @@ const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-const locationResolver = new LocationResolverDefault(stopsFetcher);
+const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
 
 test("[LocationResolverDefault] Input {id: 'http://...'}", async () => {
 

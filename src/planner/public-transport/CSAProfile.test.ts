@@ -1,6 +1,7 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Defaults from "../../Defaults";
+import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
@@ -32,7 +33,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher);
+      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,
@@ -183,7 +184,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher);
+      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,

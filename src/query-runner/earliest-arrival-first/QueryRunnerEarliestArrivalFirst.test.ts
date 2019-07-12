@@ -1,6 +1,7 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Context from "../../Context";
+import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
@@ -12,6 +13,7 @@ import ReachableStopsFinderBirdsEyeCached from "../../planner/stops/ReachableSto
 import Units from "../../util/Units";
 import LocationResolverDefault from "../LocationResolverDefault";
 import QueryRunnerEarliestArrivalFirst from "./QueryRunnerEarliestArrivalFirst";
+
 describe("[QueryRunnerExponential]", () => {
   jest.setTimeout(100000);
 
@@ -35,7 +37,7 @@ describe("[QueryRunnerExponential]", () => {
     const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
     stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-    const locationResolver = new LocationResolverDefault(stopsFetcher);
+    const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
     const context = new Context();
