@@ -120,7 +120,7 @@ export default class IsochroneGenerator implements EventEmitter {
     public async getIsochrone(maxDuration: number, reset = true) {
         await this.loaded;
 
-        const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm();
+        const pathfinder = await this.pathfinderProvider.getShortestPathTreeAlgorithm();
 
         // wait for all data to arrive
         await this.tileProvider.wait();
@@ -142,7 +142,7 @@ export default class IsochroneGenerator implements EventEmitter {
             this.emit("TILE", coordinate);
             this.reachedTiles.add(tileId);
 
-            const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm();
+            const pathfinder = await this.pathfinderProvider.getShortestPathTreeAlgorithm();
             const tile = await this.tileProvider.getByTileCoords(coordinate);
             const boundaryNodes: Set<string> = new Set();
 
@@ -157,11 +157,13 @@ export default class IsochroneGenerator implements EventEmitter {
                     if (Math.random() * this.reachedPoints.length < 100) {
                         pathfinder.setBreakPoint(nodeId, async (on: string) => {
                             const innerNode = self.registry.getNode(on);
-                            this.reachedPoints.push(innerNode);
-                            const internalNodes = this.reachedPoints
-                                .map((n) => [n.longitude, n.latitude]);
+                            if (innerNode) {
+                                this.reachedPoints.push(innerNode);
+                                const internalNodes = this.reachedPoints
+                                    .map((n) => [n.longitude, n.latitude]);
 
-                            self.emit("INTERMEDIATE", concaveman(internalNodes, Infinity).map((e) => [e[1], e[0]]));
+                                self.emit("INTERMEDIATE", concaveman(internalNodes, Infinity).map((e) => [e[1], e[0]]));
+                            }
                         });
                     }
                 }

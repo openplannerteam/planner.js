@@ -116,7 +116,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         start: ILocation,
         stop: ILocation,
     ): Promise<IPath> {
-        const pathfinder = this.pathfinderProvider.getShortestPathAlgorithm();
+        const pathfinder = await this.pathfinderProvider.getShortestPathAlgorithm();
         const summary = pathfinder.queryPath(Geo.getId(start), Geo.getId(stop));
 
         const steps: IStep[] = [];

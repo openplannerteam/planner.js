@@ -16,7 +16,7 @@ export default class ProfileProviderDefault implements IProfileProvider {
   //       e.g. bicycle near a specific station
 
   private profiles: IProfileMap;
-  private activeProfile: Profile;
+  private activeProfile: Promise<Profile>;
   private fetcher: IProfileFetcher;
 
   private developmentProfile: Profile; // does not have a persistent id, will change often
@@ -40,16 +40,14 @@ export default class ProfileProviderDefault implements IProfileProvider {
     if (!this.profiles[profile.getID()]) {
       this.addProfile(profile);
     }
-    this.activeProfile = profile;
+    this.activeProfile = Promise.resolve(profile);
   }
 
   public async setActiveProfileID(profileId: string) {
-    await this.getProfile(profileId).then((profile) => {
-      this.activeProfile = profile;
-    });
+    this.activeProfile = this.getProfile(profileId);
   }
 
-  public getActiveProfile(): Profile {
+  public getActiveProfile(): Promise<Profile> {
     return this.activeProfile;
   }
 
@@ -61,7 +59,7 @@ export default class ProfileProviderDefault implements IProfileProvider {
     }
     this.developmentProfile = newProfile;
     this.profiles[this.developmentProfile.getID()] = Promise.resolve(newProfile);
-    this.activeProfile = newProfile;
+    this.activeProfile = Promise.resolve(newProfile);
     return newProfile.getID();
   }
 
