@@ -78,13 +78,8 @@
         let first = true;
 
         async function drawIsochrone(distance, color) {
-            let data;
-            if (first) {
-                data = await generator.getIsochrone(distance, true);
-                first = false;
-            } else {
-                data = await generator.getIsochrone(distance, false);
-            }
+            const data = await generator.getIsochrone(distance, first);
+            first = false;
             const isochrones = data.isochrones;
 
             if (intermediate) {
@@ -197,11 +192,13 @@
         }
 
         async function setProfile() {
+            newMap();
             const profileId = document.getElementById("profile").value;
             generator.setProfileID(profileId);
+            first = true;
         }
 
-        newMap();
+        //newMap();
         setProfile();
         addIsochrone();
 
