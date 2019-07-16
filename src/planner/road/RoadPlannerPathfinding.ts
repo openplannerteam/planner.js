@@ -7,9 +7,9 @@ import IProfileProvider from "../../fetcher/profiles/IProfileProvider";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
-import IProbabilisticValue from "../../interfaces/IProbabilisticValue";
-import { DurationMs, SpeedKmH } from "../../interfaces/units";
+import IStep from "../../interfaces/IStep";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
+import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
@@ -21,15 +21,18 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
     private tileProvider: IRoutableTileProvider;
     private pathfinderProvider: PathfinderProvider;
     private profileProvider: IProfileProvider;
+    private locationResolver: ILocationResolver;
 
     constructor(
         @inject(TYPES.RoutableTileProvider) tileProvider: IRoutableTileProvider,
         @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
         @inject(TYPES.ProfileProvider) profileProvider: IProfileProvider,
+        @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     ) {
         this.tileProvider = tileProvider;
         this.pathfinderProvider = pathfinderProvider;
         this.profileProvider = profileProvider;
+        this.locationResolver = locationResolver;
     }
 
     public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
@@ -109,23 +112,26 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         return this._innerPath(from, to);
     }
 
-    private _innerPath(
+    private async _innerPath(
         start: ILocation,
         stop: ILocation,
-    ): IPath {
+    ): Promise<IPath> {
         const pathfinder = this.pathfinderProvider.getShortestPathAlgorithm();
-        const summary = pathfinder.queryPathSummary(Geo.getId(start), Geo.getId(stop));
+        const summary = pathfinder.queryPath(Geo.getId(start), Geo.getId(stop));
 
-        const duration: IProbabilisticValue<DurationMs> = {
-            average: summary.duration,
-        };
+        const steps: IStep[] = [];
+        for (const step of summary) {
+            const to = await this.locationResolver.resolve(step.to);
+            const from = await this.locationResolver.resolve(step.from);
+            steps.push({
+                startLocation: from,
+                stopLocation: to,
+                duration: { average: step.duration },
+                distance: step.distance,
+                travelMode: TravelMode.Profile,
+            });
+        }
 
-        return new Path([{
-            startLocation: start,
-            stopLocation: stop,
-            distance: summary.distance,
-            duration,
-            travelMode: TravelMode.Walking,
-        }]);
+        return new Path(steps);
     }
 }

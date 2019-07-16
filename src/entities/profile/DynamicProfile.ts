@@ -24,9 +24,12 @@ export default class DynamicProfile extends Profile {
     public maxSpeed: number;
     public usePublicTransport: boolean;
 
+    private mapping;
+
     constructor(url: string) {
         super();
         this.id = url;
+        this.mapping = getOsmTagMapping();
     }
 
     public getID(): string {
@@ -39,7 +42,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.isOneway !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = getOsmTagMapping()[rule.condition.predicate];
+                    const field = this.mapping[rule.condition.predicate];
                     if (way[field] === rule.condition.object) {
                         return rule.conclusion.isOneway;
                     }
@@ -55,7 +58,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.hasAccess !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = getOsmTagMapping()[rule.condition.predicate];
+                    const field = this.mapping[rule.condition.predicate];
                     if (way[field] === rule.condition.object) {
                         return rule.conclusion.hasAccess;
                     }
@@ -79,7 +82,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.speed !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = getOsmTagMapping()[rule.condition.predicate];
+                    const field = this.mapping[rule.condition.predicate];
                     if (way[field] === rule.condition.object) {
                         if (typeof (rule.conclusion.speed) === "number") {
                             return rule.conclusion.speed;
@@ -130,7 +133,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.priority !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = getOsmTagMapping()[rule.condition.predicate];
+                    const field = this.mapping[rule.condition.predicate];
                     if (way[field] === rule.condition.object) {
                         return 1 - (rule.conclusion.priority - 1);
                     }
@@ -150,7 +153,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.isObstacle !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = getOsmTagMapping()[rule.condition.predicate];
+                    const field = this.mapping[rule.condition.predicate];
                     if (node[field] === rule.condition.object) {
                         return rule.conclusion.isObstacle;
                     }

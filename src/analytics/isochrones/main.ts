@@ -1,3 +1,4 @@
+import concaveman = require("concaveman");
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import "isomorphic-fetch";
@@ -29,6 +30,8 @@ export default class IsochroneGenerator implements EventEmitter {
     private profileProvider: ProfileProvider;
 
     private loaded: Promise<boolean>;
+    private showIncremental: boolean;
+    private reachedPoints: ILocation[];
 
     constructor(point: ILocation, container = defaultContainer) {
         this.context = container.get<Context>(TYPES.Context);
@@ -39,8 +42,14 @@ export default class IsochroneGenerator implements EventEmitter {
         this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
         this.reachedTiles = new Set();
         this.startPoint = point;
+        this.reachedPoints = [this.startPoint];
+        this.showIncremental = false;
 
         this.setProfileID("http://hdelva.be/profile/car");
+    }
+
+    public enableIncrementalResults() {
+        this.showIncremental = true;
     }
 
     public addListener(type: string | symbol, listener: Listener): this {
@@ -143,6 +152,19 @@ export default class IsochroneGenerator implements EventEmitter {
                 if (!tile.contains(node)) {
                     boundaryNodes.add(nodeId);
                 }
+
+                if (this.showIncremental) {
+                    if (Math.random() * this.reachedPoints.length < 100) {
+                        pathfinder.setBreakPoint(nodeId, async (on: string) => {
+                            const innerNode = self.registry.getNode(on);
+                            this.reachedPoints.push(innerNode);
+                            const internalNodes = this.reachedPoints
+                                .map((n) => [n.longitude, n.latitude]);
+
+                            self.emit("INTERMEDIATE", concaveman(internalNodes, Infinity).map((e) => [e[1], e[0]]));
+                        });
+                    }
+                }
             }
 
             const self = this;
@@ -158,7 +180,7 @@ export default class IsochroneGenerator implements EventEmitter {
 
     private async embedBeginPoint(from: ILocation) {
         const zoom = 14;
-        const padding = 0.01;
+        const padding = 0.005;
 
         const fromBBox = {
             top: from.latitude + padding,

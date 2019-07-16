@@ -52,9 +52,9 @@
             </p>
             <p>
                 Latitude:<br>
-                <input id="latitude" type="text" name="latitude" value="51.0262973"><br>
+                <input id="latitude" type="text" name="latitude" value="51.03863"><br>
                 Longitude:<br>
-                <input id="longitude" type="text" name="longitude" value="3.7110885"><br><br>
+                <input id="longitude" type="text" name="longitude" value="3.72634"><br><br>
                 <button onclick="newMap()">Move</button>
             </p>
             <p>
@@ -74,10 +74,22 @@
 
         let map;
         let generator;
+        let intermediate;
+        let first = true;
 
         async function drawIsochrone(distance, color) {
-            const data = await generator.getIsochrone(distance, true);
+            let data;
+            if (first) {
+                data = await generator.getIsochrone(distance, true);
+                first = false;
+            } else {
+                data = await generator.getIsochrone(distance, false);
+            }
             const isochrones = data.isochrones;
+
+            if (intermediate) {
+                map.removeLayer(intermediate);
+            }
 
             for (const isochrone of isochrones) {
                 const polygonData = [];
@@ -118,10 +130,20 @@
 
             const point = { latitude: focus[0], longitude: focus[1] };
             const x = new Planner.IsochroneGenerator(point);
+            x.enableIncrementalResults();
+            first = true;
 
             x.on("TILE", (coord) => {
                 const bounds = getTileBoundingBox(coord);
                 L.rectangle(bounds, { color: 'blue', weight: 1, fillOpacity: 0 }).addTo(map);
+            })
+
+            x.on("INTERMEDIATE", (shell) => {
+                if (intermediate) {
+                    map.removeLayer(intermediate);
+                }
+                intermediate = new L.polygon([shell], { smoothFactor: 2, weight: 1, color: '#000000' });
+                intermediate.addTo(map);
             })
 
             return x;

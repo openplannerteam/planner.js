@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import RoutableTileRegistry from "../entities/tiles/registry";
 import LocationResolverError from "../errors/LocationResolverError";
 import IStop from "../fetcher/stops/IStop";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
@@ -16,11 +17,14 @@ import ILocationResolver from "./ILocationResolver";
 @injectable()
 export default class LocationResolverDefault implements ILocationResolver {
   private readonly stopsProvider: IStopsProvider;
+  private readonly tileRegistry: RoutableTileRegistry;
 
   constructor(
     @inject(TYPES.StopsProvider) stopsProvider: IStopsProvider,
+    @inject(TYPES.RoutableTileRegistry) tileRegistry: RoutableTileRegistry,
   ) {
     this.stopsProvider = stopsProvider;
+    this.tileRegistry = tileRegistry;
   }
 
   public async resolve(input: ILocation | IStop | string): Promise<ILocation> {
@@ -63,6 +67,11 @@ export default class LocationResolverDefault implements ILocationResolver {
         latitude: stop.latitude,
         longitude: stop.longitude,
       };
+    }
+
+    const node = this.tileRegistry.getNode(id);
+    if (node) {
+      return node;
     }
 
     return Promise.reject(new LocationResolverError(`No fetcher for id ${id}`));
