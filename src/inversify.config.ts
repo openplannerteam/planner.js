@@ -28,6 +28,7 @@ import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTileFetcher";
 import IRoutableTileProvider from "./fetcher/tiles/IRoutableTileProvider";
 import RoutableTileFetcherDefault from "./fetcher/tiles/RoutableTileFetcherDefault";
 import RoutableTileFetcherExtended from "./fetcher/tiles/RoutableTileFetcherExtended";
+import RoutableTileFetcherRaw from "./fetcher/tiles/RoutableTileFetcherRaw";
 import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDefault";
 import { LDLoader } from "./loader/ldloader";
 import DijkstraTree from "./pathfinding/dijkstra-tree/dijkstra-tree-js";
@@ -111,7 +112,7 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherDefault);
+container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherRaw);
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope();
 container.bind<RoutableTileRegistry>(TYPES.RoutableTileRegistry).to(RoutableTileRegistry).inSingletonScope();

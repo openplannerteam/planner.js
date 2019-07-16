@@ -11,4 +11,9 @@ export default class URI {
             return `${ns}#${id}`;
         }
     }
+
+    public static fakeExpand(ns: string, id: string): string {
+        // discards the prefix and places it the specified NS
+        return this.inNS(ns, id.substring(4));
+    }
 }
