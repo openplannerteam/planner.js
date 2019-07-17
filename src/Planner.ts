@@ -22,6 +22,7 @@ import Units from "./util/Units";
 export default class Planner implements EventEmitter {
   public static Units = Units;
 
+  private activeProfileID: string;
   private context: Context;
   private queryRunner: IQueryRunner;
   private profileProvider: ProfileProvider;
@@ -37,6 +38,8 @@ export default class Planner implements EventEmitter {
 
     this.queryRunner = container.get<IQueryRunner>(TYPES.QueryRunner);
     this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
+
+    this.activeProfileID = "PEDESTRIAN";
   }
 
   /**
@@ -47,6 +50,7 @@ export default class Planner implements EventEmitter {
   public query(query: IQuery): AsyncIterator<IPath> {
     this.emit(EventType.Query, query);
 
+    query.profileID = this.activeProfileID;
     const iterator = new PromiseProxyIterator(() => this.queryRunner.run(query));
 
     this.once(EventType.AbortQuery, () => {
@@ -129,15 +133,12 @@ export default class Planner implements EventEmitter {
   }
 
   public async setDevelopmentProfile(blob: object) {
-    const profileID = await this.profileProvider.setDevelopmentProfile(blob);
-    this.profileProvider.setActiveProfileID(profileID);
-
-    return this;
+    const profileID = await this.profileProvider.parseDevelopmentProfile(blob);
+    return this.setProfileID(profileID);
   }
 
   public setProfileID(profileID: string) {
-    this.profileProvider.setActiveProfileID(profileID);
-
+    this.activeProfileID = profileID;
     return this;
   }
 

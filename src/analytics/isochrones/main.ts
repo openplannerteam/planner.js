@@ -5,6 +5,7 @@ import "isomorphic-fetch";
 import "reflect-metadata";
 import inBBox from "tiles-in-bbox";
 import Context from "../../Context";
+import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
@@ -31,6 +32,7 @@ export default class IsochroneGenerator implements EventEmitter {
     private profileProvider: ProfileProvider;
     private locationResolver: ILocationResolver;
 
+    private activeProfile: Promise<Profile>;
     private loaded: Promise<boolean>;
     private showIncremental: boolean;
     private showDebugLogs: boolean;
@@ -50,7 +52,7 @@ export default class IsochroneGenerator implements EventEmitter {
         this.showIncremental = false;
         this.showDebugLogs = false;
 
-        this.setProfileID("http://hdelva.be/profile/car");
+        this.activeProfile = this.profileProvider.getProfile("http://hdelva.be/profile/car");
     }
 
     public enableIncrementalResults() {
@@ -110,18 +112,13 @@ export default class IsochroneGenerator implements EventEmitter {
     }
 
     public async setDevelopmentProfile(blob: object) {
-        const id = await this.profileProvider.setDevelopmentProfile(blob);
-        this.loaded = this.profileProvider.setActiveProfileID(id).then(() => {
-            return this.embedBeginPoint(this.startPoint);
-        }).then(() => {
-            return true;
-        });
+        const id = await this.profileProvider.parseDevelopmentProfile(blob);
+        this.setProfileID(id);
     }
 
     public async setProfileID(profileID: string) {
-        this.loaded = this.profileProvider.setActiveProfileID(profileID).then(() => {
-            return this.embedBeginPoint(this.startPoint);
-        }).then(() => {
+        this.activeProfile = this.profileProvider.getProfile(profileID);
+        this.loaded = this.embedBeginPoint(this.startPoint).then(() => {
             return true;
         });
     }
@@ -134,13 +131,13 @@ export default class IsochroneGenerator implements EventEmitter {
         }
 
         await this.loaded;
+        const profile = await this.activeProfile;
 
         if (this.showDebugLogs) {
-            const profile = await this.profileProvider.getActiveProfile();
             console.log(`Using the ${profile.getID()} profile`);
         }
 
-        const pathfinder = await this.pathfinderProvider.getShortestPathTreeAlgorithm();
+        const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
 
         // wait for all data to arrive
         await this.tileProvider.wait();
@@ -167,7 +164,8 @@ export default class IsochroneGenerator implements EventEmitter {
             this.emit("TILE", coordinate);
             this.reachedTiles.add(tileId);
 
-            const pathfinder = await this.pathfinderProvider.getShortestPathTreeAlgorithm();
+            const profile = await this.activeProfile;
+            const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
             const tile = await this.tileProvider.getByTileCoords(coordinate);
             const boundaryNodes: Set<string> = new Set();
 

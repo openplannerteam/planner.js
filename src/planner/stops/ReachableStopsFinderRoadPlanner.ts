@@ -37,6 +37,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedKmH,
+    profileID: string,
   ): Promise<IReachableStop[]> {
 
     const minimumDepartureTime = new Date();
@@ -50,6 +51,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
       minimumDepartureTime,
       maximumArrivalTime,
       minimumWalkingSpeed: minimumSpeed,
+      profileID,
     };
 
     const allStops: IStop[] = await this.stopsProvider.getAllStops();

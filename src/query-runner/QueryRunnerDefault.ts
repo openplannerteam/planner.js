@@ -74,7 +74,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
     } = query;
     // tslint:enable:trailing-comma
 
-    const resolvedQuery: IResolvedQuery = Object.assign({}, other);
+    const resolvedQuery: IResolvedQuery = Object.assign({}, other as IResolvedQuery);
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
 
