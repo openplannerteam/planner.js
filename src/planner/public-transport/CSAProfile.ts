@@ -266,6 +266,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
         ReachableStopsFinderMode.Target,
         this.query.maximumWalkingDuration,
         this.query.minimumWalkingSpeed,
+        this.query.profileID,
       );
 
     if (reachableStops.length < 1) {
@@ -305,6 +306,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
       ReachableStopsFinderMode.Source,
       this.query.maximumWalkingDuration,
       this.query.minimumWalkingSpeed,
+      this.query.profileID,
     );
 
     for (const reachableStop of this.initialReachableStops) {
@@ -453,6 +455,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
         ReachableStopsFinderMode.Source,
         this.query.maximumTransferDuration,
         this.query.minimumWalkingSpeed,
+        this.query.profileID,
       );
 
       reachableStops.forEach((reachableStop: IReachableStop) => {

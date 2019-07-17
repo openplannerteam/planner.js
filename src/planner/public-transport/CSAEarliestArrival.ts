@@ -228,7 +228,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     this.profilesByStop[connection.arrivalStop] = arrivalProfile;
   }
 
-  private async scheduleExtraConnections(query: IQuery, sourceConnection: IConnection) {
+  private async scheduleExtraConnections(query: IResolvedQuery, sourceConnection: IConnection) {
     try {
       const arrivalStop: ILocation = await this.locationResolver.resolve(sourceConnection.arrivalStop);
       const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
@@ -236,6 +236,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         ReachableStopsFinderMode.Source,
         query.maximumTransferDuration,
         query.minimumWalkingSpeed,
+        query.profileID,
       );
 
       if (this.finalReachableStops[arrivalStop.id]) {
@@ -284,6 +285,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       ReachableStopsFinderMode.Source,
       query.maximumWalkingDuration,
       query.minimumWalkingSpeed,
+      query.profileID,
     );
 
     // Abort when we can't reach a single stop.
@@ -335,6 +337,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       ReachableStopsFinderMode.Target,
       query.maximumWalkingDuration,
       query.minimumWalkingSpeed,
+      query.profileID,
     );
 
     // Abort when we can't reach a single stop.

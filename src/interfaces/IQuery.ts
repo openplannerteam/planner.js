@@ -1,9 +1,11 @@
+import Profile from "../entities/profile/Profile";
 import ILocation from "./ILocation";
 import { DistanceM, DurationMs, SpeedKmH } from "./units";
 
 export default interface IQuery {
   from?: string | string[] | ILocation | ILocation[];
   to?: string | string[] | ILocation | ILocation[];
+  profileID?: string;
   minimumDepartureTime?: Date;
   maximumArrivalTime?: Date;
   roadOnly?: boolean;

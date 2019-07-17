@@ -32,6 +32,7 @@ export default class ReachableStopsFinderRoadPlannerCached implements IReachable
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedKmH,
+    profileID: string,
   ): Promise<IReachableStop[]> {
 
     const id = location.id || Geo.getId(location);
@@ -43,7 +44,7 @@ export default class ReachableStopsFinderRoadPlannerCached implements IReachable
     }
 
     const reachableStops = await this.reachableStopsFinder
-      .findReachableStops(location, mode, maximumDuration, minimumSpeed);
+      .findReachableStops(location, mode, maximumDuration, minimumSpeed, profileID);
 
     this.reachableStopsCache[cacheKey] = reachableStops;
     return reachableStops;

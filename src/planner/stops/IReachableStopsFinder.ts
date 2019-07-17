@@ -13,6 +13,7 @@ export default interface IReachableStopsFinder {
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedKmH,
+    profileID: string,
   ) => Promise<IReachableStop[]>;
 }
 

@@ -34,6 +34,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedKmH,
+    profileID: string,
   ): Promise<IReachableStop[]> {
 
     const minimumDepartureTime = new Date();
@@ -47,6 +48,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
       minimumDepartureTime,
       maximumArrivalTime,
       minimumWalkingSpeed: minimumSpeed,
+      profileID,
     };
 
     const stopsNearCell: IStop[] = await this.getNearbyStops(location);

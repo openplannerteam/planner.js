@@ -45,15 +45,13 @@ export default class PathfinderProvider {
     this.graphs = {};
   }
 
-  public async getShortestPathAlgorithm(): Promise<IShortestPathAlgorithm> {
-    const profile = await this.profileProvider.getActiveProfile();
+  public getShortestPathAlgorithm(profile: Profile): IShortestPathAlgorithm {
     const graph = this.getGraphForProfile(profile);
     this.shortestPath.setGraph(graph);
     return this.shortestPath;
   }
 
-  public async getShortestPathTreeAlgorithm(): Promise<IShortestPathTreeAlgorithm> {
-    const profile = await this.profileProvider.getActiveProfile();
+  public getShortestPathTreeAlgorithm(profile: Profile): IShortestPathTreeAlgorithm {
     const graph = this.getGraphForProfile(profile);
     this.shortestPathTree.setGraph(graph);
     return this.shortestPathTree;

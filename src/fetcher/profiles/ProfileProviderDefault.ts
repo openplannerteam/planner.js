@@ -16,7 +16,6 @@ export default class ProfileProviderDefault implements IProfileProvider {
   //       e.g. bicycle near a specific station
 
   private profiles: IProfileMap;
-  private activeProfile: Promise<Profile>;
   private fetcher: IProfileFetcher;
 
   private developmentProfile: Profile; // does not have a persistent id, will change often
@@ -26,32 +25,16 @@ export default class ProfileProviderDefault implements IProfileProvider {
     @inject(TYPES.ProfileFetcher) fetcher: IProfileFetcher,
   ) {
     this.profiles = {};
-    this.activeProfile = undefined;
     this.fetcher = fetcher;
     this.developmentProfile = undefined;
     this.developmentProfileCounter = 0;
 
     // some placeholders
     const pedestrian = new PedestrianProfile();
-    this.setActiveProfile(pedestrian);
+    this.profiles[pedestrian.getID()] = Promise.resolve(pedestrian);
   }
 
-  public setActiveProfile(profile: Profile) {
-    if (!this.profiles[profile.getID()]) {
-      this.addProfile(profile);
-    }
-    this.activeProfile = Promise.resolve(profile);
-  }
-
-  public async setActiveProfileID(profileId: string) {
-    this.activeProfile = this.getProfile(profileId);
-  }
-
-  public getActiveProfile(): Promise<Profile> {
-    return this.activeProfile;
-  }
-
-  public async setDevelopmentProfile(blob: object): Promise<string> {
+  public async parseDevelopmentProfile(blob: object): Promise<string> {
     this.developmentProfileCounter += 1;
     const newProfile = await this.fetcher.parseProfileBlob(blob, "" + this.developmentProfileCounter);
     if (this.developmentProfile) {
@@ -59,7 +42,6 @@ export default class ProfileProviderDefault implements IProfileProvider {
     }
     this.developmentProfile = newProfile;
     this.profiles[this.developmentProfile.getID()] = Promise.resolve(newProfile);
-    this.activeProfile = Promise.resolve(newProfile);
     return newProfile.getID();
   }
 

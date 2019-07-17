@@ -1,6 +1,7 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import inBBox from "tiles-in-bbox";
+import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import TravelMode from "../../enums/TravelMode";
 import IProfileProvider from "../../fetcher/profiles/IProfileProvider";
@@ -39,9 +40,11 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         const {
             from: fromLocations,
             to: toLocations,
+            profileID,
         } = query;
 
         const paths = [];
+        const profile = await this.profileProvider.getProfile(profileID);
 
         if (fromLocations && toLocations && fromLocations.length && toLocations.length) {
 
@@ -51,6 +54,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
                     const newPath = await this.getPathBetweenLocations(
                         from,
                         to,
+                        profile,
                     );
 
                     if (newPath) {
@@ -66,6 +70,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
     private async getPathBetweenLocations(
         from: ILocation,
         to: ILocation,
+        profile: Profile,
     ): Promise<IPath> {
         const padding = 0.02;
         const zoom = 14;
@@ -109,14 +114,15 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
             this.pathfinderProvider.embedLocation(to, toTileset, true),
         ]);
 
-        return this._innerPath(from, to);
+        return this._innerPath(from, to, profile);
     }
 
     private async _innerPath(
         start: ILocation,
         stop: ILocation,
+        profile: Profile,
     ): Promise<IPath> {
-        const pathfinder = await this.pathfinderProvider.getShortestPathAlgorithm();
+        const pathfinder = await this.pathfinderProvider.getShortestPathAlgorithm(profile);
         const summary = pathfinder.queryPath(Geo.getId(start), Geo.getId(stop));
 
         const steps: IStep[] = [];
