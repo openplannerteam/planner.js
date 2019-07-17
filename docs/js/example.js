@@ -18,11 +18,14 @@ planner.prefetchStops();
 planner.prefetchConnections();
 
 let plannerResult;
+const usePublicTransport = document.querySelector('#usePublicTransport');
 const resetButton = document.querySelector("#reset");
 const results = document.querySelector("#results");
 const prefetchWrapper = document.querySelector("#prefetch");
 const prefetchBar = document.querySelector("#prefetch-bar");
 let prefetchBarWidth = 0;
+let publicTransportOnly = true;
+let roadNetworkOnly = false;
 
 let lines = [];
 let polyLines = [];
@@ -33,6 +36,12 @@ let prefetchViews = [];
 
 let firstPrefetch;
 
+const removeStops = () => {
+  for (const stop of allStops) {
+    stop.remove();
+  }
+};
+
 const removeLines = () => {
   for (const line of polyLines) {
     line.remove();
@@ -40,7 +49,6 @@ const removeLines = () => {
 
   lines = [];
   polyLines = [];
-  lines = [];
 };
 
 const removeResultObjects = () => {
@@ -65,14 +73,30 @@ const removePrefetchView = () => {
   }
 };
 
+usePublicTransport.onclick = e => {
+  if (!usePublicTransport.checked) {
+    publicTransportOnly = false;
+    roadNetworkOnly = true;
+    removeStops();
+  } else {
+    publicTransportOnly = true;
+    roadNetworkOnly = false;
+    for (const stop of allStops) {
+      stop.addTo(map);
+    }
+  }
+};
+
 resetButton.onclick = (e) => {
   removeLines();
   removeResultObjects();
   query = [];
   results.innerHTML = "";
 
-  for (const stop of allStops) {
-    stop.addTo(map);
+  if (usePublicTransport.checked) {
+    for (const stop of allStops) {
+      stop.addTo(map);
+    }
   }
 
   if (plannerResult) {
@@ -313,128 +337,171 @@ function getTransferTime(path) {
   return time / 60000;
 }
 
-function addResultPanel(path, color) {
+function addResultPanel(query, path, color) {
   const pathElement = document.createElement("div");
   pathElement.className = "path";
 
-  const firstStep = path.steps[0];
-  const lastStep = path.steps[path.steps.length - 1];
+  const travelTime = getTravelTime(path);
+  const startTime = path.steps[0].startTime || query.minimumDepartureTime;
+  const stopTime = path.steps[path.steps.length - 1].stopTime || new Date(query.minimumDepartureTime.getTime() + (travelTime * 60 * 1000));
+  const transferTime = Number.isNaN(getTransferTime(path)) ? 0 : getTransferTime(path);
 
   const headerElement = document.createElement("div");
   headerElement.className = "header";
 
   headerElement.innerHTML = `
-    Departure: ${dateToTimeString(firstStep.startTime)}<br/>
-    Arrival: ${dateToTimeString(lastStep.stopTime)}<br/>
-    Travel time: ${getTravelTime(path)} min<br/>
-    Transfer time: ${getTransferTime(path)} min
+    Departure: ${dateToTimeString(startTime)}<br/>
+    Arrival: ${dateToTimeString(stopTime)}<br/>
+    Travel time: ${Number(travelTime).toFixed(1)} min<br/>
+    Transfer time: ${Number(transferTime).toFixed(1)} min
   `;
 
   pathElement.appendChild(headerElement);
 
-  path.steps.forEach(step => {
-    const stepElement = document.createElement("div");
-    stepElement.className = "step";
+  if (query.roadNetworkOnly) {
+    let unifiedStep = path.steps[0];
+    unifiedStep.duration = { average: (travelTime * 60 * 1000) };
+    unifiedStep.stopLocation = path.steps[path.steps.length - 1].stopLocation;
 
-    const travelMode = document.createElement("div");
-    travelMode.className = "travelMode " + step.travelMode;
-    stepElement.appendChild(travelMode);
-
-    const details = document.createElement("div");
-    details.className = "details";
-    stepElement.appendChild(details);
-
-    const startLocation = document.createElement("div");
-    startLocation.className = "startLocation";
-    startLocation.innerHTML =
-      "Start location: " + step.startLocation.name;
-    details.appendChild(startLocation);
-
-    if (step.startTime) {
-      const startTime = document.createElement("div");
-      startTime.className = "startTime";
-      startTime.innerHTML = step.startTime;
-      details.appendChild(startTime);
-    }
-
-    if (step.enterConnectionId) {
-      const enterConnectionId = document.createElement("div");
-      enterConnectionId.className = "enterConnectionId";
-      enterConnectionId.innerHTML =
-        "Enter connection: " + step.enterConnectionId;
-      details.appendChild(enterConnectionId);
-    }
-
-    if (step.duration) {
-      const duration = document.createElement("div");
-      duration.className = "duration";
-      duration.innerHTML =
-        "Duration: average " +
-        step.duration.average / (60 * 1000) +
-        " min";
-      details.appendChild(duration);
-    }
-
-    const stopLocation = document.createElement("div");
-    stopLocation.className = "stopLocation";
-    stopLocation.innerHTML = "Stop location: " + step.stopLocation.name;
-    details.appendChild(stopLocation);
-
-    if (step.stopTime) {
-      const stopTime = document.createElement("div");
-      stopTime.className = "stopTime";
-      stopTime.innerHTML = step.stopTime;
-      details.appendChild(stopTime);
-    }
-
-    if (step.exitConnectionId) {
-      const exitConnectionId = document.createElement("div");
-      exitConnectionId.className = "exitConnectionId";
-      exitConnectionId.innerHTML =
-        "Exit connection: " + step.exitConnectionId;
-      details.appendChild(exitConnectionId);
-    }
-
-    pathElement.style.borderLeft = "5px solid " + color;
-
-    pathElement.appendChild(stepElement);
-  });
+    drawStep(unifiedStep, pathElement, color);
+  } else {
+    path.steps.forEach(step => {
+      drawStep(step, pathElement, color)
+    });
+  }
 
   results.appendChild(pathElement);
 }
 
-function addResultToMap(path, color) {
-  path.steps.forEach(step => {
-    const { startLocation, stopLocation, travelMode } = step;
+function drawStep(step, pathElement, color) {
+  const stepElement = document.createElement("div");
+  stepElement.className = "step";
 
-    const startMarker = L.marker([
-      startLocation.latitude,
-      startLocation.longitude
-    ]).addTo(map);
+  const travelMode = document.createElement("div");
+  travelMode.className = "travelMode " + step.travelMode;
+  stepElement.appendChild(travelMode);
 
-    startMarker.bindPopup(startLocation.name);
+  const details = document.createElement("div");
+  details.className = "details";
+  stepElement.appendChild(details);
 
-    const stopMarker = L.marker([
-      stopLocation.latitude,
-      stopLocation.longitude
-    ]).addTo(map);
+  const startLocation = document.createElement("div");
+  startLocation.className = "startLocation";
+  const startln = step.startLocation.name || "[ lat: " + step.startLocation.latitude + " long: " + step.startLocation.longitude + "]";
+  startLocation.innerHTML =
+    "Start location: " + startln;
+  details.appendChild(startLocation);
 
-    stopMarker.bindPopup(stopLocation.name);
-    const line = [
-      [startLocation.latitude, startLocation.longitude],
-      [stopLocation.latitude, stopLocation.longitude]
-    ];
+  if (step.startTime) {
+    const startTime = document.createElement("div");
+    startTime.className = "startTime";
+    startTime.innerHTML = step.startTime;
+    details.appendChild(startTime);
+  }
 
-    const polyline = new L.Polyline(line, {
-      color,
-      weight: 5,
-      smoothFactor: 1,
-      opacity: 0.7,
-      dashArray: travelMode === "walking" ? "8 8" : null
-    }).addTo(map);
+  if (step.enterConnectionId) {
+    const enterConnectionId = document.createElement("div");
+    enterConnectionId.className = "enterConnectionId";
+    enterConnectionId.innerHTML =
+      "Enter connection: " + step.enterConnectionId;
+    details.appendChild(enterConnectionId);
+  }
 
-    resultObjects.push(startMarker, stopMarker, polyline);
-  });
+  if (step.duration) {
+    const duration = document.createElement("div");
+    duration.className = "duration";
+    duration.innerHTML =
+      "Duration: average " +
+      Number(step.duration.average / (60 * 1000)).toFixed(1) +
+      " min";
+    details.appendChild(duration);
+  }
+
+  const stopLocation = document.createElement("div");
+  stopLocation.className = "stopLocation";
+  const stopln = step.stopLocation.name || "[ lat: " + step.stopLocation.latitude + " long: " + step.stopLocation.longitude + "]";
+  stopLocation.innerHTML = "Stop location: " + stopln;
+  details.appendChild(stopLocation);
+
+  if (step.stopTime) {
+    const stopTime = document.createElement("div");
+    stopTime.className = "stopTime";
+    stopTime.innerHTML = step.stopTime;
+    details.appendChild(stopTime);
+  }
+
+  if (step.exitConnectionId) {
+    const exitConnectionId = document.createElement("div");
+    exitConnectionId.className = "exitConnectionId";
+    exitConnectionId.innerHTML =
+      "Exit connection: " + step.exitConnectionId;
+    details.appendChild(exitConnectionId);
+  }
+
+  pathElement.style.borderLeft = "5px solid " + color;
+
+  pathElement.appendChild(stepElement);
+}
+
+function addResultToMap(q, path, color) {
+  if (q.roadNetworkOnly) {
+
+    for (let i in path.steps) {
+      if (i > 0) {
+        const { startLocation, stopLocation, travelMode } = path.steps[i];
+        const line = [
+          [startLocation.latitude, startLocation.longitude],
+          [stopLocation.latitude, stopLocation.longitude]
+        ];
+
+        drawLineBetweenPoints(line, travelMode, color);
+      }
+    }
+
+  } else {
+    path.steps.forEach(step => {
+      addConnectionMarkers(step, color);
+    });
+  }
+}
+
+function addConnectionMarkers(step, color) {
+  const { startLocation, stopLocation, travelMode } = step;
+
+  const startMarker = L.marker([
+    startLocation.latitude,
+    startLocation.longitude
+  ]).addTo(map);
+
+  startMarker.bindPopup(startLocation.name);
+
+  const stopMarker = L.marker([
+    stopLocation.latitude,
+    stopLocation.longitude
+  ]).addTo(map);
+
+  stopMarker.bindPopup(stopLocation.name);
+
+  resultObjects.push(startMarker, stopMarker);
+
+  const line = [
+    [startLocation.latitude, startLocation.longitude],
+    [stopLocation.latitude, stopLocation.longitude]
+  ];
+
+  drawLineBetweenPoints(line, travelMode, color);
+}
+
+function drawLineBetweenPoints(line, travelMode, color) {
+  const polyline = new L.Polyline(line, {
+    color,
+    weight: 5,
+    smoothFactor: 1,
+    opacity: 0.7,
+    dashArray: travelMode === "walking" ? "8 8" : null
+  }).addTo(map);
+
+  resultObjects.push(polyline);
 }
 
 function runQuery(query) {
@@ -446,42 +513,42 @@ function runQuery(query) {
     color: "limegreen",
     fillColor: "limegreen",
     fillOpacity: 0.5,
-    radius: maximumWalkingDistance
+    radius: 10 // maximumWalkingDistance
   }).addTo(map);
 
   const arrivalCircle = L.circle([query[1].latitude, query[1].longitude], {
     color: "red",
     fillColor: "red",
     fillOpacity: 0.5,
-    radius: maximumWalkingDistance
+    radius: 10 // maximumWalkingDistance
   }).addTo(map);
 
   resultObjects.push(departureCircle, arrivalCircle);
 
   let i = 0;
   let amount = 4;
+  const q = {
+    roadNetworkOnly: roadNetworkOnly,
+    publicTransportOnly: publicTransportOnly,
+    from: query[0],
+    to: query[1],
+    minimumDepartureTime: new Date(),
+    maximumWalkingDistance,
+    maximumTransferDuration: Planner.Planner.Units.fromMinutes(30), // 30 minutes
+    minimumWalkingSpeed: 3
+  };
 
   planner
-    .query({
-      publicTransportOnly: true,
-      from: query[0],
-      to: query[1],
-      minimumDepartureTime: new Date(),
-      maximumWalkingDistance,
-      maximumTransferDuration: Planner.Planner.Units.fromMinutes(30), // 30 minutes
-      minimumWalkingSpeed: 3
-    })
+    .query(q)
     .take(amount)
     .on("error", (error) => {
       console.error(error);
     })
     .on("data", path => {
       i++;
-
       const color = getRandomColor();
-
-      addResultPanel(path, color);
-      addResultToMap(path, color);
+      addResultPanel(q, path, color);
+      addResultToMap(q, path, color);
 
     })
     .on("end", () => {

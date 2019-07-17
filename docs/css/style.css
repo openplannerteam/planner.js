@@ -1,8 +1,81 @@
-html,
-body {
+html, body {
     margin: 0;
     height: 100%;
     width: 100%;
+}
+
+#optionsBar {
+    margin-bottom: 5px;
+    text-align: center
+}
+
+#optionsBar .optionLabel {
+    font-size: 19px;
+    font-family: sans-serif;
+    vertical-align: middle;
+    top: 6px;
+    position: relative;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }
 
 #mapid {
@@ -23,7 +96,7 @@ body {
     width: 500px;
 }
 
-#results > .path {
+#results>.path {
     margin: 10px;
     background: rgba(255, 255, 255, .8);
     border: 1px solid #ccc;
@@ -33,14 +106,14 @@ body {
     flex-wrap: wrap;
 }
 
-#results > .path > .header {
+#results>.path>.header {
     padding: 10px;
-    background: rgba(0, 0, 0, .25);
+    background: rgba(0, 0, 0, .7);
     color: #fff;
     text-shadow: 0 0 1px black;
 }
 
-#results > .path > .step {
+#results>.path>.step {
     display: flex;
     flex-direction: row;
     margin: 10px;
@@ -53,8 +126,7 @@ body {
     background-repeat: no-repeat;
 }
 
-.details {
-}
+.details {}
 
 .travelMode.walking {
     background-image: url(data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZGF0YS1wcmVmaXg9ImZhcyIgZGF0YS1pY29uPSJ3YWxraW5nIiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtd2Fsa2luZyBmYS13LTEwIiByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDMyMCA1MTIiPjxwYXRoIGZpbGw9ImN1cnJlbnRDb2xvciIgZD0iTTIwOCA5NmMyNi41IDAgNDgtMjEuNSA0OC00OFMyMzQuNSAwIDIwOCAwcy00OCAyMS41LTQ4IDQ4IDIxLjUgNDggNDggNDh6bTk0LjUgMTQ5LjFsLTIzLjMtMTEuOC05LjctMjkuNGMtMTQuNy00NC42LTU1LjctNzUuOC0xMDIuMi03NS45LTM2LS4xLTU1LjkgMTAuMS05My4zIDI1LjItMjEuNiA4LjctMzkuMyAyNS4yLTQ5LjcgNDYuMkwxNy42IDIxM2MtNy44IDE1LjgtMS41IDM1IDE0LjIgNDIuOSAxNS42IDcuOSAzNC42IDEuNSA0Mi41LTE0LjNMODEgMjI4YzMuNS03IDkuMy0xMi41IDE2LjUtMTUuNGwyNi44LTEwLjgtMTUuMiA2MC43Yy01LjIgMjAuOC40IDQyLjkgMTQuOSA1OC44bDU5LjkgNjUuNGM3LjIgNy45IDEyLjMgMTcuNCAxNC45IDI3LjdsMTguMyA3My4zYzQuMyAxNy4xIDIxLjcgMjcuNiAzOC44IDIzLjMgMTcuMS00LjMgMjcuNi0yMS43IDIzLjMtMzguOGwtMjIuMi04OWMtMi42LTEwLjMtNy43LTE5LjktMTQuOS0yNy43bC00NS41LTQ5LjcgMTcuMi02OC43IDUuNSAxNi41YzUuMyAxNi4xIDE2LjcgMjkuNCAzMS43IDM3bDIzLjMgMTEuOGMxNS42IDcuOSAzNC42IDEuNSA0Mi41LTE0LjMgNy43LTE1LjcgMS40LTM1LjEtMTQuMy00M3pNNzMuNiAzODUuOGMtMy4yIDguMS04IDE1LjQtMTQuMiAyMS41bC01MCA1MC4xYy0xMi41IDEyLjUtMTIuNSAzMi44IDAgNDUuM3MzMi43IDEyLjUgNDUuMiAwbDU5LjQtNTkuNGM2LjEtNi4xIDEwLjktMTMuNCAxNC4yLTIxLjVsMTMuNS0zMy44Yy01NS4zLTYwLjMtMzguNy00MS44LTQ3LjQtNTMuN2wtMjAuNyA1MS41eiI+PC9wYXRoPjwvc3ZnPg==);
@@ -73,19 +145,18 @@ body {
     margin-top: 5px;
 }
 
-.enterConnectionId,
-.exitConnectionId {
+.enterConnectionId, .exitConnectionId {
     opacity: 0.5;
 }
 
 #actions {
     position: absolute;
-    top: 10px;
+    top: 41px;
     right: 10px;
     z-index: 500;
 }
 
-#actions > button {
+#actions>button {
     border-radius: 100px;
     background: rgba(255, 255, 255, .8);
     font-size: 2em;
@@ -94,7 +165,7 @@ body {
 
 #prefetch {
     position: absolute;
-    top: 10px;
+    top: 41px;
     left: 54px;
     max-width: calc(100% - 225px);
     z-index: 500;
