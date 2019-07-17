@@ -4,6 +4,8 @@ import { RoutableTileNode } from "../../entities/tiles/node";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import ILocation from "../../interfaces/ILocation";
 import { IPathTree } from "../../pathfinding/pathfinder";
+import ILocationResolver from "../../query-runner/ILocationResolver";
+import Geo from "../../util/Geo";
 import UnionFind from "../../util/UnionFind";
 import { pointsOfTriangle } from "./util";
 
@@ -24,15 +26,19 @@ type Ring = ILocation[];
 // The first being the outer ring, the others being holes.
 type Polygon = Ring[];
 
-export function visualizeConcaveIsochrone(registry: RoutableTileRegistry, pathTree: IPathTree, maxCost: number) {
-    const nodes: NodeList = [];
+export async function visualizeConcaveIsochrone(
+    locationResolver: ILocationResolver,
+    pathTree: IPathTree,
+    maxCost: number,
+) {
+    const nodes = [];
     const costs = {};
     for (const [id, branch] of Object.entries(pathTree)) {
         const { duration } = branch;
-        const node = registry.getNode(id);
+        const node = await locationResolver.resolve(id);
         if (node && duration !== Infinity) {
             nodes.push(node);
-            costs[node.id] = duration;
+            costs[Geo.getId(node)] = duration;
         }
     }
 
@@ -40,11 +46,16 @@ export function visualizeConcaveIsochrone(registry: RoutableTileRegistry, pathTr
         .filter((node) => costs[node.id] < maxCost)
         .map((n) => [n.longitude, n.latitude]);
 
-    const shell = concaveman(internalNodes);
-    return {
-        isochrones: [[shell.map((point) => {
+    let isochrones = [];
+    if (internalNodes.length > 0) {
+        const shell = concaveman(internalNodes);
+        isochrones = [[shell.map((point) => {
             return { longitude: point[0], latitude: point[1] };
-        })]],
+        })]];
+    }
+
+    return {
+        isochrones,
     };
 }
 

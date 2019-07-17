@@ -13,6 +13,7 @@ import ILocation from "../../interfaces/ILocation";
 import defaultContainer from "../../inversify.config";
 import { IPathTree } from "../../pathfinding/pathfinder";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
+import ILocationResolver from "../../query-runner/ILocationResolver";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import { toTileCoordinate } from "./util";
@@ -28,9 +29,11 @@ export default class IsochroneGenerator implements EventEmitter {
     private startPoint: ILocation;
     private registry: RoutableTileRegistry;
     private profileProvider: ProfileProvider;
+    private locationResolver: ILocationResolver;
 
     private loaded: Promise<boolean>;
     private showIncremental: boolean;
+    private showDebugLogs: boolean;
     private reachedPoints: ILocation[];
 
     constructor(point: ILocation, container = defaultContainer) {
@@ -40,16 +43,22 @@ export default class IsochroneGenerator implements EventEmitter {
         this.pathfinderProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
         this.registry = container.get<RoutableTileRegistry>(TYPES.RoutableTileRegistry);
         this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
+        this.locationResolver = container.get<ILocationResolver>(TYPES.LocationResolver);
         this.reachedTiles = new Set();
         this.startPoint = point;
         this.reachedPoints = [this.startPoint];
         this.showIncremental = false;
+        this.showDebugLogs = false;
 
         this.setProfileID("http://hdelva.be/profile/car");
     }
 
     public enableIncrementalResults() {
         this.showIncremental = true;
+    }
+
+    public enableDebugLogs() {
+        this.showDebugLogs = true;
     }
 
     public addListener(type: string | symbol, listener: Listener): this {
@@ -118,7 +127,18 @@ export default class IsochroneGenerator implements EventEmitter {
     }
 
     public async getIsochrone(maxDuration: number, reset = true) {
+        console.time("execution time");
+        if (this.showDebugLogs) {
+            console.log(`Generating the ${maxDuration / 1000}s isochrone ` +
+            `from ${this.startPoint.latitude}, ${this.startPoint.longitude}`);
+        }
+
         await this.loaded;
+
+        if (this.showDebugLogs) {
+            const profile = await this.profileProvider.getActiveProfile();
+            console.log(`Using the ${profile.getID()} profile`);
+        }
 
         const pathfinder = await this.pathfinderProvider.getShortestPathTreeAlgorithm();
 
@@ -133,7 +153,12 @@ export default class IsochroneGenerator implements EventEmitter {
             pathTree = await pathfinder.continue(maxDuration);
         }
 
-        return visualizeConcaveIsochrone(this.registry, pathTree, maxDuration);
+        if (this.showDebugLogs) {
+            console.log(`Path tree computed using ${this.reachedTiles.size} tiles.`);
+            console.timeEnd("execution time");
+        }
+
+        return await visualizeConcaveIsochrone(this.locationResolver, pathTree, maxDuration);
     }
 
     private async fetchTile(coordinate: RoutableTileCoordinate) {
