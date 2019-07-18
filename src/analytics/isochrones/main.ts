@@ -124,8 +124,8 @@ export default class IsochroneGenerator implements EventEmitter {
     }
 
     public async getIsochrone(maxDuration: number, reset = true) {
-        console.time("execution time");
         if (this.showDebugLogs) {
+            console.time(Geo.getId(this.startPoint));
             console.log(`Generating the ${maxDuration / 1000}s isochrone ` +
             `from ${this.startPoint.latitude}, ${this.startPoint.longitude}`);
         }
@@ -152,7 +152,7 @@ export default class IsochroneGenerator implements EventEmitter {
 
         if (this.showDebugLogs) {
             console.log(`Path tree computed using ${this.reachedTiles.size} tiles.`);
-            console.timeEnd("execution time");
+            console.timeEnd(Geo.getId(this.startPoint));
         }
 
         return await visualizeConcaveIsochrone(this.locationResolver, pathTree, maxDuration);
