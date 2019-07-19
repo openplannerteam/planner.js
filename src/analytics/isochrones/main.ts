@@ -34,6 +34,7 @@ export default class IsochroneGenerator implements EventEmitter {
 
     private activeProfile: Promise<Profile>;
     private loaded: Promise<boolean>;
+    private embedded: boolean;
     private showIncremental: boolean;
     private showDebugLogs: boolean;
     private reachedPoints: ILocation[];
@@ -51,8 +52,9 @@ export default class IsochroneGenerator implements EventEmitter {
         this.reachedPoints = [this.startPoint];
         this.showIncremental = false;
         this.showDebugLogs = false;
+        this.embedded = false;
 
-        this.activeProfile = this.profileProvider.getProfile("http://hdelva.be/profile/car");
+        this.setProfileID("http://hdelva.be/profile/car");
     }
 
     public enableIncrementalResults() {
@@ -118,16 +120,19 @@ export default class IsochroneGenerator implements EventEmitter {
 
     public async setProfileID(profileID: string) {
         this.activeProfile = this.profileProvider.getProfile(profileID);
-        this.loaded = this.embedBeginPoint(this.startPoint).then(() => {
-            return true;
-        });
+        this.embedded = false;
     }
 
     public async getIsochrone(maxDuration: number, reset = true) {
-        console.time("execution time");
         if (this.showDebugLogs) {
+            console.time(Geo.getId(this.startPoint));
             console.log(`Generating the ${maxDuration / 1000}s isochrone ` +
             `from ${this.startPoint.latitude}, ${this.startPoint.longitude}`);
+        }
+
+        if (!this.embedded) {
+            await this.embedBeginPoint(this.startPoint);
+            this.embedded = true;
         }
 
         await this.loaded;
@@ -152,7 +157,7 @@ export default class IsochroneGenerator implements EventEmitter {
 
         if (this.showDebugLogs) {
             console.log(`Path tree computed using ${this.reachedTiles.size} tiles.`);
-            console.timeEnd("execution time");
+            console.timeEnd(Geo.getId(this.startPoint));
         }
 
         return await visualizeConcaveIsochrone(this.locationResolver, pathTree, maxDuration);
