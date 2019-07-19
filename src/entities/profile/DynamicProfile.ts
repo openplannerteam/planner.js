@@ -74,10 +74,12 @@ export default class DynamicProfile extends Profile {
     }
 
     public getMaxSpeed(): number {
-        return this.maxSpeed;
+        return this.maxSpeed || 300;
     }
 
     public getSpeed(way: RoutableTileWay): number {
+        const speedLimit = Math.min(way.maxSpeed || Infinity, this.getMaxSpeed());
+
         for (const rule of this.speedRules) {
             if (rule.conclusion.speed !== undefined) {
                 // should always be the case, but just in case
@@ -85,36 +87,18 @@ export default class DynamicProfile extends Profile {
                     const field = this.mapping[rule.condition.predicate];
                     if (way[field] === rule.condition.object) {
                         if (typeof (rule.conclusion.speed) === "number") {
-                            return rule.conclusion.speed;
+                            return Math.min(rule.conclusion.speed, speedLimit);
                         }
-                        /*
-                        // fixme: speeds are currently strings
-                        else {
-                            const uri = URI.inNS(PROFILE, "fromProperty");
-                            const sourceField = getOsmTagMapping()[rule.conclusion.speed[uri]];
-                            if (way[sourceField]) {
-                                return way[sourceField];
-                            }
-                        }
-                        */
                     } else {
                         if (typeof (rule.conclusion.speed) === "number") {
-                            return rule.conclusion.speed;
+                            return Math.min(rule.conclusion.speed, speedLimit);
                         }
-                        /*
-                        // fixme: speeds are currently strings
-                        else {
-                            const uri = URI.inNS(PROFILE, "fromProperty");
-                            const sourceField = getOsmTagMapping()[rule.conclusion.speed[uri]];
-                            if (way[sourceField]) {
-                                return way[sourceField];
-                            }
-                        }
-                        */
                     }
                 }
             }
         }
+
+        return Math.min(speedLimit, this.getDefaultSpeed());
     }
 
     public getDistance(from: RoutableTileNode, to: RoutableTileNode, way: RoutableTileWay): DistanceM {

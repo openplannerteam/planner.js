@@ -88,7 +88,9 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
   private createWay(blob): RoutableTileWay {
     const id = blob["@id"];
     const way = new RoutableTileWay(id);
-    way.maxSpeed = parseFloat(blob["osm:maxspeed"]);
+    if (blob["osm:maxspeed"]) {
+      way.maxSpeed = parseFloat(blob["osm:maxspeed"]);
+    }
     way.segments = [blob["osm:hasNodes"]];
     way.name = blob["osm:name"];
 
