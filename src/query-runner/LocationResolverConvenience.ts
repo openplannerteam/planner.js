@@ -31,7 +31,7 @@ export default class LocationResolverConvenience implements ILocationResolver {
     if (typeof input === "string" && !this.isId(input)) {
 
       if (input.includes("geo:")) {
-        const expression = /geo:([0-9.]+),([0-9.]+)/;
+        const expression = /geo:([\-0-9.]+),([\-0-9.]+)/;
         const result = expression.exec(input);
 
         if (result && result.length) {
