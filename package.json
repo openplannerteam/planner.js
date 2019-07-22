@@ -31,12 +31,12 @@
     "asynciterator-promiseproxy": "^2.0.0",
     "concaveman": "^1.1.1",
     "d3-delaunay": "^4.1.5",
-    "haversine": "^1.1.0",
+    "haversine": "^1.1.1",
     "inversify": "^5.0.1",
     "isomorphic-fetch": "^2.2.1",
-    "ldfetch": "^1.1.1-alpha",
+    "ldfetch": "^1.1.2",
     "node-dijkstra": "^2.5.0",
-    "reflect-metadata": "^0.1.12",
+    "reflect-metadata": "^0.1.13",
     "tiles-in-bbox": "^1.0.2",
     "tinyqueue": "^2.0.2",
     "uritemplate": "^0.3.4"
@@ -45,20 +45,20 @@
     "lint"
   ],
   "devDependencies": {
-    "@types/haversine": "^1.1.0",
-    "@types/jest": "^23.3.7",
+    "@types/haversine": "^1.1.4",
+    "@types/jest": "^23.3.14",
     "@types/rdf-js": "^1.0.1",
     "jest": "^23.6.0",
     "pre-commit": "^1.2.2",
     "prettier": "1.14.3",
     "source-map-support": "^0.5.11",
-    "ts-jest": "^23.10.4",
-    "ts-loader": "^5.3.0",
-    "tslint": "^5.11.0",
+    "ts-jest": "^23.10.5",
+    "ts-loader": "^5.4.5",
+    "tslint": "^5.18.0",
     "typedoc": "^0.14.2",
-    "typescript": "^3.3.3",
-    "webpack": "^4.25.1",
-    "webpack-cli": "^3.1.2"
+    "typescript": "^3.5.3",
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6"
   },
   "sideEffects": false
 }
