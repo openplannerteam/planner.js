@@ -47,7 +47,7 @@
     <div class="container">
         <div style="margin-right: 20px">
             <p>
-                <input id="profile" type="text" name="profile" value="http://hdelva.be/profile/car"><br><br>
+                <input id="profile" type="text" name="profile" value="https://hdelva.be/profile/car"><br><br>
                 <button onclick="setProfile()">Set Profile</button>
             </p>
             <p>
@@ -125,7 +125,8 @@
 
             const point = { latitude: focus[0], longitude: focus[1] };
             const x = new Planner.IsochroneGenerator(point);
-            x.enableIncrementalResults();
+            //x.enableIncrementalResults();
+            x.enableDebugLogs();
             first = true;
 
             x.on("TILE", (coord) => {

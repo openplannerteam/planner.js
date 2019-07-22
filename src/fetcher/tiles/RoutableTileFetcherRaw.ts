@@ -24,6 +24,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     this.routableTileRegistry = routableTileRegistry;
     this.mapping = {};
 
+    this.mapping["osm:barrier"] = "barrierKind";
     this.mapping["osm:access"] = "accessRestrictions";
     this.mapping["osm:bicycle"] = "bicycleAccessRestrictions";
     this.mapping["osm:construction"] = "constructionKind";
@@ -82,6 +83,13 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     const node = new RoutableTileNode(id);
     node.latitude = parseFloat(blob["geo:lat"]);
     node.longitude = parseFloat(blob["geo:long"]);
+
+    for (const [tag, field] of Object.entries(this.mapping)) {
+      if (blob[tag] && !node[field]) {
+        node[field] = URI.fakeExpand(OSM, blob[tag]);
+      }
+    }
+
     return node;
   }
 

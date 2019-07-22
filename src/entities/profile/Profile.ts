@@ -20,4 +20,5 @@ export default abstract class Profile {
     public abstract getCost(from: ILocation, to: ILocation, way: RoutableTileWay): number;
 
     public abstract isObstacle(node: RoutableTileNode): boolean;
+    public abstract getObstacleTime(node: RoutableTileNode): DurationMs;
 }

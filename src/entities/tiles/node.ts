@@ -1,4 +1,6 @@
 import Barrier from "../../enums/Barrier";
+import Crossing from "../../enums/Crossing";
+import Highway from "../../enums/Highway";
 import ILocation from "../../interfaces/ILocation";
 
 export class RoutableTileNode implements ILocation {
@@ -11,6 +13,8 @@ export class RoutableTileNode implements ILocation {
     public id: string;
 
     public barrierKind?: Barrier;
+    public highwayKind?: Highway;
+    public crossingKind?: Crossing;
 
     constructor(id: string) {
         this.id = id;

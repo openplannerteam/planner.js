@@ -27,28 +27,24 @@ type Ring = ILocation[];
 type Polygon = Ring[];
 
 export async function visualizeConcaveIsochrone(
-    locationResolver: ILocationResolver,
     pathTree: IPathTree,
     maxCost: number,
+    registry: RoutableTileRegistry,
 ) {
-    const nodes = [];
-    const costs = {};
-    for (const [id, branch] of Object.entries(pathTree)) {
-        const { duration } = branch;
-        const node = await locationResolver.resolve(id);
-        if (node && duration !== Infinity) {
-            nodes.push(node);
-            costs[Geo.getId(node)] = duration;
+    const locations = [];
+    for (const node of registry.getNodes()) {
+        const branch = pathTree[node.id];
+        if (branch) {
+            const { duration } = branch;
+            if (duration < maxCost) {
+                locations.push([node.longitude, node.latitude]);
+            }
         }
     }
 
-    const internalNodes = nodes
-        .filter((node) => costs[node.id] < maxCost)
-        .map((n) => [n.longitude, n.latitude]);
-
     let isochrones = [];
-    if (internalNodes.length > 0) {
-        const shell = concaveman(internalNodes);
+    if (locations.length > 0) {
+        const shell = concaveman(locations);
         isochrones = [[shell.map((point) => {
             return { longitude: point[0], latitude: point[1] };
         })]];

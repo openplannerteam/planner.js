@@ -13,6 +13,7 @@ export default class ProfileConclusion implements IEntity {
     public speed?: number | ProfileValueReference;
     public isObstacle?: boolean;
     public priority?: number;
+    public obstacleTime?: number;
 
     constructor(id: string) {
         this.id = id;
