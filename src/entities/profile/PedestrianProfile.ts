@@ -90,4 +90,8 @@ export default class PedestrianProfile extends Profile {
     public isObstacle(node: RoutableTileNode): boolean {
         return false;
     }
+
+    public getObstacleTime(node: RoutableTileNode): DurationMs {
+        return 0;
+    }
 }

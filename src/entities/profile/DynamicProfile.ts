@@ -1,8 +1,5 @@
-import Highway from "../../enums/Highway";
 import getOsmTagMapping from "../../enums/OSMTags";
 import { DistanceM, DurationMs } from "../../interfaces/units";
-import { PROFILE } from "../../uri/constants";
-import URI from "../../uri/uri";
 import Geo from "../../util/Geo";
 import { RoutableTileNode } from "../tiles/node";
 import { RoutableTileWay } from "../tiles/way";
@@ -20,6 +17,7 @@ export default class DynamicProfile extends Profile {
     public speedRules: ProfileRule[];
     public priorityRules: ProfileRule[];
     public obstacleRules: ProfileRule[];
+    public obstacleTimeRules: ProfileRule[];
 
     public maxSpeed: number;
     public usePublicTransport: boolean;
@@ -30,6 +28,16 @@ export default class DynamicProfile extends Profile {
         super();
         this.id = url;
         this.mapping = getOsmTagMapping();
+
+        this.accessRules = [];
+        this.onewayRules = [];
+        this.speedRules = [];
+        this.priorityRules = [];
+        this.obstacleRules = [];
+        this.obstacleTimeRules = [];
+
+        this.maxSpeed = 10;
+        this.usePublicTransport = true;
     }
 
     public getID(): string {
@@ -129,11 +137,11 @@ export default class DynamicProfile extends Profile {
     }
 
     public getCost(from: RoutableTileNode, to: RoutableTileNode, way: RoutableTileWay): number {
-        return this.getMultiplier(way) * this.getDuration(from, to, way);
+        return this.getMultiplier(way) * (this.getDuration(from, to, way) + this.getObstacleTime(to));
     }
 
     public isObstacle(node: RoutableTileNode): boolean {
-        for (const rule of this.accessRules) {
+        for (const rule of this.obstacleRules) {
             if (rule.conclusion.isObstacle !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
@@ -146,5 +154,26 @@ export default class DynamicProfile extends Profile {
                 }
             }
         }
+    }
+
+    public getObstacleTime(node: RoutableTileNode): DurationMs {
+        for (const rule of this.obstacleTimeRules) {
+            if (rule.conclusion.obstacleTime !== undefined) {
+                // should always be the case, but just in case
+                if (rule.condition !== undefined) {
+                    const field = this.mapping[rule.condition.predicate];
+                    if (node[field] && rule.condition.object === undefined) {
+                        return rule.conclusion.obstacleTime * 1000;
+                    }
+                    if (node[field] === rule.condition.object && rule.condition.object !== undefined) {
+                        return rule.conclusion.obstacleTime * 1000;
+                    }
+                } else {
+                    return rule.conclusion.obstacleTime * 1000;
+                }
+            }
+        }
+
+        return 0;
     }
 }
