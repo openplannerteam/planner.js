@@ -157,21 +157,27 @@ export default class IsochroneGenerator implements EventEmitter {
 
         if (this.showDebugLogs) {
             console.log(`Path tree computed using ${this.reachedTiles.size} tiles.`);
+            console.timeLog(Geo.getId(this.startPoint));
+        }
+
+        const result = await visualizeConcaveIsochrone(pathTree, maxDuration, this.registry);
+
+        if (this.showDebugLogs) {
             console.timeEnd(Geo.getId(this.startPoint));
         }
 
-        return await visualizeConcaveIsochrone(this.locationResolver, pathTree, maxDuration);
+        return result;
     }
 
     private async fetchTile(coordinate: RoutableTileCoordinate) {
         const tileId = this.tileProvider.getIdForTileCoords(coordinate);
         if (!this.reachedTiles.has(tileId)) {
             this.emit("TILE", coordinate);
-            this.reachedTiles.add(tileId);
 
             const profile = await this.activeProfile;
             const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
             const tile = await this.tileProvider.getByTileCoords(coordinate);
+            this.reachedTiles.add(tileId);
             const boundaryNodes: Set<string> = new Set();
 
             for (const nodeId of tile.getNodes()) {
@@ -199,9 +205,10 @@ export default class IsochroneGenerator implements EventEmitter {
 
             const self = this;
             for (const nodeId of boundaryNodes) {
+                const node = self.registry.getNode(nodeId);
+                const boundaryTileCoordinate = toTileCoordinate(node.latitude, node.longitude);
+
                 pathfinder.setBreakPoint(nodeId, async (on: string) => {
-                    const node = self.registry.getNode(on);
-                    const boundaryTileCoordinate = toTileCoordinate(node.latitude, node.longitude);
                     await self.fetchTile(boundaryTileCoordinate);
                 });
             }

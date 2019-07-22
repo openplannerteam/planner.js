@@ -58,20 +58,14 @@ export default class LocationResolverDefault implements ILocationResolver {
   }
 
   private async resolveById(id: string): Promise<ILocation> {
-    const stop: IStop = await this.stopsProvider.getStopById(id);
-
-    if (stop) {
-      return {
-        id,
-        name: stop.name,
-        latitude: stop.latitude,
-        longitude: stop.longitude,
-      };
-    }
-
     const node = this.tileRegistry.getNode(id);
     if (node) {
       return node;
+    }
+
+    const stop: IStop = await this.stopsProvider.getStopById(id);
+    if (stop) {
+      return stop;
     }
 
     return Promise.reject(new LocationResolverError(`No fetcher for id ${id}`));

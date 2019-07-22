@@ -92,6 +92,10 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
             queue.push(next);
             this.costs[next.position] = next.duration;
             this.previousNodes[next.position] = position;
+
+            if (this.breakPoints[next.position]) {
+              this.breakPoints[next.position](this.graph.getLabel(next.position));
+            }
           }
         }
       }
