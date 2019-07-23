@@ -44,7 +44,7 @@ export async function visualizeConcaveIsochrone(
 
     let isochrones = [];
     if (locations.length > 0) {
-        const shell = concaveman(locations);
+        const shell = concaveman(locations, 2);
         isochrones = [[shell.map((point) => {
             return { longitude: point[0], latitude: point[1] };
         })]];
