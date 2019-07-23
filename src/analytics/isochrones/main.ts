@@ -37,7 +37,6 @@ export default class IsochroneGenerator implements EventEmitter {
     private embedded: boolean;
     private showIncremental: boolean;
     private showDebugLogs: boolean;
-    private reachedPoints: ILocation[];
 
     constructor(point: ILocation, container = defaultContainer) {
         this.context = container.get<Context>(TYPES.Context);
@@ -49,7 +48,6 @@ export default class IsochroneGenerator implements EventEmitter {
         this.locationResolver = container.get<ILocationResolver>(TYPES.LocationResolver);
         this.reachedTiles = new Set();
         this.startPoint = point;
-        this.reachedPoints = [this.startPoint];
         this.showIncremental = false;
         this.showDebugLogs = false;
         this.embedded = false;
@@ -127,7 +125,7 @@ export default class IsochroneGenerator implements EventEmitter {
         if (this.showDebugLogs) {
             console.time(Geo.getId(this.startPoint));
             console.log(`Generating the ${maxDuration / 1000}s isochrone ` +
-            `from ${this.startPoint.latitude}, ${this.startPoint.longitude}`);
+                `from ${this.startPoint.latitude}, ${this.startPoint.longitude}`);
         }
 
         if (!this.embedded) {
@@ -157,7 +155,8 @@ export default class IsochroneGenerator implements EventEmitter {
 
         if (this.showDebugLogs) {
             console.log(`Path tree computed using ${this.reachedTiles.size} tiles.`);
-            console.timeLog(Geo.getId(this.startPoint));
+            console.timeEnd(Geo.getId(this.startPoint));
+            console.time(Geo.getId(this.startPoint));
         }
 
         const result = await visualizeConcaveIsochrone(pathTree, maxDuration, this.registry);
@@ -188,18 +187,16 @@ export default class IsochroneGenerator implements EventEmitter {
                 }
 
                 if (this.showIncremental) {
-                    if (Math.random() * this.reachedPoints.length < 100) {
-                        pathfinder.setBreakPoint(nodeId, async (on: string) => {
-                            const innerNode = self.registry.getNode(on);
-                            if (innerNode) {
-                                this.reachedPoints.push(innerNode);
-                                const internalNodes = this.reachedPoints
-                                    .map((n) => [n.longitude, n.latitude]);
-
-                                self.emit("INTERMEDIATE", concaveman(internalNodes, Infinity).map((e) => [e[1], e[0]]));
-                            }
-                        });
-                    }
+                    pathfinder.setBreakPoint(nodeId, async (on: string) => {
+                        const innerNode = self.registry.getNode(on);
+                        if (innerNode) {
+                            self.emit("REACHED", innerNode);
+                            /*
+                            self.emit("INTERMEDIATE", concaveman(this.reachedPoints, Infinity)
+                                .map((e) => [e[1], e[0]]));
+                            */
+                        }
+                    });
                 }
             }
 

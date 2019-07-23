@@ -3,8 +3,8 @@
 
 <head>
     <title>Isochrone demo</title>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
     <style>
         .container {
             display: flex;
@@ -52,14 +52,14 @@
             </p>
             <p>
                 Latitude:<br>
-                <input id="latitude" type="text" name="latitude" value="51.03863"><br>
+                <input id="latitude" type="text" name="latitude" value="50.8599263"><br>
                 Longitude:<br>
-                <input id="longitude" type="text" name="longitude" value="3.72634"><br><br>
+                <input id="longitude" type="text" name="longitude" value="4.3567009"><br><br>
                 <button onclick="newMap()">Move</button>
             </p>
             <p>
                 Time (s):<br>
-                <input id="time" type="text" name="time" value="180"><br><br>
+                <input id="time" type="text" name="time" value="600"><br><br>
                 <button onclick="addIsochrone()">Add Isochrone</button>
             </p>
         </div>
@@ -76,6 +76,7 @@
         let generator;
         let intermediate;
         let first = true;
+        let pointsLayer;
 
         async function drawIsochrone(distance, color) {
             const data = await generator.getIsochrone(distance, first);
@@ -115,7 +116,9 @@
                 map.remove();
             }
 
-            map = L.map('map').setView(focus, 13);
+            map = L.map('map', {
+                preferCanvas: true
+            }).setView(focus, 13);
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                 maxZoom: 18,
@@ -123,12 +126,16 @@
                 accessToken: 'pk.eyJ1IjoiaGRlbHZhIiwiYSI6ImNqd2dxNzl3MzBib3Q0YmxiMWdjMWpjM2wifQ.e6piOGj3MqwIpW2ymafjGQ'
             }).addTo(map);
 
+            pointsLayer = L.layerGroup([]);
+            pointsLayer.addTo(map);
+
             const point = { latitude: focus[0], longitude: focus[1] };
             const x = new Planner.IsochroneGenerator(point);
-            //x.enableIncrementalResults();
+            x.enableIncrementalResults();
             x.enableDebugLogs();
             first = true;
 
+            /*
             x.on("TILE", (coord) => {
                 const bounds = getTileBoundingBox(coord);
                 L.rectangle(bounds, { color: 'blue', weight: 1, fillOpacity: 0 }).addTo(map);
@@ -140,6 +147,19 @@
                 }
                 intermediate = new L.polygon([shell], { smoothFactor: 2, weight: 1, color: '#000000' });
                 intermediate.addTo(map);
+            })
+            */
+
+            x.on("REACHED", (point) => {
+                const wat = [point.latitude, point.longitude];
+                intermediate = L.circleMarker(wat, {
+                    color: 'red',
+                    fillColor: 'black',
+                    fillOpacity: 0.1,
+                    radius: 1,
+                    weight: 0,
+                });
+                pointsLayer.addLayer(intermediate);
             })
 
             return x;
