@@ -21,6 +21,7 @@ import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import CSAEarliestArrival from "./CSAEarliestArrival";
+import { EventEmitter } from "events";
 
 describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
   describe("mock data", () => {
@@ -44,7 +45,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<Context>(TYPES.Context),
+        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
     };
 
@@ -197,7 +198,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<Context>(TYPES.Context),
+        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
 
       return new QueryRunnerDefault(locationResolver, CSA, undefined);

@@ -11,6 +11,9 @@ enum EventType {
   ConnectionPrefetch = "connection-prefetch",
   ConnectionIteratorView = "connection-iterator-view",
 
+  FetchTile = "fetch-tile",
+  PointReached = "point-reached",
+
   ConnectionScan = "connection-scan",
   FinalReachableStops = "final-reachable-stops",
   InitialReachableStops = "initial-reachable-stops",

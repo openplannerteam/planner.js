@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 import { Container, interfaces } from "inversify";
 import Catalog from "./Catalog";
 import catalogDeLijn from "./catalog.delijn";
@@ -8,6 +9,7 @@ import Context from "./Context";
 import RoutableTileRegistry from "./entities/tiles/registry";
 import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
 import TravelMode from "./enums/TravelMode";
+import EventBus from "./events/EventBus";
 import ConnectionsProviderMerge from "./fetcher/connections/ConnectionsProviderMerge";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
@@ -57,6 +59,7 @@ import LocationResolverConvenience from "./query-runner/LocationResolverConvenie
 import TYPES from "./types";
 
 const container = new Container();
+container.bind<EventEmitter>(TYPES.EventBus).to(EventBus).inSingletonScope();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);

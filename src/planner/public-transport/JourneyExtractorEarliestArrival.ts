@@ -17,14 +17,10 @@ import IJourneyExtractor from "./IJourneyExtractor";
 export default class JourneyExtractorEarliestArrival implements IJourneyExtractor {
   private readonly locationResolver: ILocationResolver;
 
-  private context: Context;
-
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.Context) context?: Context,
   ) {
     this.locationResolver = locationResolver;
-    this.context = context;
   }
 
   public async extractJourneys(

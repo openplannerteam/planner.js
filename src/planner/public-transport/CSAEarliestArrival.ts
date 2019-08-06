@@ -1,12 +1,12 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
+import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
-import Context from "../../Context";
 import DropOffType from "../../enums/DropOffType";
-import EventType from "../../enums/EventType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import TravelMode from "../../enums/TravelMode";
+import EventType from "../../events/EventType";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
@@ -39,7 +39,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
   private readonly initialReachableStopsFinder: IReachableStopsFinder;
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
-  private readonly context: Context;
+  private readonly eventBus: EventEmitter;
 
   private finalReachableStops: IFinalReachableStops = {};
   private profilesByStop: IProfileByStop = {}; // S
@@ -63,15 +63,15 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Final)
     finalReachableStopsFinder: IReachableStopsFinder,
-    @inject(TYPES.Context)
-    context?: Context,
+    @inject(TYPES.EventBus)
+    eventBus?: EventEmitter,
   ) {
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.initialReachableStopsFinder = initialReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
-    this.context = context;
+    this.eventBus = eventBus;
     this.journeyExtractor = new JourneyExtractorEarliestArrival(locationResolver);
   }
 
@@ -264,8 +264,8 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         }
       }
     } catch (e) {
-      if (this.context) {
-        this.context.emitWarning(e);
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.Warning, (e));
       }
     }
   }
@@ -290,13 +290,13 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
     // Abort when we can't reach a single stop.
     if (reachableStops.length === 0) {
-      this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
+      this.eventBus.emit(EventType.AbortQuery, "No reachable stops at departure location");
 
       return false;
     }
 
-    if (this.context) {
-      this.context.emit(EventType.InitialReachableStops, reachableStops);
+    if (this.eventBus) {
+      this.eventBus.emit(EventType.InitialReachableStops, reachableStops);
     }
 
     for (const reachableStop of reachableStops) {
@@ -342,13 +342,13 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
     // Abort when we can't reach a single stop.
     if (reachableStops.length === 0) {
-      this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
+      this.eventBus.emit(EventType.AbortQuery, "No reachable stops at arrival location");
 
       return false;
     }
 
-    if (this.context) {
-      this.context.emit(EventType.FinalReachableStops, reachableStops);
+    if (this.eventBus) {
+      this.eventBus.emit(EventType.FinalReachableStops, reachableStops);
     }
 
     for (const reachableStop of reachableStops) {

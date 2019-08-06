@@ -20,6 +20,8 @@ export class Dijkstra implements IShortestPathAlgorithm {
     private graph: PathfindingGraph;
     private useWeightedCost: boolean;
     private breakPoints: IBreakPointIndex;
+    private costs: number[];
+    private previousNodes: number[];
 
     constructor() {
         this.graph = new PathfindingGraph();
@@ -45,7 +47,7 @@ export class Dijkstra implements IShortestPathAlgorithm {
         delete this.breakPoints[position];
     }
 
-    public queryPathSummary(from: string, to: string): IPathSummary {
+    public async queryPathSummary(from: string, to: string): Promise<IPathSummary> {
         const costs = [...Array(this.graph.getAdjacencyList().length)].map((_) => Infinity);
 
         let queue: TinyQueue<IState>;
@@ -73,6 +75,10 @@ export class Dijkstra implements IShortestPathAlgorithm {
                 continue;
             }
 
+            if (this.breakPoints[position]) {
+                await this.breakPoints[position](this.graph.getLabel(position));
+            }
+
             for (const edge of this.graph.getAdjacencyList()[position]) {
                 const next = {
                     distance: distance + edge.distance,
@@ -91,10 +97,7 @@ export class Dijkstra implements IShortestPathAlgorithm {
         return undefined;
     }
 
-    public queryPath(from: string, to: string) {
-        const costs = [...Array(this.graph.getAdjacencyList().length)].map((_) => Infinity);
-        const previousNodes = [...Array(this.graph.getAdjacencyList().length)].map((_) => undefined);
-
+    public async queryPath(from: string, to: string) {
         let queue: TinyQueue<IState>;
         if (this.useWeightedCost) {
             queue = new TinyQueue([], (a, b) => a.cost - b.cost);
@@ -102,9 +105,12 @@ export class Dijkstra implements IShortestPathAlgorithm {
             queue = new TinyQueue([], (a, b) => a.duration - b.duration);
         }
 
+        this.costs = [...Array(this.graph.getAdjacencyList().length)].fill(Infinity);
+        this.previousNodes = [...Array(this.graph.getAdjacencyList().length)].fill(undefined);
+
         const fromIndex = this.graph.getNodeIndex(from);
-        costs[fromIndex] = 0;
-        queue.push({ position: fromIndex, duration: 0, cost: 0, distance: 0 });
+        this.costs[fromIndex] = 0;
+        queue.push({ distance: 0, duration: 0, cost: 0, position: fromIndex });
 
         const toIndex = this.graph.getNodeIndex(to);
 
@@ -116,9 +122,13 @@ export class Dijkstra implements IShortestPathAlgorithm {
                 break;
             }
 
-            if (cost > costs[position]) {
+            if (cost > this.getCost[position]) {
                 // we have already found a better way
                 continue;
+            }
+
+            if (this.breakPoints[position]) {
+                await this.breakPoints[position](this.graph.getLabel(position));
             }
 
             for (const edge of this.graph.getAdjacencyList()[position]) {
@@ -129,10 +139,10 @@ export class Dijkstra implements IShortestPathAlgorithm {
                     position: edge.node,
                 };
 
-                if (next.cost < costs[next.position]) {
+                if (next.cost < this.getCost(next.position)) {
                     queue.push(next);
-                    costs[next.position] = next.cost;
-                    previousNodes[next.position] = position;
+                    this.costs[next.position] = next.cost;
+                    this.previousNodes[next.position] = position;
                 }
             }
         }
@@ -141,8 +151,8 @@ export class Dijkstra implements IShortestPathAlgorithm {
         const steps = [];
 
         // reconstruct the path
-        while (previousNodes[currentPosition]) {
-            const previousPosition = previousNodes[currentPosition];
+        while (this.previousNodes[currentPosition]) {
+            const previousPosition = this.previousNodes[currentPosition];
 
             for (const edge of this.graph.getAdjacencyList()[previousPosition]) {
                 // this seems inefficient, but memory consumption is way more important
@@ -165,5 +175,14 @@ export class Dijkstra implements IShortestPathAlgorithm {
         }
 
         return steps.reverse();
+    }
+
+    private getCost(position: number): number {
+        if (position >= this.costs.length) {
+            const missingCosts = this.graph.getAdjacencyList().length - this.costs.length;
+            this.costs = this.costs.concat([...Array(missingCosts)].fill(Infinity));
+            this.previousNodes = this.previousNodes.concat([...Array(missingCosts)].fill(undefined));
+        }
+        return this.costs[position];
     }
 }

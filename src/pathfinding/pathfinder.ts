@@ -26,7 +26,7 @@ interface IPathfinder {
 
 export interface IShortestPathAlgorithm extends IPathfinder {
     queryPath(from: string, to: string);
-    queryPathSummary(from: string, to: string): IPathSummary;
+    queryPathSummary(from: string, to: string): Promise<IPathSummary>;
 }
 
 export interface IShortestPathTreeAlgorithm extends IPathfinder {

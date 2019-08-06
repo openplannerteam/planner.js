@@ -1,7 +1,8 @@
 import { AsyncIterator, EmptyIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
+import { EventEmitter } from "events";
 import Context from "../../../Context";
-import EventType from "../../../enums/EventType";
+import EventType from "../../../events/EventType";
 import BinarySearch from "../../../util/BinarySearch";
 import ArrayViewIterator from "../../../util/iterators/ArrayViewIterator";
 import ExpandingIterator from "../../../util/iterators/ExpandingIterator";
@@ -23,7 +24,7 @@ export default class ConnectionsStore {
 
   private static REPORTING_THRESHOLD = Units.fromMinutes(6);
 
-  private readonly context: Context;
+  private readonly eventBus: EventEmitter;
   private readonly store: IConnection[];
   private readonly binarySearch: BinarySearch<IConnection>;
 
@@ -35,8 +36,8 @@ export default class ConnectionsStore {
   private isContinuing: boolean;
   private lastReportedDepartureTime: Date;
 
-  constructor(context?: Context) {
-    this.context = context;
+  constructor(eventBus?: EventEmitter) {
+    this.eventBus = eventBus;
     this.store = [];
     this.binarySearch = new BinarySearch<IConnection>(this.store, (connection) => connection.departureTime.valueOf());
     this.deferredBackwardViews = [];
@@ -58,7 +59,7 @@ export default class ConnectionsStore {
       })
       .on("end", () => this.finishPrimaryPush())
       .each((connection: IConnection) => {
-        if (this.context) {
+        if (this.eventBus) {
           this.maybeEmitPrefetchEvent(connection);
         }
 
@@ -230,7 +231,7 @@ export default class ConnectionsStore {
       .on("end", () => this.finishSecondaryPush());
 
     secondaryPushIterator.each((connection: IConnection) => {
-      if (this.context) {
+      if (this.eventBus) {
         this.maybeEmitPrefetchEvent(connection);
       }
 
@@ -332,8 +333,8 @@ export default class ConnectionsStore {
   }
 
   private emitConnectionViewEvent(lowerBoundDate: Date, upperBoundDate: Date, completed: boolean) {
-    if (this.context) {
-      this.context.emit(EventType.ConnectionIteratorView, lowerBoundDate, upperBoundDate, completed);
+    if (this.eventBus) {
+      this.eventBus.emit(EventType.ConnectionIteratorView, lowerBoundDate, upperBoundDate, completed);
     }
   }
 
@@ -341,7 +342,7 @@ export default class ConnectionsStore {
     if (!this.lastReportedDepartureTime) {
       this.lastReportedDepartureTime = connection.departureTime;
 
-      this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
+      this.eventBus.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
       return;
     }
 
@@ -350,7 +351,7 @@ export default class ConnectionsStore {
     if (timeSinceLastEvent > ConnectionsStore.REPORTING_THRESHOLD) {
       this.lastReportedDepartureTime = connection.departureTime;
 
-      this.context.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
+      this.eventBus.emit(EventType.ConnectionPrefetch, this.lastReportedDepartureTime);
     }
   }
 }

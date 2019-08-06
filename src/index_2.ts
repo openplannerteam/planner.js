@@ -5,8 +5,8 @@ import t from "tiles-in-bbox";
 import Planner from "./Planner";
 
 export default Planner;
-
-import EventType from "./enums/EventType";
+import EventType from "./events/EventType";
+import getEventBus from "./events/util";
 import IPath from "./interfaces/IPath";
 import defaultContainer from "./inversify.config";
 import Units from "./util/Units";
@@ -23,7 +23,8 @@ let scannedConnections = 0;
 
 console.log(`${new Date()} Start prefetch`);
 
-planner
+const eventBus = getEventBus();
+eventBus
     .on(EventType.InvalidQuery, (error) => {
         console.log("InvalidQuery", error);
     })

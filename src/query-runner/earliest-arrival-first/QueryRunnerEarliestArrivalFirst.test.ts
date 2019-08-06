@@ -1,6 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
-import Context from "../../Context";
+import EventBus from "../../events/EventBus";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
@@ -40,7 +40,7 @@ describe("[QueryRunnerExponential]", () => {
     const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
-    const context = new Context();
+    const eventBus = new EventBus();
 
     const createJourneyExtractor = () => {
       return new JourneyExtractorProfile(
@@ -60,7 +60,7 @@ describe("[QueryRunnerExponential]", () => {
     };
 
     return new QueryRunnerEarliestArrivalFirst(
-      context,
+      eventBus,
       connectionFetcher,
       locationResolver,
       createPlanner,
