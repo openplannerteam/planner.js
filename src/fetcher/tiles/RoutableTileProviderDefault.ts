@@ -5,15 +5,16 @@ import { RoutableTileSet } from "../../entities/tiles/set";
 import { IRoutableTileIndex, RoutableTile } from "../../entities/tiles/tile";
 import ILocation from "../../interfaces/ILocation";
 import TYPES from "../../types";
+import { lat_to_tile, long_to_tile } from "../../util/Tiles";
 import IRoutableTileFetcher from "./IRoutableTileFetcher";
 import IRoutableTileProvider from "./IRoutableTileProvider";
 
 @injectable()
 export default class RoutableTileProviderDefault implements IRoutableTileProvider {
 
-  private fetcher: IRoutableTileFetcher;
-  private registry: RoutableTileRegistry;
-  private tiles: IRoutableTileIndex = {};
+  protected fetcher: IRoutableTileFetcher;
+  protected registry: RoutableTileRegistry;
+  protected tiles: IRoutableTileIndex = {};
 
   constructor(
     @inject(TYPES.RoutableTileFetcher) fetcher: IRoutableTileFetcher,
@@ -28,9 +29,9 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
   }
 
   public getIdForLocation(zoom: number, location: ILocation): string {
-    const y = this.lat2tile(location.latitude, zoom);
-    const x = this.long2tile(location.longitude, zoom);
-    const coordinate = { zoom, x, y };
+    const y = lat_to_tile(location.latitude, zoom);
+    const x = long_to_tile(location.longitude, zoom);
+    const coordinate = new RoutableTileCoordinate(zoom, x, y );
     return this.getIdForTileCoords(coordinate);
   }
 

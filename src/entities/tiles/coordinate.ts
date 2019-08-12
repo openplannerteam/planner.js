@@ -8,4 +8,15 @@ export class RoutableTileCoordinate {
         this.x = x;
         this.y = y;
     }
+
+    public contains(other: RoutableTileCoordinate): boolean {
+        const n = Math.pow(2, other.zoom - this.zoom);
+        const otherX = Math.floor(other.x / n);
+        const otherY = Math.floor(other.y / n);
+        if (otherX === this.x && otherY === this.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

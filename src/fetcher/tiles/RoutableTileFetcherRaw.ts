@@ -99,7 +99,14 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     if (blob["osm:maxspeed"]) {
       way.maxSpeed = parseFloat(blob["osm:maxspeed"]);
     }
-    way.segments = [blob["osm:hasNodes"]];
+    if (blob["osm:hasNodes"]) {
+      way.segments = [blob["osm:hasNodes"]];
+    } else {
+      const weights = blob["osm:hasEdges"];
+      way.segments = [weights["osm:hasNodes"]];
+      way.weights = [weights["osm:hasWeights"]];
+    }
+
     way.name = blob["osm:name"];
 
     for (const [tag, field] of Object.entries(this.mapping)) {

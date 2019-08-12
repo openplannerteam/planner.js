@@ -36,11 +36,7 @@ export class RoutableTile {
         const top = tile_to_lat(this.coordinate);
         const left = tile_to_long(this.coordinate);
 
-        const next = {
-            zoom: this.coordinate.zoom,
-            x: this.coordinate.x + 1,
-            y: this.coordinate.y + 1,
-        };
+        const next = new RoutableTileCoordinate(this.coordinate.zoom, this.coordinate.x + 1, this.coordinate.y + 1);
 
         const bottom = tile_to_lat(next);
         const right = tile_to_long(next);

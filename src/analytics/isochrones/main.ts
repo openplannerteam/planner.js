@@ -5,6 +5,7 @@ import inBBox from "tiles-in-bbox";
 import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";
+import RoutingPhase from "../../enums/RoutingPhase";
 import EventType from "../../events/EventType";
 import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
@@ -34,7 +35,11 @@ export default class IsochroneGenerator {
     private showDebugLogs: boolean;
 
     constructor(point: ILocation, container = defaultContainer) {
-        this.tileProvider = container.get<IRoutableTileProvider>(TYPES.RoutableTileProvider);
+        this.tileProvider = container.getTagged<IRoutableTileProvider>(
+            TYPES.RoutableTileProvider,
+            "phase",
+            RoutingPhase.Base,
+        );
         this.pathfinderProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
         this.registry = container.get<RoutableTileRegistry>(TYPES.RoutableTileRegistry);
         this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);

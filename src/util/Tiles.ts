@@ -11,9 +11,5 @@ export function long_to_tile(lon: number, zoom: number) {
     return Math.floor((lon + 180) / 360 * Math.pow(2, zoom));
 }
 export function toTileCoordinate(lat: number, long: number, zoom = 14): RoutableTileCoordinate {
-    return {
-        x: long_to_tile(long, zoom),
-        y: lat_to_tile(lat, zoom),
-        zoom,
-    };
+    return new RoutableTileCoordinate(zoom, long_to_tile(long, zoom), lat_to_tile(lat, zoom));
 }

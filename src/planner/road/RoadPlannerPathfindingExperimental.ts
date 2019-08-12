@@ -4,7 +4,9 @@ import { inject, injectable, tagged } from "inversify";
 import inBBox from "tiles-in-bbox";
 import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
+import { RoutableTileNode } from "../../entities/tiles/node";
 import RoutableTileRegistry from "../../entities/tiles/registry";
+import { RoutableTile } from "../../entities/tiles/tile";
 import RoutingPhase from "../../enums/RoutingPhase";
 import TravelMode from "../../enums/TravelMode";
 import EventType from "../../events/EventType";
@@ -23,8 +25,9 @@ import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
 
 @injectable()
-export default class RoadPlannerPathfinding implements IRoadPlanner {
-    private tileProvider: IRoutableTileProvider;
+export default class RoadPlannerPathfindingExperimental implements IRoadPlanner {
+    private baseTileProvider: IRoutableTileProvider;
+    private transitTileProvider: IRoutableTileProvider;
     private pathfinderProvider: PathfinderProvider;
     private profileProvider: IProfileProvider;
     private locationResolver: ILocationResolver;
@@ -36,14 +39,18 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
     constructor(
         @inject(TYPES.RoutableTileProvider)
         @tagged("phase", RoutingPhase.Base)
-        tileProvider: IRoutableTileProvider,
+        baseTileProvider: IRoutableTileProvider,
+        @inject(TYPES.RoutableTileProvider)
+        @tagged("phase", RoutingPhase.Transit)
+        transitTileProvider: IRoutableTileProvider,
         @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
         @inject(TYPES.ProfileProvider) profileProvider: IProfileProvider,
         @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
         @inject(TYPES.RoutableTileRegistry) registry: RoutableTileRegistry,
         @inject(TYPES.EventBus) eventBus: EventEmitter,
     ) {
-        this.tileProvider = tileProvider;
+        this.baseTileProvider = baseTileProvider;
+        this.transitTileProvider = transitTileProvider;
         this.pathfinderProvider = pathfinderProvider;
         this.profileProvider = profileProvider;
         this.locationResolver = locationResolver;
@@ -88,10 +95,14 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         to: ILocation,
         profile: Profile,
     ): Promise<IPath> {
+        const localTiles = [
+            toTileCoordinate(from.latitude, from.longitude),
+            toTileCoordinate(to.latitude, to.longitude),
+        ];
 
         await Promise.all([
-            this.embedLocation(from),
-            this.embedLocation(to, true),
+            this.embedLocation(from, localTiles),
+            this.embedLocation(to, localTiles, true),
         ]);
 
         return this._innerPath(from, to, profile);
@@ -121,12 +132,47 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         return new Path(steps);
     }
 
-    private async fetchTile(coordinate: RoutableTileCoordinate) {
-        const tileId = this.tileProvider.getIdForTileCoords(coordinate);
-        if (!this.reachedTiles.has(tileId)) {
+    private pickTile(node: RoutableTileNode, localTiles: RoutableTileCoordinate[]) {
+        let coordinate: RoutableTileCoordinate;
+        for (let zoom = 10; zoom < 15; zoom++) {
+            coordinate = toTileCoordinate(node.latitude, node.longitude, zoom);
+            let ok = true;
+            for (const localTile of localTiles) {
+                if (coordinate.contains(localTile)) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) {
+                return coordinate;
+            }
+        }
+        return coordinate;
+    }
+
+    private async fetchTile(coordinate: RoutableTileCoordinate, localTiles: RoutableTileCoordinate[]) {
+        let local = false;
+        for (const localTile of localTiles) {
+            if (coordinate.x === localTile.x && coordinate.y === localTile.y && coordinate.zoom === localTile.zoom) {
+                local = true;
+                break;
+            }
+        }
+
+        const baseTileId = this.baseTileProvider.getIdForTileCoords(coordinate);
+        const transitTileId = this.transitTileProvider.getIdForTileCoords(coordinate);
+
+        if (!this.reachedTiles.has(transitTileId) && !this.reachedTiles.has(baseTileId)) {
             this.eventBus.emit(EventType.FetchTile, coordinate);
-            const tile = await this.tileProvider.getByTileCoords(coordinate);
-            this.reachedTiles.add(tileId);
+            let tile: RoutableTile;
+            if (local) {
+                tile = await this.baseTileProvider.getByTileCoords(coordinate);
+                this.reachedTiles.add(baseTileId);
+                this.reachedTiles.add(transitTileId);
+            } else {
+                tile = await this.transitTileProvider.getByTileCoords(coordinate);
+                this.reachedTiles.add(transitTileId);
+            }
             const boundaryNodes: Set<string> = new Set();
 
             for (const nodeId of tile.getNodes()) {
@@ -143,15 +189,15 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
                 for (const nodeId of boundaryNodes) {
                     pathfinder.setBreakPoint(nodeId, async (on: string) => {
                         const node = self.registry.getNode(on);
-                        const boundaryTileCoordinate = toTileCoordinate(node.latitude, node.longitude);
-                        await self.fetchTile(boundaryTileCoordinate);
+                        const boundaryTileCoordinate = this.pickTile(node, localTiles);
+                        await self.fetchTile(boundaryTileCoordinate, localTiles);
                     });
                 }
             }
         }
     }
 
-    private async embedLocation(from: ILocation, invert = false) {
+    private async embedLocation(from: ILocation, localTiles: RoutableTileCoordinate[], invert = false) {
         const zoom = 14;
         const padding = 0.005;
 
@@ -164,13 +210,13 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
 
         const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
             const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
-            this.fetchTile(coordinate);
+            this.fetchTile(coordinate, localTiles);
             return coordinate;
         });
 
         // this won't download anything new
         // but we need the tile data to embed the starting location
-        const fromTileset = await this.tileProvider.getMultipleByTileCoords(fromTileCoords);
+        const fromTileset = await this.baseTileProvider.getMultipleByTileCoords(fromTileCoords);
         await this.pathfinderProvider.embedLocation(from, fromTileset, invert);
     }
 }

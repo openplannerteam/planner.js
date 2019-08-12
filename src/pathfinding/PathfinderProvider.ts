@@ -67,16 +67,16 @@ export default class PathfinderProvider {
           continue;
         }
 
-        for (const [fromId, toId] of way.getParts()) {
-          const from = nodes[fromId];
-          const to = nodes[toId];
+        for (const edge of way.getParts()) {
+          const from = nodes[edge.from];
+          const to = nodes[edge.to];
           if (from && to) {
             if (profile.isObstacle(from) || profile.isObstacle(to)) {
               continue;
             }
-            this.addEdge(profile, from, to, way);
+            this.addEdge(profile, from, to, way, edge.distance);
             if (!profile.isOneWay(way)) {
-              this.addEdge(profile, to, from, way);
+              this.addEdge(profile, to, from, way, edge.distance);
             }
           }
         }
@@ -168,16 +168,16 @@ export default class PathfinderProvider {
           continue;
         }
 
-        for (const [fromId, toId] of way.getParts()) {
-          const from = this.routableTileRegistry.getNode(fromId);
-          const to = this.routableTileRegistry.getNode(toId);
+        for (const edge of way.getParts()) {
+          const from = this.routableTileRegistry.getNode(edge.from);
+          const to = this.routableTileRegistry.getNode(edge.to);
           if (from && to) {
             if (profile.isObstacle(from) || profile.isObstacle(to)) {
               continue;
             }
-            this.addEdge(profile, from, to, way, graph);
+            this.addEdge(profile, from, to, way, edge.distance, graph);
             if (!profile.isOneWay(way)) {
-              this.addEdge(profile, to, from, way, graph);
+              this.addEdge(profile, to, from, way, edge.distance, graph);
             }
           }
         }
@@ -186,11 +186,18 @@ export default class PathfinderProvider {
     return this.graphs[profile.getID()];
   }
 
-  private addEdge(profile: Profile, from: ILocation, to: ILocation, way: RoutableTileWay, graph?: PathfindingGraph) {
+  private addEdge(
+    profile: Profile,
+    from: ILocation, to:
+      ILocation,
+    way: RoutableTileWay,
+    distance?: number,
+    graph?: PathfindingGraph,
+  ) {
     // this specifically adds an edge that corresponds to an actual street
     // if you need to add any other edge, you'll need to create a different method
     graph = graph || this.getGraphForProfile(profile);
-    const distance = profile.getDistance(from, to, way);
+    distance = distance || profile.getDistance(from, to, way);
     const duration = profile.getDuration(from, to, way);
     const cost = profile.getCost(from, to, way);
     graph.addEdge(Geo.getId(from), Geo.getId(to), distance, duration, cost);

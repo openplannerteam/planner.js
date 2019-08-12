@@ -8,6 +8,7 @@ import Oneway from "../../enums/Oneway";
 import Smoothness from "../../enums/Smoothness";
 import Surface from "../../enums/Surface";
 import TrackType from "../../enums/TrackType";
+import Edge from "./edge";
 
 export class RoutableTileWay {
     public static create(id: string) {
@@ -16,6 +17,7 @@ export class RoutableTileWay {
 
     public id: string;
     public segments: string[][]; // ids of nodes that are part of this road
+    public weights?: number[][]; // distances between the nodes in the segments
     public name: string;
     public reachable?: boolean; // not part of OSM but a result of preprocessing, do not use this (yet)
 
@@ -38,6 +40,7 @@ export class RoutableTileWay {
 
     constructor(id: string) {
         this.id = id;
+        this.weights = [[]];
     }
 
     public mergeDefinitions(other: RoutableTileWay): RoutableTileWay {
@@ -53,17 +56,20 @@ export class RoutableTileWay {
         result.segments = [];
         result.segments = result.segments.concat(this.segments);
         result.segments = result.segments.concat(other.segments);
+
+        result.weights = [];
+        result.weights = result.weights.concat(this.weights);
+        result.weights = result.weights.concat(other.weights);
         return result;
     }
 
-    public getParts(): Array<[string, string]> {
-        /**
-         * Returns pairs of node IDs that are connected because of this road.
-         */
-        const result = [];
-        for (const segment of this.segments) {
+    public getParts(): Edge[] {
+        const result: Edge[] = [];
+        for (let index = 0; index < this.segments.length; index++) {
+            const weights = this.weights[index];
+            const segment = this.segments[index];
             for (let i = 0; i < segment.length - 1; i++) {
-                result.push([segment[i], segment[i + 1]]);
+                result.push({from: segment[i], to: segment[i + 1], distance: weights[i]});
             }
         }
         return result;
