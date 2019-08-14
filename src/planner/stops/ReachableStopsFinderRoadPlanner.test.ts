@@ -26,7 +26,7 @@ test("[ReachableStopsFinderRoadPlanner] reachable stops", async () => {
     ReachableStopsFinderMode.Source,
     Units.fromHours(1),
     5,
-    "PEDESTRIAN",
+    "https://hdelva.be/profile/pedestrian",
   );
 
   expect(reachableStops.length).toBeGreaterThan(1);

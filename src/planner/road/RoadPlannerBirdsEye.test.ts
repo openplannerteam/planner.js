@@ -24,7 +24,7 @@ test("[RoadPlannerBirdsEye] distance between stops", async () => {
   const iterator = await planner.plan({
     from: [kortrijkLocation], // Kortrijk
     to: [ghentLocation], // Ghent-Sint-Pieters,
-    profileID: "PEDESTRIAN",
+    profileID: "https://hdelva.be/profile/pedestrian",
     minimumWalkingSpeed: 3,
     maximumWalkingSpeed: 6,
   });

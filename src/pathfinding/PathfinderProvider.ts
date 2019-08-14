@@ -159,7 +159,7 @@ export default class PathfinderProvider {
     if (!this.graphs[profile.getID()]) {
       // we don't have a graph for this profile yet
       // create one
-      const graph = new PathfindingGraph();
+      const graph = new PathfindingGraph(profile.getID());
       this.graphs[profile.getID()] = graph;
 
       // and populate it with all the data we have

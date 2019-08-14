@@ -130,7 +130,7 @@ container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderD
 
 // Bind catalog
 const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();

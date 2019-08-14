@@ -11,10 +11,6 @@ interface IState {
   cost: number;
 }
 
-interface IBreakPointIndex {
-  [position: number]: (on: string) => Promise<void>;
-}
-
 @injectable()
 export default class DijkstraTree implements IShortestPathTreeAlgorithm {
   private nextQueue: IState[];
@@ -22,12 +18,9 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
   private previousNodes: number[];
   private graph: PathfindingGraph;
   private useWeightedCost: boolean;
-  private breakPoints: IBreakPointIndex;
 
   constructor() {
-    this.graph = new PathfindingGraph();
     this.useWeightedCost = true;
-    this.breakPoints = {};
   }
 
   public setUseWeightedCost(useWeightedCost: boolean) {
@@ -39,13 +32,11 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
   }
 
   public setBreakPoint(on: string, callback: (on: string) => Promise<void>): void {
-    const position = this.graph.getNodeIndex(on);
-    this.breakPoints[position] = callback;
+    this.graph.setBreakPoint(on, callback);
   }
 
   public removeBreakPoint(on: string): void {
-    const position = this.graph.getNodeIndex(on);
-    delete this.breakPoints[position];
+    this.graph.removeBreakPoint(on);
   }
 
   public async start(from: string, maxCost: number): Promise<IPathTree> {
@@ -71,8 +62,8 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
         continue;
       }
 
-      if (this.breakPoints[position]) {
-        await this.breakPoints[position](this.graph.getLabel(position));
+      if (this.graph.getBreakPoint(position)) {
+        await this.graph.getBreakPoint(position)(this.graph.getLabel(position));
       }
 
       if (cost > maxCost) {
@@ -93,8 +84,8 @@ export default class DijkstraTree implements IShortestPathTreeAlgorithm {
             this.costs[next.position] = next.duration;
             this.previousNodes[next.position] = position;
 
-            if (this.breakPoints[next.position]) {
-              this.breakPoints[next.position](this.graph.getLabel(next.position));
+            if (this.graph.getBreakPoint(next.position)) {
+              this.graph.getBreakPoint(next.position)(this.graph.getLabel(next.position));
             }
           }
         }

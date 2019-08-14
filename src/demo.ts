@@ -69,7 +69,7 @@ export default async (logResults) => {
       let i = 0;
 
       planner
-        .setProfileID("PEDESTRIAN")
+        .setProfileID("https://hdelva.be/profile/pedestrian")
         .query({
           // roadNetworkOnly: true,  // don't mix with publicTranspotOnly, for obvious reasons
           publicTransportOnly: true,

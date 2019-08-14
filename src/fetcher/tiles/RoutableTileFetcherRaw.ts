@@ -46,22 +46,26 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
   public async get(url: string): Promise<RoutableTile> {
     const response = await fetch(url);
     const responseText = await response.text();
-    const blob = JSON.parse(responseText);
+    if (responseText) {
+      const blob = JSON.parse(responseText);
 
-    const nodes: IRoutableTileNodeIndex = {};
-    const ways: IRoutableTileWayIndex = {};
+      const nodes: IRoutableTileNodeIndex = {};
+      const ways: IRoutableTileWayIndex = {};
 
-    for (const entity of blob["@graph"]) {
-      if (entity["@type"] === "osm:Node") {
-        const node = this.createNode(entity);
-        nodes[node.id] = node;
-      } else if (entity["@type"] === "osm:Way") {
-        const way = this.createWay(entity);
-        ways[way.id] = way;
+      for (const entity of blob["@graph"]) {
+        if (entity["@type"] === "osm:Node") {
+          const node = this.createNode(entity);
+          nodes[node.id] = node;
+        } else if (entity["@type"] === "osm:Way") {
+          const way = this.createWay(entity);
+          ways[way.id] = way;
+        }
       }
-    }
 
-    return this.processTileData(url, nodes, ways);
+      return this.processTileData(url, nodes, ways);
+    } else {
+      return new RoutableTile(url, new Set(), new Set());
+    }
   }
 
   protected processTileData(url: string, nodes: IRoutableTileNodeIndex, ways: IRoutableTileWayIndex) {

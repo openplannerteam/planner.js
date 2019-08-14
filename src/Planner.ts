@@ -41,7 +41,7 @@ export default class Planner implements EventEmitter {
     this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
     this.eventBus = container.get<EventEmitter>(TYPES.EventBus);
 
-    this.activeProfileID = "PEDESTRIAN";
+    this.activeProfileID = "https://hdelva.be/profile/pedestrian";
   }
 
   /**
