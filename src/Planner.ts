@@ -3,6 +3,7 @@ import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 // @ts-ignore
 import { EventEmitter, Listener } from "events";
 import Context from "./Context";
+import TravelMode from "./enums/TravelMode";
 import EventType from "./events/EventType";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import ProfileProvider from "./fetcher/profiles/ProfileProviderDefault";
@@ -11,8 +12,11 @@ import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import IPath from "./interfaces/IPath";
 import IQuery from "./interfaces/IQuery";
 import defaultContainer from "./inversify.config";
+import Path from "./planner/Path";
+import IRoadPlanner from "./planner/road/IRoadPlanner";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
+import Iterators from "./util/Iterators";
 import Units from "./util/Units";
 
 /**
@@ -27,6 +31,7 @@ export default class Planner implements EventEmitter {
   private eventBus: EventEmitter;
   private queryRunner: IQueryRunner;
   private profileProvider: ProfileProvider;
+  private roadPlanner: IRoadPlanner;
 
   /**
    * Initializes a new Planner
@@ -40,8 +45,61 @@ export default class Planner implements EventEmitter {
     this.queryRunner = container.get<IQueryRunner>(TYPES.QueryRunner);
     this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
     this.eventBus = container.get<EventEmitter>(TYPES.EventBus);
+    this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
 
     this.activeProfileID = "https://hdelva.be/profile/pedestrian";
+  }
+
+  public async completePath(path: IPath): Promise<IPath> {
+    const completePath = Path.create();
+
+    let walkingDeparture;
+    let walkingDestination;
+
+    for (const step of path.steps) {
+      if (step.travelMode === TravelMode.Walking) {
+        if (!walkingDeparture) {
+          walkingDeparture = step.startLocation;
+        }
+        walkingDestination = step.stopLocation;
+      }
+
+      if (step.travelMode !== TravelMode.Walking) {
+        if (walkingDestination) {
+          const walkingPathIterator = await this.roadPlanner.plan({
+            from: [walkingDeparture],
+            to: [walkingDestination],
+            profileID: this.activeProfileID,
+          });
+          const walkingPaths = await Iterators.toArray(walkingPathIterator);
+          for (const walkingStep of walkingPaths[0].steps) {
+            completePath.addStep(walkingStep);
+          }
+
+          walkingDeparture = null;
+          walkingDestination = null;
+        }
+
+        completePath.addStep(step);
+      }
+    }
+
+    if (walkingDestination) {
+      const walkingPathIterator = await this.roadPlanner.plan({
+        from: [walkingDeparture],
+        to: [walkingDestination],
+        profileID: this.activeProfileID,
+      });
+      const walkingPaths = await Iterators.toArray(walkingPathIterator);
+      for (const walkingStep of walkingPaths[0].steps) {
+        completePath.addStep(walkingStep);
+      }
+
+      walkingDeparture = null;
+      walkingDestination = null;
+    }
+
+    return completePath;
   }
 
   /**

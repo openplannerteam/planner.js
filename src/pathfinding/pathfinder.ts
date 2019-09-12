@@ -17,18 +17,28 @@ export interface IPathSummary {
 }
 
 interface IPathfinder {
-    setGraph(graph: PathfindingGraph): void;
-    setUseWeightedCost(useWeightedCost: boolean): void;
+    createInstance(graph: PathfindingGraph): IPathfinderInstance;
+}
 
+interface IPathfinderInstance {
+    setUseWeightedCost(useWeightedCost: boolean): void;
     setBreakPoint(on: string, callback: (on: string) => Promise<void>): void;
     removeBreakPoint(on: string): void;
 }
 
-export interface IShortestPathAlgorithm extends IPathfinder {
+export interface IShortestPathInstance extends IPathfinderInstance {
     queryPath(from: string, to: string, maxDistance: number);
 }
 
-export interface IShortestPathTreeAlgorithm extends IPathfinder {
+export interface IShortestPathTreeInstance extends IPathfinderInstance {
     start(from: string, maxCost: number): Promise<IPathTree>;
     continue(maxCost: number): Promise<IPathTree>;
+}
+
+export interface IShortestPathAlgorithm extends IPathfinder {
+    createInstance(graph: PathfindingGraph): IShortestPathInstance;
+}
+
+export interface IShortestPathTreeAlgorithm extends IPathfinder {
+    createInstance(graph: PathfindingGraph): IShortestPathTreeInstance;
 }

@@ -9,7 +9,12 @@ import ILocation from "../interfaces/ILocation";
 import TYPES from "../types";
 import Geo from "../util/Geo";
 import PathfindingGraph from "./graph";
-import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "./pathfinder";
+import {
+  IShortestPathAlgorithm,
+  IShortestPathInstance,
+  IShortestPathTreeAlgorithm,
+  IShortestPathTreeInstance,
+} from "./pathfinder";
 
 interface IPointEmbedding {
   way: RoutableTileWay; // the road where the point gets embedded in
@@ -45,16 +50,14 @@ export default class PathfinderProvider {
     this.graphs = {};
   }
 
-  public getShortestPathAlgorithm(profile: Profile): IShortestPathAlgorithm {
+  public getShortestPathAlgorithm(profile: Profile): IShortestPathInstance {
     const graph = this.getGraphForProfile(profile);
-    this.shortestPath.setGraph(graph);
-    return this.shortestPath;
+    return this.shortestPath.createInstance(graph);
   }
 
-  public getShortestPathTreeAlgorithm(profile: Profile): IShortestPathTreeAlgorithm {
+  public getShortestPathTreeAlgorithm(profile: Profile): IShortestPathTreeInstance {
     const graph = this.getGraphForProfile(profile);
-    this.shortestPathTree.setGraph(graph);
-    return this.shortestPathTree;
+    return this.shortestPathTree.createInstance(graph);
   }
 
   public async registerEdges(ways: IRoutableTileWayIndex, nodes: IRoutableTileNodeIndex): Promise<void> {

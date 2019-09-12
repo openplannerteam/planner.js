@@ -18,12 +18,14 @@ export default class PathfindingGraph {
     private nodes: Map<string, number>;
     private labels: string[];
     private adjacencyList: IEdge[][];
+    private reverseAdjacencyList: IEdge[][];
     private breakPoints: IBreakPointIndex;
 
     constructor(id: string) {
         this.nodes = new Map();
         this.labels = [];
         this.adjacencyList = [];
+        this.reverseAdjacencyList = [];
         this.id = id;
         this.breakPoints = {};
     }
@@ -32,6 +34,7 @@ export default class PathfindingGraph {
         const fromIndex = this.getNodeIndex(from);
         const toIndex = this.getNodeIndex(to);
         this.adjacencyList[fromIndex].push({ node: toIndex, distance, cost, duration });
+        this.reverseAdjacencyList[toIndex].push({ node: fromIndex, distance, cost, duration });
     }
 
     public getNodeMap() {
@@ -46,12 +49,17 @@ export default class PathfindingGraph {
         return this.adjacencyList;
     }
 
+    public getReverseAdjacencyList() {
+        return this.reverseAdjacencyList;
+    }
+
     public getNodeIndex(label: string) {
         if (!this.nodes.has(label)) {
             const index = this.adjacencyList.length;
             this.nodes.set(label, index);
             this.labels.push(label);
             this.adjacencyList.push([]);
+            this.reverseAdjacencyList.push([]);
         }
 
         return this.nodes.get(label);

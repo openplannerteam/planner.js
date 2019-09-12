@@ -12,7 +12,7 @@ import { lat_to_tile, long_to_tile } from "../../util/Tiles";
 import IStop from "../stops/IStop";
 import IFootpathsProvider from "./IFootpathsProvider";
 
-const ZOOM = 13;
+const ZOOM = 12;
 
 interface ITiledFootpathIndex {
     [id: string]: IFootpathIndex;

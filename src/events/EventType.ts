@@ -18,6 +18,8 @@ enum EventType {
   FinalReachableStops = "final-reachable-stops",
   InitialReachableStops = "initial-reachable-stops",
   AddedNewTransferProfile = "added-new-transfer-profile",
+
+  ReachableStop = "ReachableStop",
 }
 
 export default EventType;
