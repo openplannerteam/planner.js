@@ -1,7 +1,6 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
-// @ts-ignore
-import { EventEmitter, Listener } from "events";
+import { EventEmitter } from "events";
 import Context from "./Context";
 import TravelMode from "./enums/TravelMode";
 import EventType from "./events/EventType";
@@ -22,8 +21,7 @@ import Units from "./util/Units";
 /**
  * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */
-// @ts-ignore
-export default class Planner implements EventEmitter {
+export default class Planner {
   public static Units = Units;
 
   private activeProfileID: string;

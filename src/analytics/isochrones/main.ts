@@ -18,7 +18,6 @@ import Geo from "../../util/Geo";
 import { toTileCoordinate } from "../../util/Tiles";
 import { visualizeConcaveIsochrone, visualizeIsochrone } from "./visualize";
 
-// @ts-ignore
 export default class IsochroneGenerator {
     private pathfinderProvider: PathfinderProvider;
     private tileProvider: IRoutableTileProvider;
