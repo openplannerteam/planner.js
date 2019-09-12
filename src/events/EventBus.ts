@@ -1,5 +1,4 @@
-// @ts-ignore
-import { EventEmitter, Listener } from "events";
+import { EventEmitter } from "events";
 import { injectable } from "inversify";
 
 /**
@@ -45,7 +44,7 @@ export default class EventBus implements EventEmitter {
     return this;
   }
 
-  public addListener(type: string | symbol, listener: Listener): this {
+  public addListener(type: string | symbol, listener: any): this {
     this.emitter.addListener(type, listener);
 
     return this;
@@ -59,17 +58,17 @@ export default class EventBus implements EventEmitter {
     return this.emitter.listenerCount(type);
   }
 
-  public listeners(type: string | symbol): Listener[] {
+  public listeners(type: string | symbol): any[] {
     return this.emitter.listeners(type);
   }
 
-  public on(type: string | symbol, listener: Listener): this {
+  public on(type: string | symbol, listener: any): this {
     this.emitter.on(type, listener);
 
     return this;
   }
 
-  public once(type: string | symbol, listener: Listener): this {
+  public once(type: string | symbol, listener: any): this {
     this.emitter.once(type, listener);
 
     return this;
@@ -81,7 +80,7 @@ export default class EventBus implements EventEmitter {
     return this;
   }
 
-  public removeListener(type: string | symbol, listener: Listener): this {
+  public removeListener(type: string | symbol, listener: any): this {
     this.emitter.removeListener(type, listener);
 
     return this;
