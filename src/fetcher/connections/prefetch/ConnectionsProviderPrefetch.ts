@@ -1,4 +1,5 @@
 import { AsyncIterator } from "asynciterator";
+import { EventEmitter } from "events";
 import { inject, injectable } from "inversify";
 import Catalog from "../../../Catalog";
 import Context from "../../../Context";
@@ -22,7 +23,6 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
 
   private static MAX_CONNECTIONS = 20000;
 
-  private readonly context: Context;
   private readonly connectionsFetcher: IConnectionsFetcher;
   private readonly connectionsStore: ConnectionsStore;
 
@@ -33,10 +33,8 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
   constructor(
     @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
     @inject(TYPES.Catalog) catalog: Catalog,
-    @inject(TYPES.Context) context: Context,
+    @inject(TYPES.EventBus) eventBus: EventEmitter,
   ) {
-
-    this.context = context;
 
     if (catalog.connectionsSourceConfigs.length > 1) {
       this.connectionsFetcher = new ConnectionsProviderMerge(connectionsFetcherFactory, catalog);
@@ -46,7 +44,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
       this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
     }
 
-    this.connectionsStore = new ConnectionsStore(context);
+    this.connectionsStore = new ConnectionsStore(eventBus);
   }
 
   public prefetchConnections(): void {

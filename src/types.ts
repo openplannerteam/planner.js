@@ -4,6 +4,7 @@ import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
 import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTileFetcher";
 
 const TYPES = {
+  EventBus: Symbol("EventBus"),
   Context: Symbol("Context"),
   QueryRunner: Symbol("QueryRunner"),
   LocationResolver: Symbol("LocationResolver"),

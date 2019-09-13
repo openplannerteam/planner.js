@@ -21,6 +21,7 @@ import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import CSAEarliestArrival from "./CSAEarliestArrival";
+import { EventEmitter } from "events";
 
 describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
   describe("mock data", () => {
@@ -44,7 +45,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<Context>(TYPES.Context),
+        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
     };
 
@@ -55,7 +56,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         publicTransportOnly: true,
         from: [{ latitude: 50.914326, longitude: 3.255415, id: "http://irail.be/stations/NMBS/008896925" }],
         to: [{ latitude: 51.035896, longitude: 3.710875, id: "http://irail.be/stations/NMBS/008892007" }],
-        profileID: "PEDESTRIAN",
+        profileID: "https://hdelva.be/profile/pedestrian",
         minimumDepartureTime: new Date("2018-11-06T09:00:00.000Z"),
         maximumArrivalTime: new Date("2018-11-06T19:00:00.000Z"),
         maximumTransfers: 8,
@@ -197,7 +198,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<Context>(TYPES.Context),
+        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
 
       return new QueryRunnerDefault(locationResolver, CSA, undefined);

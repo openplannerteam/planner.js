@@ -1,10 +1,10 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
+import { EventEmitter } from "events";
 import { inject, injectable, interfaces } from "inversify";
-import Context from "../../Context";
 import Defaults from "../../Defaults";
-import EventType from "../../enums/EventType";
 import InvalidQueryError from "../../errors/InvalidQueryError";
+import EventType from "../../events/EventType";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
@@ -37,12 +37,12 @@ import ExponentialQueryIterator from "./ExponentialQueryIterator";
 export default class QueryRunnerExponential implements IQueryRunner {
   private readonly locationResolver: ILocationResolver;
   private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
-  private readonly context: Context;
+  private readonly eventBus: EventEmitter;
   private readonly roadPlanner: IRoadPlanner;
 
   constructor(
-    @inject(TYPES.Context)
-      context: Context,
+    @inject(TYPES.EventBus)
+      eventBus: EventEmitter,
     @inject(TYPES.LocationResolver)
       locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlannerFactory)
@@ -50,7 +50,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     @inject(TYPES.RoadPlanner)
       roadPlanner: IRoadPlanner,
   ) {
-    this.context = context;
+    this.eventBus = eventBus;
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
     this.roadPlanner = roadPlanner;
@@ -77,7 +77,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
   private runSubquery(query: IResolvedQuery): AsyncIterator<IPath> {
     // TODO investigate if publicTransportPlanner can be reused or reuse some of its aggregated data
-    this.context.emit(EventType.SubQuery, query);
+    this.eventBus.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 

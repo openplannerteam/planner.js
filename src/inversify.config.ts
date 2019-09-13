@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 import { Container, interfaces } from "inversify";
 import Catalog from "./Catalog";
 import catalogDeLijn from "./catalog.delijn";
@@ -7,7 +8,9 @@ import catalogTec from "./catalog.tec";
 import Context from "./Context";
 import RoutableTileRegistry from "./entities/tiles/registry";
 import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
+import RoutingPhase from "./enums/RoutingPhase";
 import TravelMode from "./enums/TravelMode";
+import EventBus from "./events/EventBus";
 import ConnectionsProviderMerge from "./fetcher/connections/ConnectionsProviderMerge";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
@@ -30,6 +33,8 @@ import RoutableTileFetcherDefault from "./fetcher/tiles/RoutableTileFetcherDefau
 import RoutableTileFetcherExtended from "./fetcher/tiles/RoutableTileFetcherExtended";
 import RoutableTileFetcherRaw from "./fetcher/tiles/RoutableTileFetcherRaw";
 import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDefault";
+import RoutableTileProviderTransit from "./fetcher/tiles/RoutableTileProviderTransit";
+
 import { LDLoader } from "./loader/ldloader";
 import DijkstraTree from "./pathfinding/dijkstra-tree/dijkstra-tree-js";
 import { Dijkstra } from "./pathfinding/dijkstra/dijkstra-js";
@@ -43,6 +48,7 @@ import JourneyExtractorProfile from "./planner/public-transport/JourneyExtractor
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import RoadPlannerPathfinding from "./planner/road/RoadPlannerPathfinding";
+import RoadPlannerPathfindingExperimental from "./planner/road/RoadPlannerPathfindingExperimental";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
 import ReachableStopsFinderDelaunay from "./planner/stops/ReachableStopsFinderDelaunay";
@@ -57,6 +63,7 @@ import LocationResolverConvenience from "./query-runner/LocationResolverConvenie
 import TYPES from "./types";
 
 const container = new Container();
+container.bind<EventEmitter>(TYPES.EventBus).to(EventBus).inSingletonScope();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
@@ -112,16 +119,18 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherRaw);
-container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
-  .to(RoutableTileProviderDefault).inSingletonScope();
 container.bind<RoutableTileRegistry>(TYPES.RoutableTileRegistry).to(RoutableTileRegistry).inSingletonScope();
+container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherRaw).inSingletonScope();
+container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
+  .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);
+container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
+  .to(RoutableTileProviderTransit).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
 
 container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
 
 // Bind catalog
 const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();

@@ -1,11 +1,11 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
+import { EventEmitter } from "events";
 import { inject, injectable, interfaces, tagged } from "inversify";
-import Context from "../../Context";
 import Defaults from "../../Defaults";
-import EventType from "../../enums/EventType";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import InvalidQueryError from "../../errors/InvalidQueryError";
+import EventType from "../../events/EventType";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -14,7 +14,6 @@ import { DurationMs } from "../../interfaces/units";
 import Path from "../../planner/Path";
 import CSAEarliestArrival from "../../planner/public-transport/CSAEarliestArrival";
 import IPublicTransportPlanner from "../../planner/public-transport/IPublicTransportPlanner";
-import JourneyExtractorEarliestArrival from "../../planner/public-transport/JourneyExtractorEarliestArrival";
 import IRoadPlanner from "../../planner/road/IRoadPlanner";
 import IReachableStopsFinder from "../../planner/stops/IReachableStopsFinder";
 import TYPES from "../../types";
@@ -42,21 +41,19 @@ import LinearQueryIterator from "./LinearQueryIterator";
 @injectable()
 export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
 
-  private readonly context: Context;
+  private readonly eventBus: EventEmitter;
   private readonly connectionsProvider: IConnectionsProvider;
   private readonly locationResolver: ILocationResolver;
   private readonly publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>;
   private readonly roadPlanner: IRoadPlanner;
-
-  private readonly journeyExtractorEarliestArrival: JourneyExtractorEarliestArrival;
 
   private readonly initialReachableStopsFinder: IReachableStopsFinder;
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
 
   constructor(
-    @inject(TYPES.Context)
-      context: Context,
+    @inject(TYPES.EventBus)
+      eventBus: EventEmitter,
     @inject(TYPES.ConnectionsProvider)
       connectionsProvider: IConnectionsProvider,
     @inject(TYPES.LocationResolver)
@@ -75,7 +72,7 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
     @inject(TYPES.RoadPlanner)
       roadPlanner: IRoadPlanner,
   ) {
-    this.context = context;
+    this.eventBus = eventBus;
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
@@ -85,11 +82,6 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
     this.finalReachableStopsFinder = finalReachableStopsFinder;
 
     this.roadPlanner = roadPlanner;
-
-    this.journeyExtractorEarliestArrival = new JourneyExtractorEarliestArrival(
-      locationResolver,
-      context,
-    );
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
@@ -103,7 +95,7 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
         this.initialReachableStopsFinder,
         this.transferReachableStopsFinder,
         this.finalReachableStopsFinder,
-        this.context,
+        this.eventBus,
       );
 
       const earliestArrivalIterator = await earliestArrivalPlanner.plan(baseQuery);
@@ -119,8 +111,8 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
           });
       });
 
-      if (path === null && this.context) {
-        this.context.emit(EventType.AbortQuery, "This query has no results");
+      if (path === null && this.eventBus) {
+        this.eventBus.emit(EventType.AbortQuery, "This query has no results");
       }
 
       let initialTimeSpan: DurationMs = Units.fromHours(1);
@@ -155,7 +147,7 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
   }
 
   private runSubquery(query: IResolvedQuery): AsyncIterator<IPath> {
-    this.context.emit(EventType.SubQuery, query);
+    this.eventBus.emit(EventType.SubQuery, query);
 
     const planner = this.publicTransportPlannerFactory() as IPublicTransportPlanner;
 

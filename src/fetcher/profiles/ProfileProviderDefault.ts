@@ -28,10 +28,6 @@ export default class ProfileProviderDefault implements IProfileProvider {
     this.fetcher = fetcher;
     this.developmentProfile = undefined;
     this.developmentProfileCounter = 0;
-
-    // some placeholders
-    const pedestrian = new PedestrianProfile();
-    this.profiles[pedestrian.getID()] = Promise.resolve(pedestrian);
   }
 
   public async parseDevelopmentProfile(blob: object): Promise<string> {

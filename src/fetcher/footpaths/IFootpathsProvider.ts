@@ -1,6 +1,6 @@
 import { IFootpathIndex } from "../../entities/footpaths/footpath";
+import IStop from "../stops/IStop";
 
 export default interface IFootpathsProvider {
-  prefetch: () => void;
-  get: () => Promise<IFootpathIndex>;
+  get: (stop: IStop) => Promise<IFootpathIndex>;
 }

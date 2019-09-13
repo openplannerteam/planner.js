@@ -1,9 +1,9 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
-// @ts-ignore
-import { EventEmitter, Listener } from "events";
+import { EventEmitter } from "events";
 import Context from "./Context";
-import EventType from "./enums/EventType";
+import TravelMode from "./enums/TravelMode";
+import EventType from "./events/EventType";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import ProfileProvider from "./fetcher/profiles/ProfileProviderDefault";
 import IStop from "./fetcher/stops/IStop";
@@ -11,21 +11,25 @@ import IStopsProvider from "./fetcher/stops/IStopsProvider";
 import IPath from "./interfaces/IPath";
 import IQuery from "./interfaces/IQuery";
 import defaultContainer from "./inversify.config";
+import Path from "./planner/Path";
+import IRoadPlanner from "./planner/road/IRoadPlanner";
 import IQueryRunner from "./query-runner/IQueryRunner";
 import TYPES from "./types";
+import Iterators from "./util/Iterators";
 import Units from "./util/Units";
 
 /**
  * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */
-// @ts-ignore
-export default class Planner implements EventEmitter {
+export default class Planner {
   public static Units = Units;
 
   private activeProfileID: string;
   private context: Context;
+  private eventBus: EventEmitter;
   private queryRunner: IQueryRunner;
   private profileProvider: ProfileProvider;
+  private roadPlanner: IRoadPlanner;
 
   /**
    * Initializes a new Planner
@@ -38,8 +42,62 @@ export default class Planner implements EventEmitter {
 
     this.queryRunner = container.get<IQueryRunner>(TYPES.QueryRunner);
     this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
+    this.eventBus = container.get<EventEmitter>(TYPES.EventBus);
+    this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
 
-    this.activeProfileID = "PEDESTRIAN";
+    this.activeProfileID = "https://hdelva.be/profile/pedestrian";
+  }
+
+  public async completePath(path: IPath): Promise<IPath> {
+    const completePath = Path.create();
+
+    let walkingDeparture;
+    let walkingDestination;
+
+    for (const step of path.steps) {
+      if (step.travelMode === TravelMode.Walking) {
+        if (!walkingDeparture) {
+          walkingDeparture = step.startLocation;
+        }
+        walkingDestination = step.stopLocation;
+      }
+
+      if (step.travelMode !== TravelMode.Walking) {
+        if (walkingDestination) {
+          const walkingPathIterator = await this.roadPlanner.plan({
+            from: [walkingDeparture],
+            to: [walkingDestination],
+            profileID: this.activeProfileID,
+          });
+          const walkingPaths = await Iterators.toArray(walkingPathIterator);
+          for (const walkingStep of walkingPaths[0].steps) {
+            completePath.addStep(walkingStep);
+          }
+
+          walkingDeparture = null;
+          walkingDestination = null;
+        }
+
+        completePath.addStep(step);
+      }
+    }
+
+    if (walkingDestination) {
+      const walkingPathIterator = await this.roadPlanner.plan({
+        from: [walkingDeparture],
+        to: [walkingDestination],
+        profileID: this.activeProfileID,
+      });
+      const walkingPaths = await Iterators.toArray(walkingPathIterator);
+      for (const walkingStep of walkingPaths[0].steps) {
+        completePath.addStep(walkingStep);
+      }
+
+      walkingDeparture = null;
+      walkingDestination = null;
+    }
+
+    return completePath;
   }
 
   /**
@@ -48,70 +106,22 @@ export default class Planner implements EventEmitter {
    * @returns An [[AsyncIterator]] of [[IPath]] instances
    */
   public query(query: IQuery): AsyncIterator<IPath> {
-    this.emit(EventType.Query, query);
+    this.eventBus.emit(EventType.Query, query);
 
     query.profileID = this.activeProfileID;
     const iterator = new PromiseProxyIterator(() => this.queryRunner.run(query));
 
-    this.once(EventType.AbortQuery, () => {
+    this.eventBus.once(EventType.AbortQuery, () => {
       iterator.close();
     });
 
     iterator.on("error", (e) => {
       if (e && e.eventType) {
-        this.emit(e.eventType, e.message);
+        this.eventBus.emit(e.eventType, e.message);
       }
     });
 
     return iterator;
-  }
-
-  public addListener(type: string | symbol, listener: Listener): this {
-    this.context.addListener(type, listener);
-
-    return this;
-  }
-
-  public emit(type: string | symbol, ...args: any[]): boolean {
-    return this.context.emit(type, ...args);
-  }
-
-  public listenerCount(type: string | symbol): number {
-    return this.context.listenerCount(type);
-  }
-
-  public listeners(type: string | symbol): Listener[] {
-    return this.context.listeners(type);
-  }
-
-  public on(type: string | symbol, listener: Listener): this {
-    this.context.on(type, listener);
-
-    return this;
-  }
-
-  public once(type: string | symbol, listener: Listener): this {
-    this.context.once(type, listener);
-
-    return this;
-  }
-
-  public removeAllListeners(type?: string | symbol): this {
-    this.context.removeAllListeners(type);
-
-    return this;
-  }
-
-  public removeListener(type: string | symbol, listener: Listener): this {
-    this.context.removeListener(type, listener);
-
-    return this;
-  }
-
-  public setMaxListeners(n: number): this {
-    this.context.setMaxListeners(n);
-
-    return this;
   }
 
   public prefetchStops(): void {

@@ -19,7 +19,6 @@ export default class ReachableStopsFinderFootpaths implements IReachableStopsFin
   ) {
     this.stopsProvider = stopsProvider;
     this.footpathsProvider = footpathsProvider;
-    this.footpathsProvider.prefetch();
   }
 
   public async findReachableStops(
@@ -31,13 +30,13 @@ export default class ReachableStopsFinderFootpaths implements IReachableStopsFin
 
     const reachableStops: IReachableStop[] = [{ stop: sourceOrTargetStop, duration: 0 }];
 
-    const footpaths = await this.footpathsProvider.get();
+    const footpaths = await this.footpathsProvider.get(sourceOrTargetStop);
     for (const footpath of Object.values(footpaths)) {
         let otherStop: IStop;
 
-        if (mode === ReachableStopsFinderMode.Source && sourceOrTargetStop.id === footpath.from) {
+        if (sourceOrTargetStop.id === footpath.from) {
             otherStop = await this.stopsProvider.getStopById(footpath.to);
-        } else if (mode === ReachableStopsFinderMode.Target && sourceOrTargetStop.id === footpath.to) {
+        } else if (sourceOrTargetStop.id === footpath.to) {
             otherStop = await this.stopsProvider.getStopById(footpath.from);
         }
 

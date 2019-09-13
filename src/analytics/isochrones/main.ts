@@ -1,36 +1,31 @@
-import concaveman = require("concaveman");
-// @ts-ignore
-import { EventEmitter, Listener } from "events";
+import { EventEmitter } from "events";
 import "isomorphic-fetch";
 import "reflect-metadata";
 import inBBox from "tiles-in-bbox";
-import Context from "../../Context";
 import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";
+import RoutingPhase from "../../enums/RoutingPhase";
+import EventType from "../../events/EventType";
 import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ILocation from "../../interfaces/ILocation";
 import defaultContainer from "../../inversify.config";
 import { IPathTree } from "../../pathfinding/pathfinder";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
-import ILocationResolver from "../../query-runner/ILocationResolver";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
-import { toTileCoordinate } from "./util";
+import { toTileCoordinate } from "../../util/Tiles";
 import { visualizeConcaveIsochrone, visualizeIsochrone } from "./visualize";
 
-// @ts-ignore
-export default class IsochroneGenerator implements EventEmitter {
-    private context: Context;
-
+export default class IsochroneGenerator {
     private pathfinderProvider: PathfinderProvider;
     private tileProvider: IRoutableTileProvider;
     private reachedTiles: Set<string>;
     private startPoint: ILocation;
     private registry: RoutableTileRegistry;
     private profileProvider: ProfileProvider;
-    private locationResolver: ILocationResolver;
+    private eventBus: EventEmitter;
 
     private activeProfile: Promise<Profile>;
     private loaded: Promise<boolean>;
@@ -39,13 +34,15 @@ export default class IsochroneGenerator implements EventEmitter {
     private showDebugLogs: boolean;
 
     constructor(point: ILocation, container = defaultContainer) {
-        this.context = container.get<Context>(TYPES.Context);
-        this.context.setContainer(container);
-        this.tileProvider = container.get<IRoutableTileProvider>(TYPES.RoutableTileProvider);
+        this.tileProvider = container.getTagged<IRoutableTileProvider>(
+            TYPES.RoutableTileProvider,
+            "phase",
+            RoutingPhase.Base,
+        );
         this.pathfinderProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
         this.registry = container.get<RoutableTileRegistry>(TYPES.RoutableTileRegistry);
         this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
-        this.locationResolver = container.get<ILocationResolver>(TYPES.LocationResolver);
+        this.eventBus = container.get<EventEmitter>(TYPES.EventBus);
         this.reachedTiles = new Set();
         this.startPoint = point;
         this.showIncremental = false;
@@ -61,54 +58,6 @@ export default class IsochroneGenerator implements EventEmitter {
 
     public enableDebugLogs() {
         this.showDebugLogs = true;
-    }
-
-    public addListener(type: string | symbol, listener: Listener): this {
-        this.context.addListener(type, listener);
-
-        return this;
-    }
-
-    public emit(type: string | symbol, ...args: any[]): boolean {
-        return this.context.emit(type, ...args);
-    }
-
-    public listenerCount(type: string | symbol): number {
-        return this.context.listenerCount(type);
-    }
-
-    public listeners(type: string | symbol): Listener[] {
-        return this.context.listeners(type);
-    }
-
-    public on(type: string | symbol, listener: Listener): this {
-        this.context.on(type, listener);
-
-        return this;
-    }
-
-    public once(type: string | symbol, listener: Listener): this {
-        this.context.once(type, listener);
-
-        return this;
-    }
-
-    public removeAllListeners(type?: string | symbol): this {
-        this.context.removeAllListeners(type);
-
-        return this;
-    }
-
-    public removeListener(type: string | symbol, listener: Listener): this {
-        this.context.removeListener(type, listener);
-
-        return this;
-    }
-
-    public setMaxListeners(n: number): this {
-        this.context.setMaxListeners(n);
-
-        return this;
     }
 
     public async setDevelopmentProfile(blob: object) {
@@ -171,7 +120,7 @@ export default class IsochroneGenerator implements EventEmitter {
     private async fetchTile(coordinate: RoutableTileCoordinate) {
         const tileId = this.tileProvider.getIdForTileCoords(coordinate);
         if (!this.reachedTiles.has(tileId)) {
-            this.emit("TILE", coordinate);
+            this.eventBus.emit(EventType.FetchTile, coordinate);
 
             const profile = await this.activeProfile;
             const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
@@ -190,11 +139,7 @@ export default class IsochroneGenerator implements EventEmitter {
                     pathfinder.setBreakPoint(nodeId, async (on: string) => {
                         const innerNode = self.registry.getNode(on);
                         if (innerNode) {
-                            self.emit("REACHED", innerNode);
-                            /*
-                            self.emit("INTERMEDIATE", concaveman(this.reachedPoints, Infinity)
-                                .map((e) => [e[1], e[0]]));
-                            */
+                            self.eventBus.emit(EventType.PointReached, innerNode);
                         }
                     });
                 }

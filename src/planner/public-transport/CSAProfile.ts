@@ -1,11 +1,11 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
+import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
-import Context from "../../Context";
 import DropOffType from "../../enums/DropOffType";
-import EventType from "../../enums/EventType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
+import EventType from "../../events/EventType";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
@@ -50,7 +50,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
   private readonly transferReachableStopsFinder: IReachableStopsFinder;
   private readonly journeyExtractor: IJourneyExtractor;
-  private readonly context: Context;
+  private readonly eventBus: EventEmitter;
 
   private profilesByStop: IProfilesByStop = {}; // S
   private earliestArrivalByTrip: IEarliestArrivalByTrip = {}; // T
@@ -77,8 +77,8 @@ export default class CSAProfile implements IPublicTransportPlanner {
       finalReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.JourneyExtractor)
       journeyExtractor: IJourneyExtractor,
-    @inject(TYPES.Context)
-      context?: Context,
+    @inject(TYPES.EventBus)
+      eventBus?: EventEmitter,
   ) {
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
@@ -86,7 +86,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
     this.journeyExtractor = journeyExtractor;
-    this.context = context;
+    this.eventBus = eventBus;
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
@@ -162,8 +162,8 @@ export default class CSAProfile implements IPublicTransportPlanner {
         break;
       }
 
-      if (this.context) {
-        this.context.emit(EventType.ConnectionScan, connection);
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.ConnectionScan, connection);
       }
 
       this.discoverConnection(connection);
@@ -270,15 +270,15 @@ export default class CSAProfile implements IPublicTransportPlanner {
       );
 
     if (reachableStops.length < 1) {
-      if (this.context) {
-        this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.AbortQuery, "No reachable stops at arrival location");
       }
 
       return false;
     }
 
-    if (this.context) {
-      this.context.emit(EventType.FinalReachableStops, reachableStops);
+    if (this.eventBus) {
+      this.eventBus.emit(EventType.FinalReachableStops, reachableStops);
     }
 
     for (const reachableStop of reachableStops) {
@@ -316,15 +316,15 @@ export default class CSAProfile implements IPublicTransportPlanner {
     }
 
     if (this.initialReachableStops.length < 1) {
-      if (this.context) {
-        this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.AbortQuery, "No reachable stops at departure location");
       }
 
       return false;
     }
 
-    if (this.context) {
-      this.context.emit(EventType.InitialReachableStops, this.initialReachableStops);
+    if (this.eventBus) {
+      this.eventBus.emit(EventType.InitialReachableStops, this.initialReachableStops);
     }
 
     return true;
@@ -470,8 +470,8 @@ export default class CSAProfile implements IPublicTransportPlanner {
       });
 
     } catch (e) {
-      if (this.context) {
-        this.context.emitWarning(e);
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.Warning, (e));
       }
     }
   }
@@ -485,14 +485,14 @@ export default class CSAProfile implements IPublicTransportPlanner {
         transferProfile.exitConnection.arrivalStop,
       );
 
-      this.context.emit(EventType.AddedNewTransferProfile, {
+      this.eventBus.emit(EventType.AddedNewTransferProfile, {
         departureStop,
         arrivalStop,
         amountOfTransfers,
       });
 
     } catch (e) {
-      this.context.emitWarning(e);
+      this.eventBus.emit(EventType.Warning, (e));
     }
   }
 
@@ -546,7 +546,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
           newTransferProfile.exitConnection = possibleExitConnection;
           newTransferProfile.departureTime = departureTime;
 
-          if (this.context && this.context.listenerCount(EventType.AddedNewTransferProfile) > 0) {
+          if (this.eventBus && this.eventBus.listenerCount(EventType.AddedNewTransferProfile) > 0) {
             this.emitTransferProfile(newTransferProfile, amountOfTransfers);
           }
 

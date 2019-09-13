@@ -1,7 +1,8 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
+import { EventEmitter } from "events";
 import { inject, injectable } from "inversify";
-import Context from "../../Context";
 import TravelMode from "../../enums/TravelMode";
+import EventType from "../../events/EventType";
 import IConnection from "../../fetcher/connections/IConnection";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -29,14 +30,14 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
   private readonly locationResolver: ILocationResolver;
 
   private bestArrivalTime: number[][] = [];
-  private context: Context;
+  private eventBus: EventEmitter;
 
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.Context)context?: Context,
+    @inject(TYPES.EventBus) eventBus?: EventEmitter,
   ) {
     this.locationResolver = locationResolver;
-    this.context = context;
+    this.eventBus = this.eventBus;
   }
 
   public async extractJourneys(
@@ -79,8 +80,8 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
             );
 
           } catch (e) {
-            if (this.context) {
-              this.context.emitWarning(e);
+            if (this.eventBus) {
+              this.eventBus.emit(EventType.Warning, (e));
             }
           }
         }
