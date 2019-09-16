@@ -59,8 +59,7 @@ export default async (logResults) => {
       });
   }
 
-  return wait(10000)
-    .then(() => new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
       if (logResults) {
         console.log(`${new Date()} Start query`);
       }
@@ -109,7 +108,5 @@ export default async (logResults) => {
         .on("end", () => {
           resolve(false);
         });
-    }));
+    });
 };
-
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
