@@ -103,7 +103,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         profile: Profile,
     ): Promise<IPath> {
         const pathfinder = await this.pathfinderProvider.getShortestPathAlgorithm(profile);
-        const maxDistance = Geo.getDistanceBetweenLocations(start, stop) * 4 + 1000;
+        const maxDistance = Geo.getDistanceBetweenLocations(start, stop) * 10 + 1000;
         const path = await pathfinder.queryPath(Geo.getId(start), Geo.getId(stop), maxDistance);
 
         const steps: IStep[] = [];

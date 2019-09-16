@@ -16,6 +16,6 @@ export default class RoutableTileProviderTransit extends RoutableTileProviderDef
   }
 
   public getIdForTileCoords(coordinate: RoutableTileCoordinate): string {
-    return `http://hdelva.be/tiles/reduced/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
+    return `https://hdelva.be/tiles/reduced/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
   }
 }

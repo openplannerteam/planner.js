@@ -3,7 +3,7 @@ import TinyQueue from "tinyqueue";
 import { DistanceM, DurationMs } from "../../interfaces/units";
 import PathfindingGraph from "../graph";
 import { IPathTree, IShortestPathTreeAlgorithm, IShortestPathTreeInstance } from "../pathfinder";
-import DijkstraTreeInstance from "./dijkstra-tree-js-instance";
+import DijkstraTreeInstance from "./DijkstraTreeInstance";
 
 interface IState {
   position: number;

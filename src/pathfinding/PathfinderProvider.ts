@@ -158,7 +158,7 @@ export default class PathfinderProvider {
     }
   }
 
-  private getGraphForProfile(profile: Profile): PathfindingGraph {
+  public getGraphForProfile(profile: Profile): PathfindingGraph {
     if (!this.graphs[profile.getID()]) {
       // we don't have a graph for this profile yet
       // create one

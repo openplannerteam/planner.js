@@ -34,7 +34,10 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
     private registry: RoutableTileRegistry;
     private eventBus: EventEmitter;
 
+    // STATEFUL!
+    // will misbehave when processing several queries concurrently
     private reachedTiles: Set<string>;
+    private localTiles: RoutableTileCoordinate[];
 
     constructor(
         @inject(TYPES.RoutableTileProvider)
@@ -95,14 +98,14 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         to: ILocation,
         profile: Profile,
     ): Promise<IPath> {
-        const localTiles = [
+        this.localTiles = [
             toTileCoordinate(from.latitude, from.longitude),
             toTileCoordinate(to.latitude, to.longitude),
         ];
 
         await Promise.all([
-            this.embedLocation(from, localTiles),
-            this.embedLocation(to, localTiles, true),
+            this.embedLocation(from),
+            this.embedLocation(to, true),
         ]);
 
         return this._innerPath(from, to, profile);
@@ -133,12 +136,12 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         return new Path(steps);
     }
 
-    private pickTile(node: RoutableTileNode, localTiles: RoutableTileCoordinate[]) {
+    private pickTile(node: RoutableTileNode) {
         let coordinate: RoutableTileCoordinate;
-        for (let zoom = 10; zoom < 15; zoom++) {
+        for (let zoom = 8; zoom < 15; zoom++) {
             coordinate = toTileCoordinate(node.latitude, node.longitude, zoom);
             let ok = true;
-            for (const localTile of localTiles) {
+            for (const localTile of this.localTiles) {
                 if (coordinate.contains(localTile)) {
                     ok = false;
                     break;
@@ -151,9 +154,9 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         return coordinate;
     }
 
-    private async fetchTile(coordinate: RoutableTileCoordinate, localTiles: RoutableTileCoordinate[]) {
+    private async fetchTile(coordinate: RoutableTileCoordinate) {
         let local = false;
-        for (const localTile of localTiles) {
+        for (const localTile of this.localTiles) {
             if (coordinate.x === localTile.x && coordinate.y === localTile.y && coordinate.zoom === localTile.zoom) {
                 local = true;
                 break;
@@ -185,20 +188,20 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
 
             const self = this;
             for (const profile of await this.profileProvider.getProfiles()) {
-                const pathfinder = this.pathfinderProvider.getShortestPathAlgorithm(profile);
+                const graph = this.pathfinderProvider.getGraphForProfile(profile);
 
                 for (const nodeId of boundaryNodes) {
-                    pathfinder.setBreakPoint(nodeId, async (on: string) => {
+                    graph.setBreakPoint(nodeId, async (on: string) => {
                         const node = self.registry.getNode(on);
-                        const boundaryTileCoordinate = this.pickTile(node, localTiles);
-                        await self.fetchTile(boundaryTileCoordinate, localTiles);
+                        const boundaryTileCoordinate = this.pickTile(node);
+                        await self.fetchTile(boundaryTileCoordinate);
                     });
                 }
             }
         }
     }
 
-    private async embedLocation(from: ILocation, localTiles: RoutableTileCoordinate[], invert = false) {
+    private async embedLocation(from: ILocation, invert = false) {
         const zoom = 14;
         const padding = 0.005;
 
@@ -211,7 +214,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
 
         const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
             const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
-            this.fetchTile(coordinate, localTiles);
+            this.fetchTile(coordinate);
             return coordinate;
         });
 

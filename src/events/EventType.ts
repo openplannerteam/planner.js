@@ -20,6 +20,7 @@ enum EventType {
   AddedNewTransferProfile = "added-new-transfer-profile",
 
   ReachableStop = "ReachableStop",
+  ReachableTile = "ReachableTile",
 }
 
 export default EventType;

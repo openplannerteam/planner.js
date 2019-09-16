@@ -31,7 +31,7 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
   public getIdForLocation(zoom: number, location: ILocation): string {
     const y = lat_to_tile(location.latitude, zoom);
     const x = long_to_tile(location.longitude, zoom);
-    const coordinate = new RoutableTileCoordinate(zoom, x, y );
+    const coordinate = new RoutableTileCoordinate(zoom, x, y);
     return this.getIdForTileCoords(coordinate);
   }
 
