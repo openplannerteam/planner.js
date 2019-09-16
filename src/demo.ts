@@ -1,4 +1,4 @@
-import Planner from ".";
+import { Planner } from ".";
 import EventType from "./events/EventType";
 import getEventBus from "./events/util";
 import IPath from "./interfaces/IPath";
@@ -6,7 +6,7 @@ import Units from "./util/Units";
 
 export default async (logResults) => {
 
-  const planner = new Planner.Planner();
+  const planner = new Planner();
 
   planner.prefetchStops();
   planner.prefetchConnections();

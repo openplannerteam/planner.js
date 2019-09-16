@@ -1,14 +1,10 @@
 import "isomorphic-fetch";
 import "reflect-metadata";
-
-import IsochroneGenerator from "./analytics/isochrones/main";
-import EventType from "./events/EventType";
 import getEventBus from "./events/util";
-import Planner from "./Planner";
 
-export default {
-    Planner,
-    IsochroneGenerator,
-    EventBus: getEventBus(),
-    EventType,
-};
+export {default as EventType} from "./events/EventType";
+export {default as IsochroneGenerator} from "./analytics/isochrones/main";
+export {default as Planner} from "./Planner";
+export {default as Units} from "./util/Units";
+
+export const EventBus = getEventBus();
