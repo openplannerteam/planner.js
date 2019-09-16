@@ -38,14 +38,7 @@ export default class ConnectionsStore {
 
   constructor(eventBus?: EventEmitter) {
     this.eventBus = eventBus;
-    this.store = [{
-      id: "DUMMY",
-      travelMode: TravelMode.Train,
-      departureTime: new Date(0),
-      arrivalTime: new Date(1),
-      departureStop: null,
-      arrivalStop: null,
-    }];
+    this.store = [];
     this.binarySearch = new BinarySearch<IConnection>(this.store, (connection) => connection.departureTime.valueOf());
     this.deferredBackwardViews = [];
     this.expandingForwardViews = [];
@@ -274,7 +267,7 @@ export default class ConnectionsStore {
     const { iterator: existingIterator, upperBoundIndex } = this.getIteratorView(false, lowerBoundDate, upperBoundDate);
     const expandingIterator = new ExpandingIterator<IConnection>();
 
-    const iterator = expandingIterator.prepend(existingIterator);
+    const iterator = this.store.length ? expandingIterator.prepend(existingIterator) : expandingIterator;
 
     let lastStoreIndex = upperBoundIndex;
 
