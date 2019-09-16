@@ -244,22 +244,26 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
       for (const reachableStop of reachableStops) {
         const { stop: stop, duration: duration } = reachableStop;
-        const transferTentativeArrival = this.getProfile(stop.id).arrivalTime;
 
-        if (duration && transferTentativeArrival > sourceConnection.arrivalTime.getTime() && stop.id) {
-          // create a connection that resembles a footpath
-          // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
-          const transferConnection: IConnection = {
-            id: `TRANSFER_TO:${stop.id}`,
-            tripId: `TRANSFER_TO:${stop.id}`,
-            travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
-            departureTime: sourceConnection.arrivalTime,
-            departureStop: sourceConnection.arrivalStop,
-            arrivalTime: new Date(sourceConnection.arrivalTime.getTime() + duration),
-            arrivalStop: stop.id,
-          };
+        if (duration && stop.id) {
+          const transferTentativeArrival = this.getProfile(stop.id).arrivalTime;
+          const newArrivalTime = new Date(sourceConnection.arrivalTime.getTime() + duration);
 
-          this.connectionsQueue.push(transferConnection);
+          if (transferTentativeArrival > newArrivalTime.getTime() && newArrivalTime <= query.maximumArrivalTime) {
+            // create a connection that resembles a footpath
+            // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
+            const transferConnection: IConnection = {
+              id: `TRANSFER_TO:${stop.id}`,
+              tripId: `TRANSFER_TO:${stop.id}`,
+              travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
+              departureTime: sourceConnection.arrivalTime,
+              departureStop: sourceConnection.arrivalStop,
+              arrivalTime: new Date(sourceConnection.arrivalTime.getTime() + duration),
+              arrivalStop: stop.id,
+            };
+
+            this.connectionsQueue.push(transferConnection);
+          }
         }
       }
     } catch (e) {
