@@ -74,7 +74,7 @@ container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTranspor
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
 container.bind<IRoadPlanner>(TYPES.RoadPlanner)
-  .to(RoadPlannerPathfindingExperimental);
+  .to(RoadPlannerPathfinding);
 
 container.bind<IShortestPathTreeAlgorithm>(TYPES.ShortestPathTreeAlgorithm).to(DijkstraTree).inSingletonScope();
 container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(Dijkstra).inSingletonScope();
@@ -131,7 +131,7 @@ container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderD
 // Bind catalog
 const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
 
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();
