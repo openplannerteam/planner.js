@@ -9,6 +9,12 @@ $ npm install plannerjs
 Include it in the browser:
 ```html
 <script src="https://planner.js.org/js/planner-latest.js"></script>
+
+...
+
+<script>
+  const {Planner, Units} = PlannerJS;
+</script>
 ```
 
 Include it in your JavaScript project:

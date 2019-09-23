@@ -129,9 +129,7 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
 container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
 
 // Bind catalog
-const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
-
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();

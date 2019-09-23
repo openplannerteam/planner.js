@@ -12,7 +12,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new Planner.Planner();
+const planner = new PlannerJS.Planner();
 
 planner.prefetchStops();
 planner.prefetchConnections();
@@ -131,11 +131,11 @@ planner.getAllStops().then(stops => {
   }
 });
 
-planner
-  .on("query", query => {
+PlannerJS.EventBus
+  .on(PlannerJS.EventType.Query, query => {
     console.log("Query", query);
   })
-  .on("sub-query", query => {
+  .on(PlannerJS.EventType.SubQuery, query => {
     const { minimumDepartureTime, maximumArrivalTime, maximumTravelDuration } = query;
 
     console.log(
@@ -148,7 +148,7 @@ planner
 
     removeLines();
   })
-  .on("initial-reachable-stops", reachableStops => {
+  .on(PlannerJS.EventType.InitialReachableStops, reachableStops => {
     console.log("initial", reachableStops);
     reachableStops.map(({ stop }) => {
       const startMarker = L.marker([stop.latitude, stop.longitude]).addTo(map);
@@ -158,7 +158,7 @@ planner
       resultObjects.push(startMarker);
     });
   })
-  .on("final-reachable-stops", reachableStops => {
+  .on(PlannerJS.EventType.FinalReachableStops, reachableStops => {
     console.log("final", reachableStops);
 
     reachableStops.map(({ stop }) => {
@@ -169,7 +169,7 @@ planner
       resultObjects.push(startMarker);
     });
   })
-  .on("added-new-transfer-profile", ({ departureStop, arrivalStop, amountOfTransfers }) => {
+  .on(PlannerJS.EventType.AddedNewTransferProfile, ({ departureStop, arrivalStop, amountOfTransfers }) => {
 
     const newLine = [
       [departureStop.latitude, departureStop.longitude],
@@ -197,7 +197,7 @@ planner
       polyLines.push(polyline);
     }
   })
-  .on("connection-prefetch", (departureTime) => {
+  .on(PlannerJS.EventType.ConnectionPrefetch, (departureTime) => {
     if (!firstPrefetch) {
       firstPrefetch = departureTime;
 
@@ -217,7 +217,7 @@ planner
       drawPrefetchViews();
     }
   })
-  .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
+  .on(PlannerJS.EventType.ConnectionIteratorView, (lowerBound, upperBound, completed) => {
     if (!lowerBound || !upperBound) {
       return;
     }
@@ -248,7 +248,7 @@ planner
       elem.style.backgroundColor = "limegreen";
     }
   })
-  .on("warning", (warning) => {
+  .on(PlannerJS.EventType.Warning, (warning) => {
     console.warn(warning);
   });
 
@@ -468,21 +468,23 @@ function addResultToMap(q, path, color) {
 function addConnectionMarkers(step, color) {
   const { startLocation, stopLocation, travelMode } = step;
 
-  const startMarker = L.marker([
-    startLocation.latitude,
-    startLocation.longitude
-  ]).addTo(map);
-
-  startMarker.bindPopup(startLocation.name);
-
-  const stopMarker = L.marker([
-    stopLocation.latitude,
-    stopLocation.longitude
-  ]).addTo(map);
-
-  stopMarker.bindPopup(stopLocation.name);
-
-  resultObjects.push(startMarker, stopMarker);
+  if (step.travelMode !== "profile") {
+    const startMarker = L.marker([
+      startLocation.latitude,
+      startLocation.longitude
+    ]).addTo(map);
+  
+    startMarker.bindPopup(startLocation.name);
+  
+    const stopMarker = L.marker([
+      stopLocation.latitude,
+      stopLocation.longitude
+    ]).addTo(map);
+  
+    stopMarker.bindPopup(stopLocation.name);
+    
+    resultObjects.push(startMarker, stopMarker);
+  }
 
   const line = [
     [startLocation.latitude, startLocation.longitude],
@@ -534,7 +536,7 @@ function runQuery(query) {
     to: query[1],
     minimumDepartureTime: new Date(),
     maximumWalkingDistance,
-    maximumTransferDuration: Planner.Planner.Units.fromMinutes(30), // 30 minutes
+    maximumTransferDuration: PlannerJS.Units.fromMinutes(30), // 30 minutes
     minimumWalkingSpeed: 3
   };
 
@@ -544,11 +546,12 @@ function runQuery(query) {
     .on("error", (error) => {
       console.error(error);
     })
-    .on("data", path => {
+    .on("data", async path => {
+      const completePath = await planner.completePath(path);
       i++;
       const color = getRandomColor();
-      addResultPanel(q, path, color);
-      addResultToMap(q, path, color);
+      addResultPanel(q, completePath, color);
+      addResultToMap(q, completePath, color);
 
     })
     .on("end", () => {

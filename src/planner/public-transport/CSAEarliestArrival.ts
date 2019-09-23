@@ -94,6 +94,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   private async calculateJourneys(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+    const connectionsIterator = this.connectionsProvider.createIterator();
+    this.connectionsQueue = new MultiConnectionQueue(connectionsIterator);
+
     const [hasInitialReachableStops, hasFinalReachableStops] = await Promise.all([
       this.initInitialReachableStops(query),
       this.initFinalReachableStops(query),
@@ -102,9 +105,6 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     if (!hasInitialReachableStops || !hasFinalReachableStops) {
       return Promise.resolve(new ArrayIterator([]));
     }
-
-    const connectionsIterator = this.connectionsProvider.createIterator();
-    this.connectionsQueue = new MultiConnectionQueue(connectionsIterator);
 
     const self = this;
     return new Promise((resolve, reject) => {
