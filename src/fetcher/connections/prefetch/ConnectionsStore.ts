@@ -1,7 +1,7 @@
 import { AsyncIterator, EmptyIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
-import Context from "../../../Context";
+import TravelMode from "../../../enums/TravelMode";
 import EventType from "../../../events/EventType";
 import BinarySearch from "../../../util/BinarySearch";
 import ArrayViewIterator from "../../../util/iterators/ArrayViewIterator";
@@ -267,7 +267,7 @@ export default class ConnectionsStore {
     const { iterator: existingIterator, upperBoundIndex } = this.getIteratorView(false, lowerBoundDate, upperBoundDate);
     const expandingIterator = new ExpandingIterator<IConnection>();
 
-    const iterator = expandingIterator.prepend(existingIterator);
+    const iterator = this.store.length ? expandingIterator.prepend(existingIterator) : expandingIterator;
 
     let lastStoreIndex = upperBoundIndex;
 

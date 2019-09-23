@@ -1,5 +1,3 @@
-import getOsmTagMapping from "../../enums/OSMTags";
-import { RoutableTileNode } from "../tiles/node";
 import { RoutableTileWay } from "../tiles/way";
 import DynamicProfile from "./DynamicProfile";
 
@@ -68,22 +66,6 @@ export default class CharacteristicProfile extends DynamicProfile {
         const result = super.getMultiplier(way);
         this.priorityCache[characteristic] = result;
         return result;
-    }
-
-    public isObstacle(node: RoutableTileNode): boolean {
-        for (const rule of this.accessRules) {
-            if (rule.conclusion.isObstacle !== undefined) {
-                // should always be the case, but just in case
-                if (rule.condition !== undefined) {
-                    const field = getOsmTagMapping()[rule.condition.predicate];
-                    if (node[field] === rule.condition.object) {
-                        return rule.conclusion.isObstacle;
-                    }
-                } else {
-                    return rule.conclusion.isObstacle;
-                }
-            }
-        }
     }
 
     private getWayCharacteristic(way: RoutableTileWay) {

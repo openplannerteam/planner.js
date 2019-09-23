@@ -13,16 +13,16 @@ Include it in the browser:
 
 Include it in your JavaScript project:
 ```javascript
-const Planner = require('plannerjs').default;
+const { Planner, Units } = require('plannerjs');
 
 // or
 
-import Planner              from 'plannerjs';
+import { Planner, Units }              from 'plannerjs';
 ```
 
 Use it in both environments:
 ```javascript
-const planner = new Planner.Planner();
+const planner = new Planner();
 
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
@@ -36,10 +36,10 @@ planner.query({
  
   maximumWalkingDistance: 200, // meters
   
-  minimumTransferDuration: Planner.Planner.Units.fromMinutes(1),
-  maximumTransferDuration: Planner.Planner.Units.fromMinutes(30),
+  minimumTransferDuration: Units.fromMinutes(1),
+  maximumTransferDuration: Units.fromMinutes(30),
   
-  maximumTravelDuration: Planner.Planner.Units.fromHours(1.5),
+  maximumTravelDuration: Units.fromHours(1.5),
   
   maximumTransfers: 4,
 })

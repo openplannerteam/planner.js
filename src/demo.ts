@@ -1,4 +1,4 @@
-import Planner from ".";
+import { Planner } from ".";
 import EventType from "./events/EventType";
 import getEventBus from "./events/util";
 import IPath from "./interfaces/IPath";
@@ -6,7 +6,7 @@ import Units from "./util/Units";
 
 export default async (logResults) => {
 
-  const planner = new Planner.Planner();
+  const planner = new Planner();
 
   planner.prefetchStops();
   planner.prefetchConnections();
@@ -59,8 +59,7 @@ export default async (logResults) => {
       });
   }
 
-  return wait(10000)
-    .then(() => new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
       if (logResults) {
         console.log(`${new Date()} Start query`);
       }
@@ -109,7 +108,5 @@ export default async (logResults) => {
         .on("end", () => {
           resolve(false);
         });
-    }));
+    });
 };
-
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

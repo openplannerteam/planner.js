@@ -3,6 +3,8 @@ import { IRoutableTileNodeIndex, RoutableTileNode } from "../../entities/tiles/n
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import { RoutableTile } from "../../entities/tiles/tile";
 import { IRoutableTileWayIndex, RoutableTileWay } from "../../entities/tiles/way";
+import EventType from "../../events/EventType";
+import getEventBus from "../../events/util";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import TYPES from "../../types";
 import { OSM } from "../../uri/constants";
@@ -46,7 +48,10 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
   public async get(url: string): Promise<RoutableTile> {
     const response = await fetch(url);
     const responseText = await response.text();
-    if (responseText) {
+    if (response.status !== 200) {
+      getEventBus().emit(EventType.Warning, `${url} responded with status code ${response.status}`);
+    }
+    if (response.status === 200 && responseText) {
       const blob = JSON.parse(responseText);
 
       const nodes: IRoutableTileNodeIndex = {};

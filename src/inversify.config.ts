@@ -36,8 +36,8 @@ import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDef
 import RoutableTileProviderTransit from "./fetcher/tiles/RoutableTileProviderTransit";
 
 import { LDLoader } from "./loader/ldloader";
-import DijkstraTree from "./pathfinding/dijkstra-tree/dijkstra-tree-js";
-import { Dijkstra } from "./pathfinding/dijkstra/dijkstra-js";
+import DijkstraTree from "./pathfinding/dijkstra-tree/DijkstraTree";
+import { Dijkstra } from "./pathfinding/dijkstra/Dijkstra";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "./pathfinding/pathfinder";
 import PathfinderProvider from "./pathfinding/PathfinderProvider";
 import CSAEarliestArrival from "./planner/public-transport/CSAEarliestArrival";
@@ -130,6 +130,7 @@ container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderD
 
 // Bind catalog
 const combinedCatalog = Catalog.combine(catalogNmbs, catalogDeLijn, catalogMivb, catalogTec);
+
 container.bind<Catalog>(TYPES.Catalog).toConstantValue(combinedCatalog);
 
 // Init LDFetch
