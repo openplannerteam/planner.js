@@ -1641,15 +1641,18 @@ img { max-width: 100%; }
 
 <span class="hljs-comment">// or</span>
 
-<span class="hljs-keyword">import</span> { Planner, Units }              <span class="hljs-keyword">from</span> <span class="hljs-string">'plannerjs'</span>;</code></pre>
+<span class="hljs-keyword">import</span> { Planner, Units } <span class="hljs-keyword">from</span> <span class="hljs-string">'plannerjs'</span>;</code></pre>
 			<p>Use it in both environments:</p>
 			<pre><code class="language-javascript"><span class="hljs-keyword">const</span> planner = <span class="hljs-keyword">new</span> Planner();
+
+<span class="hljs-comment">// Make the planner start collecting data</span>
+planner.prefetchStops();
+planner.prefetchConnections();
 
 planner.query({
   <span class="hljs-attr">from</span>: <span class="hljs-string">"http://irail.be/stations/NMBS/008812005"</span>, <span class="hljs-comment">// Brussels North</span>
   to: <span class="hljs-string">"http://irail.be/stations/NMBS/008892007"</span>, <span class="hljs-comment">// Ghent-Sint-Pieters</span>
-  minimumDepartureTime: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-string">"Mon Feb 11 2019 16:00:00"</span>),
-  <span class="hljs-attr">maximumArrivalTime</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-string">"Mon Feb 11 2019 19:00:00"</span>),
+  minimumDepartureTime: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(),
   <span class="hljs-attr">publicTransportOnly</span>: <span class="hljs-literal">true</span>,
 
   <span class="hljs-attr">walkingSpeed</span>: <span class="hljs-number">3</span>, <span class="hljs-comment">// KmH</span>
@@ -1978,7 +1981,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Connections<wbr>Fetcher<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L47">types.ts:47</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L47">types.ts:47</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2012,7 +2015,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">DistanceM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/interfaces/units.ts#L9">interfaces/units.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/interfaces/units.ts#L9">interfaces/units.ts:9</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2027,7 +2030,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Duration<wbr>Ms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/interfaces/units.ts#L4">interfaces/units.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/interfaces/units.ts#L4">interfaces/units.ts:4</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2042,7 +2045,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">IStep<wbr>Result<span class="tsd-signature-symbol">:</span> <a href="interfaces/icontinuestep.html" class="tsd-signature-type">IContinueStep</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/ibreakstep.html" class="tsd-signature-type">IBreakStep</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/inodehandledstep.html" class="tsd-signature-type">INodeHandledStep</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/pathfinding/bidirdijkstra/BidirDijkstraInstance.ts#L20">pathfinding/bidirdijkstra/BidirDijkstraInstance.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/pathfinding/bidirdijkstra/BidirDijkstraInstance.ts#L20">pathfinding/bidirdijkstra/BidirDijkstraInstance.ts:20</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2052,7 +2055,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Node<wbr>Cluster<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L20">analytics/isochrones/visualize.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L20">analytics/isochrones/visualize.ts:20</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2062,7 +2065,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Node<wbr>Label<wbr>List<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L17">analytics/isochrones/visualize.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L17">analytics/isochrones/visualize.ts:17</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2072,7 +2075,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Node<wbr>List<span class="tsd-signature-symbol">:</span> <a href="classes/routabletilenode.html" class="tsd-signature-type">RoutableTileNode</a><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L14">analytics/isochrones/visualize.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L14">analytics/isochrones/visualize.ts:14</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2082,7 +2085,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Polygon<span class="tsd-signature-symbol">:</span> <a href="globals.html#ring" class="tsd-signature-type">Ring</a><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L27">analytics/isochrones/visualize.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L27">analytics/isochrones/visualize.ts:27</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2092,7 +2095,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Ring<span class="tsd-signature-symbol">:</span> <a href="interfaces/ilocation.html" class="tsd-signature-type">ILocation</a><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L23">analytics/isochrones/visualize.ts:23</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L23">analytics/isochrones/visualize.ts:23</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2102,7 +2105,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Routable<wbr>Tiles<wbr>Fetcher<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L48">types.ts:48</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L48">types.ts:48</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2133,7 +2136,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Speed<wbr>KmH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/interfaces/units.ts#L14">interfaces/units.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/interfaces/units.ts#L14">interfaces/units.ts:14</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2148,7 +2151,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">Stops<wbr>Fetcher<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L46">types.ts:46</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L46">types.ts:46</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -2182,7 +2185,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">GEO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://www.w3.org/2003/01/geo/wgs84_pos"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;http://www.w3.org/2003/01/geo/wgs84_pos&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L4">uri/constants.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L4">uri/constants.ts:4</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2192,7 +2195,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">HYDRA<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://www.w3.org/ns/hydra/core"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;http://www.w3.org/ns/hydra/core&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L2">uri/constants.ts:2</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L2">uri/constants.ts:2</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2202,7 +2205,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">OSM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"https://w3id.org/openstreetmap/terms"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;https://w3id.org/openstreetmap/terms&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L3">uri/constants.ts:3</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L3">uri/constants.ts:3</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2212,7 +2215,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">PLANNER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"https://planner.js.org/terms#"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;https://planner.js.org/terms#&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L8">uri/constants.ts:8</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L8">uri/constants.ts:8</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2222,7 +2225,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">PROFILE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"https://w3id.org/openplannerteam/profile#"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;https://w3id.org/openplannerteam/profile#&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L9">uri/constants.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L9">uri/constants.ts:9</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2232,7 +2235,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">RDF<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://www.w3.org/1999/02/22-rdf-syntax-ns"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L5">uri/constants.ts:5</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L5">uri/constants.ts:5</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2242,7 +2245,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">RDFS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://www.w3.org/2000/01/rdf-schema"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;http://www.w3.org/2000/01/rdf-schema&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L6">uri/constants.ts:6</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L6">uri/constants.ts:6</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2252,7 +2255,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">ROUTE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"https://w3id.org/routabletiles/terms#"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;https://w3id.org/routabletiles/terms#&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L7">uri/constants.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L7">uri/constants.ts:7</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2262,7 +2265,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">XMLS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://www.w3.org/2001/XMLSchema"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;http://www.w3.org/2001/XMLSchema&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/uri/constants.ts#L1">uri/constants.ts:1</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/uri/constants.ts#L1">uri/constants.ts:1</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2272,7 +2275,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">ZOOM<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">12</span><span class="tsd-signature-symbol"> =&nbsp;12</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/fetcher/footpaths/FootpathsProviderDefault.ts#L15">fetcher/footpaths/FootpathsProviderDefault.ts:15</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/fetcher/footpaths/FootpathsProviderDefault.ts#L15">fetcher/footpaths/FootpathsProviderDefault.ts:15</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2282,7 +2285,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">catalog<wbr>DeLijn<span class="tsd-signature-symbol">:</span> <a href="classes/catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol"> =&nbsp;new Catalog()</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/catalog.delijn.ts#L6">catalog.delijn.ts:6</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/catalog.delijn.ts#L6">catalog.delijn.ts:6</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2292,7 +2295,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">catalog<wbr>Mivb<span class="tsd-signature-symbol">:</span> <a href="classes/catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol"> =&nbsp;new Catalog()</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/catalog.mivb.ts#L4">catalog.mivb.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/catalog.mivb.ts#L4">catalog.mivb.ts:4</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2302,7 +2305,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">catalog<wbr>Nmbs<span class="tsd-signature-symbol">:</span> <a href="classes/catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol"> =&nbsp;new Catalog()</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/catalog.nmbs.ts#L4">catalog.nmbs.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/catalog.nmbs.ts#L4">catalog.nmbs.ts:4</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2312,7 +2315,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">catalog<wbr>Tec<span class="tsd-signature-symbol">:</span> <a href="classes/catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol"> =&nbsp;new Catalog()</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/catalog.tec.ts#L4">catalog.tec.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/catalog.tec.ts#L4">catalog.tec.ts:4</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2322,7 +2325,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">x<span class="tsd-signature-symbol">:</span> <a href="classes/isochronegenerator.html" class="tsd-signature-type">IsochroneGenerator</a><span class="tsd-signature-symbol"> =&nbsp;new IsochroneGenerator({ latitude: 51.0262973, longitude: 3.7110885 })</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/isochrone.demo.ts#L3">isochrone.demo.ts:3</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/isochrone.demo.ts#L3">isochrone.demo.ts:3</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2339,7 +2342,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L116">analytics/isochrones/visualize.ts:116</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L116">analytics/isochrones/visualize.ts:116</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2368,7 +2371,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L145">analytics/isochrones/visualize.ts:145</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L145">analytics/isochrones/visualize.ts:145</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2406,7 +2409,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L104">analytics/isochrones/visualize.ts:104</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L104">analytics/isochrones/visualize.ts:104</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2429,7 +2432,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/util.ts#L3">analytics/isochrones/util.ts:3</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/util.ts#L3">analytics/isochrones/util.ts:3</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2452,7 +2455,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/events/util.ts#L5">events/util.ts:5</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/events/util.ts#L5">events/util.ts:5</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">EventEmitter</span></h4>
@@ -2469,7 +2472,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/util.ts#L14">analytics/isochrones/util.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/util.ts#L14">analytics/isochrones/util.ts:14</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2492,7 +2495,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/enums/OSMTags.ts#L4">enums/OSMTags.ts:4</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/enums/OSMTags.ts#L4">enums/OSMTags.ts:4</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -2511,7 +2514,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/util/Tiles.ts#L3">util/Tiles.ts:3</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/util/Tiles.ts#L3">util/Tiles.ts:3</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2537,7 +2540,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/util/Tiles.ts#L9">util/Tiles.ts:9</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/util/Tiles.ts#L9">util/Tiles.ts:9</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2563,7 +2566,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L196">analytics/isochrones/visualize.ts:196</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L196">analytics/isochrones/visualize.ts:196</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2595,7 +2598,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/util.ts#L8">analytics/isochrones/util.ts:8</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/util.ts#L8">analytics/isochrones/util.ts:8</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2621,7 +2624,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/entities/tiles/tile.ts#L4">entities/tiles/tile.ts:4</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/entities/tiles/tile.ts#L4">entities/tiles/tile.ts:4</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2644,7 +2647,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/entities/tiles/tile.ts#L10">entities/tiles/tile.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/entities/tiles/tile.ts#L10">entities/tiles/tile.ts:10</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2667,7 +2670,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/util/Tiles.ts#L13">util/Tiles.ts:13</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/util/Tiles.ts#L13">util/Tiles.ts:13</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2696,7 +2699,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L29">analytics/isochrones/visualize.ts:29</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L29">analytics/isochrones/visualize.ts:29</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2725,7 +2728,7 @@ planner.query({
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/analytics/isochrones/visualize.ts#L58">analytics/isochrones/visualize.ts:58</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/analytics/isochrones/visualize.ts#L58">analytics/isochrones/visualize.ts:58</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2758,7 +2761,7 @@ planner.query({
 				<div class="tsd-signature tsd-kind-icon">TYPES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L6">types.ts:6</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L6">types.ts:6</a></li>
 					</ul>
 				</aside>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -2767,7 +2770,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Catalog<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;Catalog&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L41">types.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L41">types.ts:41</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2777,7 +2780,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Connections<wbr>Fetcher<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ConnectionsFetcher&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L13">types.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L13">types.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2787,7 +2790,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Connections<wbr>Fetcher<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ConnectionsFetcherFactory&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L14">types.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L14">types.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2797,7 +2800,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Connections<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ConnectionsProvider&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L12">types.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L12">types.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2807,7 +2810,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;Context&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L8">types.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L8">types.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2817,7 +2820,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Event<wbr>Bus<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;EventBus&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L7">types.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L7">types.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2827,7 +2830,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Footpaths<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;FootpathsProvider&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L24">types.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L24">types.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2837,7 +2840,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Journey<wbr>Extractor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;JourneyExtractor&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L38">types.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L38">types.ts:38</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2847,7 +2850,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">LDFetch<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;LDFetch&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L39">types.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L39">types.ts:39</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2857,7 +2860,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">LDLoader<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;LDLoader&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L40">types.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L40">types.ts:40</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2867,7 +2870,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Location<wbr>Resolver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;LocationResolver&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L10">types.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L10">types.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2877,7 +2880,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Pathfinder<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;PathfinderProvider&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L33">types.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L33">types.ts:33</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2887,7 +2890,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Profile<wbr>Fetcher<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ProfileFetcher&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L29">types.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L29">types.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2897,7 +2900,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Profile<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ProfileProvider&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L30">types.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L30">types.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2907,7 +2910,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Public<wbr>Transport<wbr>Planner<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;PublicTransportPlanner&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L26">types.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L26">types.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2917,7 +2920,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Public<wbr>Transport<wbr>Planner<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;PublicTransportPlannerFactory&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L27">types.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L27">types.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2927,7 +2930,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Query<wbr>Runner<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;QueryRunner&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L9">types.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L9">types.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2937,7 +2940,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Reachable<wbr>Stops<wbr>Finder<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ReachableStopsFinder&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L37">types.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L37">types.ts:37</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2947,7 +2950,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Road<wbr>Planner<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;RoadPlanner&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L31">types.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L31">types.ts:31</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2957,7 +2960,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Road<wbr>Planner<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;RoadPlannerFactory&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L32">types.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L32">types.ts:32</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2967,7 +2970,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Routable<wbr>Tile<wbr>Fetcher<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;TileFetcher&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L21">types.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L21">types.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2977,7 +2980,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Routable<wbr>Tile<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;TileProvider&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L20">types.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L20">types.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2987,7 +2990,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Routable<wbr>Tile<wbr>Registry<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;RoutableTileRegistry&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L22">types.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L22">types.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2997,7 +3000,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Shortest<wbr>Path<wbr>Algorithm<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ShortestPathAlgorithm&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L34">types.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L34">types.ts:34</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -3007,7 +3010,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Shortest<wbr>Path<wbr>Tree<wbr>Algorithm<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;ShortestPathTreeAlgorithm&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L35">types.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L35">types.ts:35</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -3017,7 +3020,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Stops<wbr>Fetcher<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;StopsFetcher&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L17">types.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L17">types.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -3027,7 +3030,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Stops<wbr>Fetcher<wbr>Factory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;StopsFetcherFactory&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L18">types.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L18">types.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -3037,7 +3040,7 @@ planner.query({
 					<div class="tsd-signature tsd-kind-icon">Stops<wbr>Provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol"> =&nbsp;Symbol(&quot;StopsProvider&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/95a1160/src/types.ts#L16">types.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/types.ts#L16">types.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
