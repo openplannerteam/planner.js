@@ -36,7 +36,7 @@ const browserConfig = {
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
-    library: "Planner",
+    library: "PlannerJS",
     libraryTarget: "umd",
     libraryExport: "default"
   },
@@ -51,7 +51,7 @@ const nodeConfig = {
     output: {
         filename: "bundle.node.js",
         path: path.resolve(__dirname, "dist"),
-        library: "Planner",
+        library: "PlannerJS",
         libraryTarget: "umd",
         libraryExport: "default"
     }

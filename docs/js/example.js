@@ -12,7 +12,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new Planner.Planner();
+const planner = new PlannerJS.Planner();
 
 planner.prefetchStops();
 planner.prefetchConnections();
@@ -131,11 +131,11 @@ planner.getAllStops().then(stops => {
   }
 });
 
-planner
-  .on("query", query => {
+PlannerJS.EventBus
+  .on(PlannerJS.EventType.Query, query => {
     console.log("Query", query);
   })
-  .on("sub-query", query => {
+  .on(PlannerJS.EventType.SubQuery, query => {
     const { minimumDepartureTime, maximumArrivalTime, maximumTravelDuration } = query;
 
     console.log(
@@ -148,7 +148,7 @@ planner
 
     removeLines();
   })
-  .on("initial-reachable-stops", reachableStops => {
+  .on(PlannerJS.EventType.InitialReachableStops, reachableStops => {
     console.log("initial", reachableStops);
     reachableStops.map(({ stop }) => {
       const startMarker = L.marker([stop.latitude, stop.longitude]).addTo(map);
@@ -158,7 +158,7 @@ planner
       resultObjects.push(startMarker);
     });
   })
-  .on("final-reachable-stops", reachableStops => {
+  .on(PlannerJS.EventType.FinalReachableStops, reachableStops => {
     console.log("final", reachableStops);
 
     reachableStops.map(({ stop }) => {
@@ -169,7 +169,7 @@ planner
       resultObjects.push(startMarker);
     });
   })
-  .on("added-new-transfer-profile", ({ departureStop, arrivalStop, amountOfTransfers }) => {
+  .on(PlannerJS.EventType.AddedNewTransferProfile, ({ departureStop, arrivalStop, amountOfTransfers }) => {
 
     const newLine = [
       [departureStop.latitude, departureStop.longitude],
@@ -197,7 +197,7 @@ planner
       polyLines.push(polyline);
     }
   })
-  .on("connection-prefetch", (departureTime) => {
+  .on(PlannerJS.EventType.ConnectionPrefetch, (departureTime) => {
     if (!firstPrefetch) {
       firstPrefetch = departureTime;
 
@@ -217,7 +217,7 @@ planner
       drawPrefetchViews();
     }
   })
-  .on("connection-iterator-view", (lowerBound, upperBound, completed) => {
+  .on(PlannerJS.EventType.ConnectionIteratorView, (lowerBound, upperBound, completed) => {
     if (!lowerBound || !upperBound) {
       return;
     }
@@ -248,7 +248,7 @@ planner
       elem.style.backgroundColor = "limegreen";
     }
   })
-  .on("warning", (warning) => {
+  .on(PlannerJS.EventType.Warning, (warning) => {
     console.warn(warning);
   });
 
@@ -534,7 +534,7 @@ function runQuery(query) {
     to: query[1],
     minimumDepartureTime: new Date(),
     maximumWalkingDistance,
-    maximumTransferDuration: Planner.Planner.Units.fromMinutes(30), // 30 minutes
+    maximumTransferDuration: PlannerJS.Units.fromMinutes(30), // 30 minutes
     minimumWalkingSpeed: 3
   };
 
