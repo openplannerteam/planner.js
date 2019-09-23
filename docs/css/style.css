@@ -194,3 +194,12 @@ input:checked+.slider:before {
     max-width: 100%;
     overflow: hidden;
 }
+
+#loading {
+    display: none;
+    position: fixed;
+    z-index: 900;
+    left: 45%;
+    top: 45%;
+    width: 10%;
+}

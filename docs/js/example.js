@@ -88,6 +88,7 @@ usePublicTransport.onclick = e => {
 };
 
 resetButton.onclick = (e) => {
+  document.getElementById('loading').style.display = 'none';
   removeLines();
   removeResultObjects();
   query = [];
@@ -362,15 +363,49 @@ function addResultPanel(query, path, color) {
     let unifiedStep = path.steps[0];
     unifiedStep.duration = { average: (travelTime * 60 * 1000) };
     unifiedStep.stopLocation = path.steps[path.steps.length - 1].stopLocation;
+    unifiedStep.travelMode = 'walking';
 
     drawStep(unifiedStep, pathElement, color);
   } else {
-    path.steps.forEach(step => {
+    let mergedSteps = mergeWalkingSteps(path.steps);
+    mergedSteps.forEach(step => {
       drawStep(step, pathElement, color)
     });
   }
 
   results.appendChild(pathElement);
+}
+
+function mergeWalkingSteps(steps) {
+  let merged = [];
+  let temp = {};
+
+  for (let i = 0; i < steps.length; i++) {
+    let step = steps[i];
+    let nextStep = steps[i + 1];
+
+    if (step.travelMode !== 'profile') {
+      merged.push(steps[i]);
+    } else {
+      if (!temp.startLocation) {
+        temp.startLocation = step.startLocation;
+        temp.distance = step.distance;
+        temp.duration = step.duration;
+        temp.travelMode = 'walking';
+      } else if (!nextStep || nextStep.travelMode !== 'profile') {
+        temp.stopLocation = step.stopLocation;
+        temp.distance += step.distance;
+        temp.duration.average += step.duration.average;
+        merged.push(temp);
+        temp = {};
+      } else {
+        temp.distance += step.distance; 
+        temp.duration.average += step.duration.average;
+      }
+    }
+  }
+
+  return merged;
 }
 
 function drawStep(step, pathElement, color) {
@@ -468,21 +503,21 @@ function addResultToMap(q, path, color) {
 function addConnectionMarkers(step, color) {
   const { startLocation, stopLocation, travelMode } = step;
 
-  if (step.travelMode !== "profile") {
+  if (travelMode !== "profile") {
     const startMarker = L.marker([
       startLocation.latitude,
       startLocation.longitude
     ]).addTo(map);
-  
+
     startMarker.bindPopup(startLocation.name);
-  
+
     const stopMarker = L.marker([
       stopLocation.latitude,
       stopLocation.longitude
     ]).addTo(map);
-  
+
     stopMarker.bindPopup(stopLocation.name);
-    
+
     resultObjects.push(startMarker, stopMarker);
   }
 
@@ -500,14 +535,15 @@ function drawLineBetweenPoints(line, travelMode, color) {
     weight: 5,
     smoothFactor: 1,
     opacity: 0.7,
-    dashArray: travelMode === "walking" ? "8 8" : null
+    dashArray: travelMode === "profile" ? "8 8" : null
   }).addTo(map);
 
   resultObjects.push(polyline);
 }
 
 function runQuery(query) {
-  console.log(query);
+  console.log(document.getElementById("loading"));
+  document.getElementById('loading').style.display = 'block';
 
   const maximumWalkingDistance = 200;
 
@@ -547,7 +583,9 @@ function runQuery(query) {
       console.error(error);
     })
     .on("data", async path => {
+      document.getElementById('loading').style.display = 'none';
       const completePath = await planner.completePath(path);
+      console.log('Path', completePath);
       i++;
       const color = getRandomColor();
       addResultPanel(q, completePath, color);
