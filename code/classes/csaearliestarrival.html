@@ -922,32 +922,6 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
-		<section class="tsd-panel tsd-comment">
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>An implementation of the Earliest Arrival Connection Scan Algorithm.
-					The earliest arrival connection scan algorithm takes the initial, transfer and final footpaths into account.</p>
-				</div>
-				<p>Doesn&#39;t support the maximumTravelDuration and maximumTransfers query parameters.</p>
-				<dl class="tsd-comment-tags">
-					<dt>implements</dt>
-					<dd><p><a href="../interfaces/ipublictransportplanner.html">IPublicTransportPlanner</a></p>
-					</dd>
-					<dt>property</dt>
-					<dd><p>profilesByStop Describes the CSA profiles for each scanned stop.</p>
-					</dd>
-					<dt>property</dt>
-					<dd><p>enterConnectionByTrip Describes the connection you should enter at a departure location for each trip.</p>
-					</dd>
-					<dt>property</dt>
-					<dd><p>gtfsTripByConnection Stores the gtfs:trip&#39;s a connection is part of. Used for splitting and joining.</p>
-					</dd>
-					<dt>returns</dt>
-					<dd><p>one <a href="../interfaces/ipath.html">IPath</a> that consist of several <a href="../interfaces/istep.html">IStep</a>s.</p>
-					</dd>
-				</dl>
-			</div>
-		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
@@ -987,13 +961,13 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new CSAEarliest<wbr>Arrival<span class="tsd-signature-symbol">(</span>connectionsProvider<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnectionsprovider.html" class="tsd-signature-type">IConnectionsProvider</a>, locationResolver<span class="tsd-signature-symbol">: </span><a href="../interfaces/ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a>, initialReachableStopsFinder<span class="tsd-signature-symbol">: </span><a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a>, transferReachableStopsFinder<span class="tsd-signature-symbol">: </span><a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a>, finalReachableStopsFinder<span class="tsd-signature-symbol">: </span><a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a>, journeyExtractor<span class="tsd-signature-symbol">: </span><a href="../interfaces/ijourneyextractor.html" class="tsd-signature-type">IJourneyExtractor</a>, context<span class="tsd-signature-symbol">?: </span><a href="context.html" class="tsd-signature-type">Context</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="csaearliestarrival.html" class="tsd-signature-type">CSAEarliestArrival</a></li>
+					<li class="tsd-signature tsd-kind-icon">new CSAEarliest<wbr>Arrival<span class="tsd-signature-symbol">(</span>connectionsProvider<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnectionsprovider.html" class="tsd-signature-type">IConnectionsProvider</a>, locationResolver<span class="tsd-signature-symbol">: </span><a href="../interfaces/ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a>, transferReachableStopsFinder<span class="tsd-signature-symbol">: </span><a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a>, initialReachableStopsFinder<span class="tsd-signature-symbol">: </span><a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a>, finalReachableStopsFinder<span class="tsd-signature-symbol">: </span><a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a>, eventBus<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">EventEmitter</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="csaearliestarrival.html" class="tsd-signature-type">CSAEarliestArrival</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/planner/public-transport/CSAEarliestArrival.ts#L60">planner/public-transport/CSAEarliestArrival.ts:60</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/10d1f7c/src/planner/public-transport/CSAEarliestArrival.ts#L50">planner/public-transport/CSAEarliestArrival.ts:50</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1005,19 +979,16 @@ img { max-width: 100%; }
 								<h5>locationResolver: <a href="../interfaces/ilocationresolver.html" class="tsd-signature-type">ILocationResolver</a></h5>
 							</li>
 							<li>
-								<h5>initialReachableStopsFinder: <a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></h5>
+								<h5>transferReachableStopsFinder: <a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></h5>
 							</li>
 							<li>
-								<h5>transferReachableStopsFinder: <a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></h5>
+								<h5>initialReachableStopsFinder: <a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></h5>
 							</li>
 							<li>
 								<h5>finalReachableStopsFinder: <a href="../interfaces/ireachablestopsfinder.html" class="tsd-signature-type">IReachableStopsFinder</a></h5>
 							</li>
 							<li>
-								<h5>journeyExtractor: <a href="../interfaces/ijourneyextractor.html" class="tsd-signature-type">IJourneyExtractor</a></h5>
-							</li>
-							<li>
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="context.html" class="tsd-signature-type">Context</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> eventBus: <span class="tsd-signature-type">EventEmitter</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="csaearliestarrival.html" class="tsd-signature-type">CSAEarliestArrival</a></h4>
@@ -1037,7 +1008,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/bcd833e/src/planner/public-transport/CSAEarliestArrival.ts#L90">planner/public-transport/CSAEarliestArrival.ts:90</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/10d1f7c/src/planner/public-transport/CSAEarliestArrival.ts#L78">planner/public-transport/CSAEarliestArrival.ts:78</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
