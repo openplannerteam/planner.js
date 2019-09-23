@@ -289,8 +289,9 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       jest.setTimeout(100000);
 
       const minimumDepartureTime = new Date();
+      minimumDepartureTime.setHours(8);
       const maximumArrivalTime = new Date();
-      maximumArrivalTime.setHours(maximumArrivalTime.getHours() + 2);
+      maximumArrivalTime.setHours(8 + 2);
 
       const query: IQuery = {
         publicTransportOnly: true,
@@ -321,8 +322,9 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       jest.setTimeout(100000);
 
       const minimumDepartureTime = new Date();
+      minimumDepartureTime.setHours(8);
       const maximumArrivalTime = new Date();
-      maximumArrivalTime.setHours(maximumArrivalTime.getHours() + 3);
+      maximumArrivalTime.setHours(8 + 3);
 
       const query: IQuery = {
         publicTransportOnly: true,
