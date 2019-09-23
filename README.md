@@ -23,18 +23,21 @@ const { Planner, Units } = require('plannerjs');
 
 // or
 
-import { Planner, Units }              from 'plannerjs';
+import { Planner, Units } from 'plannerjs';
 ```
 
 Use it in both environments:
 ```javascript
 const planner = new Planner();
 
+// Make the planner start collecting data
+planner.prefetchStops();
+planner.prefetchConnections();
+
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-  minimumDepartureTime: new Date("Mon Feb 11 2019 16:00:00"),
-  maximumArrivalTime: new Date("Mon Feb 11 2019 19:00:00"),
+  minimumDepartureTime: new Date(),
   publicTransportOnly: true,
   
   walkingSpeed: 3, // KmH
