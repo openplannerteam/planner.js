@@ -468,21 +468,23 @@ function addResultToMap(q, path, color) {
 function addConnectionMarkers(step, color) {
   const { startLocation, stopLocation, travelMode } = step;
 
-  const startMarker = L.marker([
-    startLocation.latitude,
-    startLocation.longitude
-  ]).addTo(map);
-
-  startMarker.bindPopup(startLocation.name);
-
-  const stopMarker = L.marker([
-    stopLocation.latitude,
-    stopLocation.longitude
-  ]).addTo(map);
-
-  stopMarker.bindPopup(stopLocation.name);
-
-  resultObjects.push(startMarker, stopMarker);
+  if (step.travelMode !== "profile") {
+    const startMarker = L.marker([
+      startLocation.latitude,
+      startLocation.longitude
+    ]).addTo(map);
+  
+    startMarker.bindPopup(startLocation.name);
+  
+    const stopMarker = L.marker([
+      stopLocation.latitude,
+      stopLocation.longitude
+    ]).addTo(map);
+  
+    stopMarker.bindPopup(stopLocation.name);
+    
+    resultObjects.push(startMarker, stopMarker);
+  }
 
   const line = [
     [startLocation.latitude, startLocation.longitude],
@@ -544,11 +546,12 @@ function runQuery(query) {
     .on("error", (error) => {
       console.error(error);
     })
-    .on("data", path => {
+    .on("data", async path => {
+      const completePath = await planner.completePath(path);
       i++;
       const color = getRandomColor();
-      addResultPanel(q, path, color);
-      addResultToMap(q, path, color);
+      addResultPanel(q, completePath, color);
+      addResultToMap(q, completePath, color);
 
     })
     .on("end", () => {
