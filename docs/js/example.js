@@ -1,5 +1,3 @@
-// import { Planner } from "localhost:9000/bundle.js";
-
 const map = L.map("mapid").setView([51.050043, 3.719926], 10);
 
 L.tileLayer(
@@ -14,7 +12,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new PlannerJS.Planner();
+const planner = new PlannerJS.BasicTrainPlanner();
 
 planner.prefetchStops();
 planner.prefetchConnections();

@@ -23,7 +23,7 @@ export const eventBus = EventBus.getInstance();
 export default {
     EventType,
     IsochroneGenerator,
-    Planner,
+    BasicTrainPlanner,
     Units,
     EventBus: eventBus,
 };

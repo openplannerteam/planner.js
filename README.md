@@ -23,12 +23,12 @@ const { Planner, Units } = require('plannerjs');
 
 // or
 
-import { Planner, Units } from 'plannerjs';
+import { BasicTrainPlanner, Units } from 'plannerjs';
 ```
 
 Use it in both environments:
 ```javascript
-const planner = new Planner();
+const planner = new BasicTrainPlanner();
 
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
