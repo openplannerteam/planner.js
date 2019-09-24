@@ -46,31 +46,29 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
     this.connectionsStore = new ConnectionsStore();
   }
 
-  public prefetchConnections(): void {
+  public prefetchConnections(lowerBoundDate?: Date): void {
     if (!this.startedPrefetching) {
       this.startedPrefetching = true;
 
-      setTimeout(() => {
-        const options: IConnectionsIteratorOptions = {
-          backward: false,
-          lowerBoundDate: new Date(),
-        };
+      lowerBoundDate = lowerBoundDate || new Date();
+      const options: IConnectionsIteratorOptions = {
+        backward: false,
+        lowerBoundDate,
+      };
 
-        this.connectionsFetcher.setIteratorOptions(options);
-        this.connectionsIterator = this.connectionsFetcher.createIterator();
-        this.connectionsStore.setSourceIterator(this.connectionsIterator);
-        this.connectionsStore.startPrimaryPush(ConnectionsProviderPrefetch.MAX_CONNECTIONS);
-      }, 0);
+      this.connectionsFetcher.setIteratorOptions(options);
+      this.connectionsIterator = this.connectionsFetcher.createIterator();
+      this.connectionsStore.setSourceIterator(this.connectionsIterator);
+      this.connectionsStore.startPrimaryPush(ConnectionsProviderPrefetch.MAX_CONNECTIONS);
     }
   }
 
   public createIterator(): AsyncIterator<IConnection> {
-    if (this.startedPrefetching) {
-      return this.connectionsStore
-        .getIterator(this.connectionsIteratorOptions);
+    if (!this.startedPrefetching) {
+      this.prefetchConnections(this.connectionsIteratorOptions.lowerBoundDate);
     }
 
-    throw new Error("TODO");
+    return this.connectionsStore.getIterator(this.connectionsIteratorOptions);
   }
 
   public setIteratorOptions(options: IConnectionsIteratorOptions): void {

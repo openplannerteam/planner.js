@@ -8,9 +8,6 @@ export default async (logResults) => {
 
   const planner = new BasicTrainPlanner();
 
-  planner.prefetchStops();
-  planner.prefetchConnections();
-
   if (logResults) {
     let scannedPages = 0;
     let scannedConnections = 0;

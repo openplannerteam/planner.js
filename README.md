@@ -30,10 +30,6 @@ Use it in both environments:
 ```javascript
 const planner = new Planner();
 
-// Make the planner start collecting data
-planner.prefetchStops();
-planner.prefetchConnections();
-
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
