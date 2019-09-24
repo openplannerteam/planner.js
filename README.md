@@ -38,7 +38,6 @@ planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
   minimumDepartureTime: new Date(),
-  publicTransportOnly: true,
   
   walkingSpeed: 3, // KmH
   minimumWalkingSpeed: 3, // KmH

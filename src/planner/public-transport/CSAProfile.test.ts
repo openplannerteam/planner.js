@@ -53,7 +53,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{latitude: 50.914326, longitude: 3.255415 }],
         to: [{ latitude: 51.035896, longitude: 3.710875 }],
         profileID: "https://hdelva.be/profile/pedestrian",
@@ -87,7 +86,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{
           id: "http://irail.be/stations/NMBS/008821006",
           latitude: 51.2172,
@@ -133,7 +131,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{
           id: "http://irail.be/stations/NMBS/008812005",
           latitude: 50.859663,
@@ -261,7 +258,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const maximumArrivalTime = new Date(1543518087748);
 
       const query: IQuery = {
-        publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         maximumArrivalTime,
@@ -294,7 +290,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       maximumArrivalTime.setHours(8 + 2);
 
       const query: IQuery = {
-        publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         maximumArrivalTime,
@@ -327,7 +322,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       maximumArrivalTime.setHours(8 + 3);
 
       const query: IQuery = {
-        publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008812005", // Brussels North
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         maximumArrivalTime,

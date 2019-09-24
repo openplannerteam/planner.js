@@ -21,7 +21,6 @@ import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import CSAEarliestArrival from "./CSAEarliestArrival";
-import { EventEmitter } from "events";
 
 describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
   describe("mock data", () => {
@@ -52,7 +51,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{ latitude: 50.914326, longitude: 3.255415, id: "http://irail.be/stations/NMBS/008896925" }],
         to: [{ latitude: 51.035896, longitude: 3.710875, id: "http://irail.be/stations/NMBS/008892007" }],
         profileID: "https://hdelva.be/profile/pedestrian",
@@ -88,7 +86,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{
           id: "http://irail.be/stations/NMBS/008821006",
           latitude: 51.2172,
@@ -134,7 +131,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{
           id: "http://irail.be/stations/NMBS/008812005",
           latitude: 50.859663,
@@ -254,7 +250,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const minimumDepartureTime = new Date();
 
       const query: IQuery = {
-        publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         minimumDepartureTime,

@@ -26,7 +26,6 @@ const results = document.querySelector("#results");
 const prefetchWrapper = document.querySelector("#prefetch");
 const prefetchBar = document.querySelector("#prefetch-bar");
 let prefetchBarWidth = 0;
-let publicTransportOnly = true;
 let roadNetworkOnly = false;
 
 let lines = [];
@@ -77,11 +76,9 @@ const removePrefetchView = () => {
 
 usePublicTransport.onclick = e => {
   if (!usePublicTransport.checked) {
-    publicTransportOnly = false;
     roadNetworkOnly = true;
     removeStops();
   } else {
-    publicTransportOnly = true;
     roadNetworkOnly = false;
     for (const stop of allStops) {
       stop.addTo(map);
@@ -569,7 +566,6 @@ function runQuery(query) {
   let amount = 4;
   const q = {
     roadNetworkOnly: roadNetworkOnly,
-    publicTransportOnly: publicTransportOnly,
     from: query[0],
     to: query[1],
     minimumDepartureTime: new Date(),

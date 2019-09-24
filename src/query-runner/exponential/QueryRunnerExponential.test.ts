@@ -19,7 +19,6 @@ describe("[QueryRunnerExponential]", () => {
   let publicTransportResult;
 
   const query = {
-    publicTransportOnly: true,
     from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
     minimumDepartureTime: new Date(),

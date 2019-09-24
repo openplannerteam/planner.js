@@ -13,7 +13,6 @@ export default interface IResolvedQuery {
   minimumDepartureTime?: Date;
   maximumArrivalTime?: Date;
   roadOnly?: boolean;
-  publicTransportOnly?: boolean;
   roadNetworkOnly?: boolean;
   minimumWalkingSpeed?: SpeedKmH;
   maximumWalkingSpeed?: SpeedKmH;

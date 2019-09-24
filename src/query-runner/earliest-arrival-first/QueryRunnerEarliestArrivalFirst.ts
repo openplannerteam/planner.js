@@ -27,8 +27,6 @@ import IResolvedQuery from "../IResolvedQuery";
 import LinearQueryIterator from "./LinearQueryIterator";
 
 /**
- * The query runner earliest arrival first only accepts public transport queries (`publicTransportOnly = true`).
- *
  * An earliest Arrival first connection scan is started to determine the maximumTravelDuration and the scanned period
  * needed to get at least one result.
  *
@@ -86,8 +84,9 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
     const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
-    if (baseQuery.publicTransportOnly) {
-
+    if (baseQuery.roadNetworkOnly) {
+      return this.roadPlanner.plan(baseQuery);
+    } else {
       const earliestArrivalPlanner = new CSAEarliestArrival(
         this.connectionsProvider,
         this.locationResolver,
@@ -136,11 +135,6 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
       const prependedIterator = subQueryIterator.prepend([path]);
 
       return new FilterUniqueIterator<IPath>(prependedIterator, Path.compareEquals);
-
-    } else if (baseQuery.roadNetworkOnly) {
-      return this.roadPlanner.plan(baseQuery);
-    } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true or roadNetworkOnly = true");
     }
   }
 

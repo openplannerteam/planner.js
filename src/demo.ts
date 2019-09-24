@@ -70,8 +70,7 @@ export default async (logResults) => {
       planner
         .setProfileID("https://hdelva.be/profile/pedestrian")
         .query({
-          // roadNetworkOnly: true,  // don't mix with publicTranspotOnly, for obvious reasons
-          publicTransportOnly: true,
+          // roadNetworkOnly: true,
           // from: "https://data.delijn.be/stops/201657",
           // to: "https://data.delijn.be/stops/205910",
           // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456

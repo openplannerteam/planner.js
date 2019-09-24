@@ -22,9 +22,6 @@ import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
 
 /**
- * This exponential query runner only accepts public transport queries (`publicTransportOnly = true`).
- * It uses the registered [[IPublicTransportPlanner]] to execute them.
- *
  * To improve the user perceived performance, the query gets split into subqueries
  * with exponentially increasing time frames:
  *
@@ -58,7 +55,9 @@ export default class QueryRunnerExponential implements IQueryRunner {
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
     const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
-    if (baseQuery.publicTransportOnly) {
+    if (baseQuery.roadNetworkOnly) {
+      return this.roadPlanner.plan(baseQuery);
+    } else {
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
 
       const subqueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
@@ -67,10 +66,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
       );
 
       return new FilterUniqueIterator<IPath>(subqueryIterator, Path.compareEquals);
-    } else if (baseQuery.roadNetworkOnly) {
-      return this.roadPlanner.plan(baseQuery);
-    } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true or roadNetworkOnly = true");
     }
   }
 
