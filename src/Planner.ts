@@ -3,6 +3,7 @@ import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
 import Context from "./Context";
 import TravelMode from "./enums/TravelMode";
+import EventBus from "./events/EventBus";
 import EventType from "./events/EventType";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
 import ProfileProvider from "./fetcher/profiles/ProfileProviderDefault";
@@ -42,7 +43,7 @@ export default class Planner {
 
     this.queryRunner = container.get<IQueryRunner>(TYPES.QueryRunner);
     this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
-    this.eventBus = container.get<EventEmitter>(TYPES.EventBus);
+    this.eventBus = EventBus.getInstance();
     this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
 
     this.activeProfileID = "https://hdelva.be/profile/pedestrian";

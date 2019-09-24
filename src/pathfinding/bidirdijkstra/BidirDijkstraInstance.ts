@@ -185,7 +185,6 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
         }
 
         if (position === toIndex) {
-            console.log("destination reached");
             // it is done, break the loop and start reconstructing the path
             return { kind: StepResultKind.Break };
         }
@@ -233,7 +232,6 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
         }
 
         if (position === toIndex) {
-            console.log("destination reached");
             // it is done, break the loop and start reconstructing the path
             return { kind: StepResultKind.Break };
         }

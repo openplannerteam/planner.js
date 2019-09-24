@@ -6,6 +6,7 @@ import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import TravelMode from "../../enums/TravelMode";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
@@ -63,15 +64,13 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Final)
     finalReachableStopsFinder: IReachableStopsFinder,
-    @inject(TYPES.EventBus)
-    eventBus?: EventEmitter,
   ) {
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.initialReachableStopsFinder = initialReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
-    this.eventBus = eventBus;
+    this.eventBus = EventBus.getInstance();
     this.journeyExtractor = new JourneyExtractorEarliestArrival(locationResolver);
   }
 

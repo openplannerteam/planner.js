@@ -33,7 +33,6 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
   constructor(
     @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
     @inject(TYPES.Catalog) catalog: Catalog,
-    @inject(TYPES.EventBus) eventBus: EventEmitter,
   ) {
 
     if (catalog.connectionsSourceConfigs.length > 1) {
@@ -44,7 +43,7 @@ export default class ConnectionsProviderPrefetch implements IConnectionsProvider
       this.connectionsFetcher = connectionsFetcherFactory(accessUrl, travelMode);
     }
 
-    this.connectionsStore = new ConnectionsStore(eventBus);
+    this.connectionsStore = new ConnectionsStore();
   }
 
   public prefetchConnections(): void {

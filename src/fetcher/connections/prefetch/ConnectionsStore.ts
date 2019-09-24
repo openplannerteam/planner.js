@@ -1,7 +1,7 @@
 import { AsyncIterator, EmptyIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
-import TravelMode from "../../../enums/TravelMode";
+import EventBus from "../../../events/EventBus";
 import EventType from "../../../events/EventType";
 import BinarySearch from "../../../util/BinarySearch";
 import ArrayViewIterator from "../../../util/iterators/ArrayViewIterator";
@@ -36,8 +36,8 @@ export default class ConnectionsStore {
   private isContinuing: boolean;
   private lastReportedDepartureTime: Date;
 
-  constructor(eventBus?: EventEmitter) {
-    this.eventBus = eventBus;
+  constructor() {
+    this.eventBus = EventBus.getInstance();
     this.store = [];
     this.binarySearch = new BinarySearch<IConnection>(this.store, (connection) => connection.departureTime.valueOf());
     this.deferredBackwardViews = [];

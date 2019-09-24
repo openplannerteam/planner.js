@@ -6,6 +6,7 @@ import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import RoutingPhase from "../../enums/RoutingPhase";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
@@ -42,7 +43,7 @@ export default class IsochroneGenerator {
         this.pathfinderProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
         this.registry = container.get<RoutableTileRegistry>(TYPES.RoutableTileRegistry);
         this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
-        this.eventBus = container.get<EventEmitter>(TYPES.EventBus);
+        this.eventBus = EventBus.getInstance();
         this.reachedTiles = new Set();
         this.startPoint = point;
         this.showIncremental = false;

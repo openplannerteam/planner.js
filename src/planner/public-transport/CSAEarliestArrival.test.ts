@@ -45,7 +45,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
     };
 
@@ -198,7 +197,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
 
       return new QueryRunnerDefault(locationResolver, CSA, undefined);

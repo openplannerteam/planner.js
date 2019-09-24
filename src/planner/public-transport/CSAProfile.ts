@@ -5,6 +5,7 @@ import DropOffType from "../../enums/DropOffType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
@@ -77,8 +78,6 @@ export default class CSAProfile implements IPublicTransportPlanner {
       finalReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.JourneyExtractor)
       journeyExtractor: IJourneyExtractor,
-    @inject(TYPES.EventBus)
-      eventBus?: EventEmitter,
   ) {
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
@@ -86,7 +85,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     this.transferReachableStopsFinder = transferReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
     this.journeyExtractor = journeyExtractor;
-    this.eventBus = eventBus;
+    this.eventBus = EventBus.getInstance();
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {

@@ -4,6 +4,7 @@ import { EventEmitter } from "events";
 import { inject, injectable, interfaces } from "inversify";
 import Defaults from "../../Defaults";
 import InvalidQueryError from "../../errors/InvalidQueryError";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -41,8 +42,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
   private readonly roadPlanner: IRoadPlanner;
 
   constructor(
-    @inject(TYPES.EventBus)
-      eventBus: EventEmitter,
     @inject(TYPES.LocationResolver)
       locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlannerFactory)
@@ -50,7 +49,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
     @inject(TYPES.RoadPlanner)
       roadPlanner: IRoadPlanner,
   ) {
-    this.eventBus = eventBus;
+    this.eventBus = EventBus.getInstance();
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
     this.roadPlanner = roadPlanner;

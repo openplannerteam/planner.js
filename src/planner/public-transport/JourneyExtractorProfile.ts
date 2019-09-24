@@ -2,6 +2,7 @@ import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { EventEmitter } from "events";
 import { inject, injectable } from "inversify";
 import TravelMode from "../../enums/TravelMode";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IConnection from "../../fetcher/connections/IConnection";
 import ILocation from "../../interfaces/ILocation";
@@ -34,10 +35,9 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
 
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.EventBus) eventBus?: EventEmitter,
   ) {
     this.locationResolver = locationResolver;
-    this.eventBus = this.eventBus;
+    this.eventBus = EventBus.getInstance();
   }
 
   public async extractJourneys(

@@ -1,9 +1,9 @@
 import { EventEmitter } from "events";
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import LDFetchBase from "ldfetch";
 import { Triple } from "rdf-js";
+import EventBus from "../events/EventBus";
 import EventType from "../events/EventType";
-import TYPES from "../types";
 
 export interface ILDFetchResponse {
   triples: Triple[];
@@ -21,11 +21,9 @@ export default class LDFetch implements LDFetchBase {
   private ldFetchBase: LDFetchBase;
   private httpStartTimes: { [url: string]: Date };
 
-  constructor(
-    @inject(TYPES.EventBus) eventBus: EventEmitter,
-  ) {
+  constructor() {
     this.ldFetchBase = new LDFetchBase({ headers: { Accept: "application/ld+json" } });
-    this.eventBus = eventBus;
+    this.eventBus = EventBus.getInstance();
 
     this.setupEvents();
   }

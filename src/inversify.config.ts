@@ -63,7 +63,6 @@ import LocationResolverConvenience from "./query-runner/LocationResolverConvenie
 import TYPES from "./types";
 
 const container = new Container();
-container.bind<EventEmitter>(TYPES.EventBus).to(EventBus).inSingletonScope();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
@@ -82,6 +81,7 @@ container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvid
 container.bind<IProfileFetcher>(TYPES.ProfileFetcher).to(ProfileFetcherDefault).inSingletonScope();
 container.bind<IProfileProvider>(TYPES.ProfileProvider).to(ProfileProviderDefault).inSingletonScope();
 
+// TODO, make this a fixed property of the planner itself
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 

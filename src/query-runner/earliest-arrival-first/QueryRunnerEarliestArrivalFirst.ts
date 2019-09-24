@@ -5,6 +5,7 @@ import { inject, injectable, interfaces, tagged } from "inversify";
 import Defaults from "../../Defaults";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import InvalidQueryError from "../../errors/InvalidQueryError";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import ILocation from "../../interfaces/ILocation";
@@ -52,8 +53,6 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
   private readonly finalReachableStopsFinder: IReachableStopsFinder;
 
   constructor(
-    @inject(TYPES.EventBus)
-      eventBus: EventEmitter,
     @inject(TYPES.ConnectionsProvider)
       connectionsProvider: IConnectionsProvider,
     @inject(TYPES.LocationResolver)
@@ -72,7 +71,7 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
     @inject(TYPES.RoadPlanner)
       roadPlanner: IRoadPlanner,
   ) {
-    this.eventBus = eventBus;
+    this.eventBus = EventBus.getInstance();
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
@@ -95,7 +94,6 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
         this.initialReachableStopsFinder,
         this.transferReachableStopsFinder,
         this.finalReachableStopsFinder,
-        this.eventBus,
       );
 
       const earliestArrivalIterator = await earliestArrivalPlanner.plan(baseQuery);

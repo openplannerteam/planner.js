@@ -7,6 +7,7 @@ import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import RoutingPhase from "../../enums/RoutingPhase";
 import TravelMode from "../../enums/TravelMode";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IProfileProvider from "../../fetcher/profiles/IProfileProvider";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
@@ -41,14 +42,13 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         @inject(TYPES.ProfileProvider) profileProvider: IProfileProvider,
         @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
         @inject(TYPES.RoutableTileRegistry) registry: RoutableTileRegistry,
-        @inject(TYPES.EventBus) eventBus: EventEmitter,
     ) {
         this.tileProvider = tileProvider;
         this.pathfinderProvider = pathfinderProvider;
         this.profileProvider = profileProvider;
         this.locationResolver = locationResolver;
         this.registry = registry;
-        this.eventBus = eventBus;
+        this.eventBus = EventBus.getInstance();
         this.reachedTiles = new Set();
     }
 
