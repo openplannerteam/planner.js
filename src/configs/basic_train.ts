@@ -1,4 +1,3 @@
-import { EventEmitter } from "events";
 import { Container, interfaces } from "inversify";
 import Catalog from "../Catalog";
 import catalogNmbs from "../catalog.nmbs";
@@ -7,7 +6,6 @@ import RoutableTileRegistry from "../entities/tiles/registry";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
-import EventBus from "../events/EventBus";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
 import ConnectionsFetcherLazy from "../fetcher/connections/lazy/ConnectionsFetcherLazy";
@@ -32,7 +30,7 @@ import { BidirDijkstra } from "../pathfinding/bidirdijkstra/BidirDijkstra";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "../pathfinding/pathfinder";
 import PathfinderProvider from "../pathfinding/PathfinderProvider";
-import CSAProfile from "../planner/public-transport/CSAProfile";
+import CSAEarliestArrival from "../planner/public-transport/CSAEarliestArrival";
 import IJourneyExtractor from "../planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractorProfile from "../planner/public-transport/JourneyExtractorProfile";
@@ -57,7 +55,7 @@ container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(CSAProfile);
+  .to(CSAEarliestArrival);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
