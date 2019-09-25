@@ -1,5 +1,8 @@
+import TravelMode from "../enums/TravelMode";
 import ILeg from "../interfaces/ILeg";
 import IPath from "../interfaces/IPath";
+import IQuery from "../interfaces/IQuery";
+import { DurationMs } from "../interfaces/units";
 import Leg from "./Leg";
 
 /**
@@ -48,26 +51,49 @@ export default class Path implements IPath {
     this.legs.push(...path.legs);
   }
 
-  /*
-  public reverse(): void {
-    for (const leg of this.legs) {
-      leg.reverse();
-    }
-    this.legs.reverse();
-  }
-  */
-
   public getStartLocationId(): string {
     return (" " + this.legs[0].getStartLocation().id).slice(1);
   }
 
-  /*
-  public addTime(duration: DurationMs): void {
-    this.steps = this.steps.map((step: IStep) => ({
-      ...step,
-      startTime: new Date(step.startTime.getTime() + duration),
-      stopTime: new Date(step.stopTime.getTime() + duration),
-    }));
+  public getDepartureTime(query: IQuery): Date {
+    let acc = 0;
+    for (const leg of this.legs) {
+      if (leg.getStartTime()) {
+        return new Date(leg.getStartTime().getTime() - acc);
+      } else {
+        acc += leg.getExpectedDuration();
+      }
+    }
+
+    return query.minimumDepartureTime;
   }
-  */
+
+  public getArrivalTime(query: IQuery): Date {
+    let acc = 0;
+    for (let i = this.legs.length - 1; i >= 0; i--) {
+      const leg = this.legs[i];
+      if (leg.getStopTime()) {
+        return new Date(leg.getStopTime().getTime() + acc);
+      } else {
+        acc += leg.getExpectedDuration();
+      }
+    }
+    return new Date(query.minimumDepartureTime.getTime() + (this.getTravelTime()));
+  }
+
+  public getTravelTime(): DurationMs {
+    return this.legs.reduce((time, leg) => time + leg.getExpectedDuration(), 0);
+  }
+
+  public getTransferTime(): DurationMs {
+    let time = this.getTravelTime();
+
+    for (const leg of this.legs) {
+      if (leg.getTravelMode() === TravelMode.Train || leg.getTravelMode() === TravelMode.Bus) {
+        time -= leg.getExpectedDuration();
+      }
+    }
+
+    return time;
+  }
 }

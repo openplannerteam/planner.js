@@ -4,6 +4,7 @@ import IStep from "./IStep";
 import { DistanceM, DurationMs } from "./units";
 
 export default interface ILeg {
+    getExpectedDuration(): DurationMs;
     getMinimumDuration(): DurationMs;
     getAverageDuration(): DurationMs;
     getMaximumDuration(): DurationMs;

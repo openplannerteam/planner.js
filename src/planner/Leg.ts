@@ -30,6 +30,10 @@ export default class Leg implements ILeg {
         this.steps = steps;
     }
 
+    public getExpectedDuration(): DurationMs {
+        return this.getAverageDuration() || this.getMinimumDuration() || this.getMaximumDuration();
+    }
+
     public getMinimumDuration(): DurationMs {
         return this.steps.reduce((previous, current) => {
             return previous + current.duration.minimum;
