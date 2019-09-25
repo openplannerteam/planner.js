@@ -20,6 +20,7 @@ import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import { toTileCoordinate } from "../../util/Tiles";
+import Leg from "../Leg";
 import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
 
@@ -115,11 +116,11 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
                 stopLocation: to,
                 duration: { average: step.duration },
                 distance: step.distance,
-                travelMode: TravelMode.Profile,
             });
         }
 
-        return new Path(steps);
+        const leg = new Leg(TravelMode.Profile, steps);
+        return new Path([leg]);
     }
 
     private async fetchTile(coordinate: RoutableTileCoordinate) {

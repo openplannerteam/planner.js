@@ -1,7 +1,6 @@
+import ILeg from "../interfaces/ILeg";
 import IPath from "../interfaces/IPath";
-import IStep from "../interfaces/IStep";
-import { DurationMs } from "../interfaces/units";
-import Step from "./Step";
+import Leg from "./Leg";
 
 /**
  * This Path class serves as an implementation of the [[IPath]] interface and as a home for some helper functions
@@ -20,39 +19,49 @@ export default class Path implements IPath {
    * @returns true if the two paths are the same
    */
   public static compareEquals(path: IPath, otherPath: IPath): boolean {
-    if (path.steps.length !== otherPath.steps.length) {
+    if (path.legs.length !== otherPath.legs.length) {
       return false;
     }
 
-    return path.steps.every((step, stepIndex) => {
-      const otherStep = otherPath.steps[stepIndex];
+    return path.legs.every((leg, legIndex) => {
+      const otherLeg = otherPath.legs[legIndex];
 
-      return Step.compareEquals(step, otherStep);
+      return Leg.compareEquals(leg, otherLeg);
     });
   }
 
-  public steps: IStep[];
+  public legs: ILeg[];
 
-  constructor(steps: IStep[]) {
-    this.steps = steps;
+  constructor(legs: ILeg[]) {
+    this.legs = legs;
   }
 
-  public addStep(step: IStep): void {
-    this.steps.push(step);
+  public prependLeg(leg: ILeg) {
+    this.legs.unshift(leg);
+  }
+
+  public appendLeg(leg: ILeg): void {
+    this.legs.push(leg);
   }
 
   public addPath(path: IPath): void {
-    this.steps.push(...path.steps);
+    this.legs.push(...path.legs);
   }
 
+  /*
   public reverse(): void {
-    this.steps.reverse();
+    for (const leg of this.legs) {
+      leg.reverse();
+    }
+    this.legs.reverse();
   }
+  */
 
   public getStartLocationId(): string {
-    return (" " + this.steps[0].startLocation.id).slice(1);
+    return (" " + this.legs[0].getStartLocation().id).slice(1);
   }
 
+  /*
   public addTime(duration: DurationMs): void {
     this.steps = this.steps.map((step: IStep) => ({
       ...step,
@@ -60,4 +69,5 @@ export default class Path implements IPath {
       stopTime: new Date(step.stopTime.getTime() + duration),
     }));
   }
+  */
 }

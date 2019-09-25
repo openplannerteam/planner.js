@@ -62,7 +62,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
       const pathIterator = await this.roadPlanner.plan(query);
 
       const durationIterator: AsyncIterator<DurationMs> = pathIterator.map((path: IPath) =>
-        path.steps.reduce((totalDuration: DurationMs, step) => totalDuration + step.duration.average, 0),
+        path.legs.reduce((totalDuration: DurationMs, step) => totalDuration + step.getAverageDuration(), 0),
       );
 
       const durations = await Iterators.toArray(durationIterator);

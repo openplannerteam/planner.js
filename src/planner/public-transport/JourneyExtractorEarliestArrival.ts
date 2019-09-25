@@ -1,12 +1,10 @@
 import { AsyncIterator, EmptyIterator, SingletonIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
-import Context from "../../Context";
-import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
-import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Leg from "../Leg";
 import Path from "../Path";
 import Step from "../Step";
 import IProfileByStop from "./CSA/data-structure/stops/IProfileByStop";
@@ -51,7 +49,6 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
       const step = new Step(
         enterLocation,
         exitLocation,
-        exitConnection.travelMode,
         { average: duration },
         departureTime,
         arrivalTime,
@@ -60,15 +57,15 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
         exitConnection.id,
       );
 
-      path.addStep(step);
+      const leg = new Leg(exitConnection.travelMode, [step]);
+
+      path.prependLeg(leg);
       currentStopId = enterConnection.departureStop;
     }
 
-    if (!path.steps.length) {
+    if (!path.legs.length) {
       return new EmptyIterator();
     }
-
-    path.reverse();
 
     return new SingletonIterator<IPath>(path);
   }

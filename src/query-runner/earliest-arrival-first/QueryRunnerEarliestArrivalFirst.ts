@@ -115,12 +115,12 @@ export default class QueryRunnerEarliestArrivalFirst implements IQueryRunner {
       let initialTimeSpan: DurationMs = Units.fromHours(1);
       let travelDuration: DurationMs;
 
-      if (path && path.steps && path.steps.length > 0) {
-        const firstStep = path.steps[0];
-        const lastStep = path.steps[path.steps.length - 1];
+      if (path && path.legs && path.legs.length > 0) {
+        const firstLeg = path.legs[0];
+        const lastLeg = path.legs[path.legs.length - 1];
 
-        initialTimeSpan = lastStep.stopTime.getTime() - baseQuery.minimumDepartureTime.getTime();
-        travelDuration = lastStep.stopTime.getTime() - firstStep.startTime.getTime();
+        initialTimeSpan = lastLeg.getStopTime().getTime() - baseQuery.minimumDepartureTime.getTime();
+        travelDuration = lastLeg.getStopTime().getTime() - firstLeg.getStartTime().getTime();
       }
 
       baseQuery.maximumTravelDuration = travelDuration * 2;

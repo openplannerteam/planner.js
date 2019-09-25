@@ -4,6 +4,7 @@ import ILocation from "../interfaces/ILocation";
 import IProbabilisticValue from "../interfaces/IProbabilisticValue";
 import IStep from "../interfaces/IStep";
 import { DistanceM, DurationMs } from "../interfaces/units";
+import Geo from "../util/Geo";
 
 /**
  * This Step class serves as an implementation of the [[IStep]] interface and as a home for some helper functions
@@ -14,7 +15,6 @@ export default class Step implements IStep {
   public static create(
     startLocation: ILocation,
     stopLocation: ILocation,
-    travelMode: TravelMode,
     duration: IProbabilisticValue<DurationMs>,
     startTime?: Date,
     stopTime?: Date,
@@ -23,7 +23,6 @@ export default class Step implements IStep {
     return new Step(
       startLocation,
       stopLocation,
-      travelMode,
       duration,
       startTime,
       stopTime,
@@ -33,9 +32,8 @@ export default class Step implements IStep {
 
   public static createFromConnections(enterConnection: IConnection, exitConnection: IConnection): IStep {
     return new Step(
-      {id: enterConnection.departureStop},
-      {id: exitConnection.arrivalStop},
-      enterConnection.travelMode,
+      { id: enterConnection.departureStop },
+      { id: exitConnection.arrivalStop },
       {
         minimum: (
           exitConnection.arrivalTime.getTime() -
@@ -55,23 +53,12 @@ export default class Step implements IStep {
    * @returns true if the two steps are the same
    */
   public static compareEquals(step: IStep, otherStep: IStep): boolean {
-    if (otherStep.travelMode !== step.travelMode) {
-      return false;
-    }
-
-    if (otherStep.travelMode === TravelMode.Train || otherStep.travelMode === TravelMode.Bus) {
-      return otherStep.enterConnectionId === step.enterConnectionId &&
-        otherStep.exitConnectionId === step.exitConnectionId;
-    }
-
-    if (otherStep.travelMode === TravelMode.Walking) {
-      return Step.compareLocations(otherStep.startLocation, step.startLocation) &&
-        Step.compareLocations(otherStep.stopLocation, step.stopLocation);
-    }
+    return Step.compareLocations(otherStep.startLocation, step.startLocation) &&
+      Step.compareLocations(otherStep.stopLocation, step.stopLocation);
   }
 
   private static compareLocations(a: ILocation, b: ILocation): boolean {
-    return a.id === b.id && a.longitude === b.longitude && a.latitude === b.latitude;
+    return Geo.getId(a) === Geo.getId(b) && a.longitude === b.longitude && a.latitude === b.latitude;
   }
 
   public distance: DistanceM;
@@ -80,14 +67,12 @@ export default class Step implements IStep {
   public startTime: Date;
   public stopLocation: ILocation;
   public stopTime: Date;
-  public travelMode: TravelMode;
   public enterConnectionId: string;
   public exitConnectionId: string;
 
   constructor(
     startLocation: ILocation,
     stopLocation: ILocation,
-    travelMode: TravelMode,
     duration: IProbabilisticValue<DurationMs>,
     startTime?: Date,
     stopTime?: Date,
@@ -97,7 +82,6 @@ export default class Step implements IStep {
   ) {
     this.distance = distance;
     this.duration = duration;
-    this.travelMode = travelMode;
     this.startLocation = startLocation;
     this.startTime = startTime;
     this.stopLocation = stopLocation;

@@ -55,15 +55,13 @@ export default class Planner {
     let walkingDeparture;
     let walkingDestination;
 
-    for (const step of path.steps) {
-      if (step.travelMode === TravelMode.Walking) {
+    for (const leg of path.legs) {
+      if (leg.getTravelMode() === TravelMode.Walking) {
         if (!walkingDeparture) {
-          walkingDeparture = step.startLocation;
+          walkingDeparture = leg.getStartLocation();
         }
-        walkingDestination = step.stopLocation;
-      }
-
-      if (step.travelMode !== TravelMode.Walking) {
+        walkingDestination = leg.getStopLocation();
+      } else {
         if (walkingDestination) {
           const walkingPathIterator = await this.roadPlanner.plan({
             from: [walkingDeparture],
@@ -71,15 +69,15 @@ export default class Planner {
             profileID: this.activeProfileID,
           });
           const walkingPaths = await Iterators.toArray(walkingPathIterator);
-          for (const walkingStep of walkingPaths[0].steps) {
-            completePath.addStep(walkingStep);
+          for (const walkingLeg of walkingPaths[0].legs) {
+            completePath.appendLeg(walkingLeg);
           }
 
           walkingDeparture = null;
           walkingDestination = null;
         }
 
-        completePath.addStep(step);
+        completePath.appendLeg(leg);
       }
     }
 
@@ -90,8 +88,8 @@ export default class Planner {
         profileID: this.activeProfileID,
       });
       const walkingPaths = await Iterators.toArray(walkingPathIterator);
-      for (const walkingStep of walkingPaths[0].steps) {
-        completePath.addStep(walkingStep);
+      for (const walkingLeg of walkingPaths[0].legs) {
+        completePath.appendLeg(walkingLeg);
       }
 
       walkingDeparture = null;

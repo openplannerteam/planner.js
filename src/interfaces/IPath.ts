@@ -1,5 +1,5 @@
-import IStep from "./IStep";
+import ILeg from "./ILeg";
 
 export default interface IPath {
-  steps: IStep[];
+  legs: ILeg[];
 }
