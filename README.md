@@ -13,13 +13,13 @@ Include it in the browser:
 ...
 
 <script>
-  const {Planner, Units} = PlannerJS;
+  const { BasicTrainPlanner, Units } = PlannerJS;
 </script>
 ```
 
 Include it in your JavaScript project:
 ```javascript
-const { Planner, Units } = require('plannerjs');
+const { BasicTrainPlanner, Units } = require('plannerjs');
 
 // or
 
