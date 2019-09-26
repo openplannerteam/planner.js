@@ -1,6 +1,9 @@
+// tslint:disable: max-classes-per-file
+
 import "isomorphic-fetch";
 import "reflect-metadata";
 import basicTrainProfile from "./configs/basic_train";
+import dissectProfile from "./configs/dissect";
 
 import IsochroneGenerator from "./analytics/isochrones/main";
 import EventBus from "./events/EventBus";
@@ -18,12 +21,19 @@ export class BasicTrainPlanner extends Planner {
     }
 }
 
+export class DissectPlanner extends Planner {
+    constructor() {
+        super(dissectProfile);
+    }
+}
+
 export const eventBus = EventBus.getInstance();
 
 export default {
     EventType,
     IsochroneGenerator,
-    BasicTrainPlanner,
     Units,
     EventBus: eventBus,
+    BasicTrainPlanner,
+    DissectPlanner,
 };
