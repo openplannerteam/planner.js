@@ -40,11 +40,11 @@ export default class QueryRunnerExponential implements IQueryRunner {
 
   constructor(
     @inject(TYPES.LocationResolver)
-      locationResolver: ILocationResolver,
+    locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlannerFactory)
-      publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
+    publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
     @inject(TYPES.RoadPlanner)
-      roadPlanner: IRoadPlanner,
+    roadPlanner: IRoadPlanner,
   ) {
     this.eventBus = EventBus.getInstance();
     this.locationResolver = locationResolver;
@@ -96,7 +96,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
   private async resolveBaseQuery(query: IQuery): Promise<IResolvedQuery> {
     // tslint:disable:trailing-comma
     const {
-      from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumWalkingDuration, maximumWalkingDistance,
       minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
@@ -106,6 +105,11 @@ export default class QueryRunnerExponential implements IQueryRunner {
     } = query;
     // tslint:enable:trailing-comma
 
+    // make a deep copy of these
+    let { from, to } = other;
+    from = JSON.parse(JSON.stringify(from));
+    to = JSON.parse(JSON.stringify(to));
+
     const resolvedQuery: IResolvedQuery = Object.assign({}, other as IResolvedQuery);
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
@@ -113,7 +117,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
     try {
       resolvedQuery.from = await this.resolveEndpoint(from);
       resolvedQuery.to = await this.resolveEndpoint(to);
-
     } catch (e) {
       return Promise.reject(new InvalidQueryError(e));
     }
