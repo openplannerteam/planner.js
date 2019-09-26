@@ -1,28 +1,28 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
-import Context from "./Context";
-import TravelMode from "./enums/TravelMode";
-import EventBus from "./events/EventBus";
-import EventType from "./events/EventType";
-import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
-import ProfileProvider from "./fetcher/profiles/ProfileProviderDefault";
-import IStop from "./fetcher/stops/IStop";
-import IStopsProvider from "./fetcher/stops/IStopsProvider";
-import IPath from "./interfaces/IPath";
-import IQuery from "./interfaces/IQuery";
-import defaultContainer from "./inversify.config";
-import Path from "./planner/Path";
-import IRoadPlanner from "./planner/road/IRoadPlanner";
-import IQueryRunner from "./query-runner/IQueryRunner";
-import TYPES from "./types";
-import Iterators from "./util/Iterators";
-import Units from "./util/Units";
+import Context from "../../Context";
+import TravelMode from "../../enums/TravelMode";
+import EventBus from "../../events/EventBus";
+import EventType from "../../events/EventType";
+import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
+import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
+import IStop from "../../fetcher/stops/IStop";
+import IStopsProvider from "../../fetcher/stops/IStopsProvider";
+import IPath from "../../interfaces/IPath";
+import IQuery from "../../interfaces/IQuery";
+import defaultContainer from "../../inversify.config";
+import IQueryRunner from "../../query-runner/IQueryRunner";
+import TYPES from "../../types";
+import Iterators from "../../util/Iterators";
+import Units from "../../util/Units";
+import Path from "../Path";
+import IRoadPlanner from "../road/IRoadPlanner";
 
 /**
  * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */
-export default class Planner {
+export default abstract class Planner {
   public static Units = Units;
 
   private activeProfileID: string;
