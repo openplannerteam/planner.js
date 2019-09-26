@@ -2,7 +2,7 @@ import "isomorphic-fetch";
 import "reflect-metadata";
 
 import IsochroneGenerator from "./analytics/isochrones/main";
-import EventBus from "./events/EventBus";
+import EventBus_ from "./events/EventBus";
 import EventType from "./events/EventType";
 import BasicTrainPlanner from "./planner/configurations/BasicTrainPlanner";
 import DissectPlanner from "./planner/configurations/DissectPlanner";
@@ -18,13 +18,13 @@ export { default as DissectPlanner } from "./planner/configurations/DissectPlann
 export { default as TransitCarPlanner } from "./planner/configurations/TransitCarPlanner";
 export { default as TriangleDemoPlanner } from "./planner/configurations/TriangleDemoPlanner";
 
-export const eventBus = EventBus.getInstance();
+export const EventBus = EventBus_.getInstance();
 
 export default {
     EventType,
     IsochroneGenerator,
     Units,
-    EventBus: eventBus,
+    EventBus,
     BasicTrainPlanner,
     DissectPlanner,
     TransitCarPlanner,
