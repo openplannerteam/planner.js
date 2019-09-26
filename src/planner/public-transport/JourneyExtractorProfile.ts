@@ -2,6 +2,7 @@ import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { EventEmitter } from "events";
 import { inject, injectable } from "inversify";
 import TravelMode from "../../enums/TravelMode";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IConnection from "../../fetcher/connections/IConnection";
 import ILocation from "../../interfaces/ILocation";
@@ -11,6 +12,7 @@ import { DurationMs } from "../../interfaces/units";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Leg from "../Leg";
 import Path from "../Path";
 import Step from "../Step";
 import IProfile from "./CSA/data-structure/stops/IProfile";
@@ -34,10 +36,9 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
 
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-    @inject(TYPES.EventBus) eventBus?: EventEmitter,
   ) {
     this.locationResolver = locationResolver;
-    this.eventBus = this.eventBus;
+    this.eventBus = EventBus.getInstance();
   }
 
   public async extractJourneys(
@@ -153,14 +154,13 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
       if (departureTime !== transferDepartureTime) {
 
         let timeToSubtract: DurationMs = 0;
-        if (path.steps.length > 0) {
-          timeToSubtract = departureTime - path.steps[path.steps.length - 1].stopTime.getTime();
+        if (path.legs.length > 0) {
+          timeToSubtract = departureTime - path.legs[path.legs.length - 1].getStopTime().getTime();
         }
 
         const footpath: IStep = Step.create(
           currentLocation,
           enterLocation,
-          TravelMode.Walking,
           {
             minimum: transferDepartureTime - departureTime,
           },
@@ -168,20 +168,23 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
           new Date(transferDepartureTime - timeToSubtract),
         );
 
-        path.addStep(footpath);
+        const footpathLeg = new Leg(TravelMode.Walking, [footpath]);
+        path.appendLeg(footpathLeg);
       }
 
       // Public transport step.
       const step: IStep = Step.createFromConnections(enterConnection, exitConnection);
       step.startLocation = enterLocation;
       step.stopLocation = exitLocation;
-      path.addStep(step);
+
+      const leg = new Leg(exitConnection.travelMode, [step]);
+      path.appendLeg(leg);
 
       currentLocation = exitLocation;
       remainingTransfers--;
 
       // Stop if we already arrived.
-      if (path.steps[path.steps.length - 1].stopLocation.id === arrivalLocation.id) {
+      if (path.legs[path.legs.length - 1].getStopLocation().id === arrivalLocation.id) {
         break;
       }
 
@@ -214,7 +217,6 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
           const footpath: IStep = Step.create(
             currentLocation,
             arrivalLocation,
-            TravelMode.Walking,
             {
               minimum: arrivalTime.getTime() - transferArrivalTime.getTime(),
             },
@@ -222,13 +224,14 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
             arrivalTime,
           );
 
-          path.addStep(footpath);
+          const footpathLeg = new Leg(TravelMode.Walking, [footpath]);
+          path.appendLeg(footpathLeg);
         }
       }
     }
 
     // Check if path ends in the arrival location.
-    if (path.steps[path.steps.length - 1].stopLocation.id !== arrivalLocation.id) {
+    if (path.legs[path.legs.length - 1].getStopLocation().id !== arrivalLocation.id) {
       // This should never happen.
       return Promise.reject("Can't reach arrival stop:");
     }

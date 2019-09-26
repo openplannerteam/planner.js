@@ -15,9 +15,6 @@ import IQueryRunner from "./IQueryRunner";
 import IResolvedQuery from "./IResolvedQuery";
 
 /**
- * This default query runner only accepts public transport queries (`publicTransportOnly = true`).
- * It uses the registered [[IPublicTransportPlanner]] to execute them.
- *
  * The default `minimumDepartureTime` is *now*. The default `maximumArrivalTime` is `minimumDepartureTime + 2 hours`.
  */
 @injectable()
@@ -39,12 +36,10 @@ export default class QueryRunnerDefault implements IQueryRunner {
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
     const resolvedQuery: IResolvedQuery = await this.resolveQuery(query);
 
-    if (resolvedQuery.publicTransportOnly) {
-      return this.publicTransportPlanner.plan(resolvedQuery);
-    } else if (resolvedQuery.roadNetworkOnly) {
+    if (resolvedQuery.roadNetworkOnly) {
       return this.roadPlanner.plan(resolvedQuery);
     } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true or roadNetworkOnly = true");
+      return this.publicTransportPlanner.plan(resolvedQuery);
     }
   }
 

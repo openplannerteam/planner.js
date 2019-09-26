@@ -77,7 +77,7 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
 
       const durationIterator: AsyncIterator<DurationMs> = pathIterator.map((path: IPath) =>
         // Minimum speed is passed so sum max duration over all steps
-        path.steps.reduce((totalDuration: DurationMs, step) => totalDuration + step.duration.maximum, 0),
+        path.legs.reduce((totalDuration: DurationMs, leg) => totalDuration + leg.getMaximumDuration(), 0),
       );
 
       const durations = await Iterators.toArray(durationIterator);

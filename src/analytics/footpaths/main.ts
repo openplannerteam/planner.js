@@ -58,7 +58,7 @@ export default class FootpathGenerator {
                     const pathIterator = await planner.plan(query);
 
                     const distanceIterator: AsyncIterator<DistanceM> = pathIterator.map((path: IPath) =>
-                        path.steps.reduce((totalDistance: DistanceM, step) => totalDistance + step.distance, 0),
+                        path.legs.reduce((totalDistance: DistanceM, leg) => totalDistance + leg.getDistance(), 0),
                     );
 
                     const distances = await Iterators.toArray(distanceIterator);

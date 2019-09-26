@@ -13,32 +13,27 @@ Include it in the browser:
 ...
 
 <script>
-  const {Planner, Units} = PlannerJS;
+  const { BasicTrainPlanner, Units } = PlannerJS;
 </script>
 ```
 
 Include it in your JavaScript project:
 ```javascript
-const { Planner, Units } = require('plannerjs');
+const { BasicTrainPlanner, Units } = require('plannerjs');
 
 // or
 
-import { Planner, Units } from 'plannerjs';
+import { BasicTrainPlanner, Units } from 'plannerjs';
 ```
 
 Use it in both environments:
 ```javascript
-const planner = new Planner();
-
-// Make the planner start collecting data
-planner.prefetchStops();
-planner.prefetchConnections();
+const planner = new BasicTrainPlanner();
 
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
   minimumDepartureTime: new Date(),
-  publicTransportOnly: true,
   
   walkingSpeed: 3, // KmH
   minimumWalkingSpeed: 3, // KmH

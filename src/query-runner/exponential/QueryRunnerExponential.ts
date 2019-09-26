@@ -4,6 +4,7 @@ import { EventEmitter } from "events";
 import { inject, injectable, interfaces } from "inversify";
 import Defaults from "../../Defaults";
 import InvalidQueryError from "../../errors/InvalidQueryError";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
@@ -21,9 +22,6 @@ import IResolvedQuery from "../IResolvedQuery";
 import ExponentialQueryIterator from "./ExponentialQueryIterator";
 
 /**
- * This exponential query runner only accepts public transport queries (`publicTransportOnly = true`).
- * It uses the registered [[IPublicTransportPlanner]] to execute them.
- *
  * To improve the user perceived performance, the query gets split into subqueries
  * with exponentially increasing time frames:
  *
@@ -41,16 +39,14 @@ export default class QueryRunnerExponential implements IQueryRunner {
   private readonly roadPlanner: IRoadPlanner;
 
   constructor(
-    @inject(TYPES.EventBus)
-      eventBus: EventEmitter,
     @inject(TYPES.LocationResolver)
-      locationResolver: ILocationResolver,
+    locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlannerFactory)
-      publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
+    publicTransportPlannerFactory: interfaces.Factory<IPublicTransportPlanner>,
     @inject(TYPES.RoadPlanner)
-      roadPlanner: IRoadPlanner,
+    roadPlanner: IRoadPlanner,
   ) {
-    this.eventBus = eventBus;
+    this.eventBus = EventBus.getInstance();
     this.locationResolver = locationResolver;
     this.publicTransportPlannerFactory = publicTransportPlannerFactory;
     this.roadPlanner = roadPlanner;
@@ -59,7 +55,9 @@ export default class QueryRunnerExponential implements IQueryRunner {
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
     const baseQuery: IResolvedQuery = await this.resolveBaseQuery(query);
 
-    if (baseQuery.publicTransportOnly) {
+    if (baseQuery.roadNetworkOnly) {
+      return this.roadPlanner.plan(baseQuery);
+    } else {
       const queryIterator = new ExponentialQueryIterator(baseQuery, 15 * 60 * 1000);
 
       const subqueryIterator = new FlatMapIterator<IResolvedQuery, IPath>(
@@ -68,10 +66,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
       );
 
       return new FilterUniqueIterator<IPath>(subqueryIterator, Path.compareEquals);
-    } else if (baseQuery.roadNetworkOnly) {
-      return this.roadPlanner.plan(baseQuery);
-    } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true or roadNetworkOnly = true");
     }
   }
 
@@ -102,7 +96,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
   private async resolveBaseQuery(query: IQuery): Promise<IResolvedQuery> {
     // tslint:disable:trailing-comma
     const {
-      from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumWalkingDuration, maximumWalkingDistance,
       minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
@@ -112,6 +105,11 @@ export default class QueryRunnerExponential implements IQueryRunner {
     } = query;
     // tslint:enable:trailing-comma
 
+    // make a deep copy of these
+    let { from, to } = other;
+    from = JSON.parse(JSON.stringify(from));
+    to = JSON.parse(JSON.stringify(to));
+
     const resolvedQuery: IResolvedQuery = Object.assign({}, other as IResolvedQuery);
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
@@ -119,7 +117,6 @@ export default class QueryRunnerExponential implements IQueryRunner {
     try {
       resolvedQuery.from = await this.resolveEndpoint(from);
       resolvedQuery.to = await this.resolveEndpoint(to);
-
     } catch (e) {
       return Promise.reject(new InvalidQueryError(e));
     }

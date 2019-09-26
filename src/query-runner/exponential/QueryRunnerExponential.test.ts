@@ -1,12 +1,11 @@
 import "jest";
 import LDFetch from "ldfetch";
-import EventBus from "../../events/EventBus";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import ILeg from "../../interfaces/ILeg";
 import IPath from "../../interfaces/IPath";
-import IStep from "../../interfaces/IStep";
 import CSAProfile from "../../planner/public-transport/CSAProfile";
 import JourneyExtractorProfile from "../../planner/public-transport/JourneyExtractorProfile";
 import ReachableStopsFinderBirdsEyeCached from "../../planner/stops/ReachableStopsFinderBirdsEyeCached";
@@ -20,7 +19,6 @@ describe("[QueryRunnerExponential]", () => {
   let publicTransportResult;
 
   const query = {
-    publicTransportOnly: true,
     from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
     minimumDepartureTime: new Date(),
@@ -40,8 +38,6 @@ describe("[QueryRunnerExponential]", () => {
     const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
-    const eventBus = new EventBus();
-
     const createJourneyExtractor = () => {
       return new JourneyExtractorProfile(
         locationResolver,
@@ -59,7 +55,7 @@ describe("[QueryRunnerExponential]", () => {
       );
     };
 
-    return new QueryRunnerExponential(eventBus, locationResolver, createPlanner, undefined);
+    return new QueryRunnerExponential(locationResolver, createPlanner, undefined);
   };
 
   const result: IPath[] = [];
@@ -84,20 +80,20 @@ describe("[QueryRunnerExponential]", () => {
   });
 });
 
-const checkStops = (result, query) => {
+const checkStops = (result: IPath[], query) => {
   expect(result).toBeDefined();
   expect(result.length).toBeGreaterThanOrEqual(1);
 
   for (const path of result) {
-    expect(path.steps).toBeDefined();
+    expect(path.legs).toBeDefined();
 
-    expect(path.steps.length).toBeGreaterThanOrEqual(1);
+    expect(path.legs.length).toBeGreaterThanOrEqual(1);
 
     let currentLocation = query.from;
-    path.steps.forEach((step: IStep) => {
-      expect(step).toBeDefined();
-      expect(currentLocation).toEqual(step.startLocation.id);
-      currentLocation = step.stopLocation.id;
+    path.legs.forEach((leg: ILeg) => {
+      expect(leg).toBeDefined();
+      expect(currentLocation).toEqual(leg.getStartLocation().id);
+      currentLocation = leg.getStopLocation().id;
     });
 
     expect(query.to).toEqual(currentLocation);

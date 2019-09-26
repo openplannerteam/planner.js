@@ -1,27 +1,28 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
-import Context from "./Context";
-import TravelMode from "./enums/TravelMode";
-import EventType from "./events/EventType";
-import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
-import ProfileProvider from "./fetcher/profiles/ProfileProviderDefault";
-import IStop from "./fetcher/stops/IStop";
-import IStopsProvider from "./fetcher/stops/IStopsProvider";
-import IPath from "./interfaces/IPath";
-import IQuery from "./interfaces/IQuery";
-import defaultContainer from "./inversify.config";
-import Path from "./planner/Path";
-import IRoadPlanner from "./planner/road/IRoadPlanner";
-import IQueryRunner from "./query-runner/IQueryRunner";
-import TYPES from "./types";
-import Iterators from "./util/Iterators";
-import Units from "./util/Units";
+import Context from "../../Context";
+import TravelMode from "../../enums/TravelMode";
+import EventBus from "../../events/EventBus";
+import EventType from "../../events/EventType";
+import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
+import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
+import IStop from "../../fetcher/stops/IStop";
+import IStopsProvider from "../../fetcher/stops/IStopsProvider";
+import IPath from "../../interfaces/IPath";
+import IQuery from "../../interfaces/IQuery";
+import defaultContainer from "../../inversify.config";
+import IQueryRunner from "../../query-runner/IQueryRunner";
+import TYPES from "../../types";
+import Iterators from "../../util/Iterators";
+import Units from "../../util/Units";
+import Path from "../Path";
+import IRoadPlanner from "../road/IRoadPlanner";
 
 /**
  * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */
-export default class Planner {
+export default abstract class Planner {
   public static Units = Units;
 
   private activeProfileID: string;
@@ -42,7 +43,7 @@ export default class Planner {
 
     this.queryRunner = container.get<IQueryRunner>(TYPES.QueryRunner);
     this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
-    this.eventBus = container.get<EventEmitter>(TYPES.EventBus);
+    this.eventBus = EventBus.getInstance();
     this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
 
     this.activeProfileID = "https://hdelva.be/profile/pedestrian";
@@ -54,15 +55,13 @@ export default class Planner {
     let walkingDeparture;
     let walkingDestination;
 
-    for (const step of path.steps) {
-      if (step.travelMode === TravelMode.Walking) {
+    for (const leg of path.legs) {
+      if (leg.getTravelMode() === TravelMode.Walking) {
         if (!walkingDeparture) {
-          walkingDeparture = step.startLocation;
+          walkingDeparture = leg.getStartLocation();
         }
-        walkingDestination = step.stopLocation;
-      }
-
-      if (step.travelMode !== TravelMode.Walking) {
+        walkingDestination = leg.getStopLocation();
+      } else {
         if (walkingDestination) {
           const walkingPathIterator = await this.roadPlanner.plan({
             from: [walkingDeparture],
@@ -70,15 +69,15 @@ export default class Planner {
             profileID: this.activeProfileID,
           });
           const walkingPaths = await Iterators.toArray(walkingPathIterator);
-          for (const walkingStep of walkingPaths[0].steps) {
-            completePath.addStep(walkingStep);
+          for (const walkingLeg of walkingPaths[0].legs) {
+            completePath.appendLeg(walkingLeg);
           }
 
           walkingDeparture = null;
           walkingDestination = null;
         }
 
-        completePath.addStep(step);
+        completePath.appendLeg(leg);
       }
     }
 
@@ -89,8 +88,8 @@ export default class Planner {
         profileID: this.activeProfileID,
       });
       const walkingPaths = await Iterators.toArray(walkingPathIterator);
-      for (const walkingStep of walkingPaths[0].steps) {
-        completePath.addStep(walkingStep);
+      for (const walkingLeg of walkingPaths[0].legs) {
+        completePath.appendLeg(walkingLeg);
       }
 
       walkingDeparture = null;

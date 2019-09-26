@@ -7,21 +7,16 @@ import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
 import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
-import connectionsJoining from "../../fetcher/connections/tests/data/joining";
-import connectionsSplitting from "../../fetcher/connections/tests/data/splitting";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import ILeg from "../../interfaces/ILeg";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
-import IStep from "../../interfaces/IStep";
-import defaultContainer from "../../inversify.config";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
 import QueryRunnerDefault from "../../query-runner/QueryRunnerDefault";
-import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
 import ReachableStopsFinderBirdsEyeCached from "../stops/ReachableStopsFinderBirdsEyeCached";
 import CSAEarliestArrival from "./CSAEarliestArrival";
-import { EventEmitter } from "events";
 
 describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
   describe("mock data", () => {
@@ -45,7 +40,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
     };
 
@@ -53,7 +47,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{ latitude: 50.914326, longitude: 3.255415, id: "http://irail.be/stations/NMBS/008896925" }],
         to: [{ latitude: 51.035896, longitude: 3.710875, id: "http://irail.be/stations/NMBS/008892007" }],
         profileID: "https://hdelva.be/profile/pedestrian",
@@ -76,10 +69,10 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         expect(result).toBeDefined();
 
         for (const path of result) {
-          expect(path.steps).toBeDefined();
-          expect(path.steps[0]).toBeDefined();
-          expect(query.from.map((from) => from.id)).toContain(path.steps[0].startLocation.id);
-          expect(query.to.map((to) => to.id)).toContain(path.steps[path.steps.length - 1].stopLocation.id);
+          expect(path.legs).toBeDefined();
+          expect(path.legs[0]).toBeDefined();
+          expect(query.from.map((from) => from.id)).toContain(path.legs[0].getStartLocation().id);
+          expect(query.to.map((to) => to.id)).toContain(path.legs[path.legs.length - 1].getStopLocation().id);
         }
       });
     });
@@ -89,7 +82,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{
           id: "http://irail.be/stations/NMBS/008821006",
           latitude: 51.2172,
@@ -135,7 +127,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        publicTransportOnly: true,
         from: [{
           id: "http://irail.be/stations/NMBS/008812005",
           latitude: 50.859663,
@@ -198,55 +189,54 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
         reachableStopsFinder,
         reachableStopsFinder,
         reachableStopsFinder,
-        defaultContainer.get<EventEmitter>(TYPES.EventBus),
       );
 
       return new QueryRunnerDefault(locationResolver, CSA, undefined);
     };
 
-    const checkStops = (result, query) => {
+    const checkStops = (result: IPath[], query) => {
       expect(result).toBeDefined();
       expect(result.length).toBeGreaterThanOrEqual(1);
 
       for (const path of result) {
-        expect(path.steps).toBeDefined();
+        expect(path.legs).toBeDefined();
 
-        expect(path.steps.length).toBeGreaterThanOrEqual(1);
+        expect(path.legs.length).toBeGreaterThanOrEqual(1);
 
         let currentLocation = query.from;
-        path.steps.forEach((step: IStep) => {
-          expect(step).toBeDefined();
-          expect(currentLocation).toEqual(step.startLocation.id);
-          currentLocation = step.stopLocation.id;
+        path.legs.forEach((leg: ILeg) => {
+          expect(leg).toBeDefined();
+          expect(currentLocation).toEqual(leg.getStartLocation().id);
+          currentLocation = leg.getStopLocation().id;
         });
 
         expect(query.to).toEqual(currentLocation);
       }
     };
 
-    const checkTimes = (result, minimumDepartureTime) => {
+    const checkTimes = (result: IPath[], minimumDepartureTime) => {
       expect(result).toBeDefined();
       expect(result.length).toBeGreaterThanOrEqual(1);
 
       for (const path of result) {
-        expect(path.steps).toBeDefined();
+        expect(path.legs).toBeDefined();
 
-        expect(path.steps.length).toBeGreaterThanOrEqual(1);
-        expect(path.steps[0]).toBeDefined();
-        expect(path.steps[path.steps.length - 1]).toBeDefined();
+        expect(path.legs.length).toBeGreaterThanOrEqual(1);
+        expect(path.legs[0]).toBeDefined();
+        expect(path.legs[path.legs.length - 1]).toBeDefined();
 
         let currentTime = minimumDepartureTime.getTime();
-        path.steps.forEach((step: IStep) => {
-          expect(step).toBeDefined();
-          if (step.travelMode === TravelMode.Walking) {
-            currentTime += step.duration.minimum;
+        path.legs.forEach((leg: ILeg) => {
+          expect(leg).toBeDefined();
+          if (leg.getTravelMode() === TravelMode.Walking) {
+            currentTime += leg.getMinimumDuration();
           } else {
-            expect(currentTime).toBeLessThanOrEqual(step.startTime.getTime());
-            currentTime = step.stopTime.getTime();
+            expect(currentTime).toBeLessThanOrEqual(leg.getStartTime().getTime());
+            currentTime = leg.getStopTime().getTime();
           }
         });
 
-        expect(path.steps[0].startTime.getTime()).toBeGreaterThanOrEqual(minimumDepartureTime.getTime());
+        expect(path.legs[0].getStartTime().getTime()).toBeGreaterThanOrEqual(minimumDepartureTime.getTime());
       }
     };
 
@@ -256,7 +246,6 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const minimumDepartureTime = new Date();
 
       const query: IQuery = {
-        publicTransportOnly: true,
         from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
         to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
         minimumDepartureTime,

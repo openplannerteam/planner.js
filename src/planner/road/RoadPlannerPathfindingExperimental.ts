@@ -9,6 +9,7 @@ import RoutableTileRegistry from "../../entities/tiles/registry";
 import { RoutableTile } from "../../entities/tiles/tile";
 import RoutingPhase from "../../enums/RoutingPhase";
 import TravelMode from "../../enums/TravelMode";
+import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IProfileProvider from "../../fetcher/profiles/IProfileProvider";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
@@ -21,6 +22,7 @@ import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import { toTileCoordinate } from "../../util/Tiles";
+import Leg from "../Leg";
 import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
 
@@ -50,7 +52,6 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         @inject(TYPES.ProfileProvider) profileProvider: IProfileProvider,
         @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
         @inject(TYPES.RoutableTileRegistry) registry: RoutableTileRegistry,
-        @inject(TYPES.EventBus) eventBus: EventEmitter,
     ) {
         this.baseTileProvider = baseTileProvider;
         this.transitTileProvider = transitTileProvider;
@@ -58,7 +59,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         this.profileProvider = profileProvider;
         this.locationResolver = locationResolver;
         this.registry = registry;
-        this.eventBus = eventBus;
+        this.eventBus = EventBus.getInstance();
         this.reachedTiles = new Set();
     }
 
@@ -129,11 +130,11 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
                 stopLocation: to,
                 duration: { average: step.duration },
                 distance: step.distance,
-                travelMode: TravelMode.Profile,
             });
         }
 
-        return new Path(steps);
+        const leg = new Leg(TravelMode.Profile, steps);
+        return new Path([leg]);
     }
 
     private pickTile(node: RoutableTileNode) {

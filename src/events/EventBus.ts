@@ -7,9 +7,18 @@ import { injectable } from "inversify";
  */
 @injectable()
 export default class EventBus implements EventEmitter {
+  public static getInstance(): EventBus {
+    if (!EventBus.instance) {
+      EventBus.instance = new EventBus();
+    }
+
+    return EventBus.instance;
+  }
+
+  private static instance: EventBus;
   private emitter: EventEmitter;
 
-  constructor() {
+  private constructor() {
     this.emitter = new EventEmitter();
   }
 

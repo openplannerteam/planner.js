@@ -1,6 +1,6 @@
 {
   "name": "plannerjs",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "The JavaScript framework for journey planning.",
   "main": "lib/index.js",
   "license": "MIT",
@@ -24,7 +24,8 @@
     "webpack-stats": "npm run webpack -- --display-modules --json > stats.json",
     "typedoc": "typedoc --options typedoc.config.js",
     "doc-bundle": "npm run browser && cp dist/bundle.js docs/js/planner-latest.js && cp dist/bundle.js.map docs/js/bundle.js.map",
-    "doc": "npm run typedoc && npm run doc-bundle"
+    "doc": "npm run typedoc && npm run doc-bundle",
+    "start": "webpack-dev-server --open"
   },
   "dependencies": {
     "@types/concaveman": "^1.1.3",
@@ -59,7 +60,8 @@
     "typedoc": "^0.14.2",
     "typescript": "^3.5.3",
     "webpack": "^4.36.1",
-    "webpack-cli": "^3.3.6"
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.8.1"
   },
   "sideEffects": false
 }
