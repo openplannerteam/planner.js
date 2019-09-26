@@ -12,7 +12,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new PlannerJS.Planner();
+const planner = new PlannerJS.BasicTrainPlanner();
 
 planner.prefetchStops();
 planner.prefetchConnections();
@@ -24,7 +24,6 @@ const results = document.querySelector("#results");
 const prefetchWrapper = document.querySelector("#prefetch");
 const prefetchBar = document.querySelector("#prefetch-bar");
 let prefetchBarWidth = 0;
-let publicTransportOnly = true;
 let roadNetworkOnly = false;
 
 let lines = [];
@@ -75,11 +74,9 @@ const removePrefetchView = () => {
 
 usePublicTransport.onclick = e => {
   if (!usePublicTransport.checked) {
-    publicTransportOnly = false;
     roadNetworkOnly = true;
     removeStops();
   } else {
-    publicTransportOnly = true;
     roadNetworkOnly = false;
     for (const stop of allStops) {
       stop.addTo(map);
@@ -300,52 +297,42 @@ function selectRoute(e, id) {
   }
 }
 
+function appendLeadingZeroes(n) {
+  if (n <= 9) {
+    return "0" + n;
+  }
+  return n
+}
+
 function dateToTimeString(date) {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return `${hours < 10 ? "0" + hours : hours}:${minutes < 10 ? "0" + minutes : minutes}`;
+  return date.getFullYear() + "-" +
+    appendLeadingZeroes(date.getMonth() + 1) + "-" +
+    appendLeadingZeroes(date.getDate()) + " " +
+    appendLeadingZeroes(date.getHours()) + ":" +
+    appendLeadingZeroes(date.getMinutes()) + ":" +
+    appendLeadingZeroes(date.getSeconds()
+    )
 }
 
 map.on("click", onMapClick);
 
 function getRandomColor() {
-  const letters = "0123456789ABCDEF";
+  const letters = "123456789";
   let color = "#";
   for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
+    color += letters[Math.floor(Math.random() * 9)];
   }
   return color;
-}
-
-function getTravelTime(path) {
-  return path.steps.reduce((time, step) => time + step.duration.average, 0) / 60000;
-}
-
-function getTransferTime(path) {
-  let time = 0;
-
-  if (path.steps.length < 2) {
-    return time;
-  }
-
-  for (let i = 0; i < path.steps.length - 1; i++) {
-    let stepX = path.steps[i];
-    let stepY = path.steps[i + 1];
-
-    time += stepY.startTime - stepX.stopTime;
-  }
-
-  return time / 60000;
 }
 
 function addResultPanel(query, path, color) {
   const pathElement = document.createElement("div");
   pathElement.className = "path";
 
-  const travelTime = getTravelTime(path);
-  const startTime = path.steps[0].startTime || query.minimumDepartureTime;
-  const stopTime = path.steps[path.steps.length - 1].stopTime || new Date(query.minimumDepartureTime.getTime() + (travelTime * 60 * 1000));
-  const transferTime = Number.isNaN(getTransferTime(path)) ? 0 : getTransferTime(path);
+  const travelTime = path.getTravelTime();
+  const startTime = path.getDepartureTime(query);
+  const stopTime = path.getArrivalTime(query);
+  const transferTime = Number.isNaN(path.getTransferTime()) ? 0 : path.getTransferTime();
 
   const headerElement = document.createElement("div");
   headerElement.className = "header";
@@ -353,67 +340,24 @@ function addResultPanel(query, path, color) {
   headerElement.innerHTML = `
     Departure: ${dateToTimeString(startTime)}<br/>
     Arrival: ${dateToTimeString(stopTime)}<br/>
-    Travel time: ${Number(travelTime).toFixed(1)} min<br/>
-    Transfer time: ${Number(transferTime).toFixed(1)} min
+    Travel time: ${Number(travelTime / 60000).toFixed(1)} min<br/>
+    Transfer time: ${Number(transferTime / 60000).toFixed(1)} min
   `;
 
   pathElement.appendChild(headerElement);
-
-  if (query.roadNetworkOnly) {
-    let unifiedStep = path.steps[0];
-    unifiedStep.duration = { average: (travelTime * 60 * 1000) };
-    unifiedStep.stopLocation = path.steps[path.steps.length - 1].stopLocation;
-    unifiedStep.travelMode = 'walking';
-
-    drawStep(unifiedStep, pathElement, color);
-  } else {
-    let mergedSteps = mergeWalkingSteps(path.steps);
-    mergedSteps.forEach(step => {
-      drawStep(step, pathElement, color)
-    });
+  for (const leg of path.legs) {
+    drawLeg(leg, pathElement, color);
   }
 
   results.appendChild(pathElement);
 }
 
-function mergeWalkingSteps(steps) {
-  let merged = [];
-  let temp = {};
-
-  for (let i = 0; i < steps.length; i++) {
-    let step = steps[i];
-    let nextStep = steps[i + 1];
-
-    if (step.travelMode !== 'profile') {
-      merged.push(steps[i]);
-    } else {
-      if (!temp.startLocation) {
-        temp.startLocation = step.startLocation;
-        temp.distance = step.distance;
-        temp.duration = step.duration;
-        temp.travelMode = 'walking';
-      } else if (!nextStep || nextStep.travelMode !== 'profile') {
-        temp.stopLocation = step.stopLocation;
-        temp.distance += step.distance;
-        temp.duration.average += step.duration.average;
-        merged.push(temp);
-        temp = {};
-      } else {
-        temp.distance += step.distance; 
-        temp.duration.average += step.duration.average;
-      }
-    }
-  }
-
-  return merged;
-}
-
-function drawStep(step, pathElement, color) {
+function drawLeg(leg, pathElement, color) {
   const stepElement = document.createElement("div");
   stepElement.className = "step";
 
   const travelMode = document.createElement("div");
-  travelMode.className = "travelMode " + step.travelMode;
+  travelMode.className = "travelMode " + leg.travelMode;
   stepElement.appendChild(travelMode);
 
   const details = document.createElement("div");
@@ -422,55 +366,46 @@ function drawStep(step, pathElement, color) {
 
   const startLocation = document.createElement("div");
   startLocation.className = "startLocation";
-  const startln = step.startLocation.name || "[ lat: " + step.startLocation.latitude + " long: " + step.startLocation.longitude + "]";
-  startLocation.innerHTML =
-    "Start location: " + startln;
+  let startln;
+  if (leg.getStartLocation().name) {
+    startln = `${leg.getStartLocation().name} `;
+  } else {
+    startln = `${Number(leg.getStartLocation().latitude).toFixed(4)}, ${Number(leg.getStartLocation().longitude).toFixed(4)}`;
+  }
+  startLocation.innerHTML = "Start location: " + startln;
   details.appendChild(startLocation);
 
-  if (step.startTime) {
+  if (leg.getStartTime()) {
     const startTime = document.createElement("div");
     startTime.className = "startTime";
-    startTime.innerHTML = step.startTime;
+    startTime.innerHTML = `Departure time: ${dateToTimeString(leg.getStartTime())}`;
     details.appendChild(startTime);
   }
 
-  if (step.enterConnectionId) {
-    const enterConnectionId = document.createElement("div");
-    enterConnectionId.className = "enterConnectionId";
-    enterConnectionId.innerHTML =
-      "Enter connection: " + step.enterConnectionId;
-    details.appendChild(enterConnectionId);
-  }
-
-  if (step.duration) {
+  if (leg.getExpectedDuration()) {
     const duration = document.createElement("div");
     duration.className = "duration";
     duration.innerHTML =
-      "Duration: average " +
-      Number(step.duration.average / (60 * 1000)).toFixed(1) +
-      " min";
+      `Duration: ${Number(leg.getExpectedDuration() / (60 * 1000)).toFixed(1)} min`;
     details.appendChild(duration);
   }
 
   const stopLocation = document.createElement("div");
   stopLocation.className = "stopLocation";
-  const stopln = step.stopLocation.name || "[ lat: " + step.stopLocation.latitude + " long: " + step.stopLocation.longitude + "]";
+  let stopln;
+  if (leg.getStopLocation().name) {
+    stopln = `${leg.getStopLocation().name} `;
+  } else {
+    stopln = `${Number(leg.getStopLocation().latitude).toFixed(4)}, ${Number(leg.getStopLocation().longitude).toFixed(4)}`;
+  }
   stopLocation.innerHTML = "Stop location: " + stopln;
   details.appendChild(stopLocation);
 
-  if (step.stopTime) {
+  if (leg.getStopTime()) {
     const stopTime = document.createElement("div");
     stopTime.className = "stopTime";
-    stopTime.innerHTML = step.stopTime;
+    stopTime.innerHTML = `Arrival time: ${dateToTimeString(leg.getStopTime())}`;
     details.appendChild(stopTime);
-  }
-
-  if (step.exitConnectionId) {
-    const exitConnectionId = document.createElement("div");
-    exitConnectionId.className = "exitConnectionId";
-    exitConnectionId.innerHTML =
-      "Exit connection: " + step.exitConnectionId;
-    details.appendChild(exitConnectionId);
   }
 
   pathElement.style.borderLeft = "5px solid " + color;
@@ -478,55 +413,42 @@ function drawStep(step, pathElement, color) {
   pathElement.appendChild(stepElement);
 }
 
-function addResultToMap(q, path, color) {
-  if (q.roadNetworkOnly) {
-
-    for (let i in path.steps) {
-      if (i > 0) {
-        const { startLocation, stopLocation, travelMode } = path.steps[i];
-        const line = [
-          [startLocation.latitude, startLocation.longitude],
-          [stopLocation.latitude, stopLocation.longitude]
-        ];
-
-        drawLineBetweenPoints(line, travelMode, color);
-      }
-    }
-
-  } else {
-    path.steps.forEach(step => {
-      addConnectionMarkers(step, color);
-    });
+function addResultToMap(q, path) {
+  for (const leg of path.legs) {
+    addConnectionMarkers(leg);
   }
 }
 
-function addConnectionMarkers(step, color) {
-  const { startLocation, stopLocation, travelMode } = step;
+function addConnectionMarkers(leg) {
+  const startLocation = leg.getStartLocation();
+  const stopLocation = leg.getStopLocation();
+  const travelMode = leg.getTravelMode();
 
-  if (travelMode !== "profile") {
-    const startMarker = L.marker([
-      startLocation.latitude,
-      startLocation.longitude
-    ]).addTo(map);
+  const startMarker = L.marker([
+    startLocation.latitude,
+    startLocation.longitude
+  ]).addTo(map);
 
-    startMarker.bindPopup(startLocation.name);
+  startMarker.bindPopup(startLocation.name);
 
-    const stopMarker = L.marker([
-      stopLocation.latitude,
-      stopLocation.longitude
-    ]).addTo(map);
+  const stopMarker = L.marker([
+    stopLocation.latitude,
+    stopLocation.longitude
+  ]).addTo(map);
 
-    stopMarker.bindPopup(stopLocation.name);
+  stopMarker.bindPopup(stopLocation.name);
 
-    resultObjects.push(startMarker, stopMarker);
+  resultObjects.push(startMarker, stopMarker);
+
+  const color = getRandomColor();
+  for (const step of leg.steps) {
+    const line = [
+      [step.startLocation.latitude, step.startLocation.longitude],
+      [step.stopLocation.latitude, step.stopLocation.longitude]
+    ];
+
+    drawLineBetweenPoints(line, travelMode, color);
   }
-
-  const line = [
-    [startLocation.latitude, startLocation.longitude],
-    [stopLocation.latitude, stopLocation.longitude]
-  ];
-
-  drawLineBetweenPoints(line, travelMode, color);
 }
 
 function drawLineBetweenPoints(line, travelMode, color) {
@@ -545,20 +467,16 @@ function runQuery(query) {
   console.log(document.getElementById("loading"));
   document.getElementById('loading').style.display = 'block';
 
-  const maximumWalkingDistance = 200;
-
   const departureCircle = L.circle([query[0].latitude, query[0].longitude], {
     color: "limegreen",
     fillColor: "limegreen",
     fillOpacity: 0.5,
-    radius: 10 // maximumWalkingDistance
   }).addTo(map);
 
   const arrivalCircle = L.circle([query[1].latitude, query[1].longitude], {
     color: "red",
     fillColor: "red",
     fillOpacity: 0.5,
-    radius: 10 // maximumWalkingDistance
   }).addTo(map);
 
   resultObjects.push(departureCircle, arrivalCircle);
@@ -567,11 +485,9 @@ function runQuery(query) {
   let amount = 4;
   const q = {
     roadNetworkOnly: roadNetworkOnly,
-    publicTransportOnly: publicTransportOnly,
     from: query[0],
     to: query[1],
     minimumDepartureTime: new Date(),
-    maximumWalkingDistance,
     maximumTransferDuration: PlannerJS.Units.fromMinutes(30), // 30 minutes
     minimumWalkingSpeed: 3
   };
@@ -589,7 +505,7 @@ function runQuery(query) {
       i++;
       const color = getRandomColor();
       addResultPanel(q, completePath, color);
-      addResultToMap(q, completePath, color);
+      addResultToMap(q, completePath);
 
     })
     .on("end", () => {

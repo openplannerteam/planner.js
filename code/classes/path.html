@@ -914,22 +914,31 @@ img { max-width: 100%; }
 					<a href="path.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
-					<a href="path.html#steps" class="tsd-kind-icon">steps</a>
+					<a href="path.html#legs" class="tsd-kind-icon">legs</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="path.html#addpath" class="tsd-kind-icon">add<wbr>Path</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="path.html#addstep" class="tsd-kind-icon">add<wbr>Step</a>
+					<a href="path.html#appendleg" class="tsd-kind-icon">append<wbr>Leg</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="path.html#addtime" class="tsd-kind-icon">add<wbr>Time</a>
+					<a href="path.html#getarrivaltime" class="tsd-kind-icon">get<wbr>Arrival<wbr>Time</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="path.html#getdeparturetime" class="tsd-kind-icon">get<wbr>Departure<wbr>Time</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="path.html#getstartlocationid" class="tsd-kind-icon">get<wbr>Start<wbr>Location<wbr>Id</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="path.html#reverse" class="tsd-kind-icon">reverse</a>
+					<a href="path.html#gettransfertime" class="tsd-kind-icon">get<wbr>Transfer<wbr>Time</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="path.html#gettraveltime" class="tsd-kind-icon">get<wbr>Travel<wbr>Time</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="path.html#prependleg" class="tsd-kind-icon">prepend<wbr>Leg</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a href="path.html#compareequals" class="tsd-kind-icon">compare<wbr>Equals</a>
@@ -978,17 +987,20 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="path.html#steps" class="tsd-kind-icon">steps</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="path.html#legs" class="tsd-kind-icon">legs</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#addpath" class="tsd-kind-icon">add<wbr>Path</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#addstep" class="tsd-kind-icon">add<wbr>Step</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#addtime" class="tsd-kind-icon">add<wbr>Time</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#appendleg" class="tsd-kind-icon">append<wbr>Leg</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#getarrivaltime" class="tsd-kind-icon">get<wbr>Arrival<wbr>Time</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#getdeparturetime" class="tsd-kind-icon">get<wbr>Departure<wbr>Time</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#getstartlocationid" class="tsd-kind-icon">get<wbr>Start<wbr>Location<wbr>Id</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#reverse" class="tsd-kind-icon">reverse</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#gettransfertime" class="tsd-kind-icon">get<wbr>Transfer<wbr>Time</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#gettraveltime" class="tsd-kind-icon">get<wbr>Travel<wbr>Time</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="path.html#prependleg" class="tsd-kind-icon">prepend<wbr>Leg</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="path.html#compareequals" class="tsd-kind-icon">compare<wbr>Equals</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="path.html#create" class="tsd-kind-icon">create</a></li>
 						</ul>
@@ -1002,19 +1014,19 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Path<span class="tsd-signature-symbol">(</span>steps<span class="tsd-signature-symbol">: </span><a href="../interfaces/istep.html" class="tsd-signature-type">IStep</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="path.html" class="tsd-signature-type">Path</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Path<span class="tsd-signature-symbol">(</span>legs<span class="tsd-signature-symbol">: </span><a href="../interfaces/ileg.html" class="tsd-signature-type">ILeg</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="path.html" class="tsd-signature-type">Path</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L34">planner/Path.ts:34</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L36">planner/Path.ts:36</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>steps: <a href="../interfaces/istep.html" class="tsd-signature-type">IStep</a><span class="tsd-signature-symbol">[]</span></h5>
+								<h5>legs: <a href="../interfaces/ileg.html" class="tsd-signature-type">ILeg</a><span class="tsd-signature-symbol">[]</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="path.html" class="tsd-signature-type">Path</a></h4>
@@ -1025,13 +1037,13 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-				<a name="steps" class="tsd-anchor"></a>
-				<h3>steps</h3>
-				<div class="tsd-signature tsd-kind-icon">steps<span class="tsd-signature-symbol">:</span> <a href="../interfaces/istep.html" class="tsd-signature-type">IStep</a><span class="tsd-signature-symbol">[]</span></div>
+				<a name="legs" class="tsd-anchor"></a>
+				<h3>legs</h3>
+				<div class="tsd-signature tsd-kind-icon">legs<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ileg.html" class="tsd-signature-type">ILeg</a><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
-					<p>Implementation of <a href="../interfaces/ipath.html">IPath</a>.<a href="../interfaces/ipath.html#steps">steps</a></p>
+					<p>Implementation of <a href="../interfaces/ipath.html">IPath</a>.<a href="../interfaces/ipath.html#legs">legs</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L34">planner/Path.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L36">planner/Path.ts:36</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1048,7 +1060,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L44">planner/Path.ts:44</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L50">planner/Path.ts:50</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1062,22 +1074,22 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="addstep" class="tsd-anchor"></a>
-				<h3>add<wbr>Step</h3>
+				<a name="appendleg" class="tsd-anchor"></a>
+				<h3>append<wbr>Leg</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">add<wbr>Step<span class="tsd-signature-symbol">(</span>step<span class="tsd-signature-symbol">: </span><a href="../interfaces/istep.html" class="tsd-signature-type">IStep</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">append<wbr>Leg<span class="tsd-signature-symbol">(</span>leg<span class="tsd-signature-symbol">: </span><a href="../interfaces/ileg.html" class="tsd-signature-type">ILeg</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L40">planner/Path.ts:40</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L46">planner/Path.ts:46</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>step: <a href="../interfaces/istep.html" class="tsd-signature-type">IStep</a></h5>
+								<h5>leg: <a href="../interfaces/ileg.html" class="tsd-signature-type">ILeg</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1085,25 +1097,50 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="addtime" class="tsd-anchor"></a>
-				<h3>add<wbr>Time</h3>
+				<a name="getarrivaltime" class="tsd-anchor"></a>
+				<h3>get<wbr>Arrival<wbr>Time</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">add<wbr>Time<span class="tsd-signature-symbol">(</span>duration<span class="tsd-signature-symbol">: </span><a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Arrival<wbr>Time<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../interfaces/iquery.html" class="tsd-signature-type">IQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/ipath.html">IPath</a>.<a href="../interfaces/ipath.html#getarrivaltime">getArrivalTime</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L56">planner/Path.ts:56</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L71">planner/Path.ts:71</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>duration: <a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></h5>
+								<h5>query: <a href="../interfaces/iquery.html" class="tsd-signature-type">IQuery</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Date</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getdeparturetime" class="tsd-anchor"></a>
+				<h3>get<wbr>Departure<wbr>Time</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Departure<wbr>Time<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../interfaces/iquery.html" class="tsd-signature-type">IQuery</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/ipath.html">IPath</a>.<a href="../interfaces/ipath.html#getdeparturetime">getDepartureTime</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L58">planner/Path.ts:58</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>query: <a href="../interfaces/iquery.html" class="tsd-signature-type">IQuery</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Date</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1117,7 +1154,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L52">planner/Path.ts:52</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L54">planner/Path.ts:54</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1125,18 +1162,60 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="reverse" class="tsd-anchor"></a>
-				<h3>reverse</h3>
+				<a name="gettransfertime" class="tsd-anchor"></a>
+				<h3>get<wbr>Transfer<wbr>Time</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">reverse<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Transfer<wbr>Time<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/ipath.html">IPath</a>.<a href="../interfaces/ipath.html#gettransfertime">getTransferTime</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L88">planner/Path.ts:88</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="gettraveltime" class="tsd-anchor"></a>
+				<h3>get<wbr>Travel<wbr>Time</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Travel<wbr>Time<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/ipath.html">IPath</a>.<a href="../interfaces/ipath.html#gettraveltime">getTravelTime</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L84">planner/Path.ts:84</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <a href="../globals.html#durationms" class="tsd-signature-type">DurationMs</a></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="prependleg" class="tsd-anchor"></a>
+				<h3>prepend<wbr>Leg</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">prepend<wbr>Leg<span class="tsd-signature-symbol">(</span>leg<span class="tsd-signature-symbol">: </span><a href="../interfaces/ileg.html" class="tsd-signature-type">ILeg</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L48">planner/Path.ts:48</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L42">planner/Path.ts:42</a></li>
 							</ul>
 						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>leg: <a href="../interfaces/ileg.html" class="tsd-signature-type">ILeg</a></h5>
+							</li>
+						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
@@ -1151,7 +1230,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L22">planner/Path.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L24">planner/Path.ts:24</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1183,7 +1262,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/planner/Path.ts#L12">planner/Path.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/planner/Path.ts#L14">planner/Path.ts:14</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <a href="path.html" class="tsd-signature-type">Path</a></h4>

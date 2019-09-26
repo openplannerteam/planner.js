@@ -979,13 +979,13 @@ img { max-width: 100%; }
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Connections<wbr>Provider<wbr>Prefetch<span class="tsd-signature-symbol">(</span>connectionsFetcherFactory<span class="tsd-signature-symbol">: </span><a href="../globals.html#types.connectionsfetcherfactory" class="tsd-signature-type">ConnectionsFetcherFactory</a>, catalog<span class="tsd-signature-symbol">: </span><a href="catalog.html" class="tsd-signature-type">Catalog</a>, eventBus<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventEmitter</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectionsproviderprefetch.html" class="tsd-signature-type">ConnectionsProviderPrefetch</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Connections<wbr>Provider<wbr>Prefetch<span class="tsd-signature-symbol">(</span>connectionsFetcherFactory<span class="tsd-signature-symbol">: </span><a href="../globals.html#types.connectionsfetcherfactory" class="tsd-signature-type">ConnectionsFetcherFactory</a>, catalog<span class="tsd-signature-symbol">: </span><a href="catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectionsproviderprefetch.html" class="tsd-signature-type">ConnectionsProviderPrefetch</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L31">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:31</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L31">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:31</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -995,9 +995,6 @@ img { max-width: 100%; }
 							</li>
 							<li>
 								<h5>catalog: <a href="catalog.html" class="tsd-signature-type">Catalog</a></h5>
-							</li>
-							<li>
-								<h5>eventBus: <span class="tsd-signature-type">EventEmitter</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="connectionsproviderprefetch.html" class="tsd-signature-type">ConnectionsProviderPrefetch</a></h4>
@@ -1017,7 +1014,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L68">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:68</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L66">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:66</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <a href="_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1028,15 +1025,21 @@ img { max-width: 100%; }
 				<a name="prefetchconnections" class="tsd-anchor"></a>
 				<h3>prefetch<wbr>Connections</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Connections<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Connections<span class="tsd-signature-symbol">(</span>lowerBoundDate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L50">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:50</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L49">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:49</a></li>
 							</ul>
 						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> lowerBoundDate: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
@@ -1051,7 +1054,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/08f0f91/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L77">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:77</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cdad321/src/fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts#L74">fetcher/connections/prefetch/ConnectionsProviderPrefetch.ts:74</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
