@@ -35,20 +35,20 @@ interface IFinalReachableStops {
 
 @injectable()
 export default class CSAEarliestArrival implements IPublicTransportPlanner {
-  private readonly connectionsProvider: IConnectionsProvider;
-  private readonly locationResolver: ILocationResolver;
-  private readonly transferReachableStopsFinder: IReachableStopsFinder;
-  private readonly initialReachableStopsFinder: IReachableStopsFinder;
-  private readonly finalReachableStopsFinder: IReachableStopsFinder;
-  private readonly eventBus: EventEmitter;
+  protected readonly connectionsProvider: IConnectionsProvider;
+  protected readonly locationResolver: ILocationResolver;
+  protected readonly transferReachableStopsFinder: IReachableStopsFinder;
+  protected readonly initialReachableStopsFinder: IReachableStopsFinder;
+  protected readonly finalReachableStopsFinder: IReachableStopsFinder;
+  protected readonly eventBus: EventEmitter;
 
-  private finalReachableStops: IFinalReachableStops = {};
-  private profilesByStop: IProfileByStop = {}; // S
-  private enterConnectionByTrip: IEnterConnectionByTrip = {}; // T
+  protected finalReachableStops: IFinalReachableStops = {};
+  protected profilesByStop: IProfileByStop = {}; // S
+  protected enterConnectionByTrip: IEnterConnectionByTrip = {}; // T
 
-  private connectionsQueue: MultiConnectionQueue;
+  protected connectionsQueue: MultiConnectionQueue;
 
-  private journeyExtractor: IJourneyExtractor;
+  protected journeyExtractor: IJourneyExtractor;
 
   constructor(
     @inject(TYPES.ConnectionsProvider)
@@ -78,6 +78,25 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     this.setBounds(query);
 
     return this.calculateJourneys(query);
+  }
+
+  protected updateProfile(query: IResolvedQuery, connection: IConnection) {
+    /*
+    Call this ONLY if the given connection is known to improve the arrival stop's profile
+    */
+
+    const tripId = connection.tripId;
+    const departureTime = connection.departureTime.getTime();
+    const arrivalTime = connection.arrivalTime.getTime();
+
+    // update profile of arrival stop
+    const arrivalProfile: ITransferProfile = {
+      departureTime,
+      arrivalTime,
+      exitConnection: connection,
+      enterConnection: this.enterConnectionByTrip[tripId],
+    };
+    this.profilesByStop[connection.arrivalStop] = arrivalProfile;
   }
 
   private setBounds(query: IResolvedQuery) {
@@ -205,25 +224,6 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       };
     }
     return this.profilesByStop[stopId];
-  }
-
-  private updateProfile(query: IResolvedQuery, connection: IConnection) {
-    /*
-    Call this ONLY if the given connection is known to improve the arrival stop's profile
-    */
-
-    const tripId = connection.tripId;
-    const departureTime = connection.departureTime.getTime();
-    const arrivalTime = connection.arrivalTime.getTime();
-
-    // update profile of arrival stop
-    const arrivalProfile: ITransferProfile = {
-      departureTime,
-      arrivalTime,
-      exitConnection: connection,
-      enterConnection: this.enterConnectionByTrip[tripId],
-    };
-    this.profilesByStop[connection.arrivalStop] = arrivalProfile;
   }
 
   private async scheduleExtraConnections(query: IResolvedQuery, sourceConnection: IConnection) {
