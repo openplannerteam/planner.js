@@ -1,4 +1,4 @@
-import IConnection from "../../../../../fetcher/connections/IConnection";
+import IConnection from "../../../../../entities/connections/connections";
 import Path from "../../../../Path";
 
 /**

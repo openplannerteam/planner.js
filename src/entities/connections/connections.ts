@@ -29,8 +29,8 @@ export default interface IConnection {
   nextConnection?: string[];
   tripId?: string;
 
-  "gtfs:route"?: string;
-  "gtfs:dropOffType"?: DropOffType;
-  "gtfs:pickupType"?: PickupType;
-  "gtfs:headsign"?: string;
+  route?: string;
+  dropOffType: DropOffType;
+  pickupType: PickupType;
+  headsign: string;
 }

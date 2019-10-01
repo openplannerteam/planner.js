@@ -1,6 +1,7 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
+import IConnection from "../../entities/connections/connections";
 import DropOffType from "../../enums/DropOffType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
@@ -8,12 +9,10 @@ import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
-import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
-import IQuery from "../../interfaces/IQuery";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
@@ -75,44 +74,15 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    this.setBounds(query);
-
-    return this.calculateJourneys(query);
-  }
-
-  protected updateProfile(query: IResolvedQuery, connection: IConnection) {
-    /*
-    Call this ONLY if the given connection is known to improve the arrival stop's profile
-    */
-
-    const tripId = connection.tripId;
-    const departureTime = connection.departureTime.getTime();
-    const arrivalTime = connection.arrivalTime.getTime();
-
-    // update profile of arrival stop
-    const arrivalProfile: ITransferProfile = {
-      departureTime,
-      arrivalTime,
-      exitConnection: connection,
-      enterConnection: this.enterConnectionByTrip[tripId],
-    };
-    this.profilesByStop[connection.arrivalStop] = arrivalProfile;
-  }
-
-  private setBounds(query: IResolvedQuery) {
     const {
       minimumDepartureTime: lowerBoundDate,
       maximumArrivalTime: upperBoundDate,
     } = query;
 
-    this.connectionsProvider.setIteratorOptions({
+    const connectionsIterator = this.connectionsProvider.createIterator({
       upperBoundDate,
       lowerBoundDate,
     });
-  }
-
-  private async calculateJourneys(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    const connectionsIterator = this.connectionsProvider.createIterator();
     this.connectionsQueue = new MultiConnectionQueue(connectionsIterator);
 
     const [hasInitialReachableStops, hasFinalReachableStops] = await Promise.all([
@@ -151,6 +121,25 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       self.processConnections(query, done);
 
     }) as Promise<AsyncIterator<IPath>>;
+  }
+
+  protected updateProfile(query: IResolvedQuery, connection: IConnection) {
+    /*
+    Call this ONLY if the given connection is known to improve the arrival stop's profile
+    */
+
+    const tripId = connection.tripId;
+    const departureTime = connection.departureTime.getTime();
+    const arrivalTime = connection.arrivalTime.getTime();
+
+    // update profile of arrival stop
+    const arrivalProfile: ITransferProfile = {
+      departureTime,
+      arrivalTime,
+      exitConnection: connection,
+      enterConnection: this.enterConnectionByTrip[tripId],
+    };
+    this.profilesByStop[connection.arrivalStop] = arrivalProfile;
   }
 
   private async extractJourneys(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
@@ -259,6 +248,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
               departureStop: sourceConnection.arrivalStop,
               arrivalTime: new Date(sourceConnection.arrivalTime.getTime() + duration),
               arrivalStop: stop.id,
+              dropOffType: DropOffType.Regular,
+              pickupType: PickupType.Regular,
+              headsign: stop.id,
             };
 
             this.connectionsQueue.push(transferConnection);
@@ -315,6 +307,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
           departureStop: fromLocation.id,
           arrivalTime: new Date(query.minimumDepartureTime.getTime() + duration),
           arrivalStop: stop.id,
+          dropOffType: DropOffType.Regular,
+          pickupType: PickupType.Regular,
+          headsign: stop.id,
         };
 
         this.connectionsQueue.push(transferConnection);

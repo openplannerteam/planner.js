@@ -7,10 +7,10 @@ import RoutableTileRegistry from "../entities/tiles/registry";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
+import ConnectionsFetcherRaw from "../fetcher/connections/ConnectionsFetcherRaw";
+import ConnectionsProviderMerge from "../fetcher/connections/ConnectionsProviderMerge";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
-import ConnectionsFetcherLazy from "../fetcher/connections/lazy/ConnectionsFetcherLazy";
-import ConnectionsProviderPrefetch from "../fetcher/connections/prefetch/ConnectionsProviderPrefetch";
 import FootpathsProviderDefault from "../fetcher/footpaths/FootpathsProviderDefault";
 import IFootpathsFetcher from "../fetcher/footpaths/IFootpathsProvider";
 import LDFetch from "../fetcher/LDFetch";
@@ -80,15 +80,14 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPrefetch).inSingletonScope();
-container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderMerge).inSingletonScope();
+container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherRaw);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(
     (context: interfaces.Context) =>
       (accessUrl: string, travelMode: TravelMode) => {
-        const fetcher = context.container.get<ConnectionsFetcherLazy>(TYPES.ConnectionsFetcher);
+        const fetcher = context.container.get<IConnectionsFetcher>(TYPES.ConnectionsFetcher);
 
-        fetcher.setAccessUrl(accessUrl);
         fetcher.setTravelMode(travelMode);
 
         return fetcher;

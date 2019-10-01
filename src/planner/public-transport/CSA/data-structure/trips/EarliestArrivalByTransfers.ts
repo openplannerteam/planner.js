@@ -1,4 +1,4 @@
-import IConnection from "../../../../../fetcher/connections/IConnection";
+import IConnection from "../../../../../entities/connections/connections";
 import IArrivalTimeByTransfers from "../IArrivalTimeByTransfers";
 import IEarliestArrival from "./IEarliestArrival";
 import IEarliestArrivalByTransfers from "./IEarliestArrivalByTransfers";

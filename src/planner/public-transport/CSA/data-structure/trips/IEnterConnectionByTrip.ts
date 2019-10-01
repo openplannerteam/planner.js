@@ -1,4 +1,4 @@
-import IConnection from "../../../../../fetcher/connections/IConnection";
+import IConnection from "../../../../../entities/connections/connections";
 
 /**
  * @property arrivalTime Describes the earliest arrival time in milliseconds to the target [[IStop]].

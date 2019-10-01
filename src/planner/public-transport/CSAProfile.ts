@@ -1,13 +1,13 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
+import IConnection from "../../entities/connections/connections";
 import DropOffType from "../../enums/DropOffType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
-import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
@@ -90,23 +90,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     this.query = query;
-
-    this.setBounds();
-
     return this.calculateJourneys();
-  }
-
-  private setBounds() {
-    const {
-      minimumDepartureTime: lowerBoundDate,
-      maximumArrivalTime: upperBoundDate,
-    } = this.query;
-
-    this.connectionsProvider.setIteratorOptions({
-      backward: true,
-      upperBoundDate,
-      lowerBoundDate,
-    });
   }
 
   private async calculateJourneys(): Promise<AsyncIterator<IPath>> {
@@ -117,7 +101,16 @@ export default class CSAProfile implements IPublicTransportPlanner {
       return Promise.resolve(new ArrayIterator([]));
     }
 
-    this.connectionsIterator = this.connectionsProvider.createIterator();
+    const {
+      minimumDepartureTime: lowerBoundDate,
+      maximumArrivalTime: upperBoundDate,
+    } = this.query;
+
+    this.connectionsIterator = this.connectionsProvider.createIterator({
+      backward: true,
+      upperBoundDate,
+      lowerBoundDate,
+    });
 
     const self = this;
 

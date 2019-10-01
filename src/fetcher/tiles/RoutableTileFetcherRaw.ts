@@ -1,3 +1,4 @@
+import fetch from "cross-fetch";
 import { inject, injectable } from "inversify";
 import { IRoutableTileNodeIndex, RoutableTileNode } from "../../entities/tiles/node";
 import RoutableTileRegistry from "../../entities/tiles/registry";

@@ -1,11 +1,12 @@
 import "jest";
 import LDFetch from "ldfetch";
-import Context from "../../Context";
+import Catalog from "../../Catalog";
 import Defaults from "../../Defaults";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
-import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
-import ConnectionsFetcherNMBSTest from "../../fetcher/connections/tests/ConnectionsFetcherNMBSTest";
+import ConnectionsFetcherRaw from "../../fetcher/connections/ConnectionsFetcherRaw";
+import ConnectionsProviderDefault from "../../fetcher/connections/ConnectionsProviderDefault";
+import ConnectionsProviderNMBSTest from "../../fetcher/connections/tests/ConnectionsProviderNMBSTest";
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import ILeg from "../../interfaces/ILeg";
@@ -25,9 +26,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
     const createCSA = (connections) => {
       const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-      const connectionFetcher = new ConnectionsFetcherNMBSTest(connections);
-      connectionFetcher.setIteratorOptions({ backward: false });
-
+      const connectionProvider = new ConnectionsProviderNMBSTest(connections);
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
@@ -35,7 +34,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
       return new CSAEarliestArrival(
-        connectionFetcher,
+        connectionProvider,
         locationResolver,
         reachableStopsFinder,
         reachableStopsFinder,
@@ -173,9 +172,15 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
     const createQueryRunner = () => {
       const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-      const connectionFetcher = new ConnectionsFetcherLazy(ldFetch);
-      connectionFetcher.setTravelMode(TravelMode.Train);
-      connectionFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
+      const catalog = new Catalog();
+      catalog.addConnectionsSource("https://graph.irail.be/sncb/connections", TravelMode.Train);
+      const connectionProvider = new ConnectionsProviderDefault(
+        (travelMode: TravelMode) => {
+          const fetcher = new ConnectionsFetcherRaw();
+          fetcher.setTravelMode(travelMode);
+          return fetcher;
+        }, catalog,
+      );
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
@@ -184,7 +189,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
       const CSA = new CSAEarliestArrival(
-        connectionFetcher,
+        connectionProvider,
         locationResolver,
         reachableStopsFinder,
         reachableStopsFinder,

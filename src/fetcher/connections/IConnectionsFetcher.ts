@@ -1,8 +1,7 @@
-import IConnectionsProvider from "./IConnectionsProvider";
+import { LinkedConnectionsPage } from "../../entities/connections/page";
+import TravelMode from "../../enums/TravelMode";
 
-/**
- * Entry point for fetching linked connections ([[IConnection]]s)
- * Serves as interface for dependency injection, so all implementations should have @injectable() decorator
- */
-export default interface IConnectionsFetcher extends IConnectionsProvider {
+export default interface IConnectionsFetcher {
+    get(url: string): Promise<LinkedConnectionsPage>;
+    setTravelMode(travelMode: TravelMode): void;
 }

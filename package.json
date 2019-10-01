@@ -33,6 +33,7 @@
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
     "concaveman": "^1.1.1",
+    "cross-fetch": "^3.0.4",
     "d3-delaunay": "^4.1.5",
     "haversine": "^1.1.1",
     "inversify": "^5.0.1",

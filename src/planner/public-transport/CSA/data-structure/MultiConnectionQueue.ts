@@ -1,6 +1,6 @@
 import { AsyncIterator } from "asynciterator";
 import TinyQueue from "tinyqueue";
-import IConnection from "../../../../fetcher/connections/IConnection";
+import IConnection from "../../../../entities/connections/connections";
 
 export default class MultiConnectionQueue {
     private closed: boolean;

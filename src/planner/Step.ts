@@ -1,5 +1,4 @@
-import TravelMode from "../enums/TravelMode";
-import IConnection from "../fetcher/connections/IConnection";
+import IConnection from "../entities/connections/connections";
 import ILocation from "../interfaces/ILocation";
 import IProbabilisticValue from "../interfaces/IProbabilisticValue";
 import IStep from "../interfaces/IStep";
