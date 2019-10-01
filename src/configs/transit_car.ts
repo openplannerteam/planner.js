@@ -1,7 +1,5 @@
 import { Container, interfaces } from "inversify";
 import Catalog from "../Catalog";
-import catalogOVl from "../catalog.delijn.oostvlaanderen";
-import catalogMivb from "../catalog.mivb";
 import catalogNmbs from "../catalog.nmbs";
 import Context from "../Context";
 import RoutableTileRegistry from "../entities/tiles/registry";

@@ -39,15 +39,15 @@ import RoadPlannerPathfinding from "../planner/road/RoadPlannerPathfinding";
 import IReachableStopsFinder from "../planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderDelaunay from "../planner/stops/ReachableStopsFinderDelaunay";
 import ReachableStopsFinderOnlySelf from "../planner/stops/ReachableStopsFinderOnlySelf";
-import QueryRunnerExponential from "../query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "../query-runner/ILocationResolver";
 import IQueryRunner from "../query-runner/IQueryRunner";
 import LocationResolverConvenience from "../query-runner/LocationResolverConvenience";
+import QueryRunnerDefault from "../query-runner/QueryRunnerDefault";
 import TYPES from "../types";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
-container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
+container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
 
 // TODO, make this a fixed property of the planner itself
