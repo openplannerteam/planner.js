@@ -46,19 +46,19 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
 
     public read(): IConnection {
         if (this.closed) {
-            return null;
+            return undefined;
         }
 
         if (this.waiting) {
             // waiting for the next page to be fetched
             this.readable = false;
-            return null;
+            return undefined;
         }
 
         if (this.currentIndex >= this.currentPage.getConnections().length) {
             // end of this page, fetch the next one
             this.fetchPage(this.currentPage.getNextPageId());
-            return null;
+            return undefined;
         }
 
         const item = this.currentPage.getConnections()[this.currentIndex];

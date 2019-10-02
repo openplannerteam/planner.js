@@ -15,7 +15,7 @@ import IFootpathsProvider from "./IFootpathsProvider";
 const ZOOM = 12;
 
 interface ITiledFootpathIndex {
-    [id: string]: IFootpathIndex;
+    [id: string]: Promise<IFootpathIndex>;
 }
 
 @injectable()
@@ -36,7 +36,7 @@ export default class FootpathsProviderDefault implements IFootpathsProvider {
     public async get(stop: IStop): Promise<IFootpathIndex> {
         const tileId = this.getIdForLocation(ZOOM, stop);
         if (!this.paths[tileId]) {
-            this.paths[tileId] = await this.getByUrl(tileId);
+            this.paths[tileId] = this.getByUrl(tileId);
         }
 
         return this.paths[tileId];

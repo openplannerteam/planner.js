@@ -46,19 +46,19 @@ export default class BackwardConnectionIterator extends AsyncIterator<IConnectio
 
     public read(): IConnection {
         if (this.closed) {
-            return null;
+            return undefined;
         }
 
         if (this.waiting) {
             // waiting for the next page to be fetched
             this.readable = false;
-            return null;
+            return undefined;
         }
 
         if (this.currentIndex < 0) {
             // end of this page, fetch the next one
             this.fetchPage(this.currentPage.getPreviousPageId());
-            return null;
+            return undefined;
         }
 
         const item = this.currentPage.getConnections()[this.currentIndex];

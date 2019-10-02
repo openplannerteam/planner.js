@@ -20,16 +20,16 @@ export default class MergeIterator<T> extends AsyncIterator<T> {
    * @param selector
    * @param condensed When true, undefined values are filtered from the array passed to the selector function
    */
-  constructor(sourceIterators: Array<AsyncIterator<T>>, selector: (values: T[]) => number, condensed?: boolean) {
+  constructor(sourceIterators: Array<AsyncIterator<T>>, selector: (values: T[]) => number, condensed = false) {
     super();
 
     this.sourceIterators = sourceIterators;
     this.selector = selector;
-    this.condensed = condensed;
 
     this.values = Array(this.sourceIterators.length).fill(undefined);
     this.waitingForFill = Array(this.sourceIterators.length).fill(false);
     this.readable = true;
+    this.condensed = condensed;
     this.addListeners();
   }
 
@@ -106,7 +106,7 @@ export default class MergeIterator<T> extends AsyncIterator<T> {
         continue;
       }
 
-      if (this.values[sourceIndex] !== undefined) {
+      if (this.values[sourceIndex] !== undefined && this.values[sourceIndex] !== null) {
         filled();
 
       } else {
@@ -121,10 +121,9 @@ export default class MergeIterator<T> extends AsyncIterator<T> {
     const iterator = this.sourceIterators[sourceIndex];
     const value = iterator.read();
 
-    if (value) {
+    if (value || (!iterator.closed && iterator.readable)) {
       this.values[sourceIndex] = value;
       filled();
-
     } else {
       const shouldWait = !this.waitingForFill[sourceIndex];
 
@@ -164,7 +163,7 @@ export default class MergeIterator<T> extends AsyncIterator<T> {
 
     this.values
       .forEach((value: T, originalIndex: number) => {
-        if (value !== undefined) {
+        if (value !== undefined && value !== null) {
           values.push(value);
           indexMap.push(originalIndex);
         }
