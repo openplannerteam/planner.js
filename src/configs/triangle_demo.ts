@@ -11,7 +11,7 @@ import ConnectionsFetcherRaw from "../fetcher/connections/ConnectionsFetcherRaw"
 import ConnectionsProviderMerge from "../fetcher/connections/ConnectionsProviderMerge";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
-import FootpathsProviderDefault from "../fetcher/footpaths/FootpathsProviderDefault";
+import FootpathsProviderRaw from "../fetcher/footpaths/FootpathsProviderRaw";
 import IFootpathsFetcher from "../fetcher/footpaths/IFootpathsProvider";
 import LDFetch from "../fetcher/LDFetch";
 import IProfileFetcher from "../fetcher/profiles/IProfileFetcher";
@@ -71,7 +71,7 @@ container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvid
 container.bind<IProfileFetcher>(TYPES.ProfileFetcher).to(ProfileFetcherDefault).inSingletonScope();
 container.bind<IProfileProvider>(TYPES.ProfileProvider).to(ProfileProviderDefault).inSingletonScope();
 
-container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
+container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderRaw).inSingletonScope();
 
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
