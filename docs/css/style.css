@@ -5,8 +5,11 @@ html, body {
 }
 
 #optionsBar {
-    margin-bottom: 5px;
-    text-align: center
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    background-color: white;
+    z-index: 900;
 }
 
 #optionsBar .optionLabel {
@@ -201,4 +204,8 @@ input:checked+.slider:before {
     left: 89%;
     top: 80%;
     width: 9%;
+}
+
+.leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
+    top: 25px;
 }
