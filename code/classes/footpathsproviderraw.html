@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MultiConnectionQueue | plannerjs</title>
+	<title>FootpathsProviderRaw | plannerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2376,22 +2376,31 @@ img {
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class="current tsd-kind-class">
-			<a href="multiconnectionqueue.html" class="tsd-kind-icon">Multi<wbr>Connection<wbr>Queue</a>
+			<a href="footpathsproviderraw.html" class="tsd-kind-icon">Footpaths<wbr>Provider<wbr>Raw</a>
 			<ul>
 				<li class=" tsd-kind-constructor tsd-parent-kind-class">
-					<a href="multiconnectionqueue.html#constructor" class="tsd-kind-icon">constructor</a>
+					<a href="footpathsproviderraw.html#constructor" class="tsd-kind-icon">constructor</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a href="footpathsproviderraw.html#paths" class="tsd-kind-icon">paths</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="multiconnectionqueue.html#close" class="tsd-kind-icon">close</a>
+					<a href="footpathsproviderraw.html#get" class="tsd-kind-icon">get</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="multiconnectionqueue.html#isclosed" class="tsd-kind-icon">is<wbr>Closed</a>
+					<a href="footpathsproviderraw.html#getbylocation" class="tsd-kind-icon">get<wbr>ByLocation</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="multiconnectionqueue.html#pop" class="tsd-kind-icon">pop</a>
+					<a href="footpathsproviderraw.html#getbytilecoords" class="tsd-kind-icon">get<wbr>ByTile<wbr>Coords</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<a href="footpathsproviderraw.html#getbyurl" class="tsd-kind-icon">get<wbr>ByUrl</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="multiconnectionqueue.html#push" class="tsd-kind-icon">push</a>
+					<a href="footpathsproviderraw.html#getidforlocation" class="tsd-kind-icon">get<wbr>IdFor<wbr>Location</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="footpathsproviderraw.html#getidfortilecoords" class="tsd-kind-icon">get<wbr>IdFor<wbr>Tile<wbr>Coords</a>
 				</li>
 			</ul>
 		</li>
@@ -2403,8 +2412,14 @@ img {
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">MultiConnectionQueue</span>
+					<span class="target">FootpathsProviderRaw</span>
 				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel">
+			<h3>Implements</h3>
+			<ul class="tsd-hierarchy">
+				<li><a href="../interfaces/ifootpathsprovider.html" class="tsd-signature-type">IFootpathsProvider</a></li>
 			</ul>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
@@ -2414,16 +2429,24 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="multiconnectionqueue.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="footpathsproviderraw.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section tsd-is-private-protected">
+						<h3>Properties</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="footpathsproviderraw.html#paths" class="tsd-kind-icon">paths</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="multiconnectionqueue.html#close" class="tsd-kind-icon">close</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="multiconnectionqueue.html#isclosed" class="tsd-kind-icon">is<wbr>Closed</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="multiconnectionqueue.html#pop" class="tsd-kind-icon">pop</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="multiconnectionqueue.html#push" class="tsd-kind-icon">push</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="footpathsproviderraw.html#get" class="tsd-kind-icon">get</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="footpathsproviderraw.html#getbylocation" class="tsd-kind-icon">get<wbr>ByLocation</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="footpathsproviderraw.html#getbytilecoords" class="tsd-kind-icon">get<wbr>ByTile<wbr>Coords</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="footpathsproviderraw.html#getbyurl" class="tsd-kind-icon">get<wbr>ByUrl</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="footpathsproviderraw.html#getidforlocation" class="tsd-kind-icon">get<wbr>IdFor<wbr>Location</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="footpathsproviderraw.html#getidfortilecoords" class="tsd-kind-icon">get<wbr>IdFor<wbr>Tile<wbr>Coords</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2435,99 +2458,176 @@ img {
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Multi<wbr>Connection<wbr>Queue<span class="tsd-signature-symbol">(</span>asyncIterator<span class="tsd-signature-symbol">: </span><a href="_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="multiconnectionqueue.html" class="tsd-signature-type">MultiConnectionQueue</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Footpaths<wbr>Provider<wbr>Raw<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="footpathsproviderraw.html" class="tsd-signature-type">FootpathsProviderRaw</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts#L9">planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts:9</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L19">fetcher/footpaths/FootpathsProviderRaw.ts:19</a></li>
 							</ul>
 						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>asyncIterator: <a href="_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="multiconnectionqueue.html" class="tsd-signature-type">MultiConnectionQueue</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="footpathsproviderraw.html" class="tsd-signature-type">FootpathsProviderRaw</a></h4>
 					</li>
 				</ul>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+				<a name="paths" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> paths</h3>
+				<div class="tsd-signature tsd-kind-icon">paths<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ITiledFootpathIndex</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L19">fetcher/footpaths/FootpathsProviderRaw.ts:19</a></li>
+					</ul>
+				</aside>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="close" class="tsd-anchor"></a>
-				<h3>close</h3>
+				<a name="get" class="tsd-anchor"></a>
+				<h3>get</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">close<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>stop<span class="tsd-signature-symbol">: </span><a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts#L19">planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts:19</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="isclosed" class="tsd-anchor"></a>
-				<h3>is<wbr>Closed</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">is<wbr>Closed<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts#L24">planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts:24</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="pop" class="tsd-anchor"></a>
-				<h3>pop</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">pop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts#L32">planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts:32</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="push" class="tsd-anchor"></a>
-				<h3>push</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">push<span class="tsd-signature-symbol">(</span>connection<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts#L28">planner/public-transport/CSA/data-structure/MultiConnectionQueue.ts:28</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L25">fetcher/footpaths/FootpathsProviderRaw.ts:25</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>connection: <a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a></h5>
+								<h5>stop: <a href="../interfaces/istop.html" class="tsd-signature-type">IStop</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getbylocation" class="tsd-anchor"></a>
+				<h3>get<wbr>ByLocation</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>ByLocation<span class="tsd-signature-symbol">(</span>zoom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, location<span class="tsd-signature-symbol">: </span><a href="../interfaces/ilocation.html" class="tsd-signature-type">ILocation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L45">fetcher/footpaths/FootpathsProviderRaw.ts:45</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>zoom: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5>location: <a href="../interfaces/ilocation.html" class="tsd-signature-type">ILocation</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getbytilecoords" class="tsd-anchor"></a>
+				<h3>get<wbr>ByTile<wbr>Coords</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>ByTile<wbr>Coords<span class="tsd-signature-symbol">(</span>coordinate<span class="tsd-signature-symbol">: </span><a href="routabletilecoordinate.html" class="tsd-signature-type">RoutableTileCoordinate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L52">fetcher/footpaths/FootpathsProviderRaw.ts:52</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>coordinate: <a href="routabletilecoordinate.html" class="tsd-signature-type">RoutableTileCoordinate</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+				<a name="getbyurl" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>ByUrl</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>ByUrl<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L57">fetcher/footpaths/FootpathsProviderRaw.ts:57</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>url: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/ifootpathindex.html" class="tsd-signature-type">IFootpathIndex</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getidforlocation" class="tsd-anchor"></a>
+				<h3>get<wbr>IdFor<wbr>Location</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>IdFor<wbr>Location<span class="tsd-signature-symbol">(</span>zoom<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, location<span class="tsd-signature-symbol">: </span><a href="../interfaces/ilocation.html" class="tsd-signature-type">ILocation</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L34">fetcher/footpaths/FootpathsProviderRaw.ts:34</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>zoom: <span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li>
+								<h5>location: <a href="../interfaces/ilocation.html" class="tsd-signature-type">ILocation</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getidfortilecoords" class="tsd-anchor"></a>
+				<h3>get<wbr>IdFor<wbr>Tile<wbr>Coords</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>IdFor<wbr>Tile<wbr>Coords<span class="tsd-signature-symbol">(</span>coordinate<span class="tsd-signature-symbol">: </span><a href="routabletilecoordinate.html" class="tsd-signature-type">RoutableTileCoordinate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/footpaths/FootpathsProviderRaw.ts#L41">fetcher/footpaths/FootpathsProviderRaw.ts:41</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>coordinate: <a href="routabletilecoordinate.html" class="tsd-signature-type">RoutableTileCoordinate</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 					</li>
 				</ul>
 			</section>

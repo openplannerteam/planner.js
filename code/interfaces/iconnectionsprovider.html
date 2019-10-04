@@ -2378,14 +2378,17 @@ img {
 		<li class="current tsd-kind-interface">
 			<a href="iconnectionsprovider.html" class="tsd-kind-icon">IConnections<wbr>Provider</a>
 			<ul>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<li class=" tsd-kind-method tsd-parent-kind-interface">
 					<a href="iconnectionsprovider.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="iconnectionsprovider.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a>
+				<li class=" tsd-kind-method tsd-parent-kind-interface">
+					<a href="iconnectionsprovider.html#getbytime" class="tsd-kind-icon">get<wbr>ByTime</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="iconnectionsprovider.html#setiteratoroptions" class="tsd-kind-icon">set<wbr>Iterator<wbr>Options</a>
+				<li class=" tsd-kind-method tsd-parent-kind-interface">
+					<a href="iconnectionsprovider.html#getbyurl" class="tsd-kind-icon">get<wbr>ByUrl</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-interface">
+					<a href="iconnectionsprovider.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a>
 				</li>
 			</ul>
 		</li>
@@ -2393,34 +2396,19 @@ img {
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
-		<section class="tsd-panel tsd-comment">
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>A IConnectionsProvider serves as interface to other classes that want to use <a href="iconnection.html">IConnection</a> instances
-						It does this by acting as a transparent proxy between the user class and the configured [[IConnectionFetcher]]
-					instances</p>
-				</div>
-			</div>
-		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
 					<span class="target">IConnectionsProvider</span>
-					<ul class="tsd-hierarchy">
-						<li>
-							<a href="iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a>
-						</li>
-					</ul>
 				</li>
 			</ul>
 		</section>
 		<section class="tsd-panel">
 			<h3>Implemented by</h3>
 			<ul class="tsd-hierarchy">
+				<li><a href="../classes/connectionsproviderdefault.html" class="tsd-signature-type">ConnectionsProviderDefault</a></li>
 				<li><a href="../classes/connectionsprovidermerge.html" class="tsd-signature-type">ConnectionsProviderMerge</a></li>
-				<li><a href="../classes/connectionsproviderpassthrough.html" class="tsd-signature-type">ConnectionsProviderPassthrough</a></li>
-				<li><a href="../classes/connectionsproviderprefetch.html" class="tsd-signature-type">ConnectionsProviderPrefetch</a></li>
 			</ul>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
@@ -2428,98 +2416,113 @@ img {
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
-						<h3>Properties</h3>
+						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnectionsprovider.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnectionsprovider.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iconnectionsprovider.html#setiteratoroptions" class="tsd-kind-icon">set<wbr>Iterator<wbr>Options</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-interface"><a href="iconnectionsprovider.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-interface"><a href="iconnectionsprovider.html#getbytime" class="tsd-kind-icon">get<wbr>ByTime</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-interface"><a href="iconnectionsprovider.html#getbyurl" class="tsd-kind-icon">get<wbr>ByUrl</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-interface"><a href="iconnectionsprovider.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a></li>
 						</ul>
 					</section>
 				</div>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 				<a name="createiterator" class="tsd-anchor"></a>
 				<h3>create<wbr>Iterator</h3>
-				<div class="tsd-signature tsd-kind-icon">create<wbr>Iterator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/IConnectionsProvider.ts#L12">fetcher/connections/IConnectionsProvider.ts:12</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-type-declaration">
-					<h4>Type declaration</h4>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter-siganture">
-							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<li class="tsd-signature tsd-kind-icon">create<wbr>Iterator<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/IConnectionsProvider.ts#L8">fetcher/connections/IConnectionsProvider.ts:8</a></li>
 							</ul>
-							<ul class="tsd-descriptions">
-								<li class="tsd-description">
-									<h4 class="tsd-returns-title">Returns <a href="../classes/_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>options: <a href="iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../classes/_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<a name="getbytime" class="tsd-anchor"></a>
+				<h3>get<wbr>ByTime</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>ByTime<span class="tsd-signature-symbol">(</span>date<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/IConnectionsProvider.ts#L11">fetcher/connections/IConnectionsProvider.ts:11</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>date: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<a name="getbyurl" class="tsd-anchor"></a>
+				<h3>get<wbr>ByUrl</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>ByUrl<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/IConnectionsProvider.ts#L10">fetcher/connections/IConnectionsProvider.ts:10</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>url: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 				<a name="prefetchconnections" class="tsd-anchor"></a>
 				<h3>prefetch<wbr>Connections</h3>
-				<div class="tsd-signature tsd-kind-icon">prefetch<wbr>Connections<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/IConnectionsProvider.ts#L11">fetcher/connections/IConnectionsProvider.ts:11</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-type-declaration">
-					<h4>Type declaration</h4>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter-siganture">
-							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Connections<span class="tsd-signature-symbol">(</span>lowerBound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span>, upperBound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/IConnectionsProvider.ts#L7">fetcher/connections/IConnectionsProvider.ts:7</a></li>
 							</ul>
-							<ul class="tsd-descriptions">
-								<li class="tsd-description">
-									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="setiteratoroptions" class="tsd-anchor"></a>
-				<h3>set<wbr>Iterator<wbr>Options</h3>
-				<div class="tsd-signature tsd-kind-icon">set<wbr>Iterator<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/IConnectionsProvider.ts#L13">fetcher/connections/IConnectionsProvider.ts:13</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-type-declaration">
-					<h4>Type declaration</h4>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter-siganture">
-							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-							</ul>
-							<ul class="tsd-descriptions">
-								<li class="tsd-description">
-									<h4 class="tsd-parameters-title">Parameters</h4>
-									<ul class="tsd-parameters">
-										<li>
-											<h5>options: <a href="iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a></h5>
-										</li>
-									</ul>
-									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>lowerBound: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+							<li>
+								<h5>upperBound: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
 			</section>
 		</section>
 		<footer class="with-border-bottom">

@@ -115,7 +115,7 @@ const getPrefetchViewWidth = (start, stop) => {
 
 planner.getAllStops().then(stops => {
   for (const stop of stops) {
-    if (stop["http://semweb.mmlab.be/ns/stoptimes#avgStopTimes"] > 100) {
+    if (stop["avgStopTimes"] > 100000) {
       const marker = L.marker([stop.latitude, stop.longitude]).addTo(map);
 
       marker.bindPopup(stop.name);

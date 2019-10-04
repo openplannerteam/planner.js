@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>HydraPageParser | plannerjs</title>
+	<title>ConnectionsProviderDefault | plannerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2376,22 +2376,34 @@ img {
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class="current tsd-kind-class">
-			<a href="hydrapageparser.html" class="tsd-kind-icon">Hydra<wbr>Page<wbr>Parser</a>
+			<a href="connectionsproviderdefault.html" class="tsd-kind-icon">Connections<wbr>Provider<wbr>Default</a>
 			<ul>
 				<li class=" tsd-kind-constructor tsd-parent-kind-class">
-					<a href="hydrapageparser.html#constructor" class="tsd-kind-icon">constructor</a>
+					<a href="connectionsproviderdefault.html#constructor" class="tsd-kind-icon">constructor</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a href="connectionsproviderdefault.html#accessurl" class="tsd-kind-icon">access<wbr>Url</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a href="connectionsproviderdefault.html#fetcher" class="tsd-kind-icon">fetcher</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a href="connectionsproviderdefault.html#pages" class="tsd-kind-icon">pages</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="hydrapageparser.html#getnextpageiri" class="tsd-kind-icon">get<wbr>Next<wbr>Page<wbr>Iri</a>
+					<a href="connectionsproviderdefault.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="hydrapageparser.html#getpage" class="tsd-kind-icon">get<wbr>Page</a>
+					<a href="connectionsproviderdefault.html#getbytime" class="tsd-kind-icon">get<wbr>ByTime</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="hydrapageparser.html#getpreviouspageiri" class="tsd-kind-icon">get<wbr>Previous<wbr>Page<wbr>Iri</a>
+					<a href="connectionsproviderdefault.html#getbyurl" class="tsd-kind-icon">get<wbr>ByUrl</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="hydrapageparser.html#getsearchtemplate" class="tsd-kind-icon">get<wbr>Search<wbr>Template</a>
+					<a href="connectionsproviderdefault.html#getidfortime" class="tsd-kind-icon">get<wbr>IdFor<wbr>Time</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="connectionsproviderdefault.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a>
 				</li>
 			</ul>
 		</li>
@@ -2399,20 +2411,18 @@ img {
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
-		<section class="tsd-panel tsd-comment">
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Searches the given array of triples for hydra meta data, like the search template and next/previous page iris
-					Also allows getting the contained <a href="../interfaces/ihydrapage.html">IHydraPage</a>, which holds an array of <a href="../interfaces/iconnection.html">IConnection</a>s</p>
-				</div>
-			</div>
-		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">HydraPageParser</span>
+					<span class="target">ConnectionsProviderDefault</span>
 				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel">
+			<h3>Implements</h3>
+			<ul class="tsd-hierarchy">
+				<li><a href="../interfaces/iconnectionsprovider.html" class="tsd-signature-type">IConnectionsProvider</a></li>
 			</ul>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
@@ -2422,16 +2432,25 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="hydrapageparser.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="connectionsproviderdefault.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section tsd-is-private-protected">
+						<h3>Properties</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="connectionsproviderdefault.html#accessurl" class="tsd-kind-icon">access<wbr>Url</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="connectionsproviderdefault.html#fetcher" class="tsd-kind-icon">fetcher</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="connectionsproviderdefault.html#pages" class="tsd-kind-icon">pages</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="hydrapageparser.html#getnextpageiri" class="tsd-kind-icon">get<wbr>Next<wbr>Page<wbr>Iri</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="hydrapageparser.html#getpage" class="tsd-kind-icon">get<wbr>Page</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="hydrapageparser.html#getpreviouspageiri" class="tsd-kind-icon">get<wbr>Previous<wbr>Page<wbr>Iri</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="hydrapageparser.html#getsearchtemplate" class="tsd-kind-icon">get<wbr>Search<wbr>Template</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsproviderdefault.html#createiterator" class="tsd-kind-icon">create<wbr>Iterator</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsproviderdefault.html#getbytime" class="tsd-kind-icon">get<wbr>ByTime</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsproviderdefault.html#getbyurl" class="tsd-kind-icon">get<wbr>ByUrl</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsproviderdefault.html#getidfortime" class="tsd-kind-icon">get<wbr>IdFor<wbr>Time</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="connectionsproviderdefault.html#prefetchconnections" class="tsd-kind-icon">prefetch<wbr>Connections</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2443,99 +2462,183 @@ img {
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Hydra<wbr>Page<wbr>Parser<span class="tsd-signature-symbol">(</span>triples<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Triple</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hydrapageparser.html" class="tsd-signature-type">HydraPageParser</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Connections<wbr>Provider<wbr>Default<span class="tsd-signature-symbol">(</span>connectionsFetcherFactory<span class="tsd-signature-symbol">: </span><a href="../globals.html#types.connectionsfetcherfactory" class="tsd-signature-type">ConnectionsFetcherFactory</a>, catalog<span class="tsd-signature-symbol">: </span><a href="catalog.html" class="tsd-signature-type">Catalog</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="connectionsproviderdefault.html" class="tsd-signature-type">ConnectionsProviderDefault</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/hydra/HydraPageParser.ts#L12">fetcher/connections/hydra/HydraPageParser.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L18">fetcher/connections/ConnectionsProviderDefault.ts:18</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>triples: <span class="tsd-signature-type">Triple</span><span class="tsd-signature-symbol">[]</span></h5>
+								<h5>connectionsFetcherFactory: <a href="../globals.html#types.connectionsfetcherfactory" class="tsd-signature-type">ConnectionsFetcherFactory</a></h5>
+							</li>
+							<li>
+								<h5>catalog: <a href="catalog.html" class="tsd-signature-type">Catalog</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="hydrapageparser.html" class="tsd-signature-type">HydraPageParser</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="connectionsproviderdefault.html" class="tsd-signature-type">ConnectionsProviderDefault</a></h4>
 					</li>
 				</ul>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
+			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+				<a name="accessurl" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> access<wbr>Url</h3>
+				<div class="tsd-signature tsd-kind-icon">access<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L18">fetcher/connections/ConnectionsProviderDefault.ts:18</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+				<a name="fetcher" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> fetcher</h3>
+				<div class="tsd-signature tsd-kind-icon">fetcher<span class="tsd-signature-symbol">:</span> <a href="../interfaces/iconnectionsfetcher.html" class="tsd-signature-type">IConnectionsFetcher</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L16">fetcher/connections/ConnectionsProviderDefault.ts:16</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+				<a name="pages" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagProtected">Protected</span> pages</h3>
+				<div class="tsd-signature tsd-kind-icon">pages<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ilinkedconnectionspageindex.html" class="tsd-signature-type">ILinkedConnectionsPageIndex</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L17">fetcher/connections/ConnectionsProviderDefault.ts:17</a></li>
+					</ul>
+				</aside>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="getnextpageiri" class="tsd-anchor"></a>
-				<h3>get<wbr>Next<wbr>Page<wbr>Iri</h3>
+				<a name="createiterator" class="tsd-anchor"></a>
+				<h3>create<wbr>Iterator</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Next<wbr>Page<wbr>Iri<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					<li class="tsd-signature tsd-kind-icon">create<wbr>Iterator<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/iconnectionsprovider.html">IConnectionsProvider</a>.<a href="../interfaces/iconnectionsprovider.html#createiterator">createIterator</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/hydra/HydraPageParser.ts#L40">fetcher/connections/hydra/HydraPageParser.ts:40</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="getpage" class="tsd-anchor"></a>
-				<h3>get<wbr>Page</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Page<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/ihydrapage.html" class="tsd-signature-type">IHydraPage</a></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/hydra/HydraPageParser.ts#L19">fetcher/connections/hydra/HydraPageParser.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L56">fetcher/connections/ConnectionsProviderDefault.ts:56</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>index: <span class="tsd-signature-type">number</span></h5>
+								<h5>options: <a href="../interfaces/iconnectionsiteratoroptions.html" class="tsd-signature-type">IConnectionsIteratorOptions</a></h5>
 							</li>
 						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="../interfaces/ihydrapage.html" class="tsd-signature-type">IHydraPage</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="_asynciterator_.asynciterator.html" class="tsd-signature-type">AsyncIterator</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/iconnection.html" class="tsd-signature-type">IConnection</a><span class="tsd-signature-symbol">&gt;</span></h4>
 					</li>
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="getpreviouspageiri" class="tsd-anchor"></a>
-				<h3>get<wbr>Previous<wbr>Page<wbr>Iri</h3>
+				<a name="getbytime" class="tsd-anchor"></a>
+				<h3>get<wbr>ByTime</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Previous<wbr>Page<wbr>Iri<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>ByTime<span class="tsd-signature-symbol">(</span>date<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/iconnectionsprovider.html">IConnectionsProvider</a>.<a href="../interfaces/iconnectionsprovider.html#getbytime">getByTime</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L41">fetcher/connections/ConnectionsProviderDefault.ts:41</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>date: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getbyurl" class="tsd-anchor"></a>
+				<h3>get<wbr>ByUrl</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>ByUrl<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/iconnectionsprovider.html">IConnectionsProvider</a>.<a href="../interfaces/iconnectionsprovider.html#getbyurl">getByUrl</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L33">fetcher/connections/ConnectionsProviderDefault.ts:33</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>url: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="linkedconnectionspage.html" class="tsd-signature-type">LinkedConnectionsPage</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getidfortime" class="tsd-anchor"></a>
+				<h3>get<wbr>IdFor<wbr>Time</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>IdFor<wbr>Time<span class="tsd-signature-symbol">(</span>date<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/hydra/HydraPageParser.ts#L50">fetcher/connections/hydra/HydraPageParser.ts:50</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L47">fetcher/connections/ConnectionsProviderDefault.ts:47</a></li>
 							</ul>
 						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>date: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 					</li>
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="getsearchtemplate" class="tsd-anchor"></a>
-				<h3>get<wbr>Search<wbr>Template</h3>
+				<a name="prefetchconnections" class="tsd-anchor"></a>
+				<h3>prefetch<wbr>Connections</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Search<wbr>Template<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">UriTemplate</span></li>
+					<li class="tsd-signature tsd-kind-icon">prefetch<wbr>Connections<span class="tsd-signature-symbol">(</span>lowerBound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span>, upperBound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/iconnectionsprovider.html">IConnectionsProvider</a>.<a href="../interfaces/iconnectionsprovider.html#prefetchconnections">prefetchConnections</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/cbdc4d8/src/fetcher/connections/hydra/HydraPageParser.ts#L27">fetcher/connections/hydra/HydraPageParser.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/5d031f4/src/fetcher/connections/ConnectionsProviderDefault.ts#L51">fetcher/connections/ConnectionsProviderDefault.ts:51</a></li>
 							</ul>
 						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">UriTemplate</span></h4>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>lowerBound: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+							<li>
+								<h5>upperBound: <span class="tsd-signature-type">Date</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
 			</section>
