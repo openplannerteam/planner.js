@@ -61,9 +61,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   protected readonly finalReachableStopsFinder: IReachableStopsFinder;
   protected readonly eventBus: EventEmitter;
 
-  protected finalReachableStops: IFinalReachableStops = {};
-  protected profilesByStop: IProfileByStop = {}; // S
-  protected enterConnectionByTrip: IEnterConnectionByTrip = {}; // T
+  protected finalReachableStops: IFinalReachableStops;
+  protected profilesByStop: IProfileByStop; // S
+  protected enterConnectionByTrip: IEnterConnectionByTrip; // T
 
   protected footpathsQueue: FootpathQueue;
   protected connectionsQueue: AsyncIterator<IConnection>;
@@ -95,6 +95,11 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+    // reset state
+    this.finalReachableStops = {};
+    this.profilesByStop = {};
+    this.enterConnectionByTrip = {};
+
     const {
       minimumDepartureTime: lowerBoundDate,
       maximumArrivalTime: upperBoundDate,
