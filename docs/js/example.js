@@ -464,7 +464,6 @@ function drawLineBetweenPoints(line, travelMode, color) {
 }
 
 function runQuery(query) {
-  console.log(document.getElementById("loading"));
   document.getElementById('loading').style.display = 'block';
 
   const departureCircle = L.circle([query[0].latitude, query[0].longitude], {
