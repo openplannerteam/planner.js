@@ -198,7 +198,7 @@ input:checked+.slider:before {
     display: none;
     position: fixed;
     z-index: 900;
-    left: 45%;
-    top: 45%;
-    width: 10%;
+    left: 89%;
+    top: 80%;
+    width: 9%;
 }
