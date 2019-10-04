@@ -122,6 +122,12 @@ planner.getAllStops().then(stops => {
 
       allStops.push(marker);
 
+      marker.on('mouseover', e => {
+        marker.openPopup();
+      });
+      marker.on('mouseout', e => {
+        marker.closePopup();
+      });
       marker.on("click", e => {
         selectRoute(e, stop.id);
       });
@@ -498,7 +504,6 @@ function runQuery(query) {
       console.error(error);
     })
     .on("data", async path => {
-      document.getElementById('loading').style.display = 'none';
       const completePath = await planner.completePath(path);
       console.log('Path', completePath);
       i++;
@@ -508,6 +513,7 @@ function runQuery(query) {
 
     })
     .on("end", () => {
+      document.getElementById('loading').style.display = 'none';
       if (i < amount) {
         const noMore = document.createElement("div");
         noMore.className = "path";
