@@ -1,17 +1,15 @@
 import { Container, interfaces } from "inversify";
 import Catalog from "../Catalog";
-import catalogOVl from "../catalog.delijn.oostvlaanderen";
-import catalogMivb from "../catalog.mivb";
 import catalogNmbs from "../catalog.nmbs";
 import Context from "../Context";
 import RoutableTileRegistry from "../entities/tiles/registry";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
+import ConnectionsFetcherRaw from "../fetcher/connections/ConnectionsFetcherRaw";
+import ConnectionsProviderDefault from "../fetcher/connections/ConnectionsProviderDefault";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
-import ConnectionsFetcherLazy from "../fetcher/connections/lazy/ConnectionsFetcherLazy";
-import ConnectionsProviderPrefetch from "../fetcher/connections/prefetch/ConnectionsProviderPrefetch";
 import FootpathsProviderDefault from "../fetcher/footpaths/FootpathsProviderDefault";
 import IFootpathsFetcher from "../fetcher/footpaths/IFootpathsProvider";
 import LDFetch from "../fetcher/LDFetch";
@@ -21,7 +19,7 @@ import ProfileFetcherDefault from "../fetcher/profiles/ProfileFetcherDefault";
 import ProfileProviderDefault from "../fetcher/profiles/ProfileProviderDefault";
 import IStopsFetcher from "../fetcher/stops/IStopsFetcher";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
-import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import StopsFetcherRaw from "../fetcher/stops/StopsFetcherRaw";
 import StopsProviderDefault from "../fetcher/stops/StopsProviderDefault";
 import IRoutableTileFetcher from "../fetcher/tiles/IRoutableTileFetcher";
 import IRoutableTileProvider from "../fetcher/tiles/IRoutableTileProvider";
@@ -81,15 +79,14 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPrefetch).inSingletonScope();
-container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderDefault).inSingletonScope();
+container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherRaw);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(
     (context: interfaces.Context) =>
       (accessUrl: string, travelMode: TravelMode) => {
-        const fetcher = context.container.get<ConnectionsFetcherLazy>(TYPES.ConnectionsFetcher);
+        const fetcher = context.container.get<IConnectionsFetcher>(TYPES.ConnectionsFetcher);
 
-        fetcher.setAccessUrl(accessUrl);
         fetcher.setTravelMode(travelMode);
 
         return fetcher;
@@ -97,12 +94,12 @@ container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcher
   );
 
 container.bind<IStopsProvider>(TYPES.StopsProvider).to(StopsProviderDefault).inSingletonScope();
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherLDFetch);
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherRaw);
 container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   .toFactory<IStopsFetcher>(
     (context: interfaces.Context) =>
       (accessUrl: string) => {
-        const fetcher = context.container.get<StopsFetcherLDFetch>(TYPES.StopsFetcher);
+        const fetcher = context.container.get<StopsFetcherRaw>(TYPES.StopsFetcher);
         fetcher.setAccessUrl(accessUrl);
         return fetcher;
       },

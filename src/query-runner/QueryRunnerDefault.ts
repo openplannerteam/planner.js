@@ -77,10 +77,9 @@ export default class QueryRunnerDefault implements IQueryRunner {
       resolvedQuery.maximumArrivalTime = maximumArrivalTime;
 
     } else {
-      const newMaximumArrivalTime = new Date(resolvedQuery.minimumDepartureTime);
-      newMaximumArrivalTime.setHours(newMaximumArrivalTime.getHours() + 2);
-
-      resolvedQuery.maximumArrivalTime = newMaximumArrivalTime;
+      const { minimumDepartureTime: newDepartureTime } = resolvedQuery;
+      resolvedQuery.maximumArrivalTime = new Date(newDepartureTime.getTime()
+        + 12 * 60 * 60 * 1000);
     }
 
     try {

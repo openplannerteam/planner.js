@@ -10,12 +10,10 @@ import RoutableTileRegistry from "./entities/tiles/registry";
 import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
 import RoutingPhase from "./enums/RoutingPhase";
 import TravelMode from "./enums/TravelMode";
-import EventBus from "./events/EventBus";
-import ConnectionsProviderMerge from "./fetcher/connections/ConnectionsProviderMerge";
+import ConnectionsFetcherRaw from "./fetcher/connections/ConnectionsFetcherRaw";
+import ConnectionsProviderDefault from "./fetcher/connections/ConnectionsProviderDefault";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "./fetcher/connections/IConnectionsProvider";
-import ConnectionsFetcherLazy from "./fetcher/connections/lazy/ConnectionsFetcherLazy";
-import ConnectionsProviderPrefetch from "./fetcher/connections/prefetch/ConnectionsProviderPrefetch";
 import FootpathsProviderDefault from "./fetcher/footpaths/FootpathsProviderDefault";
 import IFootpathsFetcher from "./fetcher/footpaths/IFootpathsProvider";
 import LDFetch from "./fetcher/LDFetch";
@@ -41,21 +39,14 @@ import { Dijkstra } from "./pathfinding/dijkstra/Dijkstra";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "./pathfinding/pathfinder";
 import PathfinderProvider from "./pathfinding/PathfinderProvider";
 import CSAEarliestArrival from "./planner/public-transport/CSAEarliestArrival";
-import CSAProfile from "./planner/public-transport/CSAProfile";
 import IJourneyExtractor from "./planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "./planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractorProfile from "./planner/public-transport/JourneyExtractorProfile";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
-import RoadPlannerBirdsEye from "./planner/road/RoadPlannerBirdsEye";
 import RoadPlannerPathfinding from "./planner/road/RoadPlannerPathfinding";
-import RoadPlannerPathfindingExperimental from "./planner/road/RoadPlannerPathfindingExperimental";
 import IReachableStopsFinder from "./planner/stops/IReachableStopsFinder";
-import ReachableStopsFinderBirdsEyeCached from "./planner/stops/ReachableStopsFinderBirdsEyeCached";
 import ReachableStopsFinderDelaunay from "./planner/stops/ReachableStopsFinderDelaunay";
 import ReachableStopsFinderFootpaths from "./planner/stops/ReachableStopsFinderFootpaths";
-import ReachableStopsFinderOnlySelf from "./planner/stops/ReachableStopsFinderOnlySelf";
-import ReachableStopsFinderRoadPlanner from "./planner/stops/ReachableStopsFinderRoadPlanner";
-import ReachableStopsFinderRoadPlannerCached from "./planner/stops/ReachableStopsFinderRoadPlannerCached";
 import QueryRunnerExponential from "./query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "./query-runner/ILocationResolver";
 import IQueryRunner from "./query-runner/IQueryRunner";
@@ -92,17 +83,14 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderPrefetch).inSingletonScope();
-container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherLazy);
+container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderDefault).inSingletonScope();
+container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherRaw);
 container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcherFactory)
   .toFactory<IConnectionsFetcher>(
     (context: interfaces.Context) =>
-      (accessUrl: string, travelMode: TravelMode) => {
-        const fetcher = context.container.get<ConnectionsFetcherLazy>(TYPES.ConnectionsFetcher);
-
-        fetcher.setAccessUrl(accessUrl);
+      (travelMode: TravelMode) => {
+        const fetcher = context.container.get<ConnectionsFetcherRaw>(TYPES.ConnectionsFetcher);
         fetcher.setTravelMode(travelMode);
-
         return fetcher;
       },
   );

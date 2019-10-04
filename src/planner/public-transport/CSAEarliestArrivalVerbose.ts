@@ -1,8 +1,8 @@
 import { inject, injectable, tagged } from "inversify";
+import IConnection from "../../entities/connections/connections";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
-import IConnection from "../../fetcher/connections/IConnection";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";

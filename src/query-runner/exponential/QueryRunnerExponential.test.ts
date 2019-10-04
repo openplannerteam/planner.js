@@ -1,8 +1,10 @@
 import "jest";
 import LDFetch from "ldfetch";
+import Catalog from "../../Catalog";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
-import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
+import ConnectionsFetcherRaw from "../../fetcher/connections/ConnectionsFetcherRaw";
+import ConnectionsProviderDefault from "../../fetcher/connections/ConnectionsProviderDefault";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import ILeg from "../../interfaces/ILeg";
 import IPath from "../../interfaces/IPath";
@@ -14,7 +16,7 @@ import LocationResolverDefault from "../LocationResolverDefault";
 import QueryRunnerExponential from "./QueryRunnerExponential";
 
 describe("[QueryRunnerExponential]", () => {
-  jest.setTimeout(100000);
+  jest.setTimeout(300000);
 
   let publicTransportResult;
 
@@ -28,12 +30,17 @@ describe("[QueryRunnerExponential]", () => {
   const createExponentialQueryRunner = () => {
     const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-    const connectionFetcher = new ConnectionsFetcherLazy(ldFetch);
-    connectionFetcher.setTravelMode(TravelMode.Train);
-    connectionFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
-
+    const connectionsFetcher = new ConnectionsFetcherRaw();
     const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
     stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
+
+    const catalog = new Catalog();
+    catalog.addConnectionsSource("https://graph.irail.be/sncb/connections", TravelMode.Train);
+
+    const connectionProvider = new ConnectionsProviderDefault((travelMode: TravelMode) => {
+      connectionsFetcher.setTravelMode(travelMode);
+      return connectionsFetcher;
+    }, catalog);
 
     const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
@@ -46,7 +53,7 @@ describe("[QueryRunnerExponential]", () => {
 
     const createPlanner = () => {
       return new CSAProfile(
-        connectionFetcher,
+        connectionProvider,
         locationResolver,
         reachableStopsFinder,
         reachableStopsFinder,

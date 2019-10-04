@@ -1,5 +1,5 @@
+import IConnection from "../../../../entities/connections/connections";
 import DropOffType from "../../../../enums/DropOffType";
-import IConnection from "../../../../fetcher/connections/IConnection";
 import { DurationMs } from "../../../../interfaces/units";
 import IArrivalTimeByTransfers from "../data-structure/IArrivalTimeByTransfers";
 import IProfilesByStop from "../data-structure/stops/IProfilesByStop";

@@ -44,5 +44,4 @@ const TYPES = {
 export default TYPES;
 
 export type StopsFetcherFactory = (accessUrl: string) => IStopsFetcher;
-export type ConnectionsFetcherFactory = (accessUrl: string, travelMode: TravelMode) => IConnectionsFetcher;
-export type RoutableTilesFetcherFactory = (accesUrl: string) => IRoutableTileFetcher;
+export type ConnectionsFetcherFactory = (travelMode: TravelMode) => IConnectionsFetcher;

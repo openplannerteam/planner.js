@@ -132,13 +132,11 @@ export default abstract class Planner {
     }
   }
 
-  public prefetchConnections(): void {
+  public prefetchConnections(from: Date, to: Date): void {
+    // TODO, get rid of service locator anti-pattern
     const container = this.context.getContainer();
     const connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
-
-    if (connectionsProvider) {
-      connectionsProvider.prefetchConnections();
-    }
+    connectionsProvider.prefetchConnections(from, to);
   }
 
   public async setDevelopmentProfile(blob: object) {
