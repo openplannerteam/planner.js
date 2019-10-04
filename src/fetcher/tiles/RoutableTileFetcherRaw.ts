@@ -47,6 +47,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
   }
 
   public async get(url: string): Promise<RoutableTile> {
+    const beginTime = new Date();
     const response = await fetch(url);
     const responseText = await response.text();
     if (response.status !== 200) {
@@ -67,6 +68,9 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
           ways[way.id] = way;
         }
       }
+
+      const duration = (new Date()).getTime() - beginTime.getTime();
+      EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
 
       return this.processTileData(url, nodes, ways);
     } else {
