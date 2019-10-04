@@ -1,8 +1,10 @@
 import TravelMode from "./enums/TravelMode";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
+import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTileFetcher";
 
 const TYPES = {
+  EventBus: Symbol("EventBus"),
   Context: Symbol("Context"),
   QueryRunner: Symbol("QueryRunner"),
   LocationResolver: Symbol("LocationResolver"),
@@ -15,19 +17,31 @@ const TYPES = {
   StopsFetcher: Symbol("StopsFetcher"),
   StopsFetcherFactory: Symbol("StopsFetcherFactory"),
 
+  RoutableTileProvider: Symbol("TileProvider"),
+  RoutableTileFetcher: Symbol("TileFetcher"),
+  RoutableTileRegistry: Symbol("RoutableTileRegistry"),
+
+  FootpathsProvider: Symbol("FootpathsProvider"),
+
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),
   PublicTransportPlannerFactory: Symbol("PublicTransportPlannerFactory"),
 
+  ProfileFetcher: Symbol("ProfileFetcher"),
+  ProfileProvider: Symbol("ProfileProvider"),
   RoadPlanner: Symbol("RoadPlanner"),
   RoadPlannerFactory: Symbol("RoadPlannerFactory"),
+  PathfinderProvider: Symbol("PathfinderProvider"),
+  ShortestPathAlgorithm: Symbol("ShortestPathAlgorithm"),
+  ShortestPathTreeAlgorithm: Symbol("ShortestPathTreeAlgorithm"),
 
   ReachableStopsFinder: Symbol("ReachableStopsFinder"),
   JourneyExtractor: Symbol("JourneyExtractor"),
   LDFetch: Symbol("LDFetch"),
+  LDLoader: Symbol("LDLoader"),
   Catalog: Symbol("Catalog"),
 };
 
 export default TYPES;
 
 export type StopsFetcherFactory = (accessUrl: string) => IStopsFetcher;
-export type ConnectionsFetcherFactory = (accessUrl: string, travelMode: TravelMode) => IConnectionsFetcher;
+export type ConnectionsFetcherFactory = (travelMode: TravelMode) => IConnectionsFetcher;

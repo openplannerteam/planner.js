@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
+import { EventEmitter } from "events";
+import { injectable } from "inversify";
 import LDFetchBase from "ldfetch";
 import { Triple } from "rdf-js";
-import Context from "../Context";
-import EventType from "../enums/EventType";
-import TYPES from "../types";
+import EventBus from "../events/EventBus";
+import EventType from "../events/EventType";
 
 export interface ILDFetchResponse {
   triples: Triple[];
@@ -17,15 +17,13 @@ export interface ILDFetchResponse {
  */
 @injectable()
 export default class LDFetch implements LDFetchBase {
-  private context: Context;
+  private eventBus: EventEmitter;
   private ldFetchBase: LDFetchBase;
   private httpStartTimes: { [url: string]: Date };
 
-  constructor(
-    @inject(TYPES.Context) context: Context,
-  ) {
+  constructor() {
     this.ldFetchBase = new LDFetchBase({ headers: { Accept: "application/ld+json" } });
-    this.context = context;
+    this.eventBus = EventBus.getInstance();
 
     this.setupEvents();
   }
@@ -42,7 +40,7 @@ export default class LDFetch implements LDFetchBase {
     this.ldFetchBase.on("response", (url) => {
       const duration = (new Date()).getTime() - this.httpStartTimes[url].getTime();
 
-      this.context.emit(EventType.LDFetchGet, url, duration);
+      this.eventBus.emit(EventType.LDFetchGet, url, duration);
     });
   }
 }

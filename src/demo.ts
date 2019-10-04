@@ -1,26 +1,26 @@
-import EventType from "./enums/EventType";
-import Planner from "./index";
+import { BasicTrainPlanner } from ".";
+import EventBus from "./events/EventBus";
+import EventType from "./events/EventType";
 import IPath from "./interfaces/IPath";
 import Units from "./util/Units";
 
 export default async (logResults) => {
 
-  const planner = new Planner();
-
-  planner.prefetchStops();
-  planner.prefetchConnections();
+  const planner = new BasicTrainPlanner();
 
   if (logResults) {
     let scannedPages = 0;
     let scannedConnections = 0;
 
+    const eventBus = EventBus.getInstance();
+
     // let logFetch = true;
 
     if (logResults) {
-      console.log("Start prefetch");
+      console.log(`${new Date()} Start prefetch`);
     }
 
-    planner
+    eventBus
       .on(EventType.InvalidQuery, (error) => {
         console.log("InvalidQuery", error);
       })
@@ -56,28 +56,33 @@ export default async (logResults) => {
       });
   }
 
-  return wait(5000)
-    .then(() => new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
       if (logResults) {
-        console.log("Start query");
+        console.log(`${new Date()} Start query`);
       }
 
-      const amount = 3;
+      const amount = 1;
       let i = 0;
 
-      planner.query({
-        publicTransportOnly: true,
-        // from: "https://data.delijn.be/stops/201657",
-        // to: "https://data.delijn.be/stops/205910",
-        // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-        // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
-        // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
-        // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-        from: "Ingelmunster", // Ingelmunster
-        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-        minimumDepartureTime: new Date(),
-        maximumTransferDuration: Units.fromMinutes(30),
-      })
+      planner
+        .setProfileID("https://hdelva.be/profile/pedestrian")
+        .query({
+          // roadNetworkOnly: true,
+          // from: "https://data.delijn.be/stops/201657",
+          // to: "https://data.delijn.be/stops/205910",
+          // from: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
+          // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
+          // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
+          // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
+          // from: "Ingelmunster", // Ingelmunster
+          // to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+          from: { latitude: 50.93278, longitude: 5.32665 }, // Pita Aladin, Hasselt
+          to: { latitude: 50.7980187, longitude: 3.1877779 }, // Burger Pita Pasta, Menen
+          // from: "Hasselt",
+          // to: "Kortrijk",
+          minimumDepartureTime: new Date(),
+          maximumTransferDuration: Units.fromMinutes(30),
+        })
         .take(amount)
         .on("error", (error) => {
           resolve(false);
@@ -86,6 +91,7 @@ export default async (logResults) => {
           ++i;
 
           if (logResults) {
+            console.log(new Date());
             console.log(i);
             console.log(JSON.stringify(path, null, " "));
             console.log("\n");
@@ -98,7 +104,5 @@ export default async (logResults) => {
         .on("end", () => {
           resolve(false);
         });
-    }));
+    });
 };
-
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

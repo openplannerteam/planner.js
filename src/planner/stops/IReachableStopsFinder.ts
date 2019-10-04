@@ -1,5 +1,6 @@
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import IStop from "../../fetcher/stops/IStop";
+import ILocation from "../../interfaces/ILocation";
 import { DurationMs, SpeedKmH } from "../../interfaces/units";
 
 /**
@@ -8,10 +9,11 @@ import { DurationMs, SpeedKmH } from "../../interfaces/units";
  */
 export default interface IReachableStopsFinder {
   findReachableStops: (
-    sourceOrTargetStop: IStop,
+    sourceOrTargetStop: ILocation,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedKmH,
+    profileID: string,
   ) => Promise<IReachableStop[]>;
 }
 
@@ -21,4 +23,5 @@ export default interface IReachableStopsFinder {
 export interface IReachableStop {
   stop: IStop;
   duration: DurationMs;
+  id?: string;
 }

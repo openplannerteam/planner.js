@@ -1,11 +1,13 @@
 import "jest";
 import LDFetch from "ldfetch";
-import Context from "../../Context";
+import Catalog from "../../Catalog";
+import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
-import ConnectionsFetcherLazy from "../../fetcher/connections/lazy/ConnectionsFetcherLazy";
+import ConnectionsFetcherRaw from "../../fetcher/connections/ConnectionsFetcherRaw";
+import ConnectionsProviderDefault from "../../fetcher/connections/ConnectionsProviderDefault";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import ILeg from "../../interfaces/ILeg";
 import IPath from "../../interfaces/IPath";
-import IStep from "../../interfaces/IStep";
 import CSAProfile from "../../planner/public-transport/CSAProfile";
 import JourneyExtractorProfile from "../../planner/public-transport/JourneyExtractorProfile";
 import ReachableStopsFinderBirdsEyeCached from "../../planner/stops/ReachableStopsFinderBirdsEyeCached";
@@ -14,12 +16,11 @@ import LocationResolverDefault from "../LocationResolverDefault";
 import QueryRunnerExponential from "./QueryRunnerExponential";
 
 describe("[QueryRunnerExponential]", () => {
-  jest.setTimeout(100000);
+  jest.setTimeout(300000);
 
   let publicTransportResult;
 
   const query = {
-    publicTransportOnly: true,
     from: "http://irail.be/stations/NMBS/008896925", // Ingelmunster
     to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
     minimumDepartureTime: new Date(),
@@ -29,17 +30,20 @@ describe("[QueryRunnerExponential]", () => {
   const createExponentialQueryRunner = () => {
     const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-    const connectionFetcher = new ConnectionsFetcherLazy(ldFetch);
-    connectionFetcher.setTravelMode(TravelMode.Train);
-    connectionFetcher.setAccessUrl("https://graph.irail.be/sncb/connections");
-
+    const connectionsFetcher = new ConnectionsFetcherRaw();
     const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
     stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-    const locationResolver = new LocationResolverDefault(stopsFetcher);
-    const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
+    const catalog = new Catalog();
+    catalog.addConnectionsSource("https://graph.irail.be/sncb/connections", TravelMode.Train);
 
-    const context = new Context();
+    const connectionProvider = new ConnectionsProviderDefault((travelMode: TravelMode) => {
+      connectionsFetcher.setTravelMode(travelMode);
+      return connectionsFetcher;
+    }, catalog);
+
+    const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+    const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
     const createJourneyExtractor = () => {
       return new JourneyExtractorProfile(
@@ -49,7 +53,7 @@ describe("[QueryRunnerExponential]", () => {
 
     const createPlanner = () => {
       return new CSAProfile(
-        connectionFetcher,
+        connectionProvider,
         locationResolver,
         reachableStopsFinder,
         reachableStopsFinder,
@@ -58,7 +62,7 @@ describe("[QueryRunnerExponential]", () => {
       );
     };
 
-    return new QueryRunnerExponential(context, locationResolver, createPlanner);
+    return new QueryRunnerExponential(locationResolver, createPlanner, undefined);
   };
 
   const result: IPath[] = [];
@@ -83,20 +87,20 @@ describe("[QueryRunnerExponential]", () => {
   });
 });
 
-const checkStops = (result, query) => {
+const checkStops = (result: IPath[], query) => {
   expect(result).toBeDefined();
   expect(result.length).toBeGreaterThanOrEqual(1);
 
   for (const path of result) {
-    expect(path.steps).toBeDefined();
+    expect(path.legs).toBeDefined();
 
-    expect(path.steps.length).toBeGreaterThanOrEqual(1);
+    expect(path.legs.length).toBeGreaterThanOrEqual(1);
 
     let currentLocation = query.from;
-    path.steps.forEach((step: IStep) => {
-      expect(step).toBeDefined();
-      expect(currentLocation).toEqual(step.startLocation.id);
-      currentLocation = step.stopLocation.id;
+    path.legs.forEach((leg: ILeg) => {
+      expect(leg).toBeDefined();
+      expect(currentLocation).toEqual(leg.getStartLocation().id);
+      currentLocation = leg.getStopLocation().id;
     });
 
     expect(query.to).toEqual(currentLocation);

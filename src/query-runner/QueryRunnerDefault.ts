@@ -7,6 +7,7 @@ import ILocation from "../interfaces/ILocation";
 import IPath from "../interfaces/IPath";
 import IQuery from "../interfaces/IQuery";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
+import IRoadPlanner from "../planner/road/IRoadPlanner";
 import TYPES from "../types";
 import Units from "../util/Units";
 import ILocationResolver from "./ILocationResolver";
@@ -14,37 +15,35 @@ import IQueryRunner from "./IQueryRunner";
 import IResolvedQuery from "./IResolvedQuery";
 
 /**
- * This default query runner only accepts public transport queries (`publicTransportOnly = true`).
- * It uses the registered [[IPublicTransportPlanner]] to execute them.
- *
  * The default `minimumDepartureTime` is *now*. The default `maximumArrivalTime` is `minimumDepartureTime + 2 hours`.
  */
 @injectable()
 export default class QueryRunnerDefault implements IQueryRunner {
   private locationResolver: ILocationResolver;
   private publicTransportPlanner: IPublicTransportPlanner;
+  private roadPlanner: IRoadPlanner;
 
   constructor(
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     @inject(TYPES.PublicTransportPlanner) publicTransportPlanner: IPublicTransportPlanner,
+    @inject(TYPES.RoadPlanner) roadPlanner: IRoadPlanner,
   ) {
     this.locationResolver = locationResolver;
     this.publicTransportPlanner = publicTransportPlanner;
+    this.roadPlanner = roadPlanner;
   }
 
   public async run(query: IQuery): Promise<AsyncIterator<IPath>> {
     const resolvedQuery: IResolvedQuery = await this.resolveQuery(query);
 
-    if (resolvedQuery.publicTransportOnly) {
-      return this.publicTransportPlanner.plan(resolvedQuery);
-
+    if (resolvedQuery.roadNetworkOnly) {
+      return this.roadPlanner.plan(resolvedQuery);
     } else {
-      throw new InvalidQueryError("Query should have publicTransportOnly = true");
+      return this.publicTransportPlanner.plan(resolvedQuery);
     }
   }
 
   private async resolveEndpoint(endpoint: string | string[] | ILocation | ILocation[]): Promise<ILocation[]> {
-
     if (Array.isArray(endpoint)) {
       const promises = (endpoint as Array<string | ILocation>)
         .map((singleEndpoint: string | ILocation) =>
@@ -52,7 +51,6 @@ export default class QueryRunnerDefault implements IQueryRunner {
         );
 
       return await Promise.all(promises);
-
     } else {
       return [await this.locationResolver.resolve(endpoint)];
     }
@@ -71,7 +69,7 @@ export default class QueryRunnerDefault implements IQueryRunner {
     } = query;
     // tslint:enable:trailing-comma
 
-    const resolvedQuery: IResolvedQuery = Object.assign({}, other);
+    const resolvedQuery: IResolvedQuery = Object.assign({}, other as IResolvedQuery);
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
 
@@ -79,10 +77,9 @@ export default class QueryRunnerDefault implements IQueryRunner {
       resolvedQuery.maximumArrivalTime = maximumArrivalTime;
 
     } else {
-      const newMaximumArrivalTime = new Date(resolvedQuery.minimumDepartureTime);
-      newMaximumArrivalTime.setHours(newMaximumArrivalTime.getHours() + 2);
-
-      resolvedQuery.maximumArrivalTime = newMaximumArrivalTime;
+      const { minimumDepartureTime: newDepartureTime } = resolvedQuery;
+      resolvedQuery.maximumArrivalTime = new Date(newDepartureTime.getTime()
+        + 12 * 60 * 60 * 1000);
     }
 
     try {

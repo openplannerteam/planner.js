@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Isochrone demo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <style>
+        .container {
+            display: flex;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+        #map {
+            width: 1024px;
+            height: 800px;
+        }
+
+        body {
+            font: 16px/1.4 "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .ghbtns {
+            position: relative;
+            top: 4px;
+            margin-left: 5px;
+        }
+
+        a {
+            color: #0077ff;
+        }
+
+        div {
+            float: left;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div style="margin-right: 20px">
+            <p>
+                <input id="profile" type="text" name="profile" value="https://hdelva.be/profile/car"><br><br>
+                <button onclick="setProfile()">Set Profile</button>
+            </p>
+            <p>
+                Latitude:<br>
+                <input id="latitude" type="text" name="latitude" value="50.8599263"><br>
+                Longitude:<br>
+                <input id="longitude" type="text" name="longitude" value="4.3567009"><br><br>
+                <button onclick="newMap()">Move</button>
+            </p>
+            <p>
+                Time (s):<br>
+                <input id="time" type="text" name="time" value="600"><br><br>
+                <button onclick="addIsochrone()">Add Isochrone</button>
+            </p>
+        </div>
+        <br>
+        <div id="map">
+
+        </div>
+    </div>
+
+    <script src="../../../dist/bundle.js"></script>
+    <script>
+
+        let map;
+        let generator;
+        let intermediate;
+        let first = true;
+        let pointsLayer;
+
+        async function drawIsochrone(distance, color) {
+            const data = await generator.getIsochrone(distance, first);
+            first = false;
+            const isochrones = data.isochrones;
+
+            if (intermediate) {
+                map.removeLayer(intermediate);
+            }
+
+            for (const isochrone of isochrones) {
+                const polygonData = [];
+
+                for (const ring of isochrone) {
+                    if (ring.length === 0) {
+                        continue;
+                    }
+                    polygonData.push(ring.map((p) => [p.latitude, p.longitude]));
+                }
+
+                if (polygonData.length > 0) {
+                    var firstpolyline = new L.polygon(polygonData, { smoothFactor: 2, weight: 1, color: color });
+                    firstpolyline.addTo(map);
+                }
+            }
+
+            const points = data.points || [];
+            for (const p of points) {
+                var firstpolyline = new L.marker([p.latitude, p.longitude]);
+                firstpolyline.addTo(map);
+            }
+        }
+
+        function initialize(focus) {
+            if (map) {
+                map.off();
+                map.remove();
+            }
+
+            map = L.map('map', {
+                preferCanvas: true
+            }).setView(focus, 13);
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiaGRlbHZhIiwiYSI6ImNqd2dxNzl3MzBib3Q0YmxiMWdjMWpjM2wifQ.e6piOGj3MqwIpW2ymafjGQ'
+            }).addTo(map);
+
+            pointsLayer = L.layerGroup([]);
+            pointsLayer.addTo(map);
+
+            const point = { latitude: focus[0], longitude: focus[1] };
+            const x = new Planner.IsochroneGenerator(point);
+            x.enableIncrementalResults();
+            x.enableDebugLogs();
+            first = true;
+
+            /*
+            x.on("TILE", (coord) => {
+                const bounds = getTileBoundingBox(coord);
+                L.rectangle(bounds, { color: 'blue', weight: 1, fillOpacity: 0 }).addTo(map);
+            })
+
+            x.on("INTERMEDIATE", (shell) => {
+                if (intermediate) {
+                    map.removeLayer(intermediate);
+                }
+                intermediate = new L.polygon([shell], { smoothFactor: 2, weight: 1, color: '#000000' });
+                intermediate.addTo(map);
+            })
+            */
+
+            Planner.EventBus.on(Planner.EventType.PointReached, (point) => {
+                const wat = [point.latitude, point.longitude];
+                intermediate = L.circleMarker(wat, {
+                    color: 'red',
+                    fillColor: 'black',
+                    fillOpacity: 0.1,
+                    radius: 1,
+                    weight: 0,
+                });
+                pointsLayer.addLayer(intermediate);
+            })
+
+            return x;
+        }
+
+        function newMap() {
+            const latitudeRaw = document.getElementById("latitude").value;
+            const longitudeRaw = document.getElementById("longitude").value;
+
+            const latitude = parseFloat(latitudeRaw);
+            const longitude = parseFloat(longitudeRaw);
+
+            if (latitude && longitude) {
+                generator = initialize([latitude, longitude])
+            }
+        }
+
+        function addIsochrone() {
+            const distanceRaw = document.getElementById("time").value;
+            const distance = parseFloat(distanceRaw);
+            if (distance) {
+                drawIsochrone(distance * 1000, "#b10026")
+            }
+        }
+
+        function tile_to_lat(coordinate) {
+            // from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+            const n = Math.PI - 2 * Math.PI * coordinate.y / Math.pow(2, coordinate.zoom);
+            return (180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))));
+        }
+
+        function tile_to_long(coordinate) {
+            // from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+            return (coordinate.x / Math.pow(2, coordinate.zoom) * 360 - 180);
+        }
+
+        function getTileBoundingBox(coordinate) {
+            const top = tile_to_lat(coordinate);
+            const left = tile_to_long(coordinate);
+
+            const next = {
+                zoom: coordinate.zoom,
+                x: coordinate.x + 1,
+                y: coordinate.y + 1,
+            };
+
+            const bottom = tile_to_lat(next);
+            const right = tile_to_long(next);
+
+            return [[top, left], [bottom, right]];
+        }
+
+        async function setProfile() {
+            newMap();
+            const profileId = document.getElementById("profile").value;
+            generator.setProfileID(profileId);
+            first = true;
+        }
+
+        //newMap();
+        setProfile();
+        addIsochrone();
+
+    </script>
+</body>
+
+</html>

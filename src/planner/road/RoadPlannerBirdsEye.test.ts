@@ -1,5 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
+import RoutableTileRegistry from "../../entities/tiles/registry";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
@@ -13,7 +14,7 @@ const planner: IRoadPlanner = new RoadPlannerBirdsEye();
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-const locationResolver = new LocationResolverDefault(stopsFetcher);
+const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
 
 test("[RoadPlannerBirdsEye] distance between stops", async () => {
 
@@ -23,6 +24,7 @@ test("[RoadPlannerBirdsEye] distance between stops", async () => {
   const iterator = await planner.plan({
     from: [kortrijkLocation], // Kortrijk
     to: [ghentLocation], // Ghent-Sint-Pieters,
+    profileID: "https://hdelva.be/profile/pedestrian",
     minimumWalkingSpeed: 3,
     maximumWalkingSpeed: 6,
   });

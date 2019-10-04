@@ -1,16 +1,14 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
 import Catalog from "../../Catalog";
+import IConnection from "../../entities/connections/connections";
+import { LinkedConnectionsPage } from "../../entities/connections/page";
 import TYPES, { ConnectionsFetcherFactory } from "../../types";
 import MergeIterator from "../../util/iterators/MergeIterator";
-import IConnection from "./IConnection";
-import IConnectionsFetcher from "./IConnectionsFetcher";
+import ConnectionsProviderDefault from "./ConnectionsProviderDefault";
 import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 import IConnectionsProvider from "./IConnectionsProvider";
 
-/**
- * Instantiates and merge sorts all registered connection fetchers
- */
 @injectable()
 export default class ConnectionsProviderMerge implements IConnectionsProvider {
 
@@ -52,17 +50,18 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     return latestIndex;
   }
 
-  private options: IConnectionsIteratorOptions;
-  private connectionsFetchers: IConnectionsFetcher[];
+  private defaultProviders: IConnectionsProvider[];
 
   constructor(
     @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
     @inject(TYPES.Catalog) catalog: Catalog,
   ) {
-    this.connectionsFetchers = [];
+    this.defaultProviders = [];
 
     for (const { accessUrl, travelMode } of catalog.connectionsSourceConfigs) {
-      this.connectionsFetchers.push(connectionsFetcherFactory(accessUrl, travelMode));
+      const subCatalog = new Catalog();
+      subCatalog.addConnectionsSource(accessUrl, travelMode);
+      this.defaultProviders.push(new ConnectionsProviderDefault(connectionsFetcherFactory, subCatalog));
     }
   }
 
@@ -70,12 +69,11 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     return;
   }
 
-  public createIterator(): AsyncIterator<IConnection> {
+  public createIterator(options: IConnectionsIteratorOptions): AsyncIterator<IConnection> {
+    const iterators = this.defaultProviders
+      .map((provider) => provider.createIterator(options));
 
-    const iterators = this.connectionsFetchers
-      .map((fetcher) => fetcher.createIterator());
-
-    const selector = this.options.backward ?
+    const selector = options.backward ?
       ConnectionsProviderMerge.backwardsConnectionsSelector
       :
       ConnectionsProviderMerge.forwardsConnectionSelector;
@@ -83,10 +81,12 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     return new MergeIterator(iterators, selector, true);
   }
 
-  public setIteratorOptions(options: IConnectionsIteratorOptions): void {
-    this.options = options;
-    this.connectionsFetchers.forEach((fetcher) => {
-      fetcher.setIteratorOptions(options);
-    });
+  public getByUrl(url: string): Promise<LinkedConnectionsPage> {
+    // TODO, if needed this can delegate the call to one of the sub providers
+    throw new Error("Not implemented yet");
+  }
+
+  public getByTime(date: Date): Promise<LinkedConnectionsPage> {
+    throw new Error("Method not implemented because the semantics would be ambiguous.");
   }
 }

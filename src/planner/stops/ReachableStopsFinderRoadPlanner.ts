@@ -33,10 +33,11 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
   }
 
   public async findReachableStops(
-    sourceOrTargetStop: IStop,
+    location: ILocation,
     mode: ReachableStopsFinderMode,
     maximumDuration: DurationMs,
     minimumSpeed: SpeedKmH,
+    profileID: string,
   ): Promise<IReachableStop[]> {
 
     const minimumDepartureTime = new Date();
@@ -46,17 +47,18 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
     const otherProp = mode === ReachableStopsFinderMode.Target ? "from" : "to";
 
     const baseQuery: IResolvedQuery = {
-      [baseProp]: [sourceOrTargetStop as ILocation],
+      [baseProp]: [location],
       minimumDepartureTime,
       maximumArrivalTime,
       minimumWalkingSpeed: minimumSpeed,
+      profileID,
     };
 
     const allStops: IStop[] = await this.stopsProvider.getAllStops();
 
     const stopsInsideCircleArea: IStop[] = [];
     for (const stop of allStops) {
-      const distance = Geo.getDistanceBetweenStops(sourceOrTargetStop, stop);
+      const distance = Geo.getDistanceBetweenLocations(location, stop);
       const duration = Units.toDuration(distance, minimumSpeed);
 
       if (duration >= 0 && duration <= maximumDuration) {
@@ -64,30 +66,27 @@ export default class ReachableStopsFinderRoadPlanner implements IReachableStopsF
       }
     }
 
-    const reachableStops: IReachableStop[] = [{stop: sourceOrTargetStop, duration: 0}];
+    const reachableStops: IReachableStop[] = [];
 
     await Promise.all(stopsInsideCircleArea.map(async (possibleTarget: IStop) => {
-      if (possibleTarget.id !== sourceOrTargetStop.id) {
+      const query = Object.assign({}, baseQuery, {
+        [otherProp]: [possibleTarget as ILocation],
+      });
 
-        const query = Object.assign({}, baseQuery, {
-          [otherProp]: [possibleTarget as ILocation],
-        });
+      const pathIterator = await this.roadPlanner.plan(query);
 
-        const pathIterator = await this.roadPlanner.plan(query);
+      const durationIterator: AsyncIterator<DurationMs> = pathIterator.map((path: IPath) =>
+        // Minimum speed is passed so sum max duration over all steps
+        path.legs.reduce((totalDuration: DurationMs, leg) => totalDuration + leg.getMaximumDuration(), 0),
+      );
 
-        const durationIterator: AsyncIterator<DurationMs> = pathIterator.map((path: IPath) =>
-          // Minimum speed is passed so sum max duration over all steps
-          path.steps.reduce((totalDuration: DurationMs, step) => totalDuration + step.duration.maximum, 0),
-        );
-
-        const sufficientlyShortDuration = await Iterators
-          .find(durationIterator, (duration: DurationMs) => duration < maximumDuration);
-
-        if (sufficientlyShortDuration) {
-          reachableStops.push({stop: possibleTarget, duration: sufficientlyShortDuration});
+      const durations = await Iterators.toArray(durationIterator);
+      if (durations.length) {
+        const shortestDuration = Math.min(...durations);
+        if (shortestDuration < maximumDuration) {
+          reachableStops.push({ stop: possibleTarget, duration: shortestDuration });
         }
       }
-
     }));
 
     return reachableStops;

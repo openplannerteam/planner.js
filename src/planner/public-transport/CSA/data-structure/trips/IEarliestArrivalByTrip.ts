@@ -1,5 +1,5 @@
 /**
- * Stores for each gtfs:trip the earliest arrival [[IEarliestArrivalByTransfers]] to the target [[IStop]].
+ * Stores for each tripId the earliest arrival [[IEarliestArrivalByTransfers]] to the target [[IStop]].
  */
 import IEarliestArrivalByTransfers from "./IEarliestArrivalByTransfers";
 

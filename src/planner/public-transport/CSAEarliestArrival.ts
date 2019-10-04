@@ -1,132 +1,140 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
+import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
-import Context from "../../Context";
+import IConnection from "../../entities/connections/connections";
 import DropOffType from "../../enums/DropOffType";
-import EventType from "../../enums/EventType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
 import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import TravelMode from "../../enums/TravelMode";
-import IConnection from "../../fetcher/connections/IConnection";
+import EventBus from "../../events/EventBus";
+import EventType from "../../events/EventType";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
-import IStep from "../../interfaces/IStep";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
-import Path from "../Path";
-import Step from "../Step";
+import MergeIterator from "../../util/iterators/MergeIterator";
 import IReachableStopsFinder, { IReachableStop } from "../stops/IReachableStopsFinder";
 import IProfileByStop from "./CSA/data-structure/stops/IProfileByStop";
 import ITransferProfile from "./CSA/data-structure/stops/ITransferProfile";
 import IEnterConnectionByTrip from "./CSA/data-structure/trips/IEnterConnectionByTrip";
+import FootpathQueue from "./CSA/FootpathQueue";
 import IJourneyExtractor from "./IJourneyExtractor";
 import IPublicTransportPlanner from "./IPublicTransportPlanner";
+import JourneyExtractorEarliestArrival from "./JourneyExtractorEarliestArrival";
 
-/**
- * An implementation of the Earliest Arrival Connection Scan Algorithm.
- * The earliest arrival connection scan algorithm takes the initial, transfer and final footpaths into account.
- *
- * Doesn't support the maximumTravelDuration and maximumTransfers query parameters.
- *
- * @implements [[IPublicTransportPlanner]]
- * @property profilesByStop Describes the CSA profiles for each scanned stop.
- * @property enterConnectionByTrip Describes the connection you should enter at a departure location for each trip.
- * @property gtfsTripByConnection Stores the gtfs:trip's a connection is part of. Used for splitting and joining.
- *
- * @returns one [[IPath]] that consist of several [[IStep]]s.
- */
+interface IFinalReachableStops {
+  [stop: string]: IReachableStop;
+}
+
+// Implementation is as close as possible to the original paper: https://arxiv.org/pdf/1703.05997.pdf
+
 @injectable()
 export default class CSAEarliestArrival implements IPublicTransportPlanner {
-  private readonly connectionsProvider: IConnectionsProvider;
-  private readonly locationResolver: ILocationResolver;
-  private readonly initialReachableStopsFinder: IReachableStopsFinder;
-  private readonly finalReachableStopsFinder: IReachableStopsFinder;
-  private readonly transferReachableStopsFinder: IReachableStopsFinder;
-  private readonly journeyExtractor: IJourneyExtractor;
-  private readonly context: Context;
+  private static forwardsConnectionSelector(connections: IConnection[]): number {
+    if (connections.length === 1) {
+      return 0;
+    }
 
-  private profilesByStop: IProfileByStop = {}; // S
-  private enterConnectionByTrip: IEnterConnectionByTrip = {}; // T
-  private gtfsTripsByConnection = {};
+    let earliestIndex = 0;
+    const earliest = connections[earliestIndex];
 
-  private initialReachableStops: IReachableStop[] = [];
-  private finalReachableStops: IReachableStop[] = [];
+    for (let i = 1; i < connections.length; i++) {
+      const connection = connections[i];
 
-  private query: IResolvedQuery;
-  private connectionsIterator: AsyncIterator<IConnection>;
+      if (connection && connection.departureTime < earliest.departureTime) {
+        earliestIndex = i;
+      }
+    }
+
+    return earliestIndex;
+  }
+
+  protected readonly connectionsProvider: IConnectionsProvider;
+  protected readonly locationResolver: ILocationResolver;
+  protected readonly transferReachableStopsFinder: IReachableStopsFinder;
+  protected readonly initialReachableStopsFinder: IReachableStopsFinder;
+  protected readonly finalReachableStopsFinder: IReachableStopsFinder;
+  protected readonly eventBus: EventEmitter;
+
+  protected finalReachableStops: IFinalReachableStops;
+  protected profilesByStop: IProfileByStop; // S
+  protected enterConnectionByTrip: IEnterConnectionByTrip; // T
+
+  protected footpathsQueue: FootpathQueue;
+  protected connectionsQueue: AsyncIterator<IConnection>;
+
+  protected journeyExtractor: IJourneyExtractor;
 
   constructor(
     @inject(TYPES.ConnectionsProvider)
-      connectionsProvider: IConnectionsProvider,
+    connectionsProvider: IConnectionsProvider,
     @inject(TYPES.LocationResolver)
-      locationResolver: ILocationResolver,
-    @inject(TYPES.ReachableStopsFinder)
-    @tagged("phase", ReachableStopsSearchPhase.Initial)
-      initialReachableStopsFinder: IReachableStopsFinder,
+    locationResolver: ILocationResolver,
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Transfer)
-      transferReachableStopsFinder: IReachableStopsFinder,
+    transferReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.ReachableStopsFinder)
+    @tagged("phase", ReachableStopsSearchPhase.Initial)
+    initialReachableStopsFinder: IReachableStopsFinder,
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Final)
-      finalReachableStopsFinder: IReachableStopsFinder,
-    @inject(TYPES.JourneyExtractor)
-      journeyExtractor: IJourneyExtractor,
-    @inject(TYPES.Context)
-      context?: Context,
+    finalReachableStopsFinder: IReachableStopsFinder,
   ) {
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
-    this.initialReachableStopsFinder = initialReachableStopsFinder;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
+    this.initialReachableStopsFinder = initialReachableStopsFinder;
     this.finalReachableStopsFinder = finalReachableStopsFinder;
-    this.journeyExtractor = journeyExtractor;
-    this.context = context;
+    this.eventBus = EventBus.getInstance();
+    this.journeyExtractor = new JourneyExtractorEarliestArrival(locationResolver);
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    this.query = query;
+    // reset state
+    this.finalReachableStops = {};
+    this.profilesByStop = {};
+    this.enterConnectionByTrip = {};
 
-    this.setBounds();
-
-    return this.calculateJourneys();
-  }
-
-  private setBounds() {
     const {
       minimumDepartureTime: lowerBoundDate,
       maximumArrivalTime: upperBoundDate,
-    } = this.query;
+    } = query;
 
-    this.connectionsProvider.setIteratorOptions({
+    this.footpathsQueue = new FootpathQueue();
+    const connectionsIterator = this.connectionsProvider.createIterator({
       upperBoundDate,
       lowerBoundDate,
     });
-  }
 
-  private async calculateJourneys(): Promise<AsyncIterator<IPath>> {
-    const hasInitialReachableStops: boolean = await this.initInitialReachableStops();
-    const hasFinalReachableStops: boolean = await this.initFinalReachableStops();
+    this.connectionsQueue = new MergeIterator(
+      [connectionsIterator, this.footpathsQueue],
+      CSAEarliestArrival.forwardsConnectionSelector,
+      true,
+    );
+
+    const [hasInitialReachableStops, hasFinalReachableStops] = await Promise.all([
+      this.initInitialReachableStops(query),
+      this.initFinalReachableStops(query),
+    ]);
 
     if (!hasInitialReachableStops || !hasFinalReachableStops) {
       return Promise.resolve(new ArrayIterator([]));
     }
 
-    this.connectionsIterator = this.connectionsProvider.createIterator();
-
     const self = this;
-
     return new Promise((resolve, reject) => {
-      let isDone = false;
+      let isDone: boolean = false;
 
       const done = () => {
         if (!isDone) {
-          self.connectionsIterator.close();
+          self.connectionsQueue.close();
 
-          self.journeyExtractor.extractJourneys(self.profilesByStop, self.query)
+          self.extractJourneys(query)
             .then((resultIterator) => {
               resolve(resultIterator);
             });
@@ -135,74 +143,93 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         }
       };
 
-      this.connectionsIterator.on("readable", () =>
-        self.processNextConnection(done),
+      connectionsIterator.on("readable", () =>
+        self.processConnections(query, done),
       );
 
-      this.connectionsIterator.on("end", () => done());
+      connectionsIterator.on("end", () => done());
+
+      // iterator may have become readable before the listener was attached
+      self.processConnections(query, done);
 
     }) as Promise<AsyncIterator<IPath>>;
   }
 
-  private async processNextConnection(done: () => void) {
-    let connection = this.connectionsIterator.read();
+  protected updateProfile(query: IResolvedQuery, connection: IConnection) {
+    /*
+    Call this ONLY if the given connection is known to improve the arrival stop's profile
+    */
 
-    while (connection) {
-      this.discoverConnection(connection);
+    const tripId = connection.tripId;
+    const departureTime = connection.departureTime.getTime();
+    const arrivalTime = connection.arrivalTime.getTime();
 
-      const {
-        to,
-        minimumDepartureTime,
-        maximumWalkingDuration,
-        minimumTransferDuration,
-        maximumTransferDuration,
-      } = this.query;
+    // update profile of arrival stop
+    const arrivalProfile: ITransferProfile = {
+      departureTime,
+      arrivalTime,
+      exitConnection: connection,
+      enterConnection: this.enterConnectionByTrip[tripId],
+    };
+    this.profilesByStop[connection.arrivalStop] = arrivalProfile;
+  }
 
-      const arrivalStopId: string = to[0].id;
-      if (this.profilesByStop[arrivalStopId].arrivalTime <= connection.departureTime.getTime()) {
-        this.connectionsIterator.close();
-        done();
-        break;
-      }
+  private async extractJourneys(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+    return this.journeyExtractor.extractJourneys(this.profilesByStop, query);
+  }
 
-      if (connection.departureTime < minimumDepartureTime && !this.connectionsIterator.closed) {
-        connection = this.connectionsIterator.read();
+  private async processConnections(query: IResolvedQuery, resolve: () => void) {
+    const { from, to, minimumDepartureTime } = query;
+    const departureStopId: string = from[0].id;
+    const arrivalStopId: string = to[0].id;
+
+    let connection: IConnection = this.connectionsQueue.read();
+
+    while (connection && !this.connectionsQueue.closed) {
+
+      if (connection.departureTime < minimumDepartureTime && !this.connectionsQueue.closed) {
+        // starting criterion
+        // skip connections before the minimum departure time
+        connection = this.connectionsQueue.read();
         continue;
       }
 
-      const tripIds = this.getTripIdsFromConnection(connection);
-      for (const tripId of tripIds) {
-
-        const canRemainSeated = this.enterConnectionByTrip[tripId];
-
-        const initialStop = this.initialReachableStops.find(({ stop }) =>
-          stop.id === connection.departureStop,
-        );
-
-        const departure = connection.departureTime.getTime();
-        const arrival = this.profilesByStop[connection.departureStop].arrivalTime;
-
-        const transferDuration = departure - arrival;
-
-        const canTakeTransfer = (
-          transferDuration > -Infinity &&
-          (transferDuration >= minimumTransferDuration || initialStop && transferDuration >= 0) &&
-          (transferDuration <= maximumTransferDuration || initialStop && transferDuration <= maximumWalkingDuration) &&
-          connection["gtfs:pickupType"] !== PickupType.NotAvailable
-        );
-
-        if (canRemainSeated || canTakeTransfer) {
-          this.updateTrips(connection, tripId);
-
-          if (connection["gtfs:dropOffType"] !== DropOffType.NotAvailable) {
-            await this.updateProfiles(connection, tripId);
-          }
-        }
-
+      if (this.getProfile(arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
+        // stopping criterion
+        // we cannot improve the tentative arrival time anymore
+        return resolve();
       }
 
-      if (!this.connectionsIterator.closed) {
-        connection = this.connectionsIterator.read();
+      const tripId = connection.tripId;
+      const departureTime = connection.departureTime.getTime();
+
+      const canRemainSeated = this.enterConnectionByTrip[tripId];
+      const canTakeTransfer = (
+        (
+          connection.departureStop === departureStopId ||
+          this.getProfile(connection.departureStop).arrivalTime <= departureTime
+        ) &&
+        connection["gtfs:pickupType"] !== PickupType.NotAvailable
+      );
+
+      if (canRemainSeated || canTakeTransfer) {
+        // enterConnectionByTrip should point to the first reachable connection
+        if (!this.enterConnectionByTrip[tripId]) {
+          this.enterConnectionByTrip[tripId] = connection;
+        }
+
+        // limited walking optimization
+        const canImprove = connection.arrivalTime.getTime() < this.getProfile(connection.arrivalStop).arrivalTime;
+        const canLeave = connection["gtfs:dropOffType"] !== DropOffType.NotAvailable;
+
+        if (canLeave && canImprove) {
+          this.updateProfile(query, connection);
+          await this.scheduleExtraConnections(query, connection);
+        }
+      }
+
+      if (!this.connectionsQueue.closed) {
+        connection = this.connectionsQueue.read();
         continue;
       }
 
@@ -210,309 +237,158 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
   }
 
-  private async initInitialReachableStops(): Promise<boolean> {
-    const fromLocation: IStop = this.query.from[0] as IStop;
-
-    // Making sure the departure location has an id
-    const geoId = Geo.getId(this.query.from[0]);
-    if (!fromLocation.id) {
-      this.query.from[0].id = geoId;
-      this.query.from[0].name = "Departure location";
-    }
-
-    this.initialReachableStops = await this.initialReachableStopsFinder.findReachableStops(
-      fromLocation,
-      ReachableStopsFinderMode.Source,
-      this.query.maximumWalkingDuration,
-      this.query.minimumWalkingSpeed,
-    );
-
-    // Abort when we can't reach a single stop.
-    if (this.initialReachableStops.length <= 1 && this.initialReachableStops[0].stop.id === geoId && this.context) {
-      this.context.emit(EventType.AbortQuery, "No reachable stops at departure location");
-
-      return false;
-    }
-
-    // Check if departure location is a stop.
-    for (const reachableStop of this.initialReachableStops) {
-      if (reachableStop.duration === 0) {
-        this.query.from[0] = reachableStop.stop;
-      }
-    }
-
-    if (this.context) {
-      this.context.emit(EventType.InitialReachableStops, this.initialReachableStops);
-    }
-
-    this.initialReachableStops.forEach(({ stop, duration }: IReachableStop) => {
-      const departureTime = this.query.minimumDepartureTime.getTime();
-      const arrivalTime = this.query.minimumDepartureTime.getTime() + duration;
-
-      this.profilesByStop[stop.id] = {
-        departureTime,
-        arrivalTime,
-      };
-
-      if (duration > 0) {
-        const path: Path = Path.create();
-
-        const footpath: IStep = Step.create(
-          this.query.from[0],
-          stop,
-          TravelMode.Walking,
-          {
-            minimum: arrivalTime - departureTime,
-          },
-          new Date(departureTime),
-          new Date(arrivalTime),
-        );
-
-        path.addStep(footpath);
-
-        this.profilesByStop[stop.id].path = path;
-      }
-
-    });
-
-    return true;
-  }
-
-  private async initFinalReachableStops(): Promise<boolean> {
-    const arrivalStop: IStop = this.query.to[0] as IStop;
-
-    const geoId = Geo.getId(this.query.to[0]);
-    if (!this.query.to[0].id) {
-      this.query.to[0].id = geoId;
-      this.query.to[0].name = "Arrival location";
-    }
-
-    this.finalReachableStops = await this.finalReachableStopsFinder
-      .findReachableStops(
-        arrivalStop,
-        ReachableStopsFinderMode.Target,
-        this.query.maximumWalkingDuration,
-        this.query.minimumWalkingSpeed,
-      );
-
-    if (this.finalReachableStops.length <= 1 && this.finalReachableStops[0].stop.id === geoId && this.context) {
-      this.context.emit(EventType.AbortQuery, "No reachable stops at arrival location");
-
-      return false;
-    }
-
-    if (this.context) {
-      this.context.emit(EventType.FinalReachableStops, this.finalReachableStops);
-    }
-
-    // Check if arrival location is a stop.
-    for (const reachableStop of this.finalReachableStops) {
-      if (reachableStop.duration === 0) {
-        this.query.to[0] = reachableStop.stop;
-      }
-    }
-
-    this.profilesByStop[this.query.to[0].id] = {
-      departureTime: Infinity,
-      arrivalTime: Infinity,
-    };
-
-    return true;
-  }
-
-  private discoverConnection(connection: IConnection) {
-    this.setTripIdsByConnectionId(connection);
-
-    if (!this.profilesByStop[connection.departureStop]) {
-      this.profilesByStop[connection.departureStop] = {
+  private getProfile(stopId: string): ITransferProfile {
+    if (!this.profilesByStop[stopId]) {
+      this.profilesByStop[stopId] = {
         departureTime: Infinity,
         arrivalTime: Infinity,
       };
     }
-
-    if (!this.profilesByStop[connection.arrivalStop]) {
-      this.profilesByStop[connection.arrivalStop] = {
-        departureTime: Infinity,
-        arrivalTime: Infinity,
-      };
-    }
+    return this.profilesByStop[stopId];
   }
 
-  private getTripIdsFromConnection(connection: IConnection): string[] {
-    return this.gtfsTripsByConnection[connection.id];
-  }
-
-  private setTripIdsByConnectionId(connection: IConnection): void {
-    if (!this.gtfsTripsByConnection.hasOwnProperty(connection.id)) {
-      this.gtfsTripsByConnection[connection.id] = [];
-    }
-
-    this.gtfsTripsByConnection[connection.id].push(connection["gtfs:trip"]);
-
-    let nextConnectionIndex = 0;
-    while (connection.nextConnection && nextConnectionIndex < connection.nextConnection.length) {
-      const connectionId = connection.nextConnection[nextConnectionIndex];
-
-      if (!this.gtfsTripsByConnection.hasOwnProperty(connectionId)) {
-        this.gtfsTripsByConnection[connectionId] = [];
-
-      }
-
-      this.gtfsTripsByConnection[connectionId].push(connection["gtfs:trip"]);
-      nextConnectionIndex++;
-    }
-
-  }
-
-  private updateTrips(connection: IConnection, tripId: string): void {
-    const isInitialReachableStop = this.initialReachableStops.find(({ stop }: IReachableStop) =>
-      stop.id === connection.departureStop,
-    );
-
-    if (!this.enterConnectionByTrip[tripId] || isInitialReachableStop) {
-      this.enterConnectionByTrip[tripId] = connection;
-    }
-  }
-
-  private async updateProfiles(connection: IConnection, tripId: string): Promise<void> {
+  private async scheduleExtraConnections(query: IResolvedQuery, sourceConnection: IConnection) {
     try {
-      const arrivalStop: ILocation = await this.locationResolver.resolve(connection.arrivalStop);
+      const arrivalStop: ILocation = await this.locationResolver.resolve(sourceConnection.arrivalStop);
       const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
         arrivalStop as IStop,
         ReachableStopsFinderMode.Source,
-        this.query.maximumTransferDuration,
-        this.query.minimumWalkingSpeed,
+        query.maximumTransferDuration,
+        query.minimumWalkingSpeed,
+        query.profileID,
       );
 
-      reachableStops.forEach((reachableStop: IReachableStop) => {
-        const { stop, duration } = reachableStop;
+      if (this.finalReachableStops[arrivalStop.id]) {
+        reachableStops.push(this.finalReachableStops[arrivalStop.id]);
+      }
 
-        if (!this.profilesByStop[stop.id]) {
-          this.profilesByStop[stop.id] = {
-            departureTime: Infinity,
-            arrivalTime: Infinity,
-          };
-        }
+      for (const reachableStop of reachableStops) {
+        const { stop: stop, duration: duration } = reachableStop;
 
-        if (stop.id === this.query.to[0].id) {
-          return;
-        }
+        if (duration && stop.id) {
+          const transferTentativeArrival = this.getProfile(stop.id).arrivalTime;
+          const newArrivalTime = new Date(sourceConnection.arrivalTime.getTime() + duration);
 
-        const reachableStopArrival = this.profilesByStop[stop.id].arrivalTime;
+          if (transferTentativeArrival > newArrivalTime.getTime() && newArrivalTime <= query.maximumArrivalTime) {
+            // create a connection that resembles a footpath
+            // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
+            const transferConnection: IConnection = {
+              id: `TRANSFER_TO:${stop.id}`,
+              tripId: `TRANSFER_TO:${stop.id}`,
+              travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
+              departureTime: sourceConnection.arrivalTime,
+              departureStop: sourceConnection.arrivalStop,
+              arrivalTime: new Date(sourceConnection.arrivalTime.getTime() + duration),
+              arrivalStop: stop.id,
+              dropOffType: DropOffType.Regular,
+              pickupType: PickupType.Regular,
+              headsign: stop.id,
+            };
 
-        const departureTime = connection.departureTime.getTime();
-        const arrivalTime = connection.arrivalTime.getTime() + duration;
-
-        if (reachableStopArrival > arrivalTime) {
-          const transferProfile: ITransferProfile = {
-            departureTime,
-            arrivalTime,
-            exitConnection: connection,
-            enterConnection: this.enterConnectionByTrip[tripId],
-          };
-
-          if (duration > 0) {
-            const path: Path = Path.create();
-
-            const footpath: IStep = Step.create(
-              arrivalStop,
-              stop,
-              TravelMode.Walking,
-              {
-                minimum: duration,
-              },
-              new Date(arrivalTime - duration),
-              new Date(arrivalTime),
-            );
-
-            path.addStep(footpath);
-
-            transferProfile.path = path;
+            this.footpathsQueue.write(transferConnection);
           }
-
-          if (this.context && this.context.listenerCount(EventType.AddedNewTransferProfile) > 0) {
-            this.emitTransferProfile(transferProfile);
-          }
-
-          this.profilesByStop[stop.id] = transferProfile;
         }
-      });
-
-      this.checkIfArrivalStopIsReachable(connection, tripId, arrivalStop);
-
+      }
     } catch (e) {
-      if (this.context) {
-        this.context.emitWarning(e);
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.Warning, (e));
       }
     }
   }
 
-  private checkIfArrivalStopIsReachable(connection: IConnection, tripId: string, arrivalStop: ILocation): void {
-    const canReachArrivalStop = this.finalReachableStops.find((reachableStop: IReachableStop) =>
-      reachableStop.stop.id === arrivalStop.id,
+  private async initInitialReachableStops(query: IResolvedQuery): Promise<boolean> {
+    const fromLocation: ILocation = query.from[0];
+
+    // Making sure the departure location has an id
+    const geoId = Geo.getId(fromLocation);
+    if (!fromLocation.id) {
+      query.from[0].id = geoId;
+      query.from[0].name = "Departure location";
+    }
+
+    const reachableStops = await this.initialReachableStopsFinder.findReachableStops(
+      fromLocation,
+      ReachableStopsFinderMode.Source,
+      query.maximumWalkingDuration,
+      query.minimumWalkingSpeed,
+      query.profileID,
     );
 
-    if (canReachArrivalStop) {
-      const finalLocationId = this.query.to[0].id;
+    // Abort when we can't reach a single stop.
+    if (reachableStops.length === 0) {
+      this.eventBus.emit(EventType.AbortQuery, "No reachable stops at departure location");
 
-      if (canReachArrivalStop.stop.id === finalLocationId) {
-        const departureTime = connection.departureTime.getTime();
-        const arrivalTime = connection.arrivalTime.getTime();
-        const reachableStopArrival = this.profilesByStop[connection.arrivalStop].arrivalTime;
+      return false;
+    }
 
-        if (reachableStopArrival > arrivalTime) {
-          this.profilesByStop[finalLocationId] = {
-            departureTime,
-            arrivalTime,
-            exitConnection: connection,
-            enterConnection: this.enterConnectionByTrip[tripId],
-          };
-        }
+    if (this.eventBus) {
+      this.eventBus.emit(EventType.InitialReachableStops, reachableStops);
+    }
 
+    for (const reachableStop of reachableStops) {
+      const { stop: stop, duration: duration } = reachableStop;
+
+      if (duration) {
+        // create a connection that resembles a footpath
+        // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
+        const transferConnection: IConnection = {
+          id: `MOVE_TO:${stop.id}`,
+          tripId: `MOVE_TO:${stop.id}`,
+          travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
+          departureTime: query.minimumDepartureTime,
+          departureStop: fromLocation.id,
+          arrivalTime: new Date(query.minimumDepartureTime.getTime() + duration),
+          arrivalStop: stop.id,
+          dropOffType: DropOffType.Regular,
+          pickupType: PickupType.Regular,
+          headsign: stop.id,
+        };
+
+        this.footpathsQueue.write(transferConnection);
       }
+    }
 
-      const finalProfile = this.profilesByStop[finalLocationId];
+    return true;
+  }
 
-      const departureTime = connection.arrivalTime.getTime();
-      const arrivalTime = connection.arrivalTime.getTime() + canReachArrivalStop.duration;
+  private async initFinalReachableStops(query: IResolvedQuery): Promise<boolean> {
+    const toLocation: ILocation = query.to[0];
 
-      if ((!finalProfile || finalProfile.arrivalTime > arrivalTime) && canReachArrivalStop.duration > 0) {
-        const path: Path = Path.create();
+    // Making sure the departure location has an id
+    const geoId = Geo.getId(toLocation);
+    if (!toLocation.id) {
+      query.to[0].id = geoId;
+      query.to[0].name = "Arrival location";
+    }
 
-        const footpath: IStep = Step.create(
-          arrivalStop,
-          this.query.to[0],
-          TravelMode.Walking,
-          {
-            minimum: arrivalTime - departureTime,
-          },
-          new Date(departureTime),
-          new Date(arrivalTime),
-        );
+    const reachableStops = await this.finalReachableStopsFinder.findReachableStops(
+      toLocation,
+      ReachableStopsFinderMode.Target,
+      query.maximumWalkingDuration,
+      query.minimumWalkingSpeed,
+      query.profileID,
+    );
 
-        path.addStep(footpath);
+    // Abort when we can't reach a single stop.
+    if (reachableStops.length === 0) {
+      this.eventBus.emit(EventType.AbortQuery, "No reachable stops at arrival location");
 
-        this.profilesByStop[finalLocationId] = {
-          departureTime,
-          arrivalTime,
-          path,
+      return false;
+    }
+
+    if (this.eventBus) {
+      this.eventBus.emit(EventType.FinalReachableStops, reachableStops);
+    }
+
+    for (const reachableStop of reachableStops) {
+      if (reachableStop.duration > 0) {
+        this.finalReachableStops[reachableStop.stop.id] = {
+          stop: toLocation as IStop,
+          duration: reachableStop.duration,
         };
       }
     }
-  }
 
-  private async emitTransferProfile(transferProfile: ITransferProfile): Promise<void> {
-    try {
-      const departureStop = await this.locationResolver.resolve(transferProfile.enterConnection.departureStop);
-      const arrivalStop = await this.locationResolver.resolve(transferProfile.exitConnection.arrivalStop);
-
-      this.context.emit(EventType.AddedNewTransferProfile, {
-        departureStop,
-        arrivalStop,
-      });
-
-    } catch (e) {
-      this.context.emitWarning(e);
-    }
+    return true;
   }
 }

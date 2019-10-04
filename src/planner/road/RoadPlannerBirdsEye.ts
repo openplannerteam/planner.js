@@ -8,6 +8,7 @@ import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import Geo from "../../util/Geo";
 import Units from "../../util/Units";
+import Leg from "../Leg";
 import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
 
@@ -70,12 +71,13 @@ export default class RoadPlannerBirdsEye implements IRoadPlanner {
       return;
     }
 
-    return new Path([{
-      startLocation: from,
-      stopLocation: to,
-      duration,
-      distance,
-      travelMode: TravelMode.Walking,
-    }]);
+    return new Path([
+      new Leg(TravelMode.Walking, [{
+        startLocation: from,
+        stopLocation: to,
+        duration,
+        distance,
+      }]),
+    ]);
   }
 }

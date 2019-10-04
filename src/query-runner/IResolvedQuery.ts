@@ -9,10 +9,11 @@ import { DurationMs, SpeedKmH } from "../interfaces/units";
 export default interface IResolvedQuery {
   from?: ILocation[];
   to?: ILocation[];
+  profileID: string;
   minimumDepartureTime?: Date;
   maximumArrivalTime?: Date;
   roadOnly?: boolean;
-  publicTransportOnly?: boolean;
+  roadNetworkOnly?: boolean;
   minimumWalkingSpeed?: SpeedKmH;
   maximumWalkingSpeed?: SpeedKmH;
   maximumWalkingDuration?: DurationMs;

@@ -9,37 +9,41 @@ $ npm install plannerjs
 Include it in the browser:
 ```html
 <script src="https://planner.js.org/js/planner-latest.js"></script>
+
+...
+
+<script>
+  const { BasicTrainPlanner, Units } = PlannerJS;
+</script>
 ```
 
 Include it in your JavaScript project:
 ```javascript
-const Planner = require('plannerjs').default;
+const { BasicTrainPlanner, Units } = require('plannerjs');
 
 // or
 
-import Planner              from 'plannerjs';
+import { BasicTrainPlanner, Units } from 'plannerjs';
 ```
 
 Use it in both environments:
 ```javascript
-const planner = new Planner();
+const planner = new BasicTrainPlanner();
 
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North
   to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-  minimumDepartureTime: new Date("Mon Feb 11 2019 16:00:00"),
-  maximumArrivalTime: new Date("Mon Feb 11 2019 19:00:00"),
-  publicTransportOnly: true,
+  minimumDepartureTime: new Date(),
   
   walkingSpeed: 3, // KmH
   minimumWalkingSpeed: 3, // KmH
  
   maximumWalkingDistance: 200, // meters
   
-  minimumTransferDuration: Planner.Units.fromMinutes(1),
-  maximumTransferDuration: Planner.Units.fromMinutes(30),
+  minimumTransferDuration: Units.fromMinutes(1),
+  maximumTransferDuration: Units.fromMinutes(30),
   
-  maximumTravelDuration: Planner.Units.fromHours(1.5),
+  maximumTravelDuration: Units.fromHours(1.5),
   
   maximumTransfers: 4,
 })
