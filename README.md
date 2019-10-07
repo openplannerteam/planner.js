@@ -49,7 +49,7 @@ planner.query({
 })
   .take(3)
   .on('data', (path) => {
-   console.log(path);
+   console.log(JSON.stringify(path, null, 4));
   })
   .on('end', () => {
     console.log('No more paths!')
