@@ -31,8 +31,8 @@ export default class CSAEarliestArrivalVerbose extends CSAEarliestArrival {
             initialReachableStopsFinder, finalReachableStopsFinder);
     }
 
-    protected updateProfile(query: IResolvedQuery, connection: IConnection) {
-        super.updateProfile(query, connection);
+    protected updateProfile(state, query: IResolvedQuery, connection: IConnection) {
+        super.updateProfile(state, query, connection);
         EventBus.getInstance().emit(EventType.PointReached, this.locationResolver.resolve(connection.arrivalStop));
     }
 }
