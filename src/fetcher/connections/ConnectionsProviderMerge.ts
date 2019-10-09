@@ -78,7 +78,13 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
       :
       ConnectionsProviderMerge.forwardsConnectionSelector;
 
-    return new MergeIterator(iterators, selector, true);
+    if (options.excludedModes) {
+      return new MergeIterator(iterators, selector, true).filter((item) => {
+        return !options.excludedModes.has(item.travelMode);
+      });
+    } else {
+      return new MergeIterator(iterators, selector, true);
+    }
   }
 
   public getByUrl(url: string): Promise<LinkedConnectionsPage> {

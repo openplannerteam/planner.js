@@ -59,17 +59,26 @@ export default class QueryRunnerDefault implements IQueryRunner {
   private async resolveQuery(query: IQuery): Promise<IResolvedQuery> {
     // tslint:disable:trailing-comma
     const {
-      from, to,
       minimumWalkingSpeed, maximumWalkingSpeed, walkingSpeed,
       maximumWalkingDuration, maximumWalkingDistance,
       minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
       maximumTransfers,
       minimumDepartureTime, maximumArrivalTime,
+      excludedTravelModes,
       ...other
     } = query;
     // tslint:enable:trailing-comma
 
+    // make a deep copy of these
+    let { from, to } = other;
+    from = JSON.parse(JSON.stringify(from));
+    to = JSON.parse(JSON.stringify(to));
+
     const resolvedQuery: IResolvedQuery = Object.assign({}, other as IResolvedQuery);
+
+    if (excludedTravelModes) {
+      resolvedQuery.excludedTravelModes = new Set(excludedTravelModes);
+    }
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
 

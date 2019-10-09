@@ -109,6 +109,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     const connectionsIterator = this.connectionsProvider.createIterator({
       upperBoundDate,
       lowerBoundDate,
+      excludedModes: query.excludedTravelModes,
     });
 
     this.connectionsQueue = new MergeIterator(

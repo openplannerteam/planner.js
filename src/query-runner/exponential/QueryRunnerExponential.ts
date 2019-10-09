@@ -101,6 +101,7 @@ export default class QueryRunnerExponential implements IQueryRunner {
       minimumTransferDuration, maximumTransferDuration, maximumTransferDistance,
       maximumTransfers,
       minimumDepartureTime,
+      excludedTravelModes,
       ...other
     } = query;
     // tslint:enable:trailing-comma
@@ -111,6 +112,10 @@ export default class QueryRunnerExponential implements IQueryRunner {
     to = JSON.parse(JSON.stringify(to));
 
     const resolvedQuery: IResolvedQuery = Object.assign({}, other as IResolvedQuery);
+
+    if (excludedTravelModes) {
+      resolvedQuery.excludedTravelModes = new Set(excludedTravelModes);
+    }
 
     resolvedQuery.minimumDepartureTime = minimumDepartureTime || new Date();
 

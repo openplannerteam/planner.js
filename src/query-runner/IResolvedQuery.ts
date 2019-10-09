@@ -1,3 +1,4 @@
+import TravelMode from "../enums/TravelMode";
 import ILocation from "../interfaces/ILocation";
 import { DurationMs, SpeedKmH } from "../interfaces/units";
 
@@ -21,4 +22,5 @@ export default interface IResolvedQuery {
   maximumTransferDuration?: DurationMs;
   maximumTransfers?: number;
   maximumTravelDuration?: DurationMs;
+  excludedTravelModes?: Set<TravelMode>;
 }
