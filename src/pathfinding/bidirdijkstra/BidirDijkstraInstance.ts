@@ -134,8 +134,8 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
             }
 
             backwardSteps.push({
-                from: this.graph.getLabel(nextEdge.node),
-                to: this.graph.getLabel(currentPosition),
+                from: this.graph.getLabel(currentPosition),
+                to: this.graph.getLabel(nextEdge.node),
                 distance: nextEdge.distance,
                 duration: nextEdge.duration,
             });

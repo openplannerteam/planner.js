@@ -1,3 +1,6 @@
+import Big from "big.js";
+import proj4 from "proj4";
+
 import { inject, injectable } from "inversify";
 import Profile from "../entities/profile/Profile";
 import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/node";
@@ -111,16 +114,19 @@ export default class PathfinderProvider {
               continue;
             }
 
-            const [distance, intersection] = this.segmentDistToPoint(from, to, p);
-            if (distance < bestDistance) {
-              bestDistance = distance;
-              bestEmbedding = {
-                way,
-                point: p,
-                segA: from,
-                segB: to,
-                intersection,
-              };
+            const embedding = this.segmentDistToPoint(from, to, p);
+            if (embedding) {
+              const [distance, intersection] = this.segmentDistToPoint(from, to, p);
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestEmbedding = {
+                  way,
+                  point: p,
+                  segA: from,
+                  segB: to,
+                  intersection,
+                };
+              }
             }
           }
         }
@@ -207,37 +213,45 @@ export default class PathfinderProvider {
   }
 
   private segmentDistToPoint(segA: ILocation, segB: ILocation, p: ILocation): [number, ILocation] {
-    // seems numerically unstable, see 'catastrophic cancellation'
-    const sx1 = segA.longitude;
-    const sx2 = segB.longitude;
-    const px = p.longitude;
+    // potential 'catastrophic cancellation', hence the Big library
+    const mSegA = proj4("EPSG:4326", "EPSG:3857", [segA.longitude, segA.latitude]);
+    const mSegB = proj4("EPSG:4326", "EPSG:3857", [segB.longitude, segB.latitude]);
+    const mP = proj4("EPSG:4326", "EPSG:3857", [p.longitude, p.latitude]);
 
-    const sy1 = segA.latitude;
-    const sy2 = segB.latitude;
-    const py = p.latitude;
+    const sx1 = Big(mSegA[0]);
+    const sx2 = Big(mSegB[0]);
+    const px = Big(mP[0]);
 
-    const px2 = sx2 - sx1;  // <-
-    const py2 = sy2 - sy2;  // <-
+    const sy1 = Big(mSegA[1]);
+    const sy2 = Big(mSegB[1]);
+    const py = Big(mP[1]);
 
-    const norm = px2 * px2 + py2 * py2;
-    let u = ((px - sx1) * px2 + (py - sy1) * py2) / norm;
+    const px2 = sx2.minus(sx1);  // <-
+    const py2 = sy2.minus(sy1);  // <-
+
+    const norm = px2.times(px2).plus(py2.times(py2));
+
+    let u = px.minus(sx1).times(px2).plus(
+        py.minus(sy1).times(py2),
+      ).div(norm);
 
     if (u > 1) {
-      u = 1;
+      u = Big(1);
     } else if (u < 0) {
-      u = 0;
+      u = Big(0);
     }
 
-    const x = sx1 + u * px2;
-    const y = sy1 + u * py2;
+    const x = sx1.plus(u.times(px2));
+    const y = sy1.plus(u.times(py2));
 
-    const intersection = {
-      longitude: x,
-      latitude: y,
+    const mIntersection = [parseFloat(x), parseFloat(y)];
+    const intersection = proj4("EPSG:3857", "EPSG:4326", mIntersection);
+    const result = {
+      longitude: intersection[0],
+      latitude: intersection[1],
     };
 
-    const dist = Geo.getDistanceBetweenLocations(p, intersection);
-
-    return [dist, intersection];
+    const dist = Geo.getDistanceBetweenLocations(p, result);
+    return [dist, result];
   }
 }
