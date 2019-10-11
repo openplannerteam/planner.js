@@ -40,6 +40,8 @@ export default class PathfinderProvider {
   private routableTileRegistry: RoutableTileRegistry;
   private profileProvider: ProfileProvider;
 
+  private embeddings: IPointEmbedding[];
+
   constructor(
     @inject(TYPES.ShortestPathTreeAlgorithm) shortestPathTree: IShortestPathTreeAlgorithm,
     @inject(TYPES.ShortestPathAlgorithm) pointToPoint: IShortestPathAlgorithm,
@@ -51,6 +53,7 @@ export default class PathfinderProvider {
     this.routableTileRegistry = routableTileRegistry;
     this.profileProvider = profileProvider;
     this.graphs = {};
+    this.embeddings = [];
   }
 
   public getShortestPathAlgorithm(profile: Profile): IShortestPathInstance {
@@ -133,10 +136,20 @@ export default class PathfinderProvider {
       }
 
       if (bestEmbedding) {
+        const way = bestEmbedding.way;
+
+        for (const otherEmbedding of this.embeddings) {
+          if (otherEmbedding.segA === bestEmbedding.segA && otherEmbedding.segB === bestEmbedding.segB) {
+            this.addEdge(profile, bestEmbedding.intersection, otherEmbedding.intersection, way);
+            this.addEdge(profile, otherEmbedding.intersection, bestEmbedding.intersection, way);
+          }
+        }
+
+        this.embeddings.push(bestEmbedding);
+
         const intersection = bestEmbedding.intersection;
         const segA = bestEmbedding.segA;
         const segB = bestEmbedding.segB;
-        const way = bestEmbedding.way;
         const isOneWay = profile.isOneWay(way);
 
         if (!invert) {
@@ -232,8 +245,8 @@ export default class PathfinderProvider {
     const norm = px2.times(px2).plus(py2.times(py2));
 
     let u = px.minus(sx1).times(px2).plus(
-        py.minus(sy1).times(py2),
-      ).div(norm);
+      py.minus(sy1).times(py2),
+    ).div(norm);
 
     if (u > 1) {
       u = Big(1);
