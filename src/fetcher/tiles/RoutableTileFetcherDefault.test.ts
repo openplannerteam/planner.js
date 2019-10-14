@@ -2,6 +2,7 @@ import "jest";
 import LDFetch from "ldfetch";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
+import LocationResolverConvenience from "../../query-runner/LocationResolverConvenience";
 import ProfileFetcherDefault from "../profiles/ProfileFetcherDefault";
 import ProfileProviderDefault from "../profiles/ProfileProviderDefault";
 import RoutableTileFetcherDefault from "./RoutableTileFetcherDefault";
@@ -9,9 +10,10 @@ import RoutableTileFetcherDefault from "./RoutableTileFetcherDefault";
 const ldfetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 const registry = new RoutableTileRegistry();
 const profileProvider = new ProfileProviderDefault(new ProfileFetcherDefault(ldfetch));
+const locationResolver = new LocationResolverConvenience(null, registry);
 const fetcher = new RoutableTileFetcherDefault(
   ldfetch,
-  new PathfinderProvider(undefined, undefined, registry, profileProvider),
+  new PathfinderProvider(undefined, undefined, registry, profileProvider, locationResolver),
   registry);
 
 test("[RoutableTileFetcherDefault] data completeness", async () => {
