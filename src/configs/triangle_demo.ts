@@ -29,8 +29,8 @@ import RoutableTileProviderDefault from "../fetcher/tiles/RoutableTileProviderDe
 import RoutableTileProviderTransit from "../fetcher/tiles/RoutableTileProviderTransit";
 
 import { LDLoader } from "../loader/ldloader";
-import { BidirDijkstra } from "../pathfinding/bidirdijkstra/BidirDijkstra";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
+import MixedDijkstra from "../pathfinding/mixed-dijkstra/MixedDijkstra";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "../pathfinding/pathfinder";
 import PathfinderProvider from "../pathfinding/PathfinderProvider";
 import CSAEarliestArrivalVerbose from "../planner/public-transport/CSAEarliestArrivalVerbose";
@@ -66,7 +66,7 @@ container.bind<IRoadPlanner>(TYPES.RoadPlanner)
   .to(RoadPlannerPathfinding);
 
 container.bind<IShortestPathTreeAlgorithm>(TYPES.ShortestPathTreeAlgorithm).to(DijkstraTree).inSingletonScope();
-container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(BidirDijkstra).inSingletonScope();
+container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(MixedDijkstra).inSingletonScope();
 container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvider).inSingletonScope();
 container.bind<IProfileFetcher>(TYPES.ProfileFetcher).to(ProfileFetcherDefault).inSingletonScope();
 container.bind<IProfileProvider>(TYPES.ProfileProvider).to(ProfileProviderDefault).inSingletonScope();

@@ -9,6 +9,7 @@ import { RoutableTile } from "../entities/tiles/tile";
 import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/way";
 import ProfileProvider from "../fetcher/profiles/ProfileProviderDefault";
 import ILocation from "../interfaces/ILocation";
+import ILocationResolver from "../query-runner/ILocationResolver";
 import TYPES from "../types";
 import Geo from "../util/Geo";
 import PathfindingGraph from "./graph";
@@ -39,6 +40,7 @@ export default class PathfinderProvider {
   private shortestPathTree: IShortestPathTreeAlgorithm;
   private routableTileRegistry: RoutableTileRegistry;
   private profileProvider: ProfileProvider;
+  private locationResolver: ILocationResolver;
 
   private embeddings: IPointEmbedding[];
 
@@ -47,7 +49,9 @@ export default class PathfinderProvider {
     @inject(TYPES.ShortestPathAlgorithm) pointToPoint: IShortestPathAlgorithm,
     @inject(TYPES.RoutableTileRegistry) routableTileRegistry: RoutableTileRegistry,
     @inject(TYPES.ProfileProvider) profileProvider: ProfileProvider,
+    @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
   ) {
+    this.locationResolver = locationResolver;
     this.shortestPath = pointToPoint;
     this.shortestPathTree = shortestPathTree;
     this.routableTileRegistry = routableTileRegistry;
@@ -58,7 +62,7 @@ export default class PathfinderProvider {
 
   public getShortestPathAlgorithm(profile: Profile): IShortestPathInstance {
     const graph = this.getGraphForProfile(profile);
-    return this.shortestPath.createInstance(graph);
+    return this.shortestPath.createInstance(graph, this.locationResolver);
   }
 
   public getShortestPathTreeAlgorithm(profile: Profile): IShortestPathTreeInstance {
@@ -244,9 +248,14 @@ export default class PathfinderProvider {
 
     const norm = px2.times(px2).plus(py2.times(py2));
 
-    let u = px.minus(sx1).times(px2).plus(
-      py.minus(sy1).times(py2),
-    ).div(norm);
+    let u;
+    try {
+      u = px.minus(sx1).times(px2).plus(
+        py.minus(sy1).times(py2),
+      ).div(norm);
+    } catch {
+      u = Big(1);
+    }
 
     if (u > 1) {
       u = Big(1);

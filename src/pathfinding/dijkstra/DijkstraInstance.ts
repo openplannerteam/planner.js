@@ -94,7 +94,7 @@ export class DijkstraInstance implements IShortestPathInstance {
         const steps = [];
 
         // reconstruct the path
-        while (this.previousNodes[currentPosition]) {
+        while (this.previousNodes[currentPosition] !== undefined) {
             let nextEdge;
             let nextPositionCost = Infinity;
 
