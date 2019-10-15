@@ -54,6 +54,14 @@ export default class LocationResolverDefault implements ILocationResolver {
       );
     }
 
+    if (typeof location.latitude !== "number") {
+      location.latitude = parseFloat(location.latitude);
+    }
+
+    if (typeof location.longitude !== "number") {
+      location.longitude = parseFloat(location.longitude);
+    }
+
     return location;
   }
 

@@ -1,6 +1,7 @@
 import { AsyncIterator } from "asynciterator";
 import IConnection from "../../entities/connections/connections";
 import { LinkedConnectionsPage } from "../../entities/connections/page";
+import TravelMode from "../../enums/TravelMode";
 import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 
 export default interface IConnectionsProvider {

@@ -1,4 +1,4 @@
-import Profile from "../entities/profile/Profile";
+import TravelMode from "../enums/TravelMode";
 import ILocation from "./ILocation";
 import { DistanceM, DurationMs, SpeedKmH } from "./units";
 
@@ -20,4 +20,5 @@ export default interface IQuery {
   maximumTransferDistance?: DistanceM;
   maximumTransfers?: number;
   maximumTravelDuration?: DurationMs;
+  excludedTravelModes?: TravelMode[];
 }

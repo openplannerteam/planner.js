@@ -31,6 +31,14 @@ interface IFinalReachableStops {
   [stop: string]: IReachableStop;
 }
 
+interface IQueryState {
+  finalReachableStops: IFinalReachableStops;
+  profilesByStop: IProfileByStop; // S
+  enterConnectionByTrip: IEnterConnectionByTrip; // T
+  footpathsQueue: FootpathQueue;
+  connectionsQueue: AsyncIterator<IConnection>;
+}
+
 // Implementation is as close as possible to the original paper: https://arxiv.org/pdf/1703.05997.pdf
 
 @injectable()
@@ -61,13 +69,6 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   protected readonly finalReachableStopsFinder: IReachableStopsFinder;
   protected readonly eventBus: EventEmitter;
 
-  protected finalReachableStops: IFinalReachableStops;
-  protected profilesByStop: IProfileByStop; // S
-  protected enterConnectionByTrip: IEnterConnectionByTrip; // T
-
-  protected footpathsQueue: FootpathQueue;
-  protected connectionsQueue: AsyncIterator<IConnection>;
-
   protected journeyExtractor: IJourneyExtractor;
 
   constructor(
@@ -95,31 +96,35 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    // reset state
-    this.finalReachableStops = {};
-    this.profilesByStop = {};
-    this.enterConnectionByTrip = {};
-
     const {
       minimumDepartureTime: lowerBoundDate,
       maximumArrivalTime: upperBoundDate,
     } = query;
 
-    this.footpathsQueue = new FootpathQueue();
+    const footpathsQueue = new FootpathQueue();
     const connectionsIterator = this.connectionsProvider.createIterator({
       upperBoundDate,
       lowerBoundDate,
+      excludedModes: query.excludedTravelModes,
     });
 
-    this.connectionsQueue = new MergeIterator(
-      [connectionsIterator, this.footpathsQueue],
+    const connectionsQueue = new MergeIterator(
+      [connectionsIterator, footpathsQueue],
       CSAEarliestArrival.forwardsConnectionSelector,
       true,
     );
 
+    const queryState: IQueryState = {
+      finalReachableStops: {},
+      profilesByStop: {},
+      enterConnectionByTrip: {},
+      footpathsQueue,
+      connectionsQueue,
+    };
+
     const [hasInitialReachableStops, hasFinalReachableStops] = await Promise.all([
-      this.initInitialReachableStops(query),
-      this.initFinalReachableStops(query),
+      this.initInitialReachableStops(queryState, query),
+      this.initFinalReachableStops(queryState, query),
     ]);
 
     if (!hasInitialReachableStops || !hasFinalReachableStops) {
@@ -132,9 +137,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
       const done = () => {
         if (!isDone) {
-          self.connectionsQueue.close();
+          connectionsQueue.close();
 
-          self.extractJourneys(query)
+          self.extractJourneys(queryState, query)
             .then((resultIterator) => {
               resolve(resultIterator);
             });
@@ -144,18 +149,18 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       };
 
       connectionsIterator.on("readable", () =>
-        self.processConnections(query, done),
+        self.processConnections(queryState, query, done),
       );
 
       connectionsIterator.on("end", () => done());
 
       // iterator may have become readable before the listener was attached
-      self.processConnections(query, done);
+      self.processConnections(queryState, query, done);
 
     }) as Promise<AsyncIterator<IPath>>;
   }
 
-  protected updateProfile(query: IResolvedQuery, connection: IConnection) {
+  protected updateProfile(state: IQueryState, query: IResolvedQuery, connection: IConnection) {
     /*
     Call this ONLY if the given connection is known to improve the arrival stop's profile
     */
@@ -169,32 +174,32 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       departureTime,
       arrivalTime,
       exitConnection: connection,
-      enterConnection: this.enterConnectionByTrip[tripId],
+      enterConnection: state.enterConnectionByTrip[tripId],
     };
-    this.profilesByStop[connection.arrivalStop] = arrivalProfile;
+    state.profilesByStop[connection.arrivalStop] = arrivalProfile;
   }
 
-  private async extractJourneys(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
-    return this.journeyExtractor.extractJourneys(this.profilesByStop, query);
+  private async extractJourneys(state: IQueryState, query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+    return this.journeyExtractor.extractJourneys(state.profilesByStop, query);
   }
 
-  private async processConnections(query: IResolvedQuery, resolve: () => void) {
+  private async processConnections(state: IQueryState, query: IResolvedQuery, resolve: () => void) {
     const { from, to, minimumDepartureTime } = query;
     const departureStopId: string = from[0].id;
     const arrivalStopId: string = to[0].id;
 
-    let connection: IConnection = this.connectionsQueue.read();
+    let connection: IConnection = state.connectionsQueue.read();
 
-    while (connection && !this.connectionsQueue.closed) {
+    while (connection && !state.connectionsQueue.closed) {
 
-      if (connection.departureTime < minimumDepartureTime && !this.connectionsQueue.closed) {
+      if (connection.departureTime < minimumDepartureTime && !state.connectionsQueue.closed) {
         // starting criterion
         // skip connections before the minimum departure time
-        connection = this.connectionsQueue.read();
+        connection = state.connectionsQueue.read();
         continue;
       }
 
-      if (this.getProfile(arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
+      if (this.getProfile(state, arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
         // stopping criterion
         // we cannot improve the tentative arrival time anymore
         return resolve();
@@ -203,33 +208,34 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       const tripId = connection.tripId;
       const departureTime = connection.departureTime.getTime();
 
-      const canRemainSeated = this.enterConnectionByTrip[tripId];
+      const canRemainSeated = state.enterConnectionByTrip[tripId];
       const canTakeTransfer = (
         (
           connection.departureStop === departureStopId ||
-          this.getProfile(connection.departureStop).arrivalTime <= departureTime
+          this.getProfile(state, connection.departureStop).arrivalTime <= departureTime
         ) &&
         connection["gtfs:pickupType"] !== PickupType.NotAvailable
       );
 
       if (canRemainSeated || canTakeTransfer) {
         // enterConnectionByTrip should point to the first reachable connection
-        if (!this.enterConnectionByTrip[tripId]) {
-          this.enterConnectionByTrip[tripId] = connection;
+        if (!state.enterConnectionByTrip[tripId]) {
+          state.enterConnectionByTrip[tripId] = connection;
         }
 
         // limited walking optimization
-        const canImprove = connection.arrivalTime.getTime() < this.getProfile(connection.arrivalStop).arrivalTime;
+        const canImprove = connection.arrivalTime.getTime() <
+          this.getProfile(state, connection.arrivalStop).arrivalTime;
         const canLeave = connection["gtfs:dropOffType"] !== DropOffType.NotAvailable;
 
         if (canLeave && canImprove) {
-          this.updateProfile(query, connection);
-          await this.scheduleExtraConnections(query, connection);
+          this.updateProfile(state, query, connection);
+          await this.scheduleExtraConnections(state, query, connection);
         }
       }
 
-      if (!this.connectionsQueue.closed) {
-        connection = this.connectionsQueue.read();
+      if (!state.connectionsQueue.closed) {
+        connection = state.connectionsQueue.read();
         continue;
       }
 
@@ -237,17 +243,17 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
   }
 
-  private getProfile(stopId: string): ITransferProfile {
-    if (!this.profilesByStop[stopId]) {
-      this.profilesByStop[stopId] = {
+  private getProfile(state: IQueryState, stopId: string): ITransferProfile {
+    if (!state.profilesByStop[stopId]) {
+      state.profilesByStop[stopId] = {
         departureTime: Infinity,
         arrivalTime: Infinity,
       };
     }
-    return this.profilesByStop[stopId];
+    return state.profilesByStop[stopId];
   }
 
-  private async scheduleExtraConnections(query: IResolvedQuery, sourceConnection: IConnection) {
+  private async scheduleExtraConnections(state: IQueryState, query: IResolvedQuery, sourceConnection: IConnection) {
     try {
       const arrivalStop: ILocation = await this.locationResolver.resolve(sourceConnection.arrivalStop);
       const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
@@ -258,15 +264,15 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         query.profileID,
       );
 
-      if (this.finalReachableStops[arrivalStop.id]) {
-        reachableStops.push(this.finalReachableStops[arrivalStop.id]);
+      if (state.finalReachableStops[arrivalStop.id]) {
+        reachableStops.push(state.finalReachableStops[arrivalStop.id]);
       }
 
       for (const reachableStop of reachableStops) {
         const { stop: stop, duration: duration } = reachableStop;
 
         if (duration && stop.id) {
-          const transferTentativeArrival = this.getProfile(stop.id).arrivalTime;
+          const transferTentativeArrival = this.getProfile(state, stop.id).arrivalTime;
           const newArrivalTime = new Date(sourceConnection.arrivalTime.getTime() + duration);
 
           if (transferTentativeArrival > newArrivalTime.getTime() && newArrivalTime <= query.maximumArrivalTime) {
@@ -285,7 +291,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
               headsign: stop.id,
             };
 
-            this.footpathsQueue.write(transferConnection);
+            state.footpathsQueue.write(transferConnection);
           }
         }
       }
@@ -296,7 +302,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
   }
 
-  private async initInitialReachableStops(query: IResolvedQuery): Promise<boolean> {
+  private async initInitialReachableStops(state: IQueryState, query: IResolvedQuery): Promise<boolean> {
     const fromLocation: ILocation = query.from[0];
 
     // Making sure the departure location has an id
@@ -344,14 +350,14 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
           headsign: stop.id,
         };
 
-        this.footpathsQueue.write(transferConnection);
+        state.footpathsQueue.write(transferConnection);
       }
     }
 
     return true;
   }
 
-  private async initFinalReachableStops(query: IResolvedQuery): Promise<boolean> {
+  private async initFinalReachableStops(state: IQueryState, query: IResolvedQuery): Promise<boolean> {
     const toLocation: ILocation = query.to[0];
 
     // Making sure the departure location has an id
@@ -382,7 +388,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
     for (const reachableStop of reachableStops) {
       if (reachableStop.duration > 0) {
-        this.finalReachableStops[reachableStop.stop.id] = {
+        state.finalReachableStops[reachableStop.stop.id] = {
           stop: toLocation as IStop,
           duration: reachableStop.duration,
         };

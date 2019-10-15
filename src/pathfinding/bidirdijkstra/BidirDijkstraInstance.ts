@@ -34,6 +34,12 @@ interface INodeHandledStep {
 
 @injectable()
 export class BidirDijkstraInstance implements IShortestPathInstance {
+    /*
+    Note that the stopping condition isn't entirely correct.
+    It might result in slightly suboptimal results
+    but you should only notice the difference on short routes (small number of steps).
+    */
+
     private graph: PathfindingGraph;
     private useWeightedCost: boolean;
 
@@ -118,7 +124,7 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
         const backwardSteps = [];
 
         // reconstruct forward part of the path
-        while (this.backwardParents[currentPosition]) {
+        while (this.backwardParents[currentPosition] !== undefined) {
             let nextEdge;
             let nextPositionCost = Infinity;
 
@@ -134,8 +140,8 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
             }
 
             backwardSteps.push({
-                from: this.graph.getLabel(nextEdge.node),
-                to: this.graph.getLabel(currentPosition),
+                from: this.graph.getLabel(currentPosition),
+                to: this.graph.getLabel(nextEdge.node),
                 distance: nextEdge.distance,
                 duration: nextEdge.duration,
             });
@@ -144,7 +150,7 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
         }
 
         currentPosition = toIndex;
-        while (this.forwardParents[currentPosition]) {
+        while (this.forwardParents[currentPosition] !== undefined) {
             let nextEdge;
             let nextPositionCost = Infinity;
 

@@ -1,4 +1,5 @@
 import { DistanceM, DurationMs } from "../interfaces/units";
+import ILocationResolver from "../query-runner/ILocationResolver";
 import PathfindingGraph from "./graph";
 
 export interface IPathTree {
@@ -17,7 +18,7 @@ export interface IPathSummary {
 }
 
 interface IPathfinder {
-    createInstance(graph: PathfindingGraph): IPathfinderInstance;
+    createInstance(graph: PathfindingGraph, locationResolver: ILocationResolver): IPathfinderInstance;
 }
 
 interface IPathfinderInstance {
@@ -36,7 +37,7 @@ export interface IShortestPathTreeInstance extends IPathfinderInstance {
 }
 
 export interface IShortestPathAlgorithm extends IPathfinder {
-    createInstance(graph: PathfindingGraph): IShortestPathInstance;
+    createInstance(graph: PathfindingGraph, locationResolver: ILocationResolver): IShortestPathInstance;
 }
 
 export interface IShortestPathTreeAlgorithm extends IPathfinder {
