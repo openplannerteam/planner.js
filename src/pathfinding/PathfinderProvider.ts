@@ -256,9 +256,9 @@ export default class PathfinderProvider {
     const norm = px2 * px2 + py2 * py2;
 
     let u;
-    try {
+    if (norm) {
       u = ((px - sx1) * px2 + (py - sy1) * py2) / norm;
-    } catch {
+    } else {
       u = Infinity;
     }
 
