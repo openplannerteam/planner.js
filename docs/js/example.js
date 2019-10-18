@@ -177,7 +177,7 @@ PlannerJS.EventBus
     });
   })
   .on(PlannerJS.EventType.AddedNewTransferProfile, ({ departureStop, arrivalStop, amountOfTransfers }) => {
-
+    /*
     const newLine = [
       [departureStop.latitude, departureStop.longitude],
       [arrivalStop.latitude, arrivalStop.longitude]
@@ -202,7 +202,9 @@ PlannerJS.EventBus
 
       lines.push(newLine);
       polyLines.push(polyline);
+      
     }
+    */
   })
   .on(PlannerJS.EventType.ConnectionPrefetch, (departureTime) => {
     if (!earliestFetch) {
@@ -331,10 +333,10 @@ function dateToTimeString(date) {
 map.on("click", onMapClick);
 
 function getRandomColor() {
-  const letters = "123456789";
+  const letters = "23456789AB";
   let color = "#";
   for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 9)];
+    color += letters[Math.floor(Math.random() * 10)];
   }
   return color;
 }
@@ -343,10 +345,10 @@ function addResultPanel(query, path, color) {
   const pathElement = document.createElement("div");
   pathElement.className = "path";
 
-  const travelTime = path.getTravelTime();
+  const travelTime = path.getTravelTime(query);
   const startTime = path.getDepartureTime(query);
   const stopTime = path.getArrivalTime(query);
-  const transferTime = Number.isNaN(path.getTransferTime()) ? 0 : path.getTransferTime();
+  const transferTime = Number.isNaN(path.getTransferTime(query)) ? 0 : path.getTransferTime(query);
 
   const headerElement = document.createElement("div");
   headerElement.className = "header";
@@ -427,13 +429,13 @@ function drawLeg(leg, pathElement, color) {
   pathElement.appendChild(stepElement);
 }
 
-function addResultToMap(q, path) {
+function addResultToMap(q, path, color) {
   for (const leg of path.legs) {
-    addConnectionMarkers(leg);
+    addConnectionMarkers(leg, color);
   }
 }
 
-function addConnectionMarkers(leg) {
+function addConnectionMarkers(leg, color) {
   const startLocation = leg.getStartLocation();
   const stopLocation = leg.getStopLocation();
   const travelMode = leg.getTravelMode();
@@ -454,7 +456,6 @@ function addConnectionMarkers(leg) {
 
   resultObjects.push(startMarker, stopMarker);
 
-  const color = getRandomColor();
   for (const step of leg.steps) {
     const line = [
       [step.startLocation.latitude, step.startLocation.longitude],
@@ -517,7 +518,7 @@ function runQuery(query) {
       i++;
       const color = getRandomColor();
       addResultPanel(q, completePath, color);
-      addResultToMap(q, completePath);
+      addResultToMap(q, completePath, color);
 
     })
     .on("end", () => {

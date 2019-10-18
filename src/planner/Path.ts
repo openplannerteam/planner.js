@@ -78,15 +78,15 @@ export default class Path implements IPath {
         acc += leg.getExpectedDuration();
       }
     }
-    return new Date(query.minimumDepartureTime.getTime() + (this.getTravelTime()));
+    return new Date(query.minimumDepartureTime.getTime() + acc);
   }
 
-  public getTravelTime(): DurationMs {
-    return this.legs.reduce((time, leg) => time + leg.getExpectedDuration(), 0);
+  public getTravelTime(query: IQuery): DurationMs {
+    return this.getArrivalTime(query).getTime() - this.getDepartureTime(query).getTime();
   }
 
-  public getTransferTime(): DurationMs {
-    let time = this.getTravelTime();
+  public getTransferTime(query: IQuery): DurationMs {
+    let time = this.getTravelTime(query);
 
     for (const leg of this.legs) {
       if (leg.getTravelMode() === TravelMode.Train || leg.getTravelMode() === TravelMode.Bus) {
