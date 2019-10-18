@@ -30,7 +30,7 @@ import { BidirDijkstra } from "../pathfinding/bidirdijkstra/BidirDijkstra";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "../pathfinding/pathfinder";
 import PathfinderProvider from "../pathfinding/PathfinderProvider";
-import CSAEarliestArrival from "../planner/public-transport/CSAEarliestArrival";
+import CSAProfile from "../planner/public-transport/CSAProfile";
 import IJourneyExtractor from "../planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractorProfile from "../planner/public-transport/JourneyExtractorProfile";
@@ -39,15 +39,15 @@ import RoadPlannerPathfinding from "../planner/road/RoadPlannerPathfinding";
 import IReachableStopsFinder from "../planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderDelaunay from "../planner/stops/ReachableStopsFinderDelaunay";
 import ReachableStopsFinderOnlySelf from "../planner/stops/ReachableStopsFinderOnlySelf";
+import QueryRunnerExponential from "../query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "../query-runner/ILocationResolver";
 import IQueryRunner from "../query-runner/IQueryRunner";
 import LocationResolverConvenience from "../query-runner/LocationResolverConvenience";
-import QueryRunnerDefault from "../query-runner/QueryRunnerDefault";
 import TYPES from "../types";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
-container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
+container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
 
 // TODO, make this a fixed property of the planner itself
@@ -55,7 +55,7 @@ container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(CSAEarliestArrival);
+  .to(CSAProfile);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 

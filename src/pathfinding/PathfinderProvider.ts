@@ -42,6 +42,7 @@ export default class PathfinderProvider {
   private profileProvider: ProfileProvider;
   private locationResolver: ILocationResolver;
 
+  private embedded: Set<string>;
   private embeddings: IPointEmbedding[];
 
   constructor(
@@ -58,6 +59,7 @@ export default class PathfinderProvider {
     this.profileProvider = profileProvider;
     this.graphs = {};
     this.embeddings = [];
+    this.embedded = new Set();
   }
 
   public getShortestPathAlgorithm(profile: Profile): IShortestPathInstance {
@@ -98,6 +100,12 @@ export default class PathfinderProvider {
   }
 
   public async embedLocation(p: ILocation, tileset: RoutableTile, invert = false) {
+    if (this.embedded.has(Geo.getId(p))) {
+      return;
+    }
+
+    this.embedded.add(Geo.getId(p));
+
     for (const profile of await this.profileProvider.getProfiles()) {
       let bestDistance = Infinity;
       let bestEmbedding: IPointEmbedding;
