@@ -73,6 +73,9 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
 
             const duration = (new Date()).getTime() - beginTime.getTime();
             EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
+            EventBus.getInstance().emit(EventType.ConnectionPrefetch, connections[0].departureTime);
+            EventBus.getInstance().emit(EventType.ConnectionPrefetch,
+                connections[connections.length - 1].departureTime);
 
             return new LinkedConnectionsPage(pageId, connections, previousPageUrl, nextPageUrl);
         } else {

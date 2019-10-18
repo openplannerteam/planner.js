@@ -31,6 +31,7 @@ export default abstract class Planner {
   private queryRunner: IQueryRunner;
   private profileProvider: ProfileProvider;
   private roadPlanner: IRoadPlanner;
+  private connectionsProvider: IConnectionsProvider;
 
   /**
    * Initializes a new Planner
@@ -45,6 +46,7 @@ export default abstract class Planner {
     this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
     this.eventBus = EventBus.getInstance();
     this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
+    this.connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
 
     this.activeProfileID = "https://hdelva.be/profile/pedestrian";
   }
@@ -133,10 +135,7 @@ export default abstract class Planner {
   }
 
   public prefetchConnections(from: Date, to: Date): void {
-    // TODO, get rid of service locator anti-pattern
-    const container = this.context.getContainer();
-    const connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
-    connectionsProvider.prefetchConnections(from, to);
+    this.connectionsProvider.prefetchConnections(from, to);
   }
 
   public async setDevelopmentProfile(blob: object) {

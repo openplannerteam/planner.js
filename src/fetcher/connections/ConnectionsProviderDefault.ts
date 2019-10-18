@@ -1,8 +1,10 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
+import { EventType } from "../..";
 import Catalog from "../../Catalog";
 import IConnection from "../../entities/connections/connections";
 import { ILinkedConnectionsPageIndex, LinkedConnectionsPage } from "../../entities/connections/page";
+import EventBus from "../../events/EventBus";
 import TYPES, { ConnectionsFetcherFactory } from "../../types";
 import BackwardConnectionIterator from "./BackwardConnectionIterator";
 import ForwardConnectionIterator from "./ForwardConnectionIterator";
@@ -49,19 +51,43 @@ export default class ConnectionsProviderDefault implements IConnectionsProvider 
     }
 
     public prefetchConnections(lowerBound: Date, upperBound: Date): void {
-        // TODO
-        return;
+        const iterator = this.createIterator({
+            upperBoundDate: upperBound,
+            lowerBoundDate: lowerBound,
+        });
+
+        iterator.on("readable", () => {
+            while (iterator.read()) {
+                //
+            }
+        });
     }
 
     public createIterator(options: IConnectionsIteratorOptions): AsyncIterator<IConnection> {
+        EventBus.getInstance().emit(
+            EventType.ConnectionIteratorView,
+            options.lowerBoundDate,
+            options.upperBoundDate,
+        );
+
+        let iterator: AsyncIterator<IConnection>;
         if (options.backward) {
             const beginTime = options.upperBoundDate;
             const beginUrl = this.getIdForTime(beginTime);
-            return new BackwardConnectionIterator(this, options, beginUrl);
+            iterator = new BackwardConnectionIterator(this, options, beginUrl);
         } else {
             const beginTime = options.lowerBoundDate;
             const beginUrl = this.getIdForTime(beginTime);
-            return new ForwardConnectionIterator(this, options, beginUrl);
+            iterator = new ForwardConnectionIterator(this, options, beginUrl);
         }
+
+        return iterator.on("end", () => {
+            EventBus.getInstance().emit(
+                EventType.ConnectionIteratorView,
+                options.lowerBoundDate,
+                options.upperBoundDate,
+                true,
+            );
+        });
     }
 }

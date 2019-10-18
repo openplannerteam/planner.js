@@ -15,7 +15,9 @@ L.tileLayer(
 const planner = new PlannerJS.BasicTrainPlanner();
 
 planner.prefetchStops();
-planner.prefetchConnections();
+planner.prefetchConnections(new Date(), new Date(new Date().getTime() + 2 * 60 * 60 * 1000));
+
+console.log(new Date(new Date().getTime() + 2 * 60 * 60 * 1000));
 
 let plannerResult;
 const usePublicTransport = document.querySelector('#usePublicTransport');
@@ -33,7 +35,8 @@ let query = [];
 let allStops = [];
 let prefetchViews = [];
 
-let firstPrefetch;
+let earliestFetch;
+let latestFetch;
 
 const removeStops = () => {
   for (const stop of allStops) {
@@ -202,24 +205,29 @@ PlannerJS.EventBus
     }
   })
   .on(PlannerJS.EventType.ConnectionPrefetch, (departureTime) => {
-    if (!firstPrefetch) {
-      firstPrefetch = departureTime;
-
-      prefetchBar.innerHTML = departureTime.toLocaleTimeString();
-
-    } else {
-      const width = getPrefetchViewWidth(firstPrefetch, departureTime);
-
-      prefetchBarWidth = width + 10;
-
-      const prefetch = document.getElementById("prefetch");
-      prefetch.style.width = `${prefetchBarWidth}px`;
-
-      prefetchBar.style.width = `${width}px`;
-      prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
-
-      drawPrefetchViews();
+    if (!earliestFetch) {
+      earliestFetch = departureTime;
     }
+
+    if (!latestFetch) {
+      latestFetch = departureTime;
+    }
+
+    earliestFetch = new Date(Math.min(departureTime, earliestFetch));
+    latestFetch = new Date(Math.max(departureTime, latestFetch));
+    prefetchBar.innerHTML = earliestFetch.toLocaleTimeString();
+
+    const width = getPrefetchViewWidth(earliestFetch, latestFetch);
+
+    prefetchBarWidth = width + 10;
+
+    const prefetch = document.getElementById("prefetch");
+    prefetch.style.width = `${prefetchBarWidth}px`;
+
+    prefetchBar.style.width = `${width}px`;
+    prefetchBar.setAttribute("data-last", latestFetch.toLocaleTimeString());
+
+    drawPrefetchViews();
   })
   .on(PlannerJS.EventType.ConnectionIteratorView, (lowerBound, upperBound, completed) => {
     if (!lowerBound || !upperBound) {
@@ -228,7 +236,7 @@ PlannerJS.EventBus
 
     if (!completed) {
       const width = getPrefetchViewWidth(lowerBound, upperBound);
-      const offset = getPrefetchViewWidth(firstPrefetch, lowerBound);
+      const offset = getPrefetchViewWidth(earliestFetch, lowerBound);
 
       const prefetchView = document.createElement("div");
       prefetchView.className = "prefetch-view";
@@ -259,7 +267,7 @@ PlannerJS.EventBus
 function drawPrefetchViews() {
   for (const prefetchView of prefetchViews) {
     const viewWidth = getPrefetchViewWidth(prefetchView.lowerBound, prefetchView.upperBound);
-    const offset = getPrefetchViewWidth(firstPrefetch, prefetchView.lowerBound);
+    const offset = getPrefetchViewWidth(earliestFetch, prefetchView.lowerBound);
 
     prefetchView.elem.style.width = `${viewWidth * 100 / prefetchBarWidth}%`;
     prefetchView.elem.style.marginLeft = `${offset}px`;
