@@ -214,7 +214,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
           connection.departureStop === departureStopId ||
           this.getProfile(state, connection.departureStop).arrivalTime <= departureTime
         ) &&
-        connection["gtfs:pickupType"] !== PickupType.NotAvailable
+        connection.pickupType !== PickupType.NotAvailable
       );
 
       if (canRemainSeated || canTakeTransfer) {
@@ -226,7 +226,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         // limited walking optimization
         const canImprove = connection.arrivalTime.getTime() <
           this.getProfile(state, connection.arrivalStop).arrivalTime;
-        const canLeave = connection["gtfs:dropOffType"] !== DropOffType.NotAvailable;
+        const canLeave = connection.dropOffType !== DropOffType.NotAvailable;
 
         if (canLeave && canImprove) {
           this.updateProfile(state, query, connection);

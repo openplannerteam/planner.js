@@ -9,6 +9,7 @@ import IPath from "../../interfaces/IPath";
 import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
+import Geo from "../../util/Geo";
 import Iterators from "../../util/Iterators";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
@@ -83,13 +84,14 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
 
     // not including these for now
     // may result in large route network queries if the stops network is sparse
-    /*
+
     const neighbors = triangles.neighbors(cell);
     for (const neighbor of neighbors) {
-      result.push(this.trianglePoints[neighbor]);
+      const neighborLocation = this.trianglePoints[neighbor];
+      if (Geo.getDistanceBetweenLocations(location, neighborLocation) < 2500) {
+        result.push(neighborLocation);
+      }
     }
-    */
-
     return result;
   }
 

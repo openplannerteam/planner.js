@@ -7,6 +7,6 @@ export default interface IPath {
 
   getDepartureTime(query: IQuery): Date;
   getArrivalTime(query: IQuery): Date;
-  getTravelTime(): DurationMs;
-  getTransferTime(): DurationMs;
+  getTravelTime(query: IQuery): DurationMs;
+  getTransferTime(query: IQuery): DurationMs;
 }
