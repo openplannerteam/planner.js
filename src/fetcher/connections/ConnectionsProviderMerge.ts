@@ -65,8 +65,10 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     }
   }
 
-  public prefetchConnections(): void {
-    return;
+  public prefetchConnections(lowerBound: Date, upperBound: Date): void {
+    for (const provider of this.defaultProviders) {
+      provider.prefetchConnections(lowerBound, upperBound);
+    }
   }
 
   public createIterator(options: IConnectionsIteratorOptions): AsyncIterator<IConnection> {

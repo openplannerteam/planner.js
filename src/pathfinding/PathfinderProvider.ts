@@ -1,4 +1,3 @@
-import Big from "big.js";
 import proj4 from "proj4";
 
 import { inject, injectable } from "inversify";
@@ -42,6 +41,7 @@ export default class PathfinderProvider {
   private profileProvider: ProfileProvider;
   private locationResolver: ILocationResolver;
 
+  private embedded: Set<string>;
   private embeddings: IPointEmbedding[];
 
   constructor(
@@ -58,6 +58,7 @@ export default class PathfinderProvider {
     this.profileProvider = profileProvider;
     this.graphs = {};
     this.embeddings = [];
+    this.embedded = new Set();
   }
 
   public getShortestPathAlgorithm(profile: Profile): IShortestPathInstance {
@@ -98,6 +99,12 @@ export default class PathfinderProvider {
   }
 
   public async embedLocation(p: ILocation, tileset: RoutableTile, invert = false) {
+    if (this.embedded.has(Geo.getId(p))) {
+      return;
+    }
+
+    this.embedded.add(Geo.getId(p));
+
     for (const profile of await this.profileProvider.getProfiles()) {
       let bestDistance = Infinity;
       let bestEmbedding: IPointEmbedding;
@@ -230,44 +237,41 @@ export default class PathfinderProvider {
   }
 
   private segmentDistToPoint(segA: ILocation, segB: ILocation, p: ILocation): [number, ILocation] {
-    // potential 'catastrophic cancellation', hence the Big library
+    // potential 'catastrophic cancellation'
     const mSegA = proj4("EPSG:4326", "EPSG:3857", [segA.longitude, segA.latitude]);
     const mSegB = proj4("EPSG:4326", "EPSG:3857", [segB.longitude, segB.latitude]);
     const mP = proj4("EPSG:4326", "EPSG:3857", [p.longitude, p.latitude]);
 
-    const sx1 = Big(mSegA[0]);
-    const sx2 = Big(mSegB[0]);
-    const px = Big(mP[0]);
+    const sx1 = mSegA[0];
+    const sx2 = mSegB[0];
+    const px = mP[0];
 
-    const sy1 = Big(mSegA[1]);
-    const sy2 = Big(mSegB[1]);
-    const py = Big(mP[1]);
+    const sy1 = mSegA[1];
+    const sy2 = mSegB[1];
+    const py = mP[1];
 
-    const px2 = sx2.minus(sx1);  // <-
-    const py2 = sy2.minus(sy1);  // <-
+    const px2 = sx2 - sx1;  // <-
+    const py2 = sy2 - sy1;  // <-
 
-    const norm = px2.times(px2).plus(py2.times(py2));
+    const norm = px2 * px2 + py2 * py2;
 
     let u;
-    try {
-      u = px.minus(sx1).times(px2).plus(
-        py.minus(sy1).times(py2),
-      ).div(norm);
-    } catch {
-      u = Big(1);
+    if (norm) {
+      u = ((px - sx1) * px2 + (py - sy1) * py2) / norm;
+    } else {
+      u = Infinity;
     }
 
     if (u > 1) {
-      u = Big(1);
+      u = 1;
     } else if (u < 0) {
-      u = Big(0);
+      u = 0;
     }
 
-    const x = sx1.plus(u.times(px2));
-    const y = sy1.plus(u.times(py2));
+    const x = sx1 + u * px2;
+    const y = sy1 + u * py2;
 
-    const mIntersection = [parseFloat(x), parseFloat(y)];
-    const intersection = proj4("EPSG:3857", "EPSG:4326", mIntersection);
+    const intersection = proj4("EPSG:3857", "EPSG:4326", [x, y]);
     const result = {
       longitude: intersection[0],
       latitude: intersection[1],

@@ -36,7 +36,7 @@ export default class ProfileUtil {
     const { arrivalStop, arrivalTime } = connection;
     const trip: string = connection.tripId;
 
-    if (connection["gtfs:dropOffType"] !== DropOffType.NotAvailable) {
+    if (connection.dropOffType !== DropOffType.NotAvailable) {
 
       let profileIndex: number = profilesByStop[arrivalStop].length - 1;
       while (profileIndex >= 0) {
