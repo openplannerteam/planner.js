@@ -137,12 +137,9 @@ container.bind&lt;IConnectionsFetcher&gt;(TYPES.ConnectionsFetcher).to(Connectio
 container.bind&lt;interfaces.Factory&lt;IConnectionsFetcher&gt;&gt;(TYPES.ConnectionsFetcherFactory)
   .toFactory&lt;IConnectionsFetcher&gt;(
     (context: interfaces.Context) =&gt;
-      (accessUrl: string, travelMode: TravelMode) =&gt; {
+      (travelMode: TravelMode) =&gt; {
         const fetcher = context.container.get&lt;ConnectionsFetcherLazy&gt;(TYPES.ConnectionsFetcher);
-
-        fetcher.setAccessUrl(accessUrl);
         fetcher.setTravelMode(travelMode);
-
         return fetcher;
       },
   );</code></pre>

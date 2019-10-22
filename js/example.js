@@ -12,10 +12,12 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new PlannerJS.BasicTrainPlanner();
+const planner = new PlannerJS.DelijnNmbsPlanner();
 
 planner.prefetchStops();
-planner.prefetchConnections();
+planner.prefetchConnections(new Date(), new Date(new Date().getTime() + 2 * 60 * 60 * 1000));
+
+console.log(new Date(new Date().getTime() + 2 * 60 * 60 * 1000));
 
 let plannerResult;
 const usePublicTransport = document.querySelector('#usePublicTransport');
@@ -33,7 +35,8 @@ let query = [];
 let allStops = [];
 let prefetchViews = [];
 
-let firstPrefetch;
+let earliestFetch;
+let latestFetch;
 
 const removeStops = () => {
   for (const stop of allStops) {
@@ -153,17 +156,17 @@ PlannerJS.EventBus
     removeLines();
   })
   .on(PlannerJS.EventType.InitialReachableStops, reachableStops => {
-    console.log("initial", reachableStops);
+    /*console.log("initial", reachableStops);
     reachableStops.map(({ stop }) => {
       const startMarker = L.marker([stop.latitude, stop.longitude]).addTo(map);
 
       startMarker.bindPopup("initialreachable: " + stop.name);
 
       resultObjects.push(startMarker);
-    });
+    });*/
   })
   .on(PlannerJS.EventType.FinalReachableStops, reachableStops => {
-    console.log("final", reachableStops);
+    /*console.log("final", reachableStops);
 
     reachableStops.map(({ stop }) => {
       const startMarker = L.marker([stop.latitude, stop.longitude]).addTo(map);
@@ -171,10 +174,10 @@ PlannerJS.EventBus
       startMarker.bindPopup("finalreachable: " + stop.name);
 
       resultObjects.push(startMarker);
-    });
+    });*/
   })
   .on(PlannerJS.EventType.AddedNewTransferProfile, ({ departureStop, arrivalStop, amountOfTransfers }) => {
-
+    /*
     const newLine = [
       [departureStop.latitude, departureStop.longitude],
       [arrivalStop.latitude, arrivalStop.longitude]
@@ -199,36 +202,43 @@ PlannerJS.EventBus
 
       lines.push(newLine);
       polyLines.push(polyline);
+      
     }
+    */
   })
   .on(PlannerJS.EventType.ConnectionPrefetch, (departureTime) => {
-    if (!firstPrefetch) {
-      firstPrefetch = departureTime;
-
-      prefetchBar.innerHTML = departureTime.toLocaleTimeString();
-
-    } else {
-      const width = getPrefetchViewWidth(firstPrefetch, departureTime);
-
-      prefetchBarWidth = width + 10;
-
-      const prefetch = document.getElementById("prefetch");
-      prefetch.style.width = `${prefetchBarWidth}px`;
-
-      prefetchBar.style.width = `${width}px`;
-      prefetchBar.setAttribute("data-last", departureTime.toLocaleTimeString());
-
-      drawPrefetchViews();
+    /*if (!earliestFetch) {
+      earliestFetch = departureTime;
     }
+
+    if (!latestFetch) {
+      latestFetch = departureTime;
+    }
+
+    earliestFetch = new Date(Math.min(departureTime, earliestFetch));
+    latestFetch = new Date(Math.max(departureTime, latestFetch));
+    prefetchBar.innerHTML = earliestFetch.toLocaleTimeString();
+
+    const width = getPrefetchViewWidth(earliestFetch, latestFetch);
+
+    prefetchBarWidth = width + 10;
+
+    const prefetch = document.getElementById("prefetch");
+    prefetch.style.width = `${prefetchBarWidth}px`;
+
+    prefetchBar.style.width = `${width}px`;
+    prefetchBar.setAttribute("data-last", latestFetch.toLocaleTimeString());
+
+    drawPrefetchViews();*/
   })
   .on(PlannerJS.EventType.ConnectionIteratorView, (lowerBound, upperBound, completed) => {
-    if (!lowerBound || !upperBound) {
+    /*if (!lowerBound || !upperBound) {
       return;
     }
 
     if (!completed) {
       const width = getPrefetchViewWidth(lowerBound, upperBound);
-      const offset = getPrefetchViewWidth(firstPrefetch, lowerBound);
+      const offset = getPrefetchViewWidth(earliestFetch, lowerBound);
 
       const prefetchView = document.createElement("div");
       prefetchView.className = "prefetch-view";
@@ -250,7 +260,7 @@ PlannerJS.EventBus
       drawPrefetchViews();
 
       elem.style.backgroundColor = "limegreen";
-    }
+    }*/
   })
   .on(PlannerJS.EventType.Warning, (warning) => {
     console.warn(warning);
@@ -259,7 +269,7 @@ PlannerJS.EventBus
 function drawPrefetchViews() {
   for (const prefetchView of prefetchViews) {
     const viewWidth = getPrefetchViewWidth(prefetchView.lowerBound, prefetchView.upperBound);
-    const offset = getPrefetchViewWidth(firstPrefetch, prefetchView.lowerBound);
+    const offset = getPrefetchViewWidth(earliestFetch, prefetchView.lowerBound);
 
     prefetchView.elem.style.width = `${viewWidth * 100 / prefetchBarWidth}%`;
     prefetchView.elem.style.marginLeft = `${offset}px`;
@@ -323,10 +333,10 @@ function dateToTimeString(date) {
 map.on("click", onMapClick);
 
 function getRandomColor() {
-  const letters = "123456789";
+  const letters = "23456789AB";
   let color = "#";
   for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 9)];
+    color += letters[Math.floor(Math.random() * 10)];
   }
   return color;
 }
@@ -335,10 +345,10 @@ function addResultPanel(query, path, color) {
   const pathElement = document.createElement("div");
   pathElement.className = "path";
 
-  const travelTime = path.getTravelTime();
+  const travelTime = path.getTravelTime(query);
   const startTime = path.getDepartureTime(query);
   const stopTime = path.getArrivalTime(query);
-  const transferTime = Number.isNaN(path.getTransferTime()) ? 0 : path.getTransferTime();
+  const transferTime = Number.isNaN(path.getTransferTime(query)) ? 0 : path.getTransferTime(query);
 
   const headerElement = document.createElement("div");
   headerElement.className = "header";
@@ -419,13 +429,13 @@ function drawLeg(leg, pathElement, color) {
   pathElement.appendChild(stepElement);
 }
 
-function addResultToMap(q, path) {
+function addResultToMap(q, path, color) {
   for (const leg of path.legs) {
-    addConnectionMarkers(leg);
+    addConnectionMarkers(leg, color);
   }
 }
 
-function addConnectionMarkers(leg) {
+function addConnectionMarkers(leg, color) {
   const startLocation = leg.getStartLocation();
   const stopLocation = leg.getStopLocation();
   const travelMode = leg.getTravelMode();
@@ -446,7 +456,6 @@ function addConnectionMarkers(leg) {
 
   resultObjects.push(startMarker, stopMarker);
 
-  const color = getRandomColor();
   for (const step of leg.steps) {
     const line = [
       [step.startLocation.latitude, step.startLocation.longitude],
@@ -509,7 +518,7 @@ function runQuery(query) {
       i++;
       const color = getRandomColor();
       addResultPanel(q, completePath, color);
-      addResultToMap(q, completePath);
+      addResultToMap(q, completePath, color);
 
     })
     .on("end", () => {
