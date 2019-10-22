@@ -156,17 +156,17 @@ PlannerJS.EventBus
     removeLines();
   })
   .on(PlannerJS.EventType.InitialReachableStops, reachableStops => {
-    console.log("initial", reachableStops);
+    /*console.log("initial", reachableStops);
     reachableStops.map(({ stop }) => {
       const startMarker = L.marker([stop.latitude, stop.longitude]).addTo(map);
 
       startMarker.bindPopup("initialreachable: " + stop.name);
 
       resultObjects.push(startMarker);
-    });
+    });*/
   })
   .on(PlannerJS.EventType.FinalReachableStops, reachableStops => {
-    console.log("final", reachableStops);
+    /*console.log("final", reachableStops);
 
     reachableStops.map(({ stop }) => {
       const startMarker = L.marker([stop.latitude, stop.longitude]).addTo(map);
@@ -174,7 +174,7 @@ PlannerJS.EventBus
       startMarker.bindPopup("finalreachable: " + stop.name);
 
       resultObjects.push(startMarker);
-    });
+    });*/
   })
   .on(PlannerJS.EventType.AddedNewTransferProfile, ({ departureStop, arrivalStop, amountOfTransfers }) => {
     /*
@@ -207,7 +207,7 @@ PlannerJS.EventBus
     */
   })
   .on(PlannerJS.EventType.ConnectionPrefetch, (departureTime) => {
-    if (!earliestFetch) {
+    /*if (!earliestFetch) {
       earliestFetch = departureTime;
     }
 
@@ -229,10 +229,10 @@ PlannerJS.EventBus
     prefetchBar.style.width = `${width}px`;
     prefetchBar.setAttribute("data-last", latestFetch.toLocaleTimeString());
 
-    drawPrefetchViews();
+    drawPrefetchViews();*/
   })
   .on(PlannerJS.EventType.ConnectionIteratorView, (lowerBound, upperBound, completed) => {
-    if (!lowerBound || !upperBound) {
+    /*if (!lowerBound || !upperBound) {
       return;
     }
 
@@ -260,7 +260,7 @@ PlannerJS.EventBus
       drawPrefetchViews();
 
       elem.style.backgroundColor = "limegreen";
-    }
+    }*/
   })
   .on(PlannerJS.EventType.Warning, (warning) => {
     console.warn(warning);
