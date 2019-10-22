@@ -12,7 +12,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new PlannerJS.BasicTrainPlanner();
+const planner = new PlannerJS.DelijnNmbsPlanner();
 
 planner.prefetchStops();
 planner.prefetchConnections();
