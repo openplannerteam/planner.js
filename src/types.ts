@@ -19,7 +19,6 @@ const TYPES = {
 
   RoutableTileProvider: Symbol("TileProvider"),
   RoutableTileFetcher: Symbol("TileFetcher"),
-  RoutableTileRegistry: Symbol("RoutableTileRegistry"),
 
   FootpathsProvider: Symbol("FootpathsProvider"),
 

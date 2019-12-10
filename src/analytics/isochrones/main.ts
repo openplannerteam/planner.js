@@ -41,7 +41,7 @@ export default class IsochroneGenerator {
             RoutingPhase.Base,
         );
         this.pathfinderProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
-        this.registry = container.get<RoutableTileRegistry>(TYPES.RoutableTileRegistry);
+        this.registry = RoutableTileRegistry.getInstance();
         this.profileProvider = container.get<ProfileProvider>(TYPES.ProfileProvider);
         this.eventBus = EventBus.getInstance();
         this.reachedTiles = new Set();

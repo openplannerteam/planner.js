@@ -21,10 +21,9 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
 
   constructor(
     @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
-    @inject(TYPES.RoutableTileRegistry) routableTileRegistry: RoutableTileRegistry,
   ) {
     this.pathfinderProvider = pathfinderProvider;
-    this.routableTileRegistry = routableTileRegistry;
+    this.routableTileRegistry = RoutableTileRegistry.getInstance();
     this.mapping = {};
 
     this.mapping["osm:barrier"] = "barrierKind";

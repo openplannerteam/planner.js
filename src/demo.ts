@@ -1,4 +1,4 @@
-import { BasicTrainPlanner } from ".";
+import { DelijnNmbsPlanner } from ".";
 import EventBus from "./events/EventBus";
 import EventType from "./events/EventType";
 import IPath from "./interfaces/IPath";
@@ -6,7 +6,7 @@ import Units from "./util/Units";
 
 export default async (logResults) => {
 
-  const planner = new BasicTrainPlanner();
+  const planner = new DelijnNmbsPlanner();
 
   if (logResults) {
     let scannedPages = 0;

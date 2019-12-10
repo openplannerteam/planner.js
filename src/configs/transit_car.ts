@@ -105,7 +105,6 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-container.bind<RoutableTileRegistry>(TYPES.RoutableTileRegistry).to(RoutableTileRegistry).inSingletonScope();
 container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherRaw).inSingletonScope();
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);

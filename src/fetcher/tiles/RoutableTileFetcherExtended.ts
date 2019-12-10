@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
-import RoutableTileRegistry from "../../entities/tiles/registry";
 import { RoutableTile } from "../../entities/tiles/tile";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import TYPES from "../../types";
@@ -14,9 +13,8 @@ export default class RoutableTileFetcherExtended extends RoutableTileFetcherDefa
   constructor(
     @inject(TYPES.LDFetch) ldFetch: LDFetch,
     @inject(TYPES.PathfinderProvider) pathfinder: PathfinderProvider,
-    @inject(TYPES.RoutableTileRegistry) routableTileRegistry: RoutableTileRegistry,
   ) {
-    super(ldFetch, pathfinder, routableTileRegistry);
+    super(ldFetch, pathfinder);
   }
 
   public async get(url: string): Promise<RoutableTile> {

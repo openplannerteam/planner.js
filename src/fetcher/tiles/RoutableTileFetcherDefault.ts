@@ -24,13 +24,12 @@ export default class RoutableTileFetcherDefault implements IRoutableTileFetcher 
   constructor(
     @inject(TYPES.LDFetch) ldFetch: LDFetch,
     @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
-    @inject(TYPES.RoutableTileRegistry) routableTileRegistry: RoutableTileRegistry,
   ) {
     this.ldFetch = ldFetch;
     this.ldLoader = new LDLoader();
     this.ldLoader.defineCollection(URI.inNS(OSM, "hasNodes")); // unordered collection
     this.pathfinderProvider = pathfinderProvider;
-    this.routableTileRegistry = routableTileRegistry;
+    this.routableTileRegistry = RoutableTileRegistry.getInstance();
   }
 
   public async get(url: string): Promise<RoutableTile> {

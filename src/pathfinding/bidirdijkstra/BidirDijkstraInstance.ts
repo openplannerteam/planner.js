@@ -51,6 +51,11 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
     constructor(graph: PathfindingGraph) {
         this.useWeightedCost = true;
         this.graph = graph;
+
+        this.forwardCosts = [];
+        this.forwardParents = [];
+        this.backwardCosts = [];
+        this.backwardParents = [];
     }
 
     public setUseWeightedCost(useWeightedCost: boolean) {
@@ -76,10 +81,10 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
             backwardQueue = new TinyQueue([], (a, b) => a.duration - b.duration);
         }
 
-        this.forwardCosts = [...Array(this.graph.getAdjacencyList().length)].fill(Infinity);
-        this.forwardParents = [...Array(this.graph.getAdjacencyList().length)].fill(undefined);
-        this.backwardCosts = [...Array(this.graph.getAdjacencyList().length)].fill(Infinity);
-        this.backwardParents = [...Array(this.graph.getAdjacencyList().length)].fill(undefined);
+        this.forwardCosts = this.forwardCosts.fill(Infinity);
+        this.forwardParents = this.forwardParents.fill(undefined);
+        this.backwardCosts = this.backwardCosts.fill(Infinity);
+        this.backwardParents = this.backwardParents.fill(undefined);
 
         const fromIndex = this.graph.getNodeIndex(from);
         const toIndex = this.graph.getNodeIndex(to);

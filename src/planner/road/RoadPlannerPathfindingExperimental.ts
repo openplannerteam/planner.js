@@ -51,14 +51,13 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
         @inject(TYPES.ProfileProvider) profileProvider: IProfileProvider,
         @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
-        @inject(TYPES.RoutableTileRegistry) registry: RoutableTileRegistry,
     ) {
         this.baseTileProvider = baseTileProvider;
         this.transitTileProvider = transitTileProvider;
         this.pathfinderProvider = pathfinderProvider;
         this.profileProvider = profileProvider;
         this.locationResolver = locationResolver;
-        this.registry = registry;
+        this.registry = RoutableTileRegistry.getInstance();
         this.eventBus = EventBus.getInstance();
         this.reachedTiles = new Set();
     }

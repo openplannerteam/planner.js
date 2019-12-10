@@ -18,10 +18,9 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
 
   constructor(
     @inject(TYPES.RoutableTileFetcher) fetcher: IRoutableTileFetcher,
-    @inject(TYPES.RoutableTileRegistry) registry: RoutableTileRegistry,
   ) {
     this.fetcher = fetcher;
-    this.registry = registry;
+    this.registry = RoutableTileRegistry.getInstance();
   }
 
   public async wait() {

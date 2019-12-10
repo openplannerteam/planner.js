@@ -2,6 +2,8 @@ import "isomorphic-fetch";
 import "reflect-metadata";
 
 import IsochroneGenerator from "./analytics/isochrones/main";
+import TrafficEstimator from "./analytics/traffic/main";
+import RoutableTileRegistry_ from "./entities/tiles/registry";
 import TravelMode from "./enums/TravelMode";
 import EventBus_ from "./events/EventBus";
 import EventType from "./events/EventType";
@@ -14,6 +16,7 @@ import Units from "./util/Units";
 
 export { default as EventType } from "./events/EventType";
 export { default as IsochroneGenerator } from "./analytics/isochrones/main";
+export { default as TrafficEstimator } from "./analytics/traffic/main";
 export { default as Units } from "./util/Units";
 export { default as BasicTrainPlanner } from "./planner/configurations/BasicTrainPlanner";
 export { default as DelijnNmbsPlanner } from "./planner/configurations/DelijnNmbsPlanner";
@@ -23,11 +26,13 @@ export { default as TriangleDemoPlanner } from "./planner/configurations/Triangl
 export { default as TravelMode } from "./enums/TravelMode";
 
 export const EventBus = EventBus_.getInstance();
+export const RoutableTileRegistry = RoutableTileRegistry_.getInstance();
 
 export default {
     TravelMode,
     EventType,
     IsochroneGenerator,
+    TrafficEstimator,
     Units,
     EventBus,
     BasicTrainPlanner,
@@ -35,4 +40,5 @@ export default {
     DissectPlanner,
     TransitCarPlanner,
     TriangleDemoPlanner,
+    RoutableTileRegistry,
 };

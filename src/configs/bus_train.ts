@@ -1,10 +1,8 @@
 import { Container, interfaces } from "inversify";
 import Catalog from "../Catalog";
-import catalogOVl from "../catalog.delijn.oostvlaanderen";
-import catalogMivb from "../catalog.mivb";
+import catalogDeLijn from "../catalog.delijn";
 import catalogNmbs from "../catalog.nmbs";
 import Context from "../Context";
-import RoutableTileRegistry from "../entities/tiles/registry";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
@@ -107,7 +105,6 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-container.bind<RoutableTileRegistry>(TYPES.RoutableTileRegistry).to(RoutableTileRegistry).inSingletonScope();
 container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherRaw).inSingletonScope();
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);
@@ -115,7 +112,7 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderTransit).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
 
 // Bind catalog
-const combined = Catalog.combine(catalogNmbs, catalogOVl);
+const combined = Catalog.combine(catalogNmbs, catalogDeLijn);
 container.bind<Catalog>(TYPES.Catalog).toConstantValue(combined);
 
 // Init LDFetch

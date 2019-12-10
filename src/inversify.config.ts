@@ -1,12 +1,7 @@
-import { EventEmitter } from "events";
 import { Container, interfaces } from "inversify";
 import Catalog from "./Catalog";
-import catalogDeLijn from "./catalog.delijn";
-import catalogMivb from "./catalog.mivb";
 import catalogNmbs from "./catalog.nmbs";
-import catalogTec from "./catalog.tec";
 import Context from "./Context";
-import RoutableTileRegistry from "./entities/tiles/registry";
 import ReachableStopsSearchPhase from "./enums/ReachableStopsSearchPhase";
 import RoutingPhase from "./enums/RoutingPhase";
 import TravelMode from "./enums/TravelMode";
@@ -27,12 +22,9 @@ import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
 import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTileFetcher";
 import IRoutableTileProvider from "./fetcher/tiles/IRoutableTileProvider";
-import RoutableTileFetcherDefault from "./fetcher/tiles/RoutableTileFetcherDefault";
-import RoutableTileFetcherExtended from "./fetcher/tiles/RoutableTileFetcherExtended";
 import RoutableTileFetcherRaw from "./fetcher/tiles/RoutableTileFetcherRaw";
 import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDefault";
-import RoutableTileProviderTransit from "./fetcher/tiles/RoutableTileProviderTransit";
-
+import RoutableTileProviderIntermediate from "./fetcher/tiles/RoutableTileProviderIntermediate";
 import { LDLoader } from "./loader/ldloader";
 import DijkstraTree from "./pathfinding/dijkstra-tree/DijkstraTree";
 import { Dijkstra } from "./pathfinding/dijkstra/Dijkstra";
@@ -107,12 +99,11 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
       },
   );
 
-container.bind<RoutableTileRegistry>(TYPES.RoutableTileRegistry).to(RoutableTileRegistry).inSingletonScope();
 container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileFetcherRaw).inSingletonScope();
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
-  .to(RoutableTileProviderTransit).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
+  .to(RoutableTileProviderIntermediate).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
 
 container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
 

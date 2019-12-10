@@ -4,6 +4,15 @@ import { IRoutableTileWayIndex, RoutableTileWay } from "./way";
 
 @injectable()
 export default class RoutableTileRegistry {
+    public static getInstance(): RoutableTileRegistry {
+        if (!RoutableTileRegistry.instance) {
+            RoutableTileRegistry.instance = new RoutableTileRegistry();
+        }
+
+        return RoutableTileRegistry.instance;
+    }
+
+    private static instance: RoutableTileRegistry;
     private nodes: IRoutableTileNodeIndex;
     private ways: IRoutableTileWayIndex;
 
