@@ -30,7 +30,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+      const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
       return new CSAEarliestArrival(
@@ -185,7 +185,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+      const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
       const CSA = new CSAEarliestArrival(

@@ -42,7 +42,7 @@ describe("[QueryRunnerExponential]", () => {
       return connectionsFetcher;
     }, catalog);
 
-    const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+    const locationResolver = new LocationResolverDefault(stopsFetcher);
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
     const createJourneyExtractor = () => {

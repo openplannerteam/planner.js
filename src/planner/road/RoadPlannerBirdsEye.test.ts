@@ -14,7 +14,7 @@ const planner: IRoadPlanner = new RoadPlannerBirdsEye();
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+const locationResolver = new LocationResolverDefault(stopsFetcher);
 
 test("[RoadPlannerBirdsEye] distance between stops", async () => {
 

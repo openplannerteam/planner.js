@@ -33,7 +33,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+      const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,
@@ -190,7 +190,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+      const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
       const journeyExtractor = new JourneyExtractorProfile(
         locationResolver,
