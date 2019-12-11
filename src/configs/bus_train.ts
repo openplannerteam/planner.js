@@ -7,7 +7,7 @@ import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
 import ConnectionsFetcherRaw from "../fetcher/connections/ConnectionsFetcherRaw";
-import ConnectionsProviderMerge from "../fetcher/connections/ConnectionsProviderMerge";
+import ConnectionsProviderMerge from "../fetcher/connections/ConnectionsProviderDefault";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
 import FootpathsProviderRaw from "../fetcher/footpaths/FootpathsProviderRaw";

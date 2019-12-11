@@ -1,5 +1,6 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { injectable } from "inversify";
+import { IConnectionsSourceConfig } from "../../../Catalog";
 import IConnection from "../../../entities/connections/connections";
 import { LinkedConnectionsPage } from "../../../entities/connections/page";
 import IConnectionsIteratorOptions from "../IConnectionsIteratorOptions";
@@ -12,6 +13,10 @@ export default class ConnectionsProviderNMBSTest implements IConnectionsProvider
 
   constructor(connections: Array<IteratorResult<IConnection>>) {
     this.connections = connections;
+  }
+
+  public addConnectionSource(source: IConnectionsSourceConfig) {
+    throw new Error("Method not implemented.");
   }
 
   public getByUrl(url: string): Promise<LinkedConnectionsPage> {

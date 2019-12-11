@@ -32,6 +32,7 @@ export default abstract class Planner {
   private profileProvider: ProfileProvider;
   private roadPlanner: IRoadPlanner;
   private connectionsProvider: IConnectionsProvider;
+  private stopsProvider: IStopsProvider;
 
   /**
    * Initializes a new Planner
@@ -47,8 +48,17 @@ export default abstract class Planner {
     this.eventBus = EventBus.getInstance();
     this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
     this.connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
+    this.stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
 
     this.activeProfileID = "https://hdelva.be/profile/pedestrian";
+  }
+
+  public addConnectionSource(accessUrl: string, travelMode = TravelMode.Train) {
+    this.connectionsProvider.addConnectionSource({ accessUrl, travelMode });
+  }
+
+  public addStopSource(accessUrl: string) {
+    this.stopsProvider.addStopSource(accessUrl);
   }
 
   public async completePath(path: IPath): Promise<IPath> {

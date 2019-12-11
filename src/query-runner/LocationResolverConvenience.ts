@@ -41,9 +41,7 @@ export default class LocationResolverConvenience implements ILocationResolver {
         }
       }
 
-      if (!this.allStops) {
-        this.allStops = await this.stopsProvider.getAllStops();
-      }
+      this.allStops = await this.stopsProvider.getAllStops();
 
       const matchingStop = this.allStops.find((stop: IStop) => stop.name === input);
 

@@ -7,7 +7,8 @@ import IStop from "./IStop";
  * @method getAllStops Returns concatenated array of [[IStop]]s from all [[IStopsFetcher]]s it mediates
  */
 export default interface IStopsProvider {
-  prefetchStops: () => void;
-  getStopById: (stopId: string) => Promise<IStop>;
-  getAllStops: () => Promise<IStop[]>;
+  prefetchStops();
+  addStopSource(accessUrl: string);
+  getStopById(stopId: string): Promise<IStop>;
+  getAllStops(): Promise<IStop[]>;
 }

@@ -16,7 +16,6 @@ interface IStopMap {
 
 @injectable()
 export default class StopsFetcherLDFetch implements IStopsFetcher {
-
   private accessUrl: string;
 
   private ldFetch: LDFetch;
@@ -29,6 +28,10 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
     this.ldFetch = ldFetch;
     // FIXME does this ever do something?
     this.loadStops();
+  }
+
+  public addStopSource(accessUrl: string) {
+    throw new Error("Method not implemented.");
   }
 
   public setAccessUrl(accessUrl: string) {
