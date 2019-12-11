@@ -10,6 +10,8 @@ import ConnectionsFetcherRaw from "../fetcher/connections/ConnectionsFetcherRaw"
 import ConnectionsProviderDefault from "../fetcher/connections/ConnectionsProviderDefault";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
+import HydraTemplateFetcherDefault from "../fetcher/hydra/HydraTemplateFetcherDefault";
+import IHydraTemplateFetcher from "../fetcher/hydra/IHydraTemplateFetcher";
 import LDFetch from "../fetcher/LDFetch";
 import IProfileFetcher from "../fetcher/profiles/IProfileFetcher";
 import IProfileProvider from "../fetcher/profiles/IProfileProvider";
@@ -24,7 +26,6 @@ import IRoutableTileProvider from "../fetcher/tiles/IRoutableTileProvider";
 import RoutableTileFetcherRaw from "../fetcher/tiles/RoutableTileFetcherRaw";
 import RoutableTileProviderDefault from "../fetcher/tiles/RoutableTileProviderDefault";
 import RoutableTileProviderTransit from "../fetcher/tiles/RoutableTileProviderTransit";
-
 import { LDLoader } from "../loader/ldloader";
 import { BidirDijkstra } from "../pathfinding/bidirdijkstra/BidirDijkstra";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
@@ -49,6 +50,8 @@ const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
+
+container.bind<IHydraTemplateFetcher>(TYPES.HydraTemplateFetcher).to(HydraTemplateFetcherDefault).inSingletonScope();
 
 // TODO, make this a fixed property of the planner itself
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)

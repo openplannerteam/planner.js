@@ -9,6 +9,8 @@ const TYPES = {
   QueryRunner: Symbol("QueryRunner"),
   LocationResolver: Symbol("LocationResolver"),
 
+  HydraTemplateFetcher: Symbol("HydraTemplateFetcher"),
+
   ConnectionsProvider: Symbol("ConnectionsProvider"),
   ConnectionsFetcher: Symbol("ConnectionsFetcher"),
   ConnectionsFetcherFactory: Symbol("ConnectionsFetcherFactory"),

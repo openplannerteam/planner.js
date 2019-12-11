@@ -5,6 +5,7 @@ import IConnection from "../../entities/connections/connections";
 import { LinkedConnectionsPage } from "../../entities/connections/page";
 import TYPES, { ConnectionsFetcherFactory } from "../../types";
 import MergeIterator from "../../util/iterators/MergeIterator";
+import IHydraTemplateFetcher from "../hydra/IHydraTemplateFetcher";
 import ConnectionsProviderDefault from "./ConnectionsProviderDefault";
 import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 import IConnectionsProvider from "./IConnectionsProvider";
@@ -55,13 +56,16 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
   constructor(
     @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
     @inject(TYPES.Catalog) catalog: Catalog,
+    @inject(TYPES.HydraTemplateFetcher) templateFetcher: IHydraTemplateFetcher,
   ) {
     this.defaultProviders = [];
 
     for (const { accessUrl, travelMode } of catalog.connectionsSourceConfigs) {
       const subCatalog = new Catalog();
       subCatalog.addConnectionsSource(accessUrl, travelMode);
-      this.defaultProviders.push(new ConnectionsProviderDefault(connectionsFetcherFactory, subCatalog));
+      this.defaultProviders.push(
+        new ConnectionsProviderDefault(connectionsFetcherFactory, subCatalog, templateFetcher),
+      );
     }
   }
 
@@ -71,9 +75,9 @@ export default class ConnectionsProviderMerge implements IConnectionsProvider {
     }
   }
 
-  public createIterator(options: IConnectionsIteratorOptions): AsyncIterator<IConnection> {
-    const iterators = this.defaultProviders
-      .map((provider) => provider.createIterator(options));
+  public async createIterator(options: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>> {
+    const iterators = await Promise.all(this.defaultProviders
+      .map((provider) => provider.createIterator(options)));
 
     const selector = options.backward ?
       ConnectionsProviderMerge.backwardsConnectionsSelector

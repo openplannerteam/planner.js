@@ -25,7 +25,7 @@ export default class ConnectionsProviderNMBSTest implements IConnectionsProvider
     return;
   }
 
-  public createIterator(options: IConnectionsIteratorOptions): AsyncIterator<IConnection> {
+  public async createIterator(options: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>> {
     let array = this.connections
       .map((r) => r.value);
 

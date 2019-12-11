@@ -120,7 +120,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     } = query;
 
     const footpathQueue = new FootpathQueue(true);
-    const connectionsIterator = this.connectionsProvider.createIterator({
+    const connectionsIterator = await this.connectionsProvider.createIterator({
       backward: true,
       upperBoundDate,
       lowerBoundDate,

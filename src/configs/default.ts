@@ -12,6 +12,8 @@ import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
 import FootpathsProviderDefault from "../fetcher/footpaths/FootpathsProviderDefault";
 import IFootpathsFetcher from "../fetcher/footpaths/IFootpathsProvider";
+import HydraTemplateFetcherDefault from "../fetcher/hydra/HydraTemplateFetcherDefault";
+import IHydraTemplateFetcher from "../fetcher/hydra/IHydraTemplateFetcher";
 import LDFetch from "../fetcher/LDFetch";
 import IProfileFetcher from "../fetcher/profiles/IProfileFetcher";
 import IProfileProvider from "../fetcher/profiles/IProfileProvider";
@@ -50,6 +52,8 @@ const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
+
+container.bind<IHydraTemplateFetcher>(TYPES.HydraTemplateFetcher).to(HydraTemplateFetcherDefault).inSingletonScope();
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
   .to(CSAEarliestArrival);

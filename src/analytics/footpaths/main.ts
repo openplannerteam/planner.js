@@ -3,7 +3,7 @@ import { Delaunay } from "d3-delaunay";
 import fs = require("fs");
 import "isomorphic-fetch";
 import "reflect-metadata";
-import defaultContainer from "../../configs/isochrone";
+import defaultContainer from "../../configs/default";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";

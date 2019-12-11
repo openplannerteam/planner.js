@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import "isomorphic-fetch";
 import "reflect-metadata";
 import inBBox from "tiles-in-bbox";
-import defaultContainer from "../../configs/isochrone";
+import defaultContainer from "../../configs/default";
 import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";

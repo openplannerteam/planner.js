@@ -2,7 +2,6 @@ import { Container, interfaces } from "inversify";
 import Catalog from "../Catalog";
 import catalogNmbs from "../catalog.nmbs";
 import Context from "../Context";
-import RoutableTileRegistry from "../entities/tiles/registry";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
@@ -12,6 +11,8 @@ import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
 import IConnectionsProvider from "../fetcher/connections/IConnectionsProvider";
 import FootpathsProviderDefault from "../fetcher/footpaths/FootpathsProviderDefault";
 import IFootpathsFetcher from "../fetcher/footpaths/IFootpathsProvider";
+import HydraTemplateFetcherDefault from "../fetcher/hydra/HydraTemplateFetcherDefault";
+import IHydraTemplateFetcher from "../fetcher/hydra/IHydraTemplateFetcher";
 import LDFetch from "../fetcher/LDFetch";
 import IProfileFetcher from "../fetcher/profiles/IProfileFetcher";
 import IProfileProvider from "../fetcher/profiles/IProfileProvider";
@@ -51,6 +52,8 @@ const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
+
+container.bind<IHydraTemplateFetcher>(TYPES.HydraTemplateFetcher).to(HydraTemplateFetcherDefault).inSingletonScope();
 
 // TODO, make this a fixed property of the planner itself
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)

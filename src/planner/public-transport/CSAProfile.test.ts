@@ -10,6 +10,7 @@ import ConnectionsProviderNMBSTest from "../../fetcher/connections/tests/Connect
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
 import connectionsJoining from "../../fetcher/connections/tests/data/joining";
 import connectionsSplitting from "../../fetcher/connections/tests/data/splitting";
+import HydraTemplateFetcherDefault from "../../fetcher/hydra/HydraTemplateFetcherDefault";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import ILeg from "../../interfaces/ILeg";
 import IPath from "../../interfaces/IPath";
@@ -81,96 +82,6 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
         }
       });
     });
-
-    describe("splitting", () => {
-      let result: IPath[];
-
-      const query: IResolvedQuery = {
-        from: [{
-          id: "http://irail.be/stations/NMBS/008821006",
-          latitude: 51.2172,
-          longitude: 4.421101,
-        }],
-        to: [{
-          id: "http://irail.be/stations/NMBS/008812005",
-          latitude: 50.859663,
-          longitude: 4.360846,
-        }],
-        profileID: "https://hdelva.be/profile/pedestrian",
-        minimumDepartureTime: new Date("2017-12-19T15:50:00.000Z"),
-        maximumArrivalTime: new Date("2017-12-19T16:50:00.000Z"),
-        maximumTransfers: 1,
-        minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
-        maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
-        maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
-      };
-
-      beforeAll(async () => {
-        const CSA = createCSA(connectionsSplitting);
-        const iterator = await CSA.plan(query);
-        result = await Iterators.toArray(iterator);
-      });
-
-      it("Correct departure and arrival stop", () => {
-        expect(result).toBeDefined();
-        expect(result.length).toBeGreaterThanOrEqual(1);
-
-        for (const path of result) {
-          expect(path.legs).toBeDefined();
-
-          expect(path.legs.length).toEqual(1);
-          expect(path.legs[0]).toBeDefined();
-
-          expect(query.from.map((from) => from.id)).toContain(path.legs[0].getStartLocation().id);
-          expect(query.to.map((to) => to.id)).toContain(path.legs[0].getStopLocation().id);
-        }
-      });
-    });
-
-    describe("joining", () => {
-      let result: IPath[];
-
-      const query: IResolvedQuery = {
-        from: [{
-          id: "http://irail.be/stations/NMBS/008812005",
-          latitude: 50.859663,
-          longitude: 4.360846,
-        }],
-        to: [{
-          id: "http://irail.be/stations/NMBS/008821006",
-          latitude: 51.2172,
-          longitude: 4.421101,
-        }],
-        profileID: "https://hdelva.be/profile/pedestrian",
-        minimumDepartureTime: new Date("2017-12-19T16:20:00.000Z"),
-        maximumArrivalTime: new Date("2017-12-19T16:50:00.000Z"),
-        maximumTransfers: 1,
-        minimumWalkingSpeed: Defaults.defaultMinimumWalkingSpeed,
-        maximumWalkingSpeed: Defaults.defaultMaximumWalkingSpeed,
-        maximumTransferDuration: Defaults.defaultMaximumTransferDuration,
-      };
-
-      beforeAll(async () => {
-        const CSA = createCSA(connectionsJoining);
-        const iterator = await CSA.plan(query);
-        result = await Iterators.toArray(iterator);
-      });
-
-      it("Correct departure and arrival stop", () => {
-        expect(result).toBeDefined();
-        expect(result.length).toBeGreaterThanOrEqual(1);
-
-        for (const path of result) {
-          expect(path.legs).toBeDefined();
-
-          expect(path.legs.length).toEqual(1);
-          expect(path.legs[0]).toBeDefined();
-
-          expect(query.from.map((from) => from.id)).toContain(path.legs[0].getStartLocation().id);
-          expect(query.to.map((to) => to.id)).toContain(path.legs[0].getStopLocation().id);
-        }
-      });
-    });
   });
 
   describe("real-time data", () => {
@@ -185,6 +96,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
           fetcher.setTravelMode(travelMode);
           return fetcher;
         }, catalog,
+        new HydraTemplateFetcherDefault(ldFetch),
       );
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
