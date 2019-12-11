@@ -260,7 +260,10 @@ export default class CSAProfile implements IPublicTransportPlanner {
 
   private getTripIdsFromConnection(queryState: IQueryState, connection: IConnection): string[] {
     const tripIds: string[] = [connection.tripId];
+    return tripIds;
 
+    /*
+    // nextConnection isn't useable yet
     if (!connection.nextConnection) {
       return tripIds;
     }
@@ -274,6 +277,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
     }
 
     return tripIds;
+    */
   }
 
   private calculateEarliestArrivalTime(queryState: IQueryState, connection: IConnection): IArrivalTimeByTransfers {

@@ -26,7 +26,6 @@ export default interface IConnection {
   departureStop: string;
   departureDelay?: DurationMs;
 
-  nextConnection?: string[];
   tripId?: string;
 
   route?: string;

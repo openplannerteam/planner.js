@@ -84,9 +84,6 @@ export default async (logResults) => {
           maximumTransferDuration: Units.fromMinutes(30),
         })
         .take(amount)
-        .on("error", (error) => {
-          resolve(false);
-        })
         .on("data", (path: IPath) => {
           ++i;
 

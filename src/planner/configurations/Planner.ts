@@ -1,6 +1,7 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
+import defaultContainer from "../../configs/basic_train";
 import Context from "../../Context";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
@@ -11,7 +12,6 @@ import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
-import defaultContainer from "../../inversify.config";
 import IQueryRunner from "../../query-runner/IQueryRunner";
 import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
