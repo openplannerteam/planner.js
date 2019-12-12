@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>Isochrone demo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <style>
+        .container {
+            display: flex;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+        #map {
+            width: 1024px;
+            height: 800px;
+        }
+
+        body {
+            font: 16px/1.4 "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .ghbtns {
+            position: relative;
+            top: 4px;
+            margin-left: 5px;
+        }
+
+        a {
+            color: #0077ff;
+        }
+
+        div {
+            float: left;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div style="margin-right: 20px">
+            <p>
+                <input id="profile" type="text" name="profile" value="https://hdelva.be/profile/car"><br><br>
+                <button onclick="setProfile()">Set Profile</button>
+            </p>
+            <p>
+                Latitude:<br>
+                <input id="latitude" type="text" name="latitude" value="51.0306512"><br>
+                Longitude:<br>
+                <input id="longitude" type="text" name="longitude" value="3.725805"><br><br>
+                <button onclick="newMap()">Move</button>
+            </p>
+            <p>
+                <button onclick="drawArea()">Add tree</button>
+            </p>
+            <p>
+                <button onclick="startSimulation()">Start Simulation</button>
+            </p>
+        </div>
+        <br>
+        <div id="map">
+
+        </div>
+    </div>
+
+    <script src="../../../dist/bundle.js"></script>
+    <script>
+
+        let map;
+        let estimator;
+        let lineLayer;
+        let reachedNodes;
+
+        function _hex(x) {
+            x = x.toString(16);
+            return (x.length == 1) ? '0' + x : x;
+        }
+
+        function interpolateColor(color1, color2, ratio) {
+            var r = Math.ceil(parseInt(color1.substring(1, 3), 16) * ratio + parseInt(color2.substring(1, 3), 16) * (1 - ratio));
+            var g = Math.ceil(parseInt(color1.substring(3, 5), 16) * ratio + parseInt(color2.substring(3, 5), 16) * (1 - ratio));
+            var b = Math.ceil(parseInt(color1.substring(5, 7), 16) * ratio + parseInt(color2.substring(5, 7), 16) * (1 - ratio));
+
+            return `#${_hex(r)}${_hex(g)}${_hex(b)}`;
+        }
+
+        function getLineId(first, second) {
+            if (first < second) {
+                return first + second;
+            } else {
+                return second + first;
+            }
+        }
+
+        function initialize(focus) {
+            if (map) {
+                map.off();
+                map.remove();
+            }
+
+            map = L.map('map', {
+                preferCanvas: true
+            }).setView(focus, 13);
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiaGRlbHZhIiwiYSI6ImNqd2dxNzl3MzBib3Q0YmxiMWdjMWpjM2wifQ.e6piOGj3MqwIpW2ymafjGQ'
+            }).addTo(map);
+
+            lineLayer = L.layerGroup([]);
+            lineLayer.addTo(map);
+
+            reachedNodes = new Set();
+
+            const point = { latitude: focus[0], longitude: focus[1] };
+            return new PlannerJS.TrafficEstimator(point);
+        }
+
+        function newMap() {
+            const latitudeRaw = document.getElementById("latitude").value;
+            const longitudeRaw = document.getElementById("longitude").value;
+
+            const latitude = parseFloat(latitudeRaw);
+            const longitude = parseFloat(longitudeRaw);
+
+            if (latitude && longitude) {
+                estimator = initialize([latitude, longitude])
+            }
+        }
+
+        async function drawArea() {
+            const timeS = 10 * 60;
+            steps = 10;
+            let i = 0.0;
+
+            const areaGenerator = await estimator.getAreaTree(timeS * 1000, steps);
+
+            let maxCount = 1;
+            const counts = {};
+
+            for await (const tree of areaGenerator) {
+                color = interpolateColor("#450d54", "#fde725", i / steps)
+                for (const [id, branch] of Object.entries(tree)) {
+                    reachedNodes.add(id);
+
+                    const from = PlannerJS.RoutableTileRegistry.getNode(id);
+                    const to = PlannerJS.RoutableTileRegistry.getNode(branch.previousNode);
+
+                    if (to) {
+                        const lineId = getLineId(from.id, to.id);
+
+                        if (!counts[lineId]) {
+                            counts[lineId] = {
+                                from,
+                                to,
+                                count: 0
+                            };
+                        } else {
+                            continue;
+                        }
+
+                        drawLine(from, to, color)
+                    }
+                }
+                i++;
+            }
+
+            i = 0;
+            const treeGenerator = await estimator.startSimulation(reachedNodes, 10);
+            for await (const tree of treeGenerator) {
+                for await (const path of treeGenerator) {
+                    for (const step of path) {
+                        const from = step.from;
+                        const to = step.to;
+                        const lineId = getLineId(from, to);
+
+                        if (!counts[lineId]) {
+                            counts[lineId] = {
+                                from: PlannerJS.RoutableTileRegistry.getNode(from),
+                                to: PlannerJS.RoutableTileRegistry.getNode(to),
+                                count: 0
+                            };
+                        }
+
+                        //console.log(counts);
+
+                        counts[lineId].count += 1;
+                        maxCount = Math.max(counts[lineId].count, maxCount);
+                    }
+
+                    lineLayer.clearLayers();
+
+                    for (const obj of Object.values(counts)) {
+                        color = interpolateColor("#fde725", "#450d54", Math.sqrt(Math.sqrt(obj.count / maxCount)));
+                        drawLine(obj.from, obj.to, color)
+                    }
+
+                    await sleep(100);
+                    console.log(i);
+                    i++;
+                }
+
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function drawLine(from, to, color) {
+            var line = L.polyline([
+                [from.latitude, from.longitude],
+                [to.latitude, to.longitude],
+            ], {
+                color,
+            });
+
+            lineLayer.addLayer(line);
+        }
+
+        async function setProfile() {
+            newMap();
+            const profileId = document.getElementById("profile").value;
+            estimator.setProfileID(profileId);
+        }
+
+        //newMap();
+        setProfile();
+
+    </script>
+</body>
+
+</html>
