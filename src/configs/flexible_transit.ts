@@ -1,6 +1,5 @@
 import { Container, interfaces } from "inversify";
 import Catalog from "../Catalog";
-import catalogNmbs from "../catalog.nmbs";
 import Context from "../Context";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
@@ -18,7 +17,7 @@ import ProfileFetcherDefault from "../fetcher/profiles/ProfileFetcherDefault";
 import ProfileProviderDefault from "../fetcher/profiles/ProfileProviderDefault";
 import IStopsFetcher from "../fetcher/stops/IStopsFetcher";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
-import StopsFetcherRaw from "../fetcher/stops/StopsFetcherRaw";
+import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import StopsProviderDefault from "../fetcher/stops/StopsProviderDefault";
 import IRoutableTileFetcher from "../fetcher/tiles/IRoutableTileFetcher";
 import IRoutableTileProvider from "../fetcher/tiles/IRoutableTileProvider";
@@ -91,12 +90,12 @@ container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcher
   );
 
 container.bind<IStopsProvider>(TYPES.StopsProvider).to(StopsProviderDefault).inSingletonScope();
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherRaw);
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherLDFetch);
 container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   .toFactory<IStopsFetcher>(
     (context: interfaces.Context) =>
       (accessUrl: string) => {
-        const fetcher = context.container.get<StopsFetcherRaw>(TYPES.StopsFetcher);
+        const fetcher = context.container.get<StopsFetcherLDFetch>(TYPES.StopsFetcher);
         fetcher.setAccessUrl(accessUrl);
         return fetcher;
       },
