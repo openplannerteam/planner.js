@@ -6,50 +6,13 @@ import { LinkedConnectionsPage } from "../../entities/connections/page";
 import TYPES, { ConnectionsFetcherFactory } from "../../types";
 import MergeIterator from "../../util/iterators/MergeIterator";
 import IHydraTemplateFetcher from "../hydra/IHydraTemplateFetcher";
+import { backwardsConnectionsSelector, forwardsConnectionSelector } from "./ConnectionSelectors";
 import ConnectionsProviderSingle from "./ConnectionsProviderSingle";
 import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 import IConnectionsProvider from "./IConnectionsProvider";
 
 @injectable()
 export default class ConnectionsProviderDefault implements IConnectionsProvider {
-
-  private static forwardsConnectionSelector(connections: IConnection[]): number {
-    if (connections.length === 1) {
-      return 0;
-    }
-
-    let earliestIndex = 0;
-    const earliest = connections[earliestIndex];
-
-    for (let i = 1; i < connections.length; i++) {
-      const connection = connections[i];
-
-      if (connection.departureTime < earliest.departureTime) {
-        earliestIndex = i;
-      }
-    }
-
-    return earliestIndex;
-  }
-
-  private static backwardsConnectionsSelector(connections: IConnection[]): number {
-    if (connections.length === 1) {
-      return 0;
-    }
-
-    let latestIndex = 0;
-    const latest = connections[latestIndex];
-
-    for (let i = 1; i < connections.length; i++) {
-      const connection = connections[i];
-
-      if (connection.departureTime > latest.departureTime) {
-        latestIndex = i;
-      }
-    }
-
-    return latestIndex;
-  }
 
   private singleProviders: ConnectionsProviderSingle[];
   private connectionsFetcherFactory: ConnectionsFetcherFactory;
@@ -86,9 +49,9 @@ export default class ConnectionsProviderDefault implements IConnectionsProvider 
       .map((provider) => provider.createIterator(options)));
 
     const selector = options.backward ?
-      ConnectionsProviderDefault.backwardsConnectionsSelector
+      backwardsConnectionsSelector
       :
-      ConnectionsProviderDefault.forwardsConnectionSelector;
+      forwardsConnectionSelector;
 
     if (options.excludedModes) {
       return new MergeIterator(iterators, selector, true).filter((item) => {

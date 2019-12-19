@@ -9,6 +9,7 @@ import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
+import { forwardsConnectionSelector } from "../../fetcher/connections/ConnectionSelectors";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
@@ -43,25 +44,6 @@ interface IQueryState {
 
 @injectable()
 export default class CSAEarliestArrival implements IPublicTransportPlanner {
-  private static forwardsConnectionSelector(connections: IConnection[]): number {
-    if (connections.length === 1) {
-      return 0;
-    }
-
-    let earliestIndex = 0;
-    const earliest = connections[earliestIndex];
-
-    for (let i = 1; i < connections.length; i++) {
-      const connection = connections[i];
-
-      if (connection && connection.departureTime < earliest.departureTime) {
-        earliestIndex = i;
-      }
-    }
-
-    return earliestIndex;
-  }
-
   protected readonly connectionsProvider: IConnectionsProvider;
   protected readonly locationResolver: ILocationResolver;
   protected readonly transferReachableStopsFinder: IReachableStopsFinder;
@@ -110,7 +92,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
     const connectionsQueue = new MergeIterator(
       [connectionsIterator, footpathsQueue],
-      CSAEarliestArrival.forwardsConnectionSelector,
+      forwardsConnectionSelector,
       true,
     );
 
