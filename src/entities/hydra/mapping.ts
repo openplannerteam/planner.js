@@ -4,6 +4,9 @@ export class HydraTemplateMapping {
     }
 
     public id?: string;
+    public variable: string;
+    public required: boolean;
+    public property: string;
 
     constructor(id?: string) {
         this.id = id;

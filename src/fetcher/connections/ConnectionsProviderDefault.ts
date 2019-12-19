@@ -1,93 +1,110 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
-import { EventType } from "../..";
-import Catalog from "../../Catalog";
+import Catalog, { IConnectionsSourceConfig } from "../../Catalog";
 import IConnection from "../../entities/connections/connections";
-import { ILinkedConnectionsPageIndex, LinkedConnectionsPage } from "../../entities/connections/page";
-import EventBus from "../../events/EventBus";
+import { LinkedConnectionsPage } from "../../entities/connections/page";
 import TYPES, { ConnectionsFetcherFactory } from "../../types";
-import BackwardConnectionIterator from "./BackwardConnectionIterator";
-import ForwardConnectionIterator from "./ForwardConnectionIterator";
-import IConnectionsFetcher from "./IConnectionsFetcher";
+import MergeIterator from "../../util/iterators/MergeIterator";
+import IHydraTemplateFetcher from "../hydra/IHydraTemplateFetcher";
+import ConnectionsProviderSingle from "./ConnectionsProviderSingle";
 import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 import IConnectionsProvider from "./IConnectionsProvider";
 
 @injectable()
 export default class ConnectionsProviderDefault implements IConnectionsProvider {
 
-    protected fetcher: IConnectionsFetcher;
-    protected pages: ILinkedConnectionsPageIndex = {};
-    protected accessUrl: string;
-
-    constructor(
-        @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
-        @inject(TYPES.Catalog) catalog: Catalog,
-    ) {
-        if (catalog.connectionsSourceConfigs.length > 1) {
-            throw (new Error("Use the ConnectionsProviderMerge if you have multiple connections sources"));
-        }
-
-        const { accessUrl, travelMode } = catalog.connectionsSourceConfigs[0];
-        this.accessUrl = accessUrl;
-        this.fetcher = connectionsFetcherFactory(travelMode);
+  private static forwardsConnectionSelector(connections: IConnection[]): number {
+    if (connections.length === 1) {
+      return 0;
     }
 
-    public async getByUrl(url: string): Promise<LinkedConnectionsPage> {
-        if (!this.pages[url]) {
-            this.pages[url] = this.fetcher.get(url);
-        }
+    let earliestIndex = 0;
+    const earliest = connections[earliestIndex];
 
-        return await this.pages[url];
+    for (let i = 1; i < connections.length; i++) {
+      const connection = connections[i];
+
+      if (connection.departureTime < earliest.departureTime) {
+        earliestIndex = i;
+      }
     }
 
-    public async getByTime(date: Date): Promise<LinkedConnectionsPage> {
-        // TODO, look up in the index -- use lower/upper bounds of each page
-        const url = this.getIdForTime(date);
-        return this.getByUrl(url);
+    return earliestIndex;
+  }
+
+  private static backwardsConnectionsSelector(connections: IConnection[]): number {
+    if (connections.length === 1) {
+      return 0;
     }
 
-    public getIdForTime(date: Date): string {
-        return `${this.accessUrl}?departureTime=${date.toISOString()}`;
+    let latestIndex = 0;
+    const latest = connections[latestIndex];
+
+    for (let i = 1; i < connections.length; i++) {
+      const connection = connections[i];
+
+      if (connection.departureTime > latest.departureTime) {
+        latestIndex = i;
+      }
     }
 
-    public prefetchConnections(lowerBound: Date, upperBound: Date): void {
-        const iterator = this.createIterator({
-            upperBoundDate: upperBound,
-            lowerBoundDate: lowerBound,
-        });
+    return latestIndex;
+  }
 
-        iterator.on("readable", () => {
-            while (iterator.read()) {
-                //
-            }
-        });
+  private singleProviders: ConnectionsProviderSingle[];
+  private connectionsFetcherFactory: ConnectionsFetcherFactory;
+  private templateFetcher: IHydraTemplateFetcher;
+
+  constructor(
+    @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
+    @inject(TYPES.Catalog) catalog: Catalog,
+    @inject(TYPES.HydraTemplateFetcher) templateFetcher: IHydraTemplateFetcher,
+  ) {
+    this.singleProviders = [];
+    this.connectionsFetcherFactory = connectionsFetcherFactory;
+    this.templateFetcher = templateFetcher;
+
+    for (const connectionSource of catalog.connectionsSourceConfigs) {
+      this.addConnectionSource(connectionSource);
     }
+  }
 
-    public createIterator(options: IConnectionsIteratorOptions): AsyncIterator<IConnection> {
-        EventBus.getInstance().emit(
-            EventType.ConnectionIteratorView,
-            options.lowerBoundDate,
-            options.upperBoundDate,
-        );
+  public addConnectionSource(source: IConnectionsSourceConfig) {
+    this.singleProviders.push(
+      new ConnectionsProviderSingle(this.connectionsFetcherFactory, source, this.templateFetcher),
+    );
+  }
 
-        let iterator: AsyncIterator<IConnection>;
-        if (options.backward) {
-            const beginTime = options.upperBoundDate;
-            const beginUrl = this.getIdForTime(beginTime);
-            iterator = new BackwardConnectionIterator(this, options, beginUrl);
-        } else {
-            const beginTime = options.lowerBoundDate;
-            const beginUrl = this.getIdForTime(beginTime);
-            iterator = new ForwardConnectionIterator(this, options, beginUrl);
-        }
-
-        return iterator.on("end", () => {
-            EventBus.getInstance().emit(
-                EventType.ConnectionIteratorView,
-                options.lowerBoundDate,
-                options.upperBoundDate,
-                true,
-            );
-        });
+  public prefetchConnections(lowerBound: Date, upperBound: Date): void {
+    for (const provider of this.singleProviders) {
+      provider.prefetchConnections(lowerBound, upperBound);
     }
+  }
+
+  public async createIterator(options: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>> {
+    const iterators = await Promise.all(this.singleProviders
+      .map((provider) => provider.createIterator(options)));
+
+    const selector = options.backward ?
+      ConnectionsProviderDefault.backwardsConnectionsSelector
+      :
+      ConnectionsProviderDefault.forwardsConnectionSelector;
+
+    if (options.excludedModes) {
+      return new MergeIterator(iterators, selector, true).filter((item) => {
+        return !options.excludedModes.has(item.travelMode);
+      });
+    } else {
+      return new MergeIterator(iterators, selector, true);
+    }
+  }
+
+  public getByUrl(url: string): Promise<LinkedConnectionsPage> {
+    // TODO, if needed this can delegate the call to one of the sub providers
+    throw new Error("Not implemented yet");
+  }
+
+  public getByTime(date: Date): Promise<LinkedConnectionsPage> {
+    throw new Error("Method not implemented because the semantics would be ambiguous.");
+  }
 }

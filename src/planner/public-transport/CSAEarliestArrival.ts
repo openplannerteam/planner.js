@@ -102,7 +102,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     } = query;
 
     const footpathsQueue = new FootpathQueue();
-    const connectionsIterator = this.connectionsProvider.createIterator({
+    const connectionsIterator = await this.connectionsProvider.createIterator({
       upperBoundDate,
       lowerBoundDate,
       excludedModes: query.excludedTravelModes,

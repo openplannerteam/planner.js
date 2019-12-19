@@ -8,13 +8,13 @@ import ProfileProviderDefault from "../profiles/ProfileProviderDefault";
 import RoutableTileFetcherDefault from "./RoutableTileFetcherDefault";
 
 const ldfetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
-const registry = new RoutableTileRegistry();
 const profileProvider = new ProfileProviderDefault(new ProfileFetcherDefault(ldfetch));
-const locationResolver = new LocationResolverConvenience(null, registry);
+const locationResolver = new LocationResolverConvenience(null);
 const fetcher = new RoutableTileFetcherDefault(
   ldfetch,
-  new PathfinderProvider(undefined, undefined, registry, profileProvider, locationResolver),
-  registry);
+  new PathfinderProvider(undefined, undefined, profileProvider, locationResolver));
+
+const registry = RoutableTileRegistry.getInstance();
 
 test("[RoutableTileFetcherDefault] data completeness", async () => {
   jest.setTimeout(15000);

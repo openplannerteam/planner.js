@@ -1,3 +1,4 @@
+import { AsyncIterator } from "asynciterator";
 import { EventEmitter } from "events";
 import "isomorphic-fetch";
 import "reflect-metadata";
@@ -6,6 +7,7 @@ import defaultContainer from "../../configs/default";
 import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import RoutableTileRegistry from "../../entities/tiles/registry";
+import { RoutableTile } from "../../entities/tiles/tile";
 import RoutingPhase from "../../enums/RoutingPhase";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
@@ -17,11 +19,11 @@ import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";
 import { toTileCoordinate } from "../../util/Tiles";
-import { visualizeConcaveIsochrone, visualizeIsochrone } from "./visualize";
 
-export default class IsochroneGenerator {
+export default class TrafficEstimator {
     private pathfinderProvider: PathfinderProvider;
-    private tileProvider: IRoutableTileProvider;
+    private baseTileProvider: IRoutableTileProvider;
+    private transitTileProvider: IRoutableTileProvider;
     private reachedTiles: Set<string>;
     private startPoint: ILocation;
     private registry: RoutableTileRegistry;
@@ -32,13 +34,17 @@ export default class IsochroneGenerator {
     private loaded: Promise<boolean>;
     private embedded: boolean;
     private showIncremental: boolean;
-    private showDebugLogs: boolean;
 
     constructor(point: ILocation, container = defaultContainer) {
-        this.tileProvider = container.getTagged<IRoutableTileProvider>(
+        this.baseTileProvider = container.getTagged<IRoutableTileProvider>(
             TYPES.RoutableTileProvider,
             "phase",
             RoutingPhase.Base,
+        );
+        this.transitTileProvider = container.getTagged<IRoutableTileProvider>(
+            TYPES.RoutableTileProvider,
+            "phase",
+            RoutingPhase.Transit,
         );
         this.pathfinderProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
         this.registry = RoutableTileRegistry.getInstance();
@@ -47,7 +53,6 @@ export default class IsochroneGenerator {
         this.reachedTiles = new Set();
         this.startPoint = point;
         this.showIncremental = false;
-        this.showDebugLogs = false;
         this.embedded = false;
 
         this.setProfileID("http://hdelva.be/profile/car");
@@ -55,10 +60,6 @@ export default class IsochroneGenerator {
 
     public enableIncrementalResults() {
         this.showIncremental = true;
-    }
-
-    public enableDebugLogs() {
-        this.showDebugLogs = true;
     }
 
     public async setDevelopmentProfile(blob: object) {
@@ -71,13 +72,35 @@ export default class IsochroneGenerator {
         this.embedded = false;
     }
 
-    public async getIsochrone(maxDuration: number, reset = true) {
-        if (this.showDebugLogs) {
-            console.time(Geo.getId(this.startPoint));
-            console.log(`Generating the ${maxDuration / 1000}s isochrone ` +
-                `from ${this.startPoint.latitude}, ${this.startPoint.longitude}`);
-        }
+    public async * startSimulation(nodes: Set<string>, timeM: number) {
+        const data = Array.from(nodes);
 
+        const profile = await this.activeProfile;
+        console.log(`Using the ${profile.getID()} profile`);
+
+        const pathfinder = this.pathfinderProvider.getShortestPathAlgorithm(profile);
+
+        while (true) {
+            const index1 = data[Math.floor(Math.random() * data.length)];
+
+            /*
+            const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
+
+            const pathTree: IPathTree = await pathfinder.start(index1, timeM * 60 * 1000);
+            yield this.pruneTree(pathTree);
+            */
+
+            const index2 = data[Math.floor(Math.random() * data.length)];
+
+            if (index1 !== index2) {
+                const path = await pathfinder.queryPath(index1, index2, 90 * 1000 / 60 * timeM);
+                yield path;
+            }
+
+        }
+    }
+
+    public async * getAreaTree(maxDuration: number, steps: number) {
         if (!this.embedded) {
             await this.embedBeginPoint(this.startPoint);
             this.embedded = true;
@@ -86,46 +109,70 @@ export default class IsochroneGenerator {
         await this.loaded;
         const profile = await this.activeProfile;
 
-        if (this.showDebugLogs) {
-            console.log(`Using the ${profile.getID()} profile`);
-        }
-
+        console.log(`Using the ${profile.getID()} profile`);
         const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
 
-        // wait for all data to arrive
-        await this.tileProvider.wait();
+        let pathTree: IPathTree = await pathfinder.start(Geo.getId(this.startPoint), maxDuration / steps);
+        yield this.pruneTree(pathTree);
 
-        let pathTree: IPathTree;
-        pathfinder.setUseWeightedCost(false); // we want the raw durations
-        if (reset) {
-            pathTree = await pathfinder.start(Geo.getId(this.startPoint), maxDuration);
-        } else {
-            pathTree = await pathfinder.continue(maxDuration);
+        for (let i = 1; i <= steps; i++) {
+            console.log(maxDuration / steps * i);
+            pathTree = await pathfinder.continue(maxDuration / steps * i);
+            yield this.pruneTree(pathTree);
         }
+    }
 
-        if (this.showDebugLogs) {
-            console.log(`Path tree computed using ${this.reachedTiles.size} tiles.`);
-            console.timeEnd(Geo.getId(this.startPoint));
-            console.time(Geo.getId(this.startPoint));
+    private pruneTree(tree: IPathTree): IPathTree {
+        const result = {};
+        for (const [id, branch] of Object.entries(tree)) {
+            if (branch.previousNode) {
+                result[id] = branch;
+            }
         }
-
-        const result = await visualizeConcaveIsochrone(pathTree, maxDuration, this.registry);
-
-        if (this.showDebugLogs) {
-            console.timeEnd(Geo.getId(this.startPoint));
-        }
-
         return result;
     }
 
-    private async fetchTile(coordinate: RoutableTileCoordinate) {
-        const tileId = this.tileProvider.getIdForTileCoords(coordinate);
+    private async embedBeginPoint(from: ILocation) {
+        const zoom = 14;
+        const padding = 0.005;
+
+        const fromBBox = {
+            top: from.latitude + padding,
+            bottom: from.latitude - padding,
+            left: from.longitude - padding,
+            right: from.longitude + padding,
+        };
+
+        const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
+            const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
+            this.fetchTile(coordinate, true);
+            return coordinate;
+        });
+
+        // this won't download anything new
+        // but we need the tile data to embed the starting location
+        const fromTileset = await this.baseTileProvider.getMultipleByTileCoords(fromTileCoords);
+        await this.pathfinderProvider.embedLocation(from, fromTileset);
+    }
+
+    private async fetchTile(coordinate: RoutableTileCoordinate, base) {
+        let tileId: string;
+        if (base) {
+            tileId = this.baseTileProvider.getIdForTileCoords(coordinate);
+        } else {
+            tileId = this.transitTileProvider.getIdForTileCoords(coordinate);
+        }
         if (!this.reachedTiles.has(tileId)) {
             this.eventBus.emit(EventType.FetchTile, coordinate);
 
             const profile = await this.activeProfile;
             const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
-            const tile = await this.tileProvider.getByTileCoords(coordinate);
+            let tile: RoutableTile;
+            if (base) {
+                tile = await this.baseTileProvider.getByTileCoords(coordinate);
+            } else {
+                tile = await this.transitTileProvider.getByTileCoords(coordinate);
+            }
             this.reachedTiles.add(tileId);
             const boundaryNodes: Set<string> = new Set();
 
@@ -152,32 +199,9 @@ export default class IsochroneGenerator {
                 const boundaryTileCoordinate = toTileCoordinate(node.latitude, node.longitude);
 
                 pathfinder.setBreakPoint(nodeId, async (on: string) => {
-                    await self.fetchTile(boundaryTileCoordinate);
+                    await self.fetchTile(boundaryTileCoordinate, false);
                 });
             }
         }
-    }
-
-    private async embedBeginPoint(from: ILocation) {
-        const zoom = 14;
-        const padding = 0.005;
-
-        const fromBBox = {
-            top: from.latitude + padding,
-            bottom: from.latitude - padding,
-            left: from.longitude - padding,
-            right: from.longitude + padding,
-        };
-
-        const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
-            const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
-            this.fetchTile(coordinate);
-            return coordinate;
-        });
-
-        // this won't download anything new
-        // but we need the tile data to embed the starting location
-        const fromTileset = await this.tileProvider.getMultipleByTileCoords(fromTileCoords);
-        await this.pathfinderProvider.embedLocation(from, fromTileset);
     }
 }

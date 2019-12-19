@@ -1,6 +1,7 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
+import defaultContainer from "../../configs/basic_train";
 import Context from "../../Context";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
@@ -11,7 +12,6 @@ import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
-import defaultContainer from "../../inversify.config";
 import IQueryRunner from "../../query-runner/IQueryRunner";
 import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
@@ -32,6 +32,7 @@ export default abstract class Planner {
   private profileProvider: ProfileProvider;
   private roadPlanner: IRoadPlanner;
   private connectionsProvider: IConnectionsProvider;
+  private stopsProvider: IStopsProvider;
 
   /**
    * Initializes a new Planner
@@ -47,8 +48,17 @@ export default abstract class Planner {
     this.eventBus = EventBus.getInstance();
     this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
     this.connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
+    this.stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
 
     this.activeProfileID = "https://hdelva.be/profile/pedestrian";
+  }
+
+  public addConnectionSource(accessUrl: string, travelMode = TravelMode.Train) {
+    this.connectionsProvider.addConnectionSource({ accessUrl, travelMode });
+  }
+
+  public addStopSource(accessUrl: string) {
+    this.stopsProvider.addStopSource(accessUrl);
   }
 
   public async completePath(path: IPath): Promise<IPath> {

@@ -1,10 +1,10 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Catalog from "../../Catalog";
-import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherRaw from "../../fetcher/connections/ConnectionsFetcherRaw";
 import ConnectionsProviderDefault from "../../fetcher/connections/ConnectionsProviderDefault";
+import HydraTemplateFetcherDefault from "../../fetcher/hydra/HydraTemplateFetcherDefault";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import ILeg from "../../interfaces/ILeg";
 import IPath from "../../interfaces/IPath";
@@ -40,9 +40,9 @@ describe("[QueryRunnerExponential]", () => {
     const connectionProvider = new ConnectionsProviderDefault((travelMode: TravelMode) => {
       connectionsFetcher.setTravelMode(travelMode);
       return connectionsFetcher;
-    }, catalog);
+    }, catalog, new HydraTemplateFetcherDefault(ldFetch));
 
-    const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+    const locationResolver = new LocationResolverDefault(stopsFetcher);
     const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
     const createJourneyExtractor = () => {

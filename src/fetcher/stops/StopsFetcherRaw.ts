@@ -30,6 +30,10 @@ export default class StopsFetcherRaw implements IStopsFetcher {
         this.ldFetch = ldFetch;
     }
 
+    public addStopSource(accessUrl: string) {
+        throw new Error("Method not implemented.");
+    }
+
     public setAccessUrl(accessUrl: string) {
         this.accessUrl = accessUrl;
     }

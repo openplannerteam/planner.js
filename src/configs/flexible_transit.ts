@@ -1,8 +1,6 @@
 import { Container, interfaces } from "inversify";
 import Catalog from "../Catalog";
-import catalogNmbs from "../catalog.nmbs";
 import Context from "../Context";
-import RoutableTileRegistry from "../entities/tiles/registry";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
@@ -19,13 +17,12 @@ import ProfileFetcherDefault from "../fetcher/profiles/ProfileFetcherDefault";
 import ProfileProviderDefault from "../fetcher/profiles/ProfileProviderDefault";
 import IStopsFetcher from "../fetcher/stops/IStopsFetcher";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
-import StopsFetcherRaw from "../fetcher/stops/StopsFetcherRaw";
+import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import StopsProviderDefault from "../fetcher/stops/StopsProviderDefault";
 import IRoutableTileFetcher from "../fetcher/tiles/IRoutableTileFetcher";
 import IRoutableTileProvider from "../fetcher/tiles/IRoutableTileProvider";
 import RoutableTileFetcherRaw from "../fetcher/tiles/RoutableTileFetcherRaw";
 import RoutableTileProviderDefault from "../fetcher/tiles/RoutableTileProviderDefault";
-import RoutableTileProviderTransit from "../fetcher/tiles/RoutableTileProviderTransit";
 import { LDLoader } from "../loader/ldloader";
 import { BidirDijkstra } from "../pathfinding/bidirdijkstra/BidirDijkstra";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
@@ -38,8 +35,8 @@ import JourneyExtractorProfile from "../planner/public-transport/JourneyExtracto
 import IRoadPlanner from "../planner/road/IRoadPlanner";
 import RoadPlannerPathfinding from "../planner/road/RoadPlannerPathfinding";
 import IReachableStopsFinder from "../planner/stops/IReachableStopsFinder";
+import ReachableStopsFinderBirdsEyeCached from "../planner/stops/ReachableStopsFinderBirdsEyeCached";
 import ReachableStopsFinderDelaunay from "../planner/stops/ReachableStopsFinderDelaunay";
-import ReachableStopsFinderOnlySelf from "../planner/stops/ReachableStopsFinderOnlySelf";
 import QueryRunnerExponential from "../query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "../query-runner/ILocationResolver";
 import IQueryRunner from "../query-runner/IQueryRunner";
@@ -74,7 +71,7 @@ container.bind<IProfileProvider>(TYPES.ProfileProvider).to(ProfileProviderDefaul
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
+  .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
@@ -93,12 +90,12 @@ container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcher
   );
 
 container.bind<IStopsProvider>(TYPES.StopsProvider).to(StopsProviderDefault).inSingletonScope();
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherRaw);
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherLDFetch);
 container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   .toFactory<IStopsFetcher>(
     (context: interfaces.Context) =>
       (accessUrl: string) => {
-        const fetcher = context.container.get<StopsFetcherRaw>(TYPES.StopsFetcher);
+        const fetcher = context.container.get<StopsFetcherLDFetch>(TYPES.StopsFetcher);
         fetcher.setAccessUrl(accessUrl);
         return fetcher;
       },
@@ -108,10 +105,10 @@ container.bind<IRoutableTileFetcher>(TYPES.RoutableTileFetcher).to(RoutableTileF
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
-  .to(RoutableTileProviderTransit).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
+  .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
 
-// Bind catalog
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(catalogNmbs);
+// Bind empty catalog
+container.bind<Catalog>(TYPES.Catalog).toConstantValue(new Catalog());
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();

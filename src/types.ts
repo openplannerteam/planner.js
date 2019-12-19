@@ -9,6 +9,8 @@ const TYPES = {
   QueryRunner: Symbol("QueryRunner"),
   LocationResolver: Symbol("LocationResolver"),
 
+  HydraTemplateFetcher: Symbol("HydraTemplateFetcher"),
+
   ConnectionsProvider: Symbol("ConnectionsProvider"),
   ConnectionsFetcher: Symbol("ConnectionsFetcher"),
   ConnectionsFetcherFactory: Symbol("ConnectionsFetcherFactory"),
@@ -19,7 +21,6 @@ const TYPES = {
 
   RoutableTileProvider: Symbol("TileProvider"),
   RoutableTileFetcher: Symbol("TileFetcher"),
-  RoutableTileRegistry: Symbol("RoutableTileRegistry"),
 
   FootpathsProvider: Symbol("FootpathsProvider"),
 

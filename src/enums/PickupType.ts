@@ -1,8 +1,8 @@
 enum PickupType {
-  Regular = "gtfs:Regular",
-  NotAvailable = "gtfs:NotAvailable",
-  MustPhone = "gtfs:MustPhone",
-  MustCoordinateWithDriver = "gtfs:MustCoordinateWithDriver",
+  Regular = "http://vocab.gtfs.org/terms#Regular",
+  NotAvailable = "http://vocab.gtfs.org/terms#NotAvailable",
+  MustPhone = "http://vocab.gtfs.org/terms#MustPhone",
+  MustCoordinateWithDriver = "http://vocab.gtfs.org/terms#MustCoordinateWithDriver",
 }
 
 export default PickupType;

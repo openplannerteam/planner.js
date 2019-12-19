@@ -3,12 +3,11 @@ import { Delaunay } from "d3-delaunay";
 import fs = require("fs");
 import "isomorphic-fetch";
 import "reflect-metadata";
-
+import defaultContainer from "../../configs/default";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import { DistanceM } from "../../interfaces/units";
-import defaultContainer from "../../inversify.config";
 import IRoadPlanner from "../../planner/road/IRoadPlanner";
 import TYPES from "../../types";
 import Geo from "../../util/Geo";

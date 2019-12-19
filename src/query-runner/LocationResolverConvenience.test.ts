@@ -1,16 +1,14 @@
 import "jest";
 import LDFetch from "ldfetch";
-import RoutableTileRegistry from "../entities/tiles/registry";
 import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import LocationResolverConvenience from "./LocationResolverConvenience";
 
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-const tileRegistry = new RoutableTileRegistry();
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-const locationResolver = new LocationResolverConvenience(stopsFetcher, tileRegistry);
+const locationResolver = new LocationResolverConvenience(stopsFetcher);
 
 describe("[LocationResolverConvenience]", () => {
 

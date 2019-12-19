@@ -8,6 +8,7 @@ import ConnectionsFetcherRaw from "../../fetcher/connections/ConnectionsFetcherR
 import ConnectionsProviderDefault from "../../fetcher/connections/ConnectionsProviderDefault";
 import ConnectionsProviderNMBSTest from "../../fetcher/connections/tests/ConnectionsProviderNMBSTest";
 import connectionsIngelmunsterGhent from "../../fetcher/connections/tests/data/ingelmunster-ghent";
+import HydraTemplateFetcherDefault from "../../fetcher/hydra/HydraTemplateFetcherDefault";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import ILeg from "../../interfaces/ILeg";
 import IPath from "../../interfaces/IPath";
@@ -30,7 +31,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+      const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
       return new CSAEarliestArrival(
@@ -180,12 +181,13 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
           fetcher.setTravelMode(travelMode);
           return fetcher;
         }, catalog,
+        new HydraTemplateFetcherDefault(ldFetch),
       );
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
 
-      const locationResolver = new LocationResolverDefault(stopsFetcher, new RoutableTileRegistry());
+      const locationResolver = new LocationResolverDefault(stopsFetcher);
       const reachableStopsFinder = new ReachableStopsFinderBirdsEyeCached(stopsFetcher);
 
       const CSA = new CSAEarliestArrival(

@@ -10,6 +10,8 @@ export default class StopsProviderDefault implements IStopsProvider {
 
   private readonly stopsFetchers: IStopsFetcher[];
   private cachedStops: IStop[];
+  private allStops: Promise<IStop[]>;
+  private stopsFetcherFactory: StopsFetcherFactory;
 
   constructor(
     @inject(TYPES.StopsFetcherFactory) stopsFetcherFactory: StopsFetcherFactory,
@@ -17,10 +19,17 @@ export default class StopsProviderDefault implements IStopsProvider {
   ) {
     this.stopsFetchers = [];
     this.cachedStops = [];
+    this.stopsFetcherFactory = stopsFetcherFactory;
 
     for (const { accessUrl } of catalog.stopsSourceConfigs) {
-      this.stopsFetchers.push(stopsFetcherFactory(accessUrl));
+      this.addStopSource(accessUrl);
     }
+  }
+
+  public addStopSource(accessUrl: string) {
+    this.cachedStops = [];
+    this.allStops = null;
+    this.stopsFetchers.push(this.stopsFetcherFactory(accessUrl));
   }
 
   public prefetchStops(): void {
@@ -36,16 +45,20 @@ export default class StopsProviderDefault implements IStopsProvider {
   }
 
   public async getAllStops(): Promise<IStop[]> {
-    if (this.cachedStops.length > 0) {
-      return Promise.resolve(this.cachedStops);
+    if (!this.allStops) {
+      if (this.cachedStops.length > 0) {
+        return Promise.resolve(this.cachedStops);
+      }
+
+      this.allStops = Promise.all(this.stopsFetchers
+        .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getAllStops()),
+      ).then((results: IStop[][]) => {
+        this.cachedStops = [].concat(...results);
+
+        return this.cachedStops;
+      });
     }
 
-    return Promise.all(this.stopsFetchers
-      .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getAllStops()),
-    ).then((results: IStop[][]) => {
-      this.cachedStops = [].concat(...results);
-
-      return this.cachedStops;
-    });
+    return this.allStops;
   }
 }

@@ -21,10 +21,9 @@ export default class LocationResolverDefault implements ILocationResolver {
 
   constructor(
     @inject(TYPES.StopsProvider) stopsProvider: IStopsProvider,
-    @inject(TYPES.RoutableTileRegistry) tileRegistry: RoutableTileRegistry,
   ) {
     this.stopsProvider = stopsProvider;
-    this.tileRegistry = tileRegistry;
+    this.tileRegistry = RoutableTileRegistry.getInstance();
   }
 
   public async resolve(input: ILocation | IStop | string): Promise<ILocation> {

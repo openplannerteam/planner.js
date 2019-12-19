@@ -47,14 +47,13 @@ export default class PathfinderProvider {
   constructor(
     @inject(TYPES.ShortestPathTreeAlgorithm) shortestPathTree: IShortestPathTreeAlgorithm,
     @inject(TYPES.ShortestPathAlgorithm) pointToPoint: IShortestPathAlgorithm,
-    @inject(TYPES.RoutableTileRegistry) routableTileRegistry: RoutableTileRegistry,
     @inject(TYPES.ProfileProvider) profileProvider: ProfileProvider,
     @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
   ) {
     this.locationResolver = locationResolver;
     this.shortestPath = pointToPoint;
     this.shortestPathTree = shortestPathTree;
-    this.routableTileRegistry = routableTileRegistry;
+    this.routableTileRegistry = RoutableTileRegistry.getInstance();
     this.profileProvider = profileProvider;
     this.graphs = {};
     this.embeddings = [];
