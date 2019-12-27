@@ -258,11 +258,14 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
           const newArrivalTime = new Date(sourceConnection.arrivalTime.getTime() + duration);
 
           if (transferTentativeArrival > newArrivalTime.getTime() && newArrivalTime <= query.maximumArrivalTime) {
+
+            const tripId = `TRANSFER_TO:${sourceConnection.arrivalStop}@${sourceConnection.arrivalTime.getTime()}`;
+
             // create a connection that resembles a footpath
             // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
             const transferConnection: IConnection = {
-              id: `TRANSFER_TO:${stop.id}`,
-              tripId: `TRANSFER_TO:${stop.id}`,
+              id: `${tripId}-${stop.id}`,
+              tripId,
               travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
               departureTime: sourceConnection.arrivalTime,
               departureStop: sourceConnection.arrivalStop,

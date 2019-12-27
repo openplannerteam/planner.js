@@ -61,11 +61,15 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
                 const departureStop = context.resolveIdentifier(entity[DEPARTURE_STOP]);
                 const departureDelay = entity[DEPARTURE_DELAY] ? parseFloat(entity[DEPARTURE_DELAY]) : 0;
 
-                const tripId = context.resolveIdentifier(entity[TRIP]) || null;
-                const route = context.resolveIdentifier(entity[ROUTE]) || null;
+                const tripId = entity[TRIP] ? context.resolveIdentifier(entity[TRIP]) : null;
+                const route = entity[ROUTE] ? context.resolveIdentifier(entity[ROUTE]) : null;
 
-                const dropOffType = context.resolveIdentifier(entity[DROP_OFF_TYPE]) as DropOffType;
-                const pickupType = context.resolveIdentifier(entity[PICKUP_TYPE]) as PickupType;
+                const dropOffType = entity[DROP_OFF_TYPE] ?
+                    context.resolveIdentifier(entity[DROP_OFF_TYPE]) as DropOffType :
+                    DropOffType.Regular;
+                const pickupType = entity[PICKUP_TYPE] ?
+                    context.resolveIdentifier(entity[PICKUP_TYPE]) as PickupType :
+                    PickupType.Regular;
                 const headsign = entity[HEADSIGN] || null;
                 const connection: IConnection = {
                     id: connectionId,
@@ -83,7 +87,10 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
                     headsign,
                 };
 
-                connections.push(connection);
+                if (connection.departureTime < connection.arrivalTime) {
+                    // safety precaution
+                    connections.push(connection);
+                }
             }
 
             const pageId = blob["@id"];
@@ -95,6 +102,10 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
             EventBus.getInstance().emit(EventType.ConnectionPrefetch, connections[0].departureTime);
             EventBus.getInstance().emit(EventType.ConnectionPrefetch,
                 connections[connections.length - 1].departureTime);
+
+            connections.sort((a, b) => {
+                return a.departureTime.getTime() - b.departureTime.getTime();
+            });
 
             return new LinkedConnectionsPage(pageId, connections, previousPageUrl, nextPageUrl);
         } else {
