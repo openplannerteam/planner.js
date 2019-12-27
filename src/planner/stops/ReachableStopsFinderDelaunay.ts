@@ -77,15 +77,18 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
   }
 
   private async getNearbyStops(location: ILocation): Promise<IStop[]> {
-    const triangles = await this.triangles;
-    const cell = triangles.find(location.longitude, location.latitude);
+    if (!this.triangles) {
+      await this.prepare();
+    }
+
+    const cell = this.triangles.find(location.longitude, location.latitude);
 
     const result = [this.trianglePoints[cell]];
 
     // not including these for now
     // may result in large route network queries if the stops network is sparse
 
-    const neighbors = triangles.neighbors(cell);
+    const neighbors = this.triangles.neighbors(cell);
     for (const neighbor of neighbors) {
       const neighborLocation = this.trianglePoints[neighbor];
       if (Geo.getDistanceBetweenLocations(location, neighborLocation) < 2500) {
@@ -96,9 +99,9 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
   }
 
   private async prepare() {
-    this.triangles = this.stopsProvider.getAllStops().then((stops) => {
-      this.trianglePoints = stops;
+    this.trianglePoints = await this.stopsProvider.getAllStops();
 
+    if (this.trianglePoints && this.trianglePoints.length) {
       function getX(p: ILocation) {
         return p.longitude;
       }
@@ -107,7 +110,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
         return p.latitude;
       }
 
-      return Delaunay.from(stops, getX, getY);
-    });
+      this.triangles = Delaunay.from(this.trianglePoints, getX, getY);
+    }
   }
 }

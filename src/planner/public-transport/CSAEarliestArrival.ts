@@ -9,6 +9,7 @@ import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
+import { forwardsConnectionSelector } from "../../fetcher/connections/ConnectionSelectors";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
@@ -43,25 +44,6 @@ interface IQueryState {
 
 @injectable()
 export default class CSAEarliestArrival implements IPublicTransportPlanner {
-  private static forwardsConnectionSelector(connections: IConnection[]): number {
-    if (connections.length === 1) {
-      return 0;
-    }
-
-    let earliestIndex = 0;
-    const earliest = connections[earliestIndex];
-
-    for (let i = 1; i < connections.length; i++) {
-      const connection = connections[i];
-
-      if (connection && connection.departureTime < earliest.departureTime) {
-        earliestIndex = i;
-      }
-    }
-
-    return earliestIndex;
-  }
-
   protected readonly connectionsProvider: IConnectionsProvider;
   protected readonly locationResolver: ILocationResolver;
   protected readonly transferReachableStopsFinder: IReachableStopsFinder;
@@ -110,7 +92,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
     const connectionsQueue = new MergeIterator(
       [connectionsIterator, footpathsQueue],
-      CSAEarliestArrival.forwardsConnectionSelector,
+      forwardsConnectionSelector,
       true,
     );
 
@@ -276,11 +258,14 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
           const newArrivalTime = new Date(sourceConnection.arrivalTime.getTime() + duration);
 
           if (transferTentativeArrival > newArrivalTime.getTime() && newArrivalTime <= query.maximumArrivalTime) {
+
+            const tripId = `TRANSFER_TO:${sourceConnection.arrivalStop}@${sourceConnection.arrivalTime.getTime()}`;
+
             // create a connection that resembles a footpath
             // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
             const transferConnection: IConnection = {
-              id: `TRANSFER_TO:${stop.id}`,
-              tripId: `TRANSFER_TO:${stop.id}`,
+              id: `${tripId}-${stop.id}`,
+              tripId,
               travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
               departureTime: sourceConnection.arrivalTime,
               departureStop: sourceConnection.arrivalStop,

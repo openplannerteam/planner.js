@@ -18,6 +18,7 @@ import ProfileProviderDefault from "../fetcher/profiles/ProfileProviderDefault";
 import IStopsFetcher from "../fetcher/stops/IStopsFetcher";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
 import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import StopsFetcherRaw from "../fetcher/stops/StopsFetcherRaw";
 import StopsProviderDefault from "../fetcher/stops/StopsProviderDefault";
 import IRoutableTileFetcher from "../fetcher/tiles/IRoutableTileFetcher";
 import IRoutableTileProvider from "../fetcher/tiles/IRoutableTileProvider";
@@ -28,7 +29,7 @@ import { BidirDijkstra } from "../pathfinding/bidirdijkstra/BidirDijkstra";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "../pathfinding/pathfinder";
 import PathfinderProvider from "../pathfinding/PathfinderProvider";
-import CSAProfile from "../planner/public-transport/CSAProfile";
+import CSAEarliestArrival from "../planner/public-transport/CSAEarliestArrival";
 import IJourneyExtractor from "../planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractorProfile from "../planner/public-transport/JourneyExtractorProfile";
@@ -37,15 +38,15 @@ import RoadPlannerPathfinding from "../planner/road/RoadPlannerPathfinding";
 import IReachableStopsFinder from "../planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEyeCached from "../planner/stops/ReachableStopsFinderBirdsEyeCached";
 import ReachableStopsFinderDelaunay from "../planner/stops/ReachableStopsFinderDelaunay";
-import QueryRunnerExponential from "../query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "../query-runner/ILocationResolver";
 import IQueryRunner from "../query-runner/IQueryRunner";
 import LocationResolverConvenience from "../query-runner/LocationResolverConvenience";
+import QueryRunnerDefault from "../query-runner/QueryRunnerDefault";
 import TYPES from "../types";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
-container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
+container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
 
 container.bind<IHydraTemplateFetcher>(TYPES.HydraTemplateFetcher).to(HydraTemplateFetcherDefault).inSingletonScope();
@@ -55,7 +56,7 @@ container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(CSAProfile);
+  .to(CSAEarliestArrival);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
@@ -90,7 +91,7 @@ container.bind<interfaces.Factory<IConnectionsFetcher>>(TYPES.ConnectionsFetcher
   );
 
 container.bind<IStopsProvider>(TYPES.StopsProvider).to(StopsProviderDefault).inSingletonScope();
-container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherLDFetch);
+container.bind<IStopsFetcher>(TYPES.StopsFetcher).to(StopsFetcherRaw);
 container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   .toFactory<IStopsFetcher>(
     (context: interfaces.Context) =>
