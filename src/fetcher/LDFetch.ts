@@ -40,7 +40,7 @@ export default class LDFetch implements LDFetchBase {
     this.ldFetchBase.on("response", (url) => {
       const duration = (new Date()).getTime() - this.httpStartTimes[url].getTime();
 
-      this.eventBus.emit(EventType.LDFetchGet, url, duration);
+      this.eventBus.emit(EventType.ResourceFetch, "?", url, duration, "?");
     });
   }
 }

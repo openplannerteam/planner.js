@@ -58,6 +58,9 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       const nodes: IRoutableTileNodeIndex = {};
       const ways: IRoutableTileWayIndex = {};
 
+      const size = parseInt(response.headers.get("content-length"), 10);
+      const duration = (new Date()).getTime() - beginTime.getTime();
+
       for (const entity of blob["@graph"]) {
         if (entity["@type"] === "osm:Node") {
           const node = this.createNode(entity);
@@ -68,8 +71,13 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
         }
       }
 
-      const duration = (new Date()).getTime() - beginTime.getTime();
-      EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
+      EventBus.getInstance().emit(
+        EventType.ResourceFetch,
+        TYPES.StopsFetcher, // origin
+        url, // resource uri
+        duration, // time it took to download and parse
+        size, // transferred data
+      );
 
       return this.processTileData(url, nodes, ways);
     } else {

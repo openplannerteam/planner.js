@@ -7,6 +7,7 @@ import PickupType from "../../enums/PickupType";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
+import TYPES from "../../types";
 import JSONLDContext from "../../uri/JSONLDContext";
 import IConnectionsFetcher from "./IConnectionsFetcher";
 
@@ -37,7 +38,8 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
 
         const response = await fetch(url);
         const size = parseInt(response.headers.get("content-length"), 10);
-        EventBus.getInstance().emit(EventType.Downloaded, size);
+        const duration = (new Date()).getTime() - beginTime.getTime();
+
         const responseText = await response.text();
         if (response.status !== 200) {
             EventBus.getInstance().emit(EventType.Warning, `${url} responded with status code ${response.status}`);
@@ -99,9 +101,6 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
             const nextPageUrl = blob["hydra:next"];
             const previousPageUrl = blob["hydra:previous"];
 
-            const duration = (new Date()).getTime() - beginTime.getTime();
-            EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
-
             connections.sort((a, b) => {
                 if (a.departureTime.getTime() !== b.departureTime.getTime()) {
                     return a.departureTime.getTime() - b.departureTime.getTime();
@@ -111,6 +110,14 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
 
                 return a.id.localeCompare(b.id);
             });
+
+            EventBus.getInstance().emit(
+                EventType.ResourceFetch,
+                TYPES.ConnectionsFetcher, // origin
+                url, // resource uri
+                duration, // time it took to download and parse
+                size, // transferred data
+            );
 
             return new LinkedConnectionsPage(pageId, connections, previousPageUrl, nextPageUrl);
         } else {

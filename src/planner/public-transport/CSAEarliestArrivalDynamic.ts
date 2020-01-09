@@ -193,9 +193,6 @@ export default class CSAEarliestArrivalDynamic implements IPublicTransportPlanne
         /*
         Call this ONLY if the given connection is known to improve the arrival stop's profile
         */
-        if (connection.travelMode === TravelMode.Train) {
-            console.log(connection.departureTime, connection.id);
-        }
 
         const tripId = connection.tripId;
         const departureTime = connection.departureTime.getTime();

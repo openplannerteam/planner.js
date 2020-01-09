@@ -81,6 +81,9 @@ export default class StopsFetcherRaw implements IStopsFetcher {
         const response = await fetch(url);
         const responseText = await response.text();
 
+        const size = parseInt(response.headers.get("content-length"), 10);
+        const duration = (new Date()).getTime() - beginTime.getTime();
+
         const stops: IStopMap = {};
 
         if (response.status !== 200) {
@@ -106,8 +109,13 @@ export default class StopsFetcherRaw implements IStopsFetcher {
             }
         }
 
-        const duration = (new Date()).getTime() - beginTime.getTime();
-        EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
+        EventBus.getInstance().emit(
+            EventType.ResourceFetch,
+            TYPES.StopsFetcher, // origin
+            url, // resource uri
+            duration, // time it took to download and parse
+            size, // transferred data
+        );
 
         return stops;
     }

@@ -41,9 +41,9 @@ export default async (logResults) => {
         console.log("Total scanned connections", scannedConnections);
         console.log("[Subquery]", minimumDepartureTime, maximumArrivalTime, maximumArrivalTime - minimumDepartureTime);
       })
-      .on(EventType.LDFetchGet, (url, duration) => {
+      .on(EventType.ResourceFetch, (source, url, duration, size) => {
         scannedPages++;
-        console.log(`[GET] ${url} (${duration}ms)`);
+        console.log(`[GET] ${url} (${duration}ms ${size} bytes)`);
 
         // if (logFetch) {
         //   console.log(`[GET] ${url} (${duration}ms)`);

@@ -150,7 +150,7 @@
             })
             */
 
-            Planner.EventBus.on(Planner.EventType.PointReached, (point) => {
+            Planner.EventBus.on(Planner.EventType.ReachableLocation, (point) => {
                 const wat = [point.latitude, point.longitude];
                 intermediate = L.circleMarker(wat, {
                     color: 'red',
