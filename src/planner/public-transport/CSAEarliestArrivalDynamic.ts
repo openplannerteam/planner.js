@@ -2,6 +2,8 @@ import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
 import IConnection from "../../entities/connections/connections";
+import GeometryValue from "../../entities/tree/geometry";
+import HypermediaTree from "../../entities/tree/tree";
 import DropOffType from "../../enums/DropOffType";
 import PickupType from "../../enums/PickupType";
 import ReachableStopsFinderMode from "../../enums/ReachableStopsFinderMode";
@@ -12,6 +14,8 @@ import EventType from "../../events/EventType";
 import { forwardsConnectionSelector } from "../../fetcher/connections/ConnectionSelectors";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
+import IStopsProvider from "../../fetcher/stops/IStopsProvider";
+import IHypermediaTreeProvider from "../../fetcher/tree/IHeadermediaTreeProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import ILocationResolver from "../../query-runner/ILocationResolver";
@@ -37,21 +41,27 @@ interface IQueryState {
   profilesByStop: IProfileByStop; // S
   enterConnectionByTrip: IEnterConnectionByTrip; // T
   footpathsQueue: FootpathQueue;
-  connectionsQueue: AsyncIterator<IConnection>;
+  connectionsIterator: AsyncIterator<IConnection>;
+  mergedQueue: AsyncIterator<IConnection>;
+  clusterStops: object;
+  lowerBoundDate: Date;
 }
 
 // Implementation is as close as possible to the original paper: https://arxiv.org/pdf/1703.05997.pdf
 
 @injectable()
-export default class CSAEarliestArrival implements IPublicTransportPlanner {
+export default class CSAEarliestArrivalDynamic implements IPublicTransportPlanner {
   protected readonly connectionsProvider: IConnectionsProvider;
   protected readonly locationResolver: ILocationResolver;
+  protected readonly treeProvider: IHypermediaTreeProvider;
   protected readonly transferReachableStopsFinder: IReachableStopsFinder;
   protected readonly initialReachableStopsFinder: IReachableStopsFinder;
   protected readonly finalReachableStopsFinder: IReachableStopsFinder;
   protected readonly eventBus: EventEmitter;
 
   protected journeyExtractor: IJourneyExtractor;
+  protected reachedClusters: Set<string>;
+  protected stopsProvider: IStopsProvider;
 
   constructor(
     @inject(TYPES.ConnectionsProvider)
@@ -67,7 +77,13 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     @inject(TYPES.ReachableStopsFinder)
     @tagged("phase", ReachableStopsSearchPhase.Final)
     finalReachableStopsFinder: IReachableStopsFinder,
+    @inject(TYPES.HypermediaTreeProvider)
+    treeProvider: IHypermediaTreeProvider,
+    @inject(TYPES.StopsProvider)
+    stopsProvider: IStopsProvider,
   ) {
+    this.reachedClusters = new Set();
+    this.treeProvider = treeProvider;
     this.connectionsProvider = connectionsProvider;
     this.locationResolver = locationResolver;
     this.transferReachableStopsFinder = transferReachableStopsFinder;
@@ -75,6 +91,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     this.finalReachableStopsFinder = finalReachableStopsFinder;
     this.eventBus = EventBus.getInstance();
     this.journeyExtractor = new JourneyExtractorEarliestArrival(locationResolver);
+    this.stopsProvider = stopsProvider;
   }
 
   public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
@@ -83,15 +100,20 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       maximumArrivalTime: upperBoundDate,
     } = query;
 
+    const trees = await this.treeProvider.getAllTrees();
+    const clusterStops = await this.clusterStops(trees);
+    const startLocation = clusterStops[Geo.getId(query.from[0])];
+    this.reachedClusters.add(startLocation.id);
+
     const footpathsQueue = new FootpathQueue();
     const connectionsIterator = await this.connectionsProvider.createIterator({
       upperBoundDate,
       lowerBoundDate,
       excludedModes: query.excludedTravelModes,
-      region: null,
+      region: startLocation,
     });
 
-    const connectionsQueue = new MergeIterator(
+    const mergedQueue = new MergeIterator(
       [connectionsIterator, footpathsQueue],
       forwardsConnectionSelector,
       true,
@@ -102,7 +124,10 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       profilesByStop: {},
       enterConnectionByTrip: {},
       footpathsQueue,
-      connectionsQueue,
+      connectionsIterator,
+      clusterStops,
+      mergedQueue,
+      lowerBoundDate,
     };
 
     const [hasInitialReachableStops, hasFinalReachableStops] = await Promise.all([
@@ -120,7 +145,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
       const done = () => {
         if (!isDone) {
-          connectionsQueue.close();
+          mergedQueue.close();
 
           self.extractJourneys(queryState, query)
             .then((resultIterator) => {
@@ -143,7 +168,28 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }) as Promise<AsyncIterator<IPath>>;
   }
 
-  protected updateProfile(state: IQueryState, query: IResolvedQuery, connection: IConnection) {
+  protected async clusterStops(trees: HypermediaTree[]): Promise<object> {
+    const stops = await this.stopsProvider.getAllStops();
+    const result = {};
+    for (const stop of stops) {
+      const cluster = this.placeLocation(stop, trees);
+      result[Geo.getId(stop)] = cluster;
+    }
+    return result;
+  }
+
+  protected placeLocation(location: ILocation, trees: HypermediaTree[]): GeometryValue {
+    for (const tree of trees) {
+      for (const relation of tree.relations) {
+        if (relation.geoValue.contains(location)) {
+          return relation.geoValue;
+        }
+      }
+    }
+
+  }
+
+  protected async updateProfile(state: IQueryState, query: IResolvedQuery, connection: IConnection) {
     /*
     Call this ONLY if the given connection is known to improve the arrival stop's profile
     */
@@ -160,6 +206,31 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       enterConnection: state.enterConnectionByTrip[tripId],
     };
     state.profilesByStop[connection.arrivalStop] = arrivalProfile;
+
+    const cluster = state.clusterStops[connection.arrivalStop];
+    if (cluster && !this.reachedClusters.has(cluster.id)) {
+      const {
+        maximumArrivalTime: upperBoundDate,
+      } = query;
+
+      // console.log("REACHED", cluster.id);
+
+      this.reachedClusters.add(cluster.id);
+
+      const newConnectionIterator = await this.connectionsProvider.appendIterator({
+        upperBoundDate,
+        lowerBoundDate: connection.departureTime,
+        excludedModes: query.excludedTravelModes,
+        region: cluster,
+      }, state.connectionsIterator);
+
+      state.connectionsIterator = newConnectionIterator;
+      state.mergedQueue = new MergeIterator(
+        [newConnectionIterator, state.footpathsQueue],
+        forwardsConnectionSelector,
+        true,
+      );
+    }
   }
 
   private async extractJourneys(state: IQueryState, query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
@@ -171,16 +242,18 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     const departureStopId: string = from[0].id;
     const arrivalStopId: string = to[0].id;
 
-    let connection: IConnection = state.connectionsQueue.read();
+    let connection: IConnection = state.mergedQueue.read();
 
-    while (connection && !state.connectionsQueue.closed) {
-
-      if (connection.departureTime < minimumDepartureTime && !state.connectionsQueue.closed) {
+    while (connection && !state.connectionsIterator.closed) {
+      if (connection.departureTime < state.lowerBoundDate && !state.connectionsIterator.closed) {
         // starting criterion
         // skip connections before the minimum departure time
-        connection = state.connectionsQueue.read();
+        connection = state.mergedQueue.read();
         continue;
       }
+
+      state.lowerBoundDate = connection.departureTime;
+      // console.log(connection.id, connection.departureTime)
 
       if (this.getProfile(state, arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
         // stopping criterion
@@ -217,8 +290,8 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         }
       }
 
-      if (!state.connectionsQueue.closed) {
-        connection = state.connectionsQueue.read();
+      if (!state.connectionsIterator.closed) {
+        connection = state.mergedQueue.read();
         continue;
       }
 

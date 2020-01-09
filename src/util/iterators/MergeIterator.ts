@@ -26,6 +26,8 @@ export default class MergeIterator<T> extends AsyncIterator<T> {
     this.sourceIterators = sourceIterators;
     this.selector = selector;
 
+    this.setMaxListeners(1000);
+
     this.values = Array(this.sourceIterators.length).fill(undefined);
     this.waitingForFill = Array(this.sourceIterators.length).fill(false);
     this.readable = true;

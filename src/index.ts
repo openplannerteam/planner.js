@@ -11,6 +11,7 @@ import BasicTrainPlanner from "./planner/configurations/BasicTrainPlanner";
 import DelijnNmbsPlanner from "./planner/configurations/DelijnNmbsPlanner";
 import DissectPlanner from "./planner/configurations/DissectPlanner";
 import FlexibleTransitPlanner from "./planner/configurations/FlexibleTransitPlanner";
+import GeospatialFragmentedPlanner from "./planner/configurations/GeospatialFragmentedPlanner";
 import TransitCarPlanner from "./planner/configurations/TransitCarPlanner";
 import TriangleDemoPlanner from "./planner/configurations/TriangleDemoPlanner";
 import Units from "./util/Units";
@@ -24,6 +25,7 @@ export { default as DelijnNmbsPlanner } from "./planner/configurations/DelijnNmb
 export { default as DissectPlanner } from "./planner/configurations/DissectPlanner";
 export { default as TransitCarPlanner } from "./planner/configurations/TransitCarPlanner";
 export { default as FlexibleTransitPlanner } from "./planner/configurations/FlexibleTransitPlanner";
+export { default as GeospatialFragmentedPlanner } from "./planner/configurations/GeospatialFragmentedPlanner";
 export { default as TriangleDemoPlanner } from "./planner/configurations/TriangleDemoPlanner";
 export { default as TravelMode } from "./enums/TravelMode";
 
@@ -44,4 +46,5 @@ export default {
     TriangleDemoPlanner,
     RoutableTileRegistry,
     FlexibleTransitPlanner,
+    GeospatialFragmentedPlanner,
 };

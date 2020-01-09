@@ -1,7 +1,7 @@
 import TravelMode from "./enums/TravelMode";
 import IConnectionsFetcher from "./fetcher/connections/IConnectionsFetcher";
 import IStopsFetcher from "./fetcher/stops/IStopsFetcher";
-import IRoutableTileFetcher from "./fetcher/tiles/IRoutableTileFetcher";
+import IHypermediaTreeFetcher from "./fetcher/tree/IHypermediaTreeFetcher";
 
 const TYPES = {
   EventBus: Symbol("EventBus"),
@@ -10,6 +10,9 @@ const TYPES = {
   LocationResolver: Symbol("LocationResolver"),
 
   HydraTemplateFetcher: Symbol("HydraTemplateFetcher"),
+  HypermediaTreeFetcher: Symbol("HypermediaTreeFetcher"),
+  HypermediaTreeProvider: Symbol("HypermediaTreeProvider"),
+  HypermediaTreeFetcherFactory: Symbol("HypermediaTreeFetcherFactory"),
 
   ConnectionsProvider: Symbol("ConnectionsProvider"),
   ConnectionsFetcher: Symbol("ConnectionsFetcher"),
@@ -44,5 +47,6 @@ const TYPES = {
 
 export default TYPES;
 
+export type HypermediaTreeFetcherFactory = (accessUrl: string) => IHypermediaTreeFetcher;
 export type StopsFetcherFactory = (accessUrl: string) => IStopsFetcher;
 export type ConnectionsFetcherFactory = (travelMode: TravelMode) => IConnectionsFetcher;

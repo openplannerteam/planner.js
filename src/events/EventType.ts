@@ -21,6 +21,8 @@ enum EventType {
 
   ReachableStop = "ReachableStop",
   ReachableTile = "ReachableTile",
+
+  Downloaded = "Downloaded",
 }
 
 export default EventType;

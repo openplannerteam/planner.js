@@ -108,6 +108,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
       upperBoundDate,
       lowerBoundDate,
       excludedModes: query.excludedTravelModes,
+      region: null,
     });
 
     const mergedIterator = new MergeIterator(

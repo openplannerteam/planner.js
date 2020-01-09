@@ -36,6 +36,8 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
         const beginTime = new Date();
 
         const response = await fetch(url);
+        const size = parseInt(response.headers.get("content-length"), 10);
+        EventBus.getInstance().emit(EventType.Downloaded, size);
         const responseText = await response.text();
         if (response.status !== 200) {
             EventBus.getInstance().emit(EventType.Warning, `${url} responded with status code ${response.status}`);
@@ -99,9 +101,6 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
 
             const duration = (new Date()).getTime() - beginTime.getTime();
             EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
-            EventBus.getInstance().emit(EventType.ConnectionPrefetch, connections[0].departureTime);
-            EventBus.getInstance().emit(EventType.ConnectionPrefetch,
-                connections[connections.length - 1].departureTime);
 
             connections.sort((a, b) => {
                 return a.departureTime.getTime() - b.departureTime.getTime();

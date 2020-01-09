@@ -1,6 +1,7 @@
 import { injectable } from "inversify";
 import { Triple } from "rdf-js";
-import { XMLS } from "../uri/constants";
+import parse = require("wellknown");
+import { GEOSPARQL, XMLS } from "../uri/constants";
 import URI from "../uri/uri";
 import { IEntity, IEntityMap } from "./common";
 import { ThingView } from "./views/single";
@@ -44,11 +45,12 @@ export class LDLoader {
         const tripleObject = triple.object;
         const rawValue = tripleObject.value;
         if (tripleObject.termType === "BlankNode") {
-            if (!entities[rawValue]) {
-                entities[rawValue] = { id: rawValue };
-            }
-
             return entities[rawValue];
+        }
+        if (tripleObject.termType === "NamedNode") {
+            if (entities[rawValue]) {
+                return entities[rawValue];
+            }
         }
         if (tripleObject.termType === "Literal") {
             const valueType = tripleObject.datatype.value;
@@ -64,19 +66,33 @@ export class LDLoader {
             if (valueType === URI.inNS(XMLS, "integer")) {
                 return parseInt(rawValue, 10);
             }
+            if (valueType === URI.inNS(GEOSPARQL, "wktLiteral")) {
+                return this.parseWktLiteral(rawValue);
+            }
         }
 
         return rawValue;
     }
 
+    private parseWktLiteral(raw: string) {
+        const [reference, ...rest] = raw.split(" ");
+        if (reference === "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>") {
+            return parse(rest.join(" "));
+        }
+        return parse(raw);
+    }
+
     private _extractEntities(triples): IEntityMap<IEntity> {
         const entities = {};
         for (const triple of triples) {
-            const { subject: { value: subject }, predicate: { value: predicate } } = triple;
+            const { subject: { value: subject } } = triple;
 
             if (!(subject in entities)) {
                 entities[subject] = { id: subject };
             }
+        }
+        for (const triple of triples) {
+            const { subject: { value: subject }, predicate: { value: predicate } } = triple;
 
             const entity = entities[subject];
             const parsedValue = this._parseValue(entities, triple);

@@ -17,7 +17,6 @@ import ProfileFetcherDefault from "../fetcher/profiles/ProfileFetcherDefault";
 import ProfileProviderDefault from "../fetcher/profiles/ProfileProviderDefault";
 import IStopsFetcher from "../fetcher/stops/IStopsFetcher";
 import IStopsProvider from "../fetcher/stops/IStopsProvider";
-import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import StopsFetcherRaw from "../fetcher/stops/StopsFetcherRaw";
 import StopsProviderDefault from "../fetcher/stops/StopsProviderDefault";
 import IRoutableTileFetcher from "../fetcher/tiles/IRoutableTileFetcher";
@@ -33,7 +32,7 @@ import { BidirDijkstra } from "../pathfinding/bidirdijkstra/BidirDijkstra";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "../pathfinding/pathfinder";
 import PathfinderProvider from "../pathfinding/PathfinderProvider";
-import CSAEarliestArrival from "../planner/public-transport/CSAEarliestArrival";
+import CSAEarliestArrivalDynamic from "../planner/public-transport/CSAEarliestArrivalDynamic";
 import IJourneyExtractor from "../planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractorProfile from "../planner/public-transport/JourneyExtractorProfile";
@@ -41,34 +40,37 @@ import IRoadPlanner from "../planner/road/IRoadPlanner";
 import RoadPlannerPathfinding from "../planner/road/RoadPlannerPathfinding";
 import IReachableStopsFinder from "../planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEyeCached from "../planner/stops/ReachableStopsFinderBirdsEyeCached";
-import ReachableStopsFinderDelaunay from "../planner/stops/ReachableStopsFinderDelaunay";
+import ReachableStopsFinderOnlySelf from "../planner/stops/ReachableStopsFinderOnlySelf";
 import ILocationResolver from "../query-runner/ILocationResolver";
 import IQueryRunner from "../query-runner/IQueryRunner";
 import LocationResolverConvenience from "../query-runner/LocationResolverConvenience";
 import QueryRunnerDefault from "../query-runner/QueryRunnerDefault";
 import TYPES from "../types";
 
+import FootpathsProviderRaw from "../fetcher/footpaths/FootpathsProviderRaw";
+import IFootpathsFetcher from "../fetcher/footpaths/IFootpathsProvider";
+
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerDefault);
 container.bind<ILocationResolver>(TYPES.LocationResolver).to(LocationResolverConvenience);
+
+container.bind<IHydraTemplateFetcher>(TYPES.HydraTemplateFetcher).to(HydraTemplateFetcherDefault).inSingletonScope();
+container.bind<IHypermediaTreeFetcher>(TYPES.HypermediaTreeFetcher).to(HypermediaTreeFetcherDefault).inSingletonScope();
+container.bind<IHypermediaTreeProvider>(TYPES.HypermediaTreeProvider)
+  .to(HypermediaTreeProviderDefault).inSingletonScope();
 
 // TODO, make this a fixed property of the planner itself
 container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(CSAEarliestArrival);
+  .to(CSAEarliestArrivalDynamic);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 
 container.bind<IRoadPlanner>(TYPES.RoadPlanner)
   .to(RoadPlannerPathfinding);
-
-container.bind<IHydraTemplateFetcher>(TYPES.HydraTemplateFetcher).to(HydraTemplateFetcherDefault).inSingletonScope();
-container.bind<IHypermediaTreeFetcher>(TYPES.HypermediaTreeFetcher).to(HypermediaTreeFetcherDefault).inSingletonScope();
-container.bind<IHypermediaTreeProvider>(TYPES.HypermediaTreeProvider)
-  .to(HypermediaTreeProviderDefault).inSingletonScope();
 
 container.bind<IShortestPathTreeAlgorithm>(TYPES.ShortestPathTreeAlgorithm).to(DijkstraTree).inSingletonScope();
 container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(BidirDijkstra).inSingletonScope();
@@ -76,12 +78,14 @@ container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvid
 container.bind<IProfileFetcher>(TYPES.ProfileFetcher).to(ProfileFetcherDefault).inSingletonScope();
 container.bind<IProfileProvider>(TYPES.ProfileProvider).to(ProfileProviderDefault).inSingletonScope();
 
+container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderRaw).inSingletonScope();
+
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
 container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderDefault).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherRaw);
@@ -103,7 +107,7 @@ container.bind<interfaces.Factory<IStopsFetcher>>(TYPES.StopsFetcherFactory)
   .toFactory<IStopsFetcher>(
     (context: interfaces.Context) =>
       (accessUrl: string) => {
-        const fetcher = context.container.get<StopsFetcherLDFetch>(TYPES.StopsFetcher);
+        const fetcher = context.container.get<StopsFetcherRaw>(TYPES.StopsFetcher);
         fetcher.setAccessUrl(accessUrl);
         return fetcher;
       },
