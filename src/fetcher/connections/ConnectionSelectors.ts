@@ -14,6 +14,10 @@ export function forwardsConnectionSelector(connections: IConnection[]): number {
         if (connection.departureTime < earliest.departureTime) {
             earliestIndex = i;
             earliest = connection;
+        } else if (connection.departureTime === earliest.departureTime
+            && connection.arrivalTime < earliest.arrivalTime) {
+            earliestIndex = i;
+            earliest = connection;
         }
     }
 

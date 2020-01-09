@@ -103,7 +103,13 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
             EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
 
             connections.sort((a, b) => {
-                return a.departureTime.getTime() - b.departureTime.getTime();
+                if (a.departureTime.getTime() !== b.departureTime.getTime()) {
+                    return a.departureTime.getTime() - b.departureTime.getTime();
+                } else if (a.arrivalTime.getTime() !== b.arrivalTime.getTime()) {
+                    return a.arrivalTime.getTime() - b.arrivalTime.getTime();
+                }
+
+                return a.id.localeCompare(b.id);
             });
 
             return new LinkedConnectionsPage(pageId, connections, previousPageUrl, nextPageUrl);
