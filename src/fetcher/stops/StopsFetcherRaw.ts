@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
 import { EventType } from "../..";
+import { IStopsSourceConfig } from "../../Catalog";
 import EventBus from "../../events/EventBus";
 import TYPES from "../../types";
 import IStop from "./IStop";
@@ -30,8 +31,12 @@ export default class StopsFetcherRaw implements IStopsFetcher {
         this.ldFetch = ldFetch;
     }
 
-    public addStopSource(accessUrl: string) {
+    public addStopSource(source: IStopsSourceConfig) {
         throw new Error("Method not implemented.");
+    }
+
+    public getSources(): IStopsSourceConfig[] {
+        return [{ accessUrl: this.accessUrl }];
     }
 
     public setAccessUrl(accessUrl: string) {

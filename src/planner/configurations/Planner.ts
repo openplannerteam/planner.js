@@ -1,6 +1,7 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
+import { IConnectionsSourceConfig, IStopsSourceConfig } from "../../Catalog";
 import defaultContainer from "../../configs/basic_train";
 import Context from "../../Context";
 import TravelMode from "../../enums/TravelMode";
@@ -58,7 +59,15 @@ export default abstract class Planner {
   }
 
   public addStopSource(accessUrl: string) {
-    this.stopsProvider.addStopSource(accessUrl);
+    this.stopsProvider.addStopSource({ accessUrl });
+  }
+
+  public getConnectionSources(): IConnectionsSourceConfig[] {
+    return this.connectionsProvider.getSources();
+  }
+
+  public getStopsSources(): IStopsSourceConfig[] {
+    return this.stopsProvider.getSources();
   }
 
   public async completePath(path: IPath): Promise<IPath> {

@@ -7,6 +7,7 @@ import IConnectionsIteratorOptions from "./IConnectionsIteratorOptions";
 
 export default interface IConnectionsProvider {
   addConnectionSource(source: IConnectionsSourceConfig);
+  getSources(): IConnectionsSourceConfig[];
 
   prefetchConnections(lowerBound: Date, upperBound: Date): void;
   appendIterator(

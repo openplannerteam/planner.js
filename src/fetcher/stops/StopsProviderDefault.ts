@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import Catalog from "../../Catalog";
+import Catalog, { IStopsSourceConfig } from "../../Catalog";
 import TYPES, { StopsFetcherFactory } from "../../types";
 import IStop from "./IStop";
 import IStopsFetcher from "./IStopsFetcher";
@@ -12,24 +12,31 @@ export default class StopsProviderDefault implements IStopsProvider {
   private cachedStops: IStop[];
   private allStops: Promise<IStop[]>;
   private stopsFetcherFactory: StopsFetcherFactory;
+  private sources: IStopsSourceConfig[];
 
   constructor(
     @inject(TYPES.StopsFetcherFactory) stopsFetcherFactory: StopsFetcherFactory,
     @inject(TYPES.Catalog) catalog: Catalog,
   ) {
+    this.sources = [];
     this.stopsFetchers = [];
     this.cachedStops = [];
     this.stopsFetcherFactory = stopsFetcherFactory;
 
-    for (const { accessUrl } of catalog.stopsSourceConfigs) {
-      this.addStopSource(accessUrl);
+    for (const source of catalog.stopsSourceConfigs) {
+      this.addStopSource(source);
     }
   }
 
-  public addStopSource(accessUrl: string) {
+  public addStopSource(source: IStopsSourceConfig) {
+    this.sources.push(source);
     this.cachedStops = [];
     this.allStops = null;
-    this.stopsFetchers.push(this.stopsFetcherFactory(accessUrl));
+    this.stopsFetchers.push(this.stopsFetcherFactory(source.accessUrl));
+  }
+
+  public getSources(): IStopsSourceConfig[] {
+    return this.sources;
   }
 
   public prefetchStops(): void {

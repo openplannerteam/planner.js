@@ -21,7 +21,7 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
     protected fetcher: IConnectionsFetcher;
     protected templateFetcher: IHydraTemplateFetcher;
     protected pages: ILinkedConnectionsPageIndex = {};
-    protected accessUrl: string;
+    protected source: IConnectionsSourceConfig;
     protected template: Promise<HydraTemplate>;
 
     constructor(
@@ -30,13 +30,17 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
         templateFetcher: IHydraTemplateFetcher,
     ) {
         const { accessUrl, travelMode } = catalog;
-        this.accessUrl = accessUrl;
+        this.source = catalog;
         this.fetcher = connectionsFetcherFactory(travelMode);
         this.templateFetcher = templateFetcher;
     }
 
     public addConnectionSource(source: IConnectionsSourceConfig) {
         throw new Error("Method not implemented.");
+    }
+
+    public getSources(): IConnectionsSourceConfig[] {
+        return [this.source];
     }
 
     public async getByUrl(url: string): Promise<LinkedConnectionsPage> {
@@ -154,7 +158,7 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
 
     protected async getTemplate(): Promise<HydraTemplate> {
         if (!this.template) {
-            this.template = this.templateFetcher.get(this.accessUrl);
+            this.template = this.templateFetcher.get(this.source.accessUrl);
         }
         return this.template;
     }

@@ -34,7 +34,7 @@ import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
 import MixedDijkstra from "../pathfinding/mixed-dijkstra/MixedDijkstra";
 import { IShortestPathAlgorithm, IShortestPathTreeAlgorithm } from "../pathfinding/pathfinder";
 import PathfinderProvider from "../pathfinding/PathfinderProvider";
-import CSAEarliestArrivalVerbose from "../planner/public-transport/CSAEarliestArrivalVerbose";
+import CSAEarliestArrival from "../planner/public-transport/CSAEarliestArrival";
 import IJourneyExtractor from "../planner/public-transport/IJourneyExtractor";
 import IPublicTransportPlanner from "../planner/public-transport/IPublicTransportPlanner";
 import JourneyExtractorProfile from "../planner/public-transport/JourneyExtractorProfile";
@@ -61,7 +61,7 @@ container.bind<IJourneyExtractor>(TYPES.JourneyExtractor)
   .to(JourneyExtractorProfile);
 
 container.bind<IPublicTransportPlanner>(TYPES.PublicTransportPlanner)
-  .to(CSAEarliestArrivalVerbose);
+  .to(CSAEarliestArrival);
 container.bind<interfaces.Factory<IPublicTransportPlanner>>(TYPES.PublicTransportPlannerFactory)
   .toAutoFactory<IPublicTransportPlanner>(TYPES.PublicTransportPlanner);
 

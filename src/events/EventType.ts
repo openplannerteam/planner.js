@@ -14,9 +14,10 @@ enum EventType {
   InitialReachableStops = "initial-reachable-stops",
   AddedNewTransferProfile = "added-new-transfer-profile",
 
-  ReachableLocation = "ReachableLocation",
-  ReachableStop = "ReachableStop",
-  ReachableTile = "ReachableTile",
+  ReachableLocation = "ReachableLocation",  // planning reached a location
+  ReachableStop = "ReachableStop", // planning reached a stop (id)
+  ReachableTile = "ReachableTile", // planning reached a tile (coordinate)
+  ReachableTranfer = "ReachableTransfer", // planning reached a transfer
 
   ResourceFetch = "ResourceFetch",
 }

@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
 import { Triple } from "rdf-js";
+import { IStopsSourceConfig } from "../../../Catalog";
 import TYPES from "../../../types";
 import Rdf from "../../../util/Rdf";
 import IStop from "../IStop";
@@ -30,8 +31,12 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
     this.loadStops();
   }
 
-  public addStopSource(accessUrl: string) {
+  public addStopSource(source: IStopsSourceConfig) {
     throw new Error("Method not implemented.");
+  }
+
+  public getSources(): IStopsSourceConfig[] {
+    return [{ accessUrl: this.accessUrl }];
   }
 
   public setAccessUrl(accessUrl: string) {

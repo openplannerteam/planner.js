@@ -14,7 +14,7 @@ import IConnectionsProvider from "./IConnectionsProvider";
 @injectable()
 export default class ConnectionsProviderDefault implements IConnectionsProvider {
 
-  private accessUrls: string[];
+  private sources: IConnectionsSourceConfig[];
   private singleProviders: ConnectionsProviderSingle[];
   private connectionsFetcherFactory: ConnectionsFetcherFactory;
   private templateFetcher: IHydraTemplateFetcher;
@@ -24,7 +24,7 @@ export default class ConnectionsProviderDefault implements IConnectionsProvider 
     @inject(TYPES.Catalog) catalog: Catalog,
     @inject(TYPES.HydraTemplateFetcher) templateFetcher: IHydraTemplateFetcher,
   ) {
-    this.accessUrls = [];
+    this.sources = [];
     this.singleProviders = [];
     this.connectionsFetcherFactory = connectionsFetcherFactory;
     this.templateFetcher = templateFetcher;
@@ -35,10 +35,14 @@ export default class ConnectionsProviderDefault implements IConnectionsProvider 
   }
 
   public addConnectionSource(source: IConnectionsSourceConfig) {
-    this.accessUrls.push(source.accessUrl);
+    this.sources.push(source);
     this.singleProviders.push(
       new ConnectionsProviderSingle(this.connectionsFetcherFactory, source, this.templateFetcher),
     );
+  }
+
+  public getSources(): IConnectionsSourceConfig[] {
+    return this.sources;
   }
 
   public prefetchConnections(lowerBound: Date, upperBound: Date): void {
