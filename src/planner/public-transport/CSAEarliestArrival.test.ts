@@ -1,6 +1,5 @@
 import "jest";
 import LDFetch from "ldfetch";
-import Catalog from "../../Catalog";
 import Defaults from "../../Defaults";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
@@ -173,16 +172,18 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
     const createQueryRunner = () => {
       const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-      const catalog = new Catalog();
-      catalog.addConnectionsSource("https://graph.irail.be/sncb/connections", TravelMode.Train);
       const connectionProvider = new ConnectionsProviderDefault(
         (travelMode: TravelMode) => {
           const fetcher = new ConnectionsFetcherRaw();
           fetcher.setTravelMode(travelMode);
           return fetcher;
-        }, catalog,
+        },
         new HydraTemplateFetcherDefault(ldFetch),
       );
+      connectionProvider.addConnectionSource({
+        accessUrl: "https://graph.irail.be/sncb/connections",
+        travelMode: TravelMode.Train,
+      });
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");

@@ -1,6 +1,6 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
-import Catalog, { IConnectionsSourceConfig } from "../../Catalog";
+import { IConnectionsSourceConfig } from "../../Catalog";
 import IConnection from "../../entities/connections/connections";
 import { LinkedConnectionsPage } from "../../entities/connections/page";
 import TYPES, { ConnectionsFetcherFactory } from "../../types";
@@ -21,17 +21,12 @@ export default class ConnectionsProviderDefault implements IConnectionsProvider 
 
   constructor(
     @inject(TYPES.ConnectionsFetcherFactory) connectionsFetcherFactory: ConnectionsFetcherFactory,
-    @inject(TYPES.Catalog) catalog: Catalog,
     @inject(TYPES.HydraTemplateFetcher) templateFetcher: IHydraTemplateFetcher,
   ) {
     this.sources = [];
     this.singleProviders = [];
     this.connectionsFetcherFactory = connectionsFetcherFactory;
     this.templateFetcher = templateFetcher;
-
-    for (const connectionSource of catalog.connectionsSourceConfigs) {
-      this.addConnectionSource(connectionSource);
-    }
   }
 
   public addConnectionSource(source: IConnectionsSourceConfig) {

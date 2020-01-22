@@ -1,5 +1,4 @@
 import { Container, interfaces } from "inversify";
-import Catalog from "../Catalog";
 import Context from "../Context";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
@@ -24,7 +23,7 @@ import IRoutableTileProvider from "../fetcher/tiles/IRoutableTileProvider";
 import RoutableTileFetcherRaw from "../fetcher/tiles/RoutableTileFetcherRaw";
 import RoutableTileProviderDefault from "../fetcher/tiles/RoutableTileProviderDefault";
 import HypermediaTreeFetcherDefault from "../fetcher/tree/HypermediaTreeFetcherDefault";
-import HypermediaTreeProviderDefault from "../fetcher/tree/HypermediaTreeProviderDeault";
+import HypermediaTreeProviderDefault from "../fetcher/tree/HypermediaTreeProviderDefault";
 import IHypermediaTreeProvider from "../fetcher/tree/IHeadermediaTreeProvider";
 import IHypermediaTreeFetcher from "../fetcher/tree/IHypermediaTreeFetcher";
 import { LDLoader } from "../loader/ldloader";
@@ -118,9 +117,6 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
-
-// Bind empty catalog
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(new Catalog());
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();

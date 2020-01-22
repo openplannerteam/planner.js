@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify";
-import Catalog from "../../Catalog";
 import HypermediaTree from "../../entities/tree/tree";
 import TYPES from "../../types";
 import IHypermediaTreeProvider from "./IHeadermediaTreeProvider";
@@ -13,14 +12,9 @@ export default class HypermediaTreeProviderDefault implements IHypermediaTreePro
 
     constructor(
         @inject(TYPES.HypermediaTreeFetcher) treeFetcher: IHypermediaTreeFetcher,
-        @inject(TYPES.Catalog) catalog: Catalog,
     ) {
         this.accessUrls = [];
         this.treeFetcher = treeFetcher;
-
-        for (const { accessUrl } of catalog.connectionsSourceConfigs) {
-            this.addTreeSource(accessUrl);
-        }
     }
 
     public addTreeSource(accessUrl: string) {

@@ -1,7 +1,4 @@
 import { Container, interfaces } from "inversify";
-import Catalog from "../Catalog";
-import catalogDeLijn from "../catalog.delijn.vlaenderen";
-import catalogNmbs from "../catalog.nmbs";
 import Context from "../Context";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
@@ -114,10 +111,6 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderTransit).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
-
-// Bind catalog
-const combined = Catalog.combine(catalogNmbs, catalogDeLijn);
-container.bind<Catalog>(TYPES.Catalog).toConstantValue(combined);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();
