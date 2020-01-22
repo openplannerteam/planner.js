@@ -33,7 +33,11 @@ export default class ReachableStopsFinderFootpathsVerbose extends ReachableStops
     if (!this.done.has(sourceOrTargetStop.id)) {
       this.done.add(sourceOrTargetStop.id);
       for (const reachableStop of result) {
-        EventBus.getInstance().emit(EventType.ReachableTranfer, sourceOrTargetStop, reachableStop.stop);
+        EventBus.getInstance().emit(EventType.ReachableTranfer,
+          {
+            from: sourceOrTargetStop,
+            to: reachableStop.stop,
+          });
       }
     }
 

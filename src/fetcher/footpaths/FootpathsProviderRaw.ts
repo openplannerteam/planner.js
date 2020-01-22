@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { DataType } from "../..";
 import { Footpath, IFootpathIndex } from "../../entities/footpaths/footpath";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import EventBus from "../../events/EventBus";
@@ -55,7 +56,11 @@ export default class FootpathsProviderRaw implements IFootpathsProvider {
     }
 
     protected async getByUrl(url: string): Promise<IFootpathIndex> {
+        const beginTime = new Date();
         const response = await fetch(url);
+        const size = parseInt(response.headers.get("content-length"), 10);
+        const duration = (new Date()).getTime() - beginTime.getTime();
+
         const responseText = await response.text();
 
         const footpaths: IFootpathIndex = {};
@@ -76,6 +81,16 @@ export default class FootpathsProviderRaw implements IFootpathsProvider {
                 footpaths[id] = footpath;
             }
         }
+
+        EventBus.getInstance().emit(
+            EventType.ResourceFetch,
+            {
+                datatype: DataType.Footpath,
+                url,
+                duration,
+                size,
+            },
+        );
 
         return footpaths;
     }

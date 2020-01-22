@@ -91,8 +91,10 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
     ): Promise<AsyncIterator<IConnection>> {
         EventBus.getInstance().emit(
             EventType.ConnectionIteratorView,
-            options.lowerBoundDate,
-            options.upperBoundDate,
+            {
+                lowerBound: options.lowerBoundDate,
+                upperBound: options.upperBoundDate,
+            },
         );
 
         const selector = options.backward ? backwardsConnectionsSelector : forwardsConnectionSelector;
@@ -131,8 +133,10 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
     public async createIterator(options: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>> {
         EventBus.getInstance().emit(
             EventType.ConnectionIteratorView,
-            options.lowerBoundDate,
-            options.upperBoundDate,
+            {
+                lowerBound: options.lowerBoundDate,
+                upperBound: options.upperBoundDate,
+            },
         );
 
         let iterator: AsyncIterator<IConnection>;
@@ -149,9 +153,11 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
         return iterator.on("end", () => {
             EventBus.getInstance().emit(
                 EventType.ConnectionIteratorView,
-                options.lowerBoundDate,
-                options.upperBoundDate,
-                true,
+                {
+                    lowerBound: options.lowerBoundDate,
+                    upperBound: options.upperBoundDate,
+                    finished: true,
+                },
             );
         });
     }

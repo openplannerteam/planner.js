@@ -1,5 +1,6 @@
 import fetch from "cross-fetch";
 import { inject, injectable } from "inversify";
+import { DataType } from "../..";
 import { IRoutableTileNodeIndex, RoutableTileNode } from "../../entities/tiles/node";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import { RoutableTile } from "../../entities/tiles/tile";
@@ -73,10 +74,12 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
 
       EventBus.getInstance().emit(
         EventType.ResourceFetch,
-        TYPES.StopsFetcher, // origin
-        url, // resource uri
-        duration, // time it took to download and parse
-        size, // transferred data
+        {
+          DataType: DataType.RoutableTile,
+          url,
+          duration,
+          size,
+        },
       );
 
       return this.processTileData(url, nodes, ways);

@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
-import { EventType } from "../..";
+import { DataType, EventType } from "../..";
 import { IStopsSourceConfig } from "../../Catalog";
 import EventBus from "../../events/EventBus";
 import TYPES from "../../types";
@@ -116,10 +116,12 @@ export default class StopsFetcherRaw implements IStopsFetcher {
 
         EventBus.getInstance().emit(
             EventType.ResourceFetch,
-            TYPES.StopsFetcher, // origin
-            url, // resource uri
-            duration, // time it took to download and parse
-            size, // transferred data
+            {
+                DataType: DataType.Stops,
+                url,
+                duration,
+                size,
+            },
         );
 
         return stops;

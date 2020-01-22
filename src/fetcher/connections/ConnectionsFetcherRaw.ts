@@ -1,5 +1,6 @@
 import fetch from "cross-fetch";
 import { injectable } from "inversify";
+import { DataType } from "../..";
 import IConnection from "../../entities/connections/connections";
 import { LinkedConnectionsPage } from "../../entities/connections/page";
 import DropOffType from "../../enums/DropOffType";
@@ -7,7 +8,6 @@ import PickupType from "../../enums/PickupType";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
-import TYPES from "../../types";
 import JSONLDContext from "../../uri/JSONLDContext";
 import IConnectionsFetcher from "./IConnectionsFetcher";
 
@@ -113,10 +113,12 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
 
             EventBus.getInstance().emit(
                 EventType.ResourceFetch,
-                TYPES.ConnectionsFetcher, // origin
-                url, // resource uri
-                duration, // time it took to download and parse
-                size, // transferred data
+                {
+                    datatype: DataType.Connections,
+                    url,
+                    duration,
+                    size,
+                },
             );
 
             return new LinkedConnectionsPage(pageId, connections, previousPageUrl, nextPageUrl);
