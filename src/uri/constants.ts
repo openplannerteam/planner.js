@@ -9,3 +9,4 @@ export const ROUTE = "https://w3id.org/routabletiles/terms#";
 export const PLANNER = "https://planner.js.org/terms#";
 export const PROFILE = "https://w3id.org/openplannerteam/profile#";
 export const TREE = "https://w3id.org/tree#";
+export const LC = "http://semweb.mmlab.be/ns/linkedconnections#";

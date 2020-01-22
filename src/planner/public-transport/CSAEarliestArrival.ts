@@ -161,7 +161,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     };
     state.profilesByStop[connection.arrivalStop] = arrivalProfile;
 
-    EventBus.getInstance().emit(EventType.ReachableLocation, this.locationResolver.resolve(connection.arrivalStop));
+    EventBus.getInstance().emit(EventType.ReachableID, connection.arrivalStop);
   }
 
   private async extractJourneys(state: IQueryState, query: IResolvedQuery): Promise<AsyncIterator<IPath>> {

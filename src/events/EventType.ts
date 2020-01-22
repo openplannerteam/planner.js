@@ -15,7 +15,7 @@ enum EventType {
   AddedNewTransferProfile = "added-new-transfer-profile",
 
   ReachableLocation = "ReachableLocation",  // planning reached a location
-  ReachableStop = "ReachableStop", // planning reached a stop (id)
+  ReachableID = "ReachableID",  // planning reached a location, but the value is just a ID
   ReachableTile = "ReachableTile", // planning reached a tile (coordinate)
   ReachableTranfer = "ReachableTransfer", // planning reached a transfer
 
