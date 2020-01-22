@@ -11,7 +11,6 @@ export default async (logResults) => {
   planner.addStopSource("https://irail.be/stations/NMBS");
 
   if (logResults) {
-    let scannedPages = 0;
     let scannedConnections = 0;
 
     const eventBus = EventBus.getInstance();
@@ -37,13 +36,11 @@ export default async (logResults) => {
 
         // logFetch = true;
 
-        console.log("Total scanned pages", scannedPages);
         console.log("Total scanned connections", scannedConnections);
         console.log("[Subquery]", minimumDepartureTime, maximumArrivalTime, maximumArrivalTime - minimumDepartureTime);
       })
-      .on(EventType.ResourceFetch, (source, url, duration, size) => {
-        scannedPages++;
-        console.log(`[GET] ${url} (${duration}ms ${size} bytes)`);
+      .on(EventType.ResourceFetch, (data) => {
+        console.log(`[GET] ${JSON.stringify(data)}`);
 
         // if (logFetch) {
         //   console.log(`[GET] ${url} (${duration}ms)`);

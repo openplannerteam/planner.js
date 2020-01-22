@@ -59,7 +59,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       const nodes: IRoutableTileNodeIndex = {};
       const ways: IRoutableTileWayIndex = {};
 
-      const size = parseInt(response.headers.get("content-length"), 10);
+      const size = this.parseResponseLength(response);
       const duration = (new Date()).getTime() - beginTime.getTime();
 
       for (const entity of blob["@graph"]) {
@@ -85,6 +85,18 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       return this.processTileData(url, nodes, ways);
     } else {
       return new RoutableTile(url, new Set(), new Set());
+    }
+  }
+
+  protected parseResponseLength(response): number {
+    if (response.headers.get("content-length")) {
+      return parseInt(response.headers.get("content-length"), 10);
+    } else {
+      try {
+        return response.body._chunkSize;
+      } catch (e) {
+        //
+      }
     }
   }
 

@@ -86,7 +86,7 @@ export default class StopsFetcherRaw implements IStopsFetcher {
         const response = await fetch(url);
         const responseText = await response.text();
 
-        const size = parseInt(response.headers.get("content-length"), 10);
+        const size = this.parseResponseLength(response);
         const duration = (new Date()).getTime() - beginTime.getTime();
 
         const stops: IStopMap = {};
@@ -125,5 +125,17 @@ export default class StopsFetcherRaw implements IStopsFetcher {
         );
 
         return stops;
+    }
+
+    private parseResponseLength(response): number {
+        if (response.headers.get("content-length")) {
+            return parseInt(response.headers.get("content-length"), 10);
+        } else {
+            try {
+                return response.body._chunkSize;
+            } catch (e) {
+                //
+            }
+        }
     }
 }

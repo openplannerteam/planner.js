@@ -37,7 +37,7 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
         const beginTime = new Date();
 
         const response = await fetch(url);
-        const size = parseInt(response.headers.get("content-length"), 10);
+        const size = this.parseResponseLength(response);
         const duration = (new Date()).getTime() - beginTime.getTime();
 
         const responseText = await response.text();
@@ -124,6 +124,18 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
             return new LinkedConnectionsPage(pageId, connections, previousPageUrl, nextPageUrl);
         } else {
             return new LinkedConnectionsPage(url, [], undefined, undefined);
+        }
+    }
+
+    private parseResponseLength(response): number {
+        if (response.headers.get("content-length")) {
+            return parseInt(response.headers.get("content-length"), 10);
+        } else {
+            try {
+                return response.body._chunkSize;
+            } catch (e) {
+                //
+            }
         }
     }
 }
