@@ -141,7 +141,7 @@ export default abstract class Planner {
 
     iterator.on("error", (e) => {
       if (e && e.eventType) {
-        this.eventBus.emit(e.eventType, e);
+        this.eventBus.emit(e.eventType, e.message);
       }
     });
 

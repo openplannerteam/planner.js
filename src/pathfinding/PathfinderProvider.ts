@@ -23,8 +23,8 @@ interface IPointEmbedding {
   way: RoutableTileWay; // the road where the point gets embedded in
   point: ILocation; // point that's embedded into the road network
   intersection: ILocation; // closest point on the road segment closest to the point
-  segA: RoutableTileNode; // one side of the road segment closest to the point
-  segB: RoutableTileNode; // other side of the road segment closest to the point
+  segA: ILocation; // one side of the road segment closest to the point
+  segB: ILocation; // other side of the road segment closest to the point
 }
 
 interface IGraphMap {
@@ -106,7 +106,7 @@ export default class PathfinderProvider {
 
     for (const profile of await this.profileProvider.getProfiles()) {
       let bestDistance = Infinity;
-      let bestEmbedding: IPointEmbedding;
+      let bestSegment: [RoutableTileWay, ILocation, ILocation];
 
       for (const wayId of tileset.getWays()) {
         const way = this.routableTileRegistry.getWay(wayId);
@@ -129,37 +129,33 @@ export default class PathfinderProvider {
 
             const embedding = this.segmentDistToPoint(from, to, p);
             if (embedding) {
-              const [distance, intersection] = this.segmentDistToPoint(from, to, p);
+              const distance = this.segmentDistToPoint(from, to, p);
               if (distance < bestDistance) {
                 bestDistance = distance;
-                bestEmbedding = {
-                  way,
-                  point: p,
-                  segA: from,
-                  segB: to,
-                  intersection,
-                };
+                bestSegment = [way, from, to];
               }
             }
           }
         }
       }
 
-      if (bestEmbedding) {
-        const way = bestEmbedding.way;
+      if (bestSegment) {
+        const [way, segA, segB] = bestSegment;
+        const intersection = this.projectOntoSegment(segA, segB, p);
+        const newEmbedding: IPointEmbedding = {
+          way, segA, segB, intersection, point: p,
+        };
 
         for (const otherEmbedding of this.embeddings) {
-          if (otherEmbedding.segA === bestEmbedding.segA && otherEmbedding.segB === bestEmbedding.segB) {
-            this.addEdge(profile, bestEmbedding.intersection, otherEmbedding.intersection, way);
-            this.addEdge(profile, otherEmbedding.intersection, bestEmbedding.intersection, way);
+          if (Geo.getId(otherEmbedding.segA) === Geo.getId(segA)
+            && Geo.getId(otherEmbedding.segB) === Geo.getId(segB)) {
+            this.addEdge(profile, intersection, otherEmbedding.intersection, way);
+            this.addEdge(profile, otherEmbedding.intersection, intersection, way);
           }
         }
 
-        this.embeddings.push(bestEmbedding);
+        this.embeddings.push(newEmbedding);
 
-        const intersection = bestEmbedding.intersection;
-        const segA = bestEmbedding.segA;
-        const segB = bestEmbedding.segB;
         const isOneWay = profile.isOneWay(way);
 
         if (!invert) {
@@ -235,7 +231,47 @@ export default class PathfinderProvider {
     graph.addEdge(Geo.getId(from), Geo.getId(to), distance, duration, cost);
   }
 
-  private segmentDistToPoint(segA: ILocation, segB: ILocation, p: ILocation): [number, ILocation] {
+  private segmentDistToPoint(segA: ILocation, segB: ILocation, p: ILocation): number {
+    // potential 'catastrophic cancellation'
+    const sx1 = segA.longitude;
+    const sx2 = segB.longitude;
+    const px = p.longitude;
+
+    const sy1 = segA.latitude;
+    const sy2 = segB.latitude;
+    const py = p.latitude;
+
+    const px2 = sx2 - sx1;  // <-
+    const py2 = sy2 - sy1;  // <-
+
+    const norm = px2 * px2 + py2 * py2;
+
+    let u;
+    if (norm) {
+      u = ((px - sx1) * px2 + (py - sy1) * py2) / norm;
+    } else {
+      u = Infinity;
+    }
+
+    if (u > 1) {
+      u = 1;
+    } else if (u < 0) {
+      u = 0;
+    }
+
+    const x = sx1 + u * px2;
+    const y = sy1 + u * py2;
+
+    const result = {
+      longitude: x,
+      latitude: y,
+    };
+
+    const dist = Geo.getDistanceBetweenLocations(p, result);
+    return dist;
+  }
+
+  private projectOntoSegment(segA: ILocation, segB: ILocation, p: ILocation): ILocation {
     // potential 'catastrophic cancellation'
     const mSegA = proj4("EPSG:4326", "EPSG:3857", [segA.longitude, segA.latitude]);
     const mSegB = proj4("EPSG:4326", "EPSG:3857", [segB.longitude, segB.latitude]);
@@ -276,7 +312,6 @@ export default class PathfinderProvider {
       latitude: intersection[1],
     };
 
-    const dist = Geo.getDistanceBetweenLocations(p, result);
-    return [dist, result];
+    return result;
   }
 }

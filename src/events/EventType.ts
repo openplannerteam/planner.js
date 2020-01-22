@@ -17,7 +17,7 @@ enum EventType {
   ReachableLocation = "ReachableLocation",  // planning reached a location
   ReachableID = "ReachableID",  // planning reached a location, but the value is just a ID
   ReachableTile = "ReachableTile", // planning reached a tile (coordinate)
-  ReachableTranfer = "ReachableTransfer", // planning reached a transfer
+  ReachableTransfer = "ReachableTransfer", // planning reached a transfer
 
   ResourceFetch = "ResourceFetch",
 }

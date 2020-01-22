@@ -88,6 +88,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
     // not including these for now
     // may result in large route network queries if the stops network is sparse
 
+    /*
     const neighbors = this.triangles.neighbors(cell);
     for (const neighbor of neighbors) {
       const neighborLocation = this.trianglePoints[neighbor];
@@ -95,6 +96,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
         result.push(neighborLocation);
       }
     }
+    */
     return result;
   }
 
