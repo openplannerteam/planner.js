@@ -12,7 +12,9 @@ L.tileLayer(
   }
 ).addTo(map);
 
-const planner = new PlannerJS.DelijnNmbsPlanner();
+const planner = new PlannerJS.FlexibleTransitPlanner();
+planner.addConnectionSource("https://graph.irail.be/sncb/connections");
+planner.addStopSource("https://irail.be/stations/NMBS");
 
 planner.prefetchStops();
 planner.prefetchConnections(new Date(), new Date(new Date().getTime() + 2 * 60 * 60 * 1000));

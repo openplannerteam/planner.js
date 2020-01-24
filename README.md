@@ -13,22 +13,24 @@ Include it in the browser:
 ...
 
 <script>
-  const { BasicTrainPlanner, Units } = PlannerJS;
+  const { FlexibleTransitPlanner, Units } = PlannerJS;
 </script>
 ```
 
 Include it in your JavaScript project:
 ```javascript
-const { BasicTrainPlanner, Units } = require('plannerjs');
+const { FlexibleTransitPlanner, Units } = require('plannerjs');
 
 // or
 
-import { BasicTrainPlanner, Units } from 'plannerjs';
+import { FlexibleTransitPlanner, Units } from 'plannerjs';
 ```
 
 Use it in both environments:
 ```javascript
-const planner = new BasicTrainPlanner();
+const planner = new FlexibleTransitPlanner();
+planner.addConnectionSource("https://graph.irail.be/sncb/connections");
+planner.addStopSource("https://irail.be/stations/NMBS");
 
 planner.query({
   from: "http://irail.be/stations/NMBS/008812005", // Brussels North

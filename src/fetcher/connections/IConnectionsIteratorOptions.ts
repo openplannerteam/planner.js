@@ -1,3 +1,4 @@
+import GeometryValue from "../../entities/tree/geometry";
 import TravelMode from "../../enums/TravelMode";
 
 /**
@@ -9,4 +10,5 @@ export default interface IConnectionsIteratorOptions {
   lowerBoundDate?: Date;
   backward?: boolean;
   excludedModes?: Set<TravelMode>;
+  region: GeometryValue;
 }

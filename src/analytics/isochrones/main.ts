@@ -121,7 +121,7 @@ export default class IsochroneGenerator {
     private async fetchTile(coordinate: RoutableTileCoordinate) {
         const tileId = this.tileProvider.getIdForTileCoords(coordinate);
         if (!this.reachedTiles.has(tileId)) {
-            this.eventBus.emit(EventType.FetchTile, coordinate);
+            this.eventBus.emit(EventType.ReachableTile, coordinate);
 
             const profile = await this.activeProfile;
             const pathfinder = this.pathfinderProvider.getShortestPathTreeAlgorithm(profile);
@@ -140,7 +140,7 @@ export default class IsochroneGenerator {
                     pathfinder.setBreakPoint(nodeId, async (on: string) => {
                         const innerNode = self.registry.getNode(on);
                         if (innerNode) {
-                            self.eventBus.emit(EventType.PointReached, innerNode);
+                            self.eventBus.emit(EventType.ReachableLocation, innerNode);
                         }
                     });
                 }

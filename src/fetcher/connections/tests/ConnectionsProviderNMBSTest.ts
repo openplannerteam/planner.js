@@ -15,6 +15,17 @@ export default class ConnectionsProviderNMBSTest implements IConnectionsProvider
     this.connections = connections;
   }
 
+  public getSources(): IConnectionsSourceConfig[] {
+    throw new Error("Method not implemented.");
+  }
+
+  public appendIterator(
+    options: IConnectionsIteratorOptions,
+    existingIterator: AsyncIterator<IConnection>,
+  ): Promise<AsyncIterator<IConnection>> {
+    throw new Error("Method not implemented.");
+  }
+
   public addConnectionSource(source: IConnectionsSourceConfig) {
     throw new Error("Method not implemented.");
   }

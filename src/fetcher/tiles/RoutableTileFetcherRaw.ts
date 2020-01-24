@@ -1,5 +1,6 @@
 import fetch from "cross-fetch";
 import { inject, injectable } from "inversify";
+import { DataType } from "../..";
 import { IRoutableTileNodeIndex, RoutableTileNode } from "../../entities/tiles/node";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import { RoutableTile } from "../../entities/tiles/tile";
@@ -58,6 +59,9 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       const nodes: IRoutableTileNodeIndex = {};
       const ways: IRoutableTileWayIndex = {};
 
+      const size = this.parseResponseLength(response);
+      const duration = (new Date()).getTime() - beginTime.getTime();
+
       for (const entity of blob["@graph"]) {
         if (entity["@type"] === "osm:Node") {
           const node = this.createNode(entity);
@@ -68,12 +72,31 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
         }
       }
 
-      const duration = (new Date()).getTime() - beginTime.getTime();
-      EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
+      EventBus.getInstance().emit(
+        EventType.ResourceFetch,
+        {
+          DataType: DataType.RoutableTile,
+          url,
+          duration,
+          size,
+        },
+      );
 
       return this.processTileData(url, nodes, ways);
     } else {
       return new RoutableTile(url, new Set(), new Set());
+    }
+  }
+
+  protected parseResponseLength(response): number {
+    if (response.headers.get("content-length")) {
+      return parseInt(response.headers.get("content-length"), 10);
+    } else {
+      try {
+        return response.body._chunkSize;
+      } catch (e) {
+        //
+      }
     }
   }
 

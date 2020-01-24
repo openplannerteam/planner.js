@@ -1,6 +1,5 @@
 import "jest";
 import LDFetch from "ldfetch";
-import Catalog from "../../Catalog";
 import Defaults from "../../Defaults";
 import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
@@ -54,7 +53,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       let result: IPath[];
 
       const query: IResolvedQuery = {
-        from: [{latitude: 50.914326, longitude: 3.255415 }],
+        from: [{ latitude: 50.914326, longitude: 3.255415 }],
         to: [{ latitude: 51.035896, longitude: 3.710875 }],
         profileID: "https://hdelva.be/profile/pedestrian",
         minimumDepartureTime: new Date("2018-11-06T09:00:00.000Z"),
@@ -88,16 +87,19 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
     const createQueryRunner = () => {
       const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
-      const catalog = new Catalog();
-      catalog.addConnectionsSource("https://graph.irail.be/sncb/connections", TravelMode.Train);
       const connectionProvider = new ConnectionsProviderDefault(
         (travelMode: TravelMode) => {
           const fetcher = new ConnectionsFetcherRaw();
           fetcher.setTravelMode(travelMode);
           return fetcher;
-        }, catalog,
+        },
         new HydraTemplateFetcherDefault(ldFetch),
       );
+
+      connectionProvider.addConnectionSource({
+        accessUrl: "https://graph.irail.be/sncb/connections",
+        travelMode: TravelMode.Train,
+      });
 
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
       stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
@@ -184,7 +186,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       let result: IPath[];
 
       beforeAll(async () => {
-        const queryRunner =  createQueryRunner();
+        const queryRunner = createQueryRunner();
         const iterator = await queryRunner.run(query);
 
         result = await Iterators.toArray(iterator);
@@ -216,7 +218,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       let result: IPath[];
 
       beforeAll(async () => {
-        const queryRunner =  createQueryRunner();
+        const queryRunner = createQueryRunner();
         const iterator = await queryRunner.run(query);
 
         result = await Iterators.toArray(iterator);
@@ -248,7 +250,7 @@ describe("[PublicTransportPlannerCSAProfile]", () => {
       let result: IPath[];
 
       beforeAll(async () => {
-        const queryRunner =  createQueryRunner();
+        const queryRunner = createQueryRunner();
         const iterator = await queryRunner.run(query);
 
         result = await Iterators.toArray(iterator);

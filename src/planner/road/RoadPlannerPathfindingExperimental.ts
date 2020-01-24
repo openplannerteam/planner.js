@@ -167,7 +167,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         const transitTileId = this.transitTileProvider.getIdForTileCoords(coordinate);
 
         if (!this.reachedTiles.has(transitTileId) && !this.reachedTiles.has(baseTileId)) {
-            this.eventBus.emit(EventType.FetchTile, coordinate);
+            this.eventBus.emit(EventType.ReachableTile, coordinate);
             let tile: RoutableTile;
             if (local) {
                 tile = await this.baseTileProvider.getByTileCoords(coordinate);

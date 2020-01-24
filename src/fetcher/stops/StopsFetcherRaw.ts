@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
-import { EventType } from "../..";
+import { DataType, EventType } from "../..";
+import { IStopsSourceConfig } from "../../Catalog";
 import EventBus from "../../events/EventBus";
 import TYPES from "../../types";
 import IStop from "./IStop";
@@ -30,8 +31,12 @@ export default class StopsFetcherRaw implements IStopsFetcher {
         this.ldFetch = ldFetch;
     }
 
-    public addStopSource(accessUrl: string) {
+    public addStopSource(source: IStopsSourceConfig) {
         throw new Error("Method not implemented.");
+    }
+
+    public getSources(): IStopsSourceConfig[] {
+        return [{ accessUrl: this.accessUrl }];
     }
 
     public setAccessUrl(accessUrl: string) {
@@ -81,6 +86,9 @@ export default class StopsFetcherRaw implements IStopsFetcher {
         const response = await fetch(url);
         const responseText = await response.text();
 
+        const size = this.parseResponseLength(response);
+        const duration = (new Date()).getTime() - beginTime.getTime();
+
         const stops: IStopMap = {};
 
         if (response.status !== 200) {
@@ -106,9 +114,28 @@ export default class StopsFetcherRaw implements IStopsFetcher {
             }
         }
 
-        const duration = (new Date()).getTime() - beginTime.getTime();
-        EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
+        EventBus.getInstance().emit(
+            EventType.ResourceFetch,
+            {
+                DataType: DataType.Stops,
+                url,
+                duration,
+                size,
+            },
+        );
 
         return stops;
+    }
+
+    private parseResponseLength(response): number {
+        if (response.headers.get("content-length")) {
+            return parseInt(response.headers.get("content-length"), 10);
+        } else {
+            try {
+                return response.body._chunkSize;
+            } catch (e) {
+                //
+            }
+        }
     }
 }

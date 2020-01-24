@@ -1,3 +1,4 @@
+import { IStopsSourceConfig } from "../../Catalog";
 import IStop from "./IStop";
 
 /**
@@ -8,7 +9,8 @@ import IStop from "./IStop";
  */
 export default interface IStopsProvider {
   prefetchStops();
-  addStopSource(accessUrl: string);
+  addStopSource(source: IStopsSourceConfig);
+  getSources(): IStopsSourceConfig[];
   getStopById(stopId: string): Promise<IStop>;
   getAllStops(): Promise<IStop[]>;
 }

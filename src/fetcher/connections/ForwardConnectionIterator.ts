@@ -13,6 +13,8 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
     private currentPage: LinkedConnectionsPage;
     private currentIndex: number;
 
+    private count = 0;
+
     constructor(
         provider: IConnectionsProvider,
         options: IConnectionsIteratorOptions,
@@ -33,6 +35,7 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
             this.waiting = true;
             this.currentPage = null;
             this.currentPage = await this.connectionsProvider.getByUrl(url);
+            this.count += 1;
             this.waiting = false;
             this.currentIndex = 0;
             this.readable = true;
@@ -53,6 +56,11 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
             // waiting for the next page to be fetched
             this.readable = false;
             return undefined;
+        }
+
+        if (this.count > 25) {
+            this.close();
+            return null;
         }
 
         if (this.currentIndex >= this.currentPage.getConnections().length) {

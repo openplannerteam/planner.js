@@ -1,7 +1,8 @@
 import { AsyncIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
-import defaultContainer from "../../configs/basic_train";
+import { IConnectionsSourceConfig, IStopsSourceConfig } from "../../Catalog";
+import defaultContainer from "../../configs/default";
 import Context from "../../Context";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
@@ -10,8 +11,10 @@ import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider
 import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
 import IStop from "../../fetcher/stops/IStop";
 import IStopsProvider from "../../fetcher/stops/IStopsProvider";
+import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IQuery from "../../interfaces/IQuery";
+import ILocationResolver from "../../query-runner/ILocationResolver";
 import IQueryRunner from "../../query-runner/IQueryRunner";
 import TYPES from "../../types";
 import Iterators from "../../util/Iterators";
@@ -33,6 +36,7 @@ export default abstract class Planner {
   private roadPlanner: IRoadPlanner;
   private connectionsProvider: IConnectionsProvider;
   private stopsProvider: IStopsProvider;
+  private locationResolver: ILocationResolver;
 
   /**
    * Initializes a new Planner
@@ -49,6 +53,7 @@ export default abstract class Planner {
     this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
     this.connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
     this.stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
+    this.locationResolver = container.get<ILocationResolver>(TYPES.LocationResolver);
 
     this.activeProfileID = "https://hdelva.be/profile/pedestrian";
   }
@@ -58,7 +63,15 @@ export default abstract class Planner {
   }
 
   public addStopSource(accessUrl: string) {
-    this.stopsProvider.addStopSource(accessUrl);
+    this.stopsProvider.addStopSource({ accessUrl });
+  }
+
+  public getConnectionSources(): IConnectionsSourceConfig[] {
+    return this.connectionsProvider.getSources();
+  }
+
+  public getStopsSources(): IStopsSourceConfig[] {
+    return this.stopsProvider.getSources();
   }
 
   public async completePath(path: IPath): Promise<IPath> {
@@ -171,4 +184,7 @@ export default abstract class Planner {
     return Promise.reject();
   }
 
+  public resolveLocation(id: string): Promise<ILocation> {
+    return this.locationResolver.resolve(id);
+  }
 }

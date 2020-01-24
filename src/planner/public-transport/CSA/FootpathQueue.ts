@@ -22,6 +22,8 @@ export default class FootpathQueue extends AsyncIterator<IConnection> {
 
         this.readable = true;
         this.shouldClose = false;
+
+        this.setMaxListeners(100);
     }
 
     public read(): IConnection {

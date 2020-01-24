@@ -1,5 +1,6 @@
 import fetch from "cross-fetch";
 import { injectable } from "inversify";
+import { DataType } from "../..";
 import IConnection from "../../entities/connections/connections";
 import { LinkedConnectionsPage } from "../../entities/connections/page";
 import DropOffType from "../../enums/DropOffType";
@@ -36,6 +37,9 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
         const beginTime = new Date();
 
         const response = await fetch(url);
+        const size = this.parseResponseLength(response);
+        const duration = (new Date()).getTime() - beginTime.getTime();
+
         const responseText = await response.text();
         if (response.status !== 200) {
             EventBus.getInstance().emit(EventType.Warning, `${url} responded with status code ${response.status}`);
@@ -61,11 +65,15 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
                 const departureStop = context.resolveIdentifier(entity[DEPARTURE_STOP]);
                 const departureDelay = entity[DEPARTURE_DELAY] ? parseFloat(entity[DEPARTURE_DELAY]) : 0;
 
-                const tripId = context.resolveIdentifier(entity[TRIP]) || null;
-                const route = context.resolveIdentifier(entity[ROUTE]) || null;
+                const tripId = entity[TRIP] ? context.resolveIdentifier(entity[TRIP]) : null;
+                const route = entity[ROUTE] ? context.resolveIdentifier(entity[ROUTE]) : null;
 
-                const dropOffType = context.resolveIdentifier(entity[DROP_OFF_TYPE]) as DropOffType;
-                const pickupType = context.resolveIdentifier(entity[PICKUP_TYPE]) as PickupType;
+                const dropOffType = entity[DROP_OFF_TYPE] ?
+                    context.resolveIdentifier(entity[DROP_OFF_TYPE]) as DropOffType :
+                    DropOffType.Regular;
+                const pickupType = entity[PICKUP_TYPE] ?
+                    context.resolveIdentifier(entity[PICKUP_TYPE]) as PickupType :
+                    PickupType.Regular;
                 const headsign = entity[HEADSIGN] || null;
                 const connection: IConnection = {
                     id: connectionId,
@@ -83,22 +91,51 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
                     headsign,
                 };
 
-                connections.push(connection);
+                if (connection.departureTime < connection.arrivalTime) {
+                    // safety precaution
+                    connections.push(connection);
+                }
             }
 
             const pageId = blob["@id"];
             const nextPageUrl = blob["hydra:next"];
             const previousPageUrl = blob["hydra:previous"];
 
-            const duration = (new Date()).getTime() - beginTime.getTime();
-            EventBus.getInstance().emit(EventType.LDFetchGet, url, duration);
-            EventBus.getInstance().emit(EventType.ConnectionPrefetch, connections[0].departureTime);
-            EventBus.getInstance().emit(EventType.ConnectionPrefetch,
-                connections[connections.length - 1].departureTime);
+            connections.sort((a, b) => {
+                if (a.departureTime.getTime() !== b.departureTime.getTime()) {
+                    return a.departureTime.getTime() - b.departureTime.getTime();
+                } else if (a.arrivalTime.getTime() !== b.arrivalTime.getTime()) {
+                    return a.arrivalTime.getTime() - b.arrivalTime.getTime();
+                }
+
+                return a.id.localeCompare(b.id);
+            });
+
+            EventBus.getInstance().emit(
+                EventType.ResourceFetch,
+                {
+                    datatype: DataType.Connections,
+                    url,
+                    duration,
+                    size,
+                },
+            );
 
             return new LinkedConnectionsPage(pageId, connections, previousPageUrl, nextPageUrl);
         } else {
             return new LinkedConnectionsPage(url, [], undefined, undefined);
+        }
+    }
+
+    private parseResponseLength(response): number {
+        if (response.headers.get("content-length")) {
+            return parseInt(response.headers.get("content-length"), 10);
+        } else {
+            try {
+                return response.body._chunkSize;
+            } catch (e) {
+                //
+            }
         }
     }
 }

@@ -4,23 +4,22 @@ enum EventType {
   AbortQuery = "abort-query",
   InvalidQuery = "invalid-query",
 
-  LDFetchGet = "ldfetch-get",
-
   Warning = "warning",
 
   ConnectionPrefetch = "connection-prefetch",
   ConnectionIteratorView = "connection-iterator-view",
-
-  FetchTile = "fetch-tile",
-  PointReached = "point-reached",
 
   ConnectionScan = "connection-scan",
   FinalReachableStops = "final-reachable-stops",
   InitialReachableStops = "initial-reachable-stops",
   AddedNewTransferProfile = "added-new-transfer-profile",
 
-  ReachableStop = "ReachableStop",
-  ReachableTile = "ReachableTile",
+  ReachableLocation = "ReachableLocation",  // planning reached a location
+  ReachableID = "ReachableID",  // planning reached a location, but the value is just a ID
+  ReachableTile = "ReachableTile", // planning reached a tile (coordinate)
+  ReachableTransfer = "ReachableTransfer", // planning reached a transfer
+
+  ResourceFetch = "ResourceFetch",
 }
 
 export default EventType;

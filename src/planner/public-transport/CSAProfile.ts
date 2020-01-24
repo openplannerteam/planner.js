@@ -9,6 +9,7 @@ import ReachableStopsSearchPhase from "../../enums/ReachableStopsSearchPhase";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
+import { backwardsConnectionsSelector } from "../../fetcher/connections/ConnectionSelectors";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import IStop from "../../fetcher/stops/IStop";
 import ILocation from "../../interfaces/ILocation";
@@ -60,24 +61,6 @@ interface IQueryState {
  */
 @injectable()
 export default class CSAProfile implements IPublicTransportPlanner {
-  private static backwardsConnectionsSelector(connections: IConnection[]): number {
-    if (connections.length === 1) {
-      return 0;
-    }
-
-    let latestIndex = 0;
-    const latest = connections[latestIndex];
-
-    for (let i = 1; i < connections.length; i++) {
-      const connection = connections[i];
-
-      if (connection.departureTime > latest.departureTime) {
-        latestIndex = i;
-      }
-    }
-
-    return latestIndex;
-  }
 
   private readonly connectionsProvider: IConnectionsProvider;
   private readonly locationResolver: ILocationResolver;
@@ -125,11 +108,12 @@ export default class CSAProfile implements IPublicTransportPlanner {
       upperBoundDate,
       lowerBoundDate,
       excludedModes: query.excludedTravelModes,
+      region: null,
     });
 
     const mergedIterator = new MergeIterator(
       [connectionsIterator, footpathQueue],
-      CSAProfile.backwardsConnectionsSelector,
+      backwardsConnectionsSelector,
       true,
     );
 
