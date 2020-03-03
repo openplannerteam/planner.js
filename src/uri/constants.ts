@@ -10,3 +10,5 @@ export const PLANNER = "https://planner.js.org/terms#";
 export const PROFILE = "https://w3id.org/openplannerteam/profile#";
 export const TREE = "https://w3id.org/tree#";
 export const LC = "http://semweb.mmlab.be/ns/linkedconnections#";
+export const DCAT = "http://www.w3.org/ns/dcat#";
+export const DCT = "http://purl.org/dc/terms/";

@@ -3,6 +3,10 @@ import Context from "../Context";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
+import CatalogFetcherDefault from "../fetcher/catalog/CatalogFetcherDefault";
+import CatalogProviderDefault from "../fetcher/catalog/CatalogProviderDefault";
+import ICatalogFetcher from "../fetcher/catalog/ICatalogFetcher";
+import ICatalogProvider from "../fetcher/catalog/ICatalogProvider";
 import ConnectionsFetcherRaw from "../fetcher/connections/ConnectionsFetcherRaw";
 import ConnectionsProviderDefault from "../fetcher/connections/ConnectionsProviderDefault";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
@@ -81,6 +85,9 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
+
+container.bind<ICatalogFetcher>(TYPES.CatalogFetcher).to(CatalogFetcherDefault).inSingletonScope();
+container.bind<ICatalogProvider>(TYPES.CatalogProvider).to(CatalogProviderDefault).inSingletonScope();
 
 container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderDefault).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherRaw);

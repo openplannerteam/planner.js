@@ -7,8 +7,7 @@ import Units from "./util/Units";
 export default async (logResults) => {
 
   const planner = new FlexibleProfileTransitPlanner();
-  planner.addConnectionSource("https://graph.irail.be/sncb/connections");
-  planner.addStopSource("https://irail.be/stations/NMBS");
+  await planner.addCatalogSource("https://graph.irail.be/sncb/catalog");
 
   if (logResults) {
     let scannedConnections = 0;

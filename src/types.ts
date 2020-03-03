@@ -14,6 +14,9 @@ const TYPES = {
   HypermediaTreeProvider: Symbol("HypermediaTreeProvider"),
   HypermediaTreeFetcherFactory: Symbol("HypermediaTreeFetcherFactory"),
 
+  CatalogFetcher: Symbol("CatalogFetcher"),
+  CatalogProvider: Symbol("CatalogProvider"),
+
   ConnectionsProvider: Symbol("ConnectionsProvider"),
   ConnectionsFetcher: Symbol("ConnectionsFetcher"),
   ConnectionsFetcherFactory: Symbol("ConnectionsFetcherFactory"),

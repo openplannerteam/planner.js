@@ -7,6 +7,7 @@ import Context from "../../Context";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
+import ICatalogProvider from "../../fetcher/catalog/ICatalogProvider";
 import IConnectionsProvider from "../../fetcher/connections/IConnectionsProvider";
 import ProfileProvider from "../../fetcher/profiles/ProfileProviderDefault";
 import IStop from "../../fetcher/stops/IStop";
@@ -37,6 +38,7 @@ export default abstract class Planner {
   private connectionsProvider: IConnectionsProvider;
   private stopsProvider: IStopsProvider;
   private locationResolver: ILocationResolver;
+  private catalogProvider: ICatalogProvider;
 
   /**
    * Initializes a new Planner
@@ -52,6 +54,7 @@ export default abstract class Planner {
     this.eventBus = EventBus.getInstance();
     this.roadPlanner = container.get<IRoadPlanner>(TYPES.RoadPlanner);
     this.connectionsProvider = container.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
+    this.catalogProvider = container.get<ICatalogProvider>(TYPES.CatalogProvider);
     this.stopsProvider = container.get<IStopsProvider>(TYPES.StopsProvider);
     this.locationResolver = container.get<ILocationResolver>(TYPES.LocationResolver);
 
@@ -72,6 +75,23 @@ export default abstract class Planner {
 
   public getStopsSources(): IStopsSourceConfig[] {
     return this.stopsProvider.getSources();
+  }
+
+  public async addCatalogSource(accessUrl: string) {
+    const catalog = await this.catalogProvider.getCatalog(accessUrl);
+    for (const dataset of catalog.datasets) {
+      for (const distribution of dataset.distributions) {
+        if (dataset.subject === "lc:Connection") {
+          this.connectionsProvider.addConnectionSource(
+            { accessUrl: distribution.accessUrl, travelMode: TravelMode.Train },
+          );
+        } else if (dataset.subject === "gtfs:Stop") {
+          this.stopsProvider.addStopSource(
+            { accessUrl: distribution.accessUrl },
+          );
+        }
+      }
+    }
   }
 
   public async completePath(path: IPath): Promise<IPath> {
