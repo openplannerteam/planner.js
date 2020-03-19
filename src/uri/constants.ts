@@ -12,3 +12,4 @@ export const TREE = "https://w3id.org/tree#";
 export const LC = "http://semweb.mmlab.be/ns/linkedconnections#";
 export const DCAT = "http://www.w3.org/ns/dcat#";
 export const DCT = "http://purl.org/dc/terms/";
+export const GTFS = "http://vocab.gtfs.org/terms#";

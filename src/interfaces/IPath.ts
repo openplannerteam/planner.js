@@ -5,7 +5,9 @@ import { DurationMs } from "./units";
 export default interface IPath {
   legs: ILeg[];
 
+  updateContext(other: object);
   addToContext(id: string, value: any);
+  getContext(): object;
   getFromContext(id: string): any;
 
   getDepartureTime(query: IQuery): Date;

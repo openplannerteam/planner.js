@@ -1,4 +1,4 @@
-import { AsyncIterator } from "asynciterator";
+import { AsyncIterator, BufferedIterator } from "asynciterator";
 import { PromiseProxyIterator } from "asynciterator-promiseproxy";
 import { EventEmitter } from "events";
 import { IConnectionsSourceConfig, IStopsSourceConfig } from "../../Catalog";
@@ -18,6 +18,8 @@ import IQuery from "../../interfaces/IQuery";
 import ILocationResolver from "../../query-runner/ILocationResolver";
 import IQueryRunner from "../../query-runner/IQueryRunner";
 import TYPES from "../../types";
+import { GTFS, LC } from "../../uri/constants";
+import URI from "../../uri/uri";
 import Iterators from "../../util/Iterators";
 import Units from "../../util/Units";
 import Path from "../Path";
@@ -81,11 +83,11 @@ export default abstract class Planner {
     const catalog = await this.catalogProvider.getCatalog(accessUrl);
     for (const dataset of catalog.datasets) {
       for (const distribution of dataset.distributions) {
-        if (dataset.subject === "lc:Connection") {
+        if (dataset.subject === URI.inNS(LC, "Connection")) {
           this.connectionsProvider.addConnectionSource(
             { accessUrl: distribution.accessUrl, travelMode: TravelMode.Train },
           );
-        } else if (dataset.subject === "gtfs:Stop") {
+        } else if (dataset.subject === URI.inNS(GTFS, "Stop")) {
           this.stopsProvider.addStopSource(
             { accessUrl: distribution.accessUrl },
           );
@@ -117,6 +119,7 @@ export default abstract class Planner {
           for (const walkingLeg of walkingPaths[0].legs) {
             completePath.appendLeg(walkingLeg);
           }
+          completePath.updateContext(walkingPaths[0].getContext());
 
           walkingDeparture = null;
           walkingDestination = null;
@@ -136,6 +139,7 @@ export default abstract class Planner {
       for (const walkingLeg of walkingPaths[0].legs) {
         completePath.appendLeg(walkingLeg);
       }
+      completePath.updateContext(walkingPaths[0].getContext());
 
       walkingDeparture = null;
       walkingDestination = null;
@@ -153,19 +157,34 @@ export default abstract class Planner {
     this.eventBus.emit(EventType.Query, query);
 
     query.profileID = this.activeProfileID;
-    const iterator = new PromiseProxyIterator(() => this.queryRunner.run(query));
+    const pathIterator = new PromiseProxyIterator(() => this.queryRunner.run(query));
 
     this.eventBus.once(EventType.AbortQuery, () => {
-      iterator.close();
+      pathIterator.close();
     });
 
-    iterator.on("error", (e) => {
+    pathIterator.on("error", (e) => {
       if (e && e.eventType) {
         this.eventBus.emit(e.eventType, e.message);
       }
     });
 
-    return iterator;
+    if (query.minimized) {
+      return pathIterator;
+    }
+
+    const completeIterator: BufferedIterator<IPath> = new BufferedIterator();
+
+    pathIterator.on("data", async (path) => {
+      const completePath = await this.completePath(path);
+      completeIterator._push(completePath);
+
+      if (pathIterator.closed) {
+        completeIterator.close();
+      }
+    });
+
+    return completeIterator;
   }
 
   public prefetchStops(): void {
