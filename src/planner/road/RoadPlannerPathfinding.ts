@@ -107,6 +107,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         const path = await pathfinder.queryPath(Geo.getId(start), Geo.getId(stop), maxDistance);
 
         const steps: IStep[] = [];
+        const context = {};
         for (const step of path) {
             const to = await this.locationResolver.resolve(step.to);
             const from = await this.locationResolver.resolve(step.from);
@@ -117,10 +118,14 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
                 duration: { average: step.duration },
                 distance: step.distance,
             });
+
+            if (step.through) {
+                context[step.through] = this.registry.getWay(step.through);
+            }
         }
 
         const leg = new Leg(TravelMode.Profile, steps);
-        return new Path([leg]);
+        return new Path([leg], context);
     }
 
     private async fetchTile(coordinate: RoutableTileCoordinate) {
