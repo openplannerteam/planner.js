@@ -33,10 +33,33 @@ export default class Path implements IPath {
     });
   }
 
+  public context: object; // lookup table with relevant data
   public legs: ILeg[];
 
-  constructor(legs: ILeg[]) {
+  constructor(legs: ILeg[], context?: object) {
     this.legs = legs;
+
+    if (context) {
+      this.context = context;
+    } else {
+      this.context = {};
+    }
+  }
+
+  public updateContext(other: object) {
+    this.context = Object.assign(this.context, other);
+  }
+
+  public addToContext(id: string, value: any) {
+    this.context[id] = value;
+  }
+
+  public getContext(): object {
+    return this.context;
+  }
+
+  public getFromContext(id: string): any {
+    return this.context[id];
   }
 
   public prependLeg(leg: ILeg) {

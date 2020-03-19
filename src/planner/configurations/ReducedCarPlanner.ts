@@ -14,4 +14,8 @@ export default class TransitCarPlanner extends Planner {
         query.roadNetworkOnly = true;
         return super.query(query);
     }
+
+    public async completePath(path: IPath): Promise<IPath> {
+        return path;
+    }
 }

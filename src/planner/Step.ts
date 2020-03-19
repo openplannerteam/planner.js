@@ -15,6 +15,7 @@ export default class Step implements IStep {
     startLocation: ILocation,
     stopLocation: ILocation,
     duration: IProbabilisticValue<DurationMs>,
+    through?: string, // string identifier of a way, route, ... that was taken
     startTime?: Date,
     stopTime?: Date,
     distance?: DistanceM,
@@ -26,6 +27,7 @@ export default class Step implements IStep {
       startTime,
       stopTime,
       distance,
+      through,
     );
   }
 

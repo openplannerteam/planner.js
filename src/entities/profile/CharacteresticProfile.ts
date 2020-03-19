@@ -69,22 +69,6 @@ export default class CharacteristicProfile extends DynamicProfile {
     }
 
     private getWayCharacteristic(way: RoutableTileWay) {
-        return way.reachable +
-            way.accessRestrictions +
-            way.bicycleAccessRestrictions +
-            way.constructionKind +
-            way.crossingKind +
-            way.cyclewayKind +
-            way.footwayKind +
-            way.highwayKind +
-            way.maxSpeed +
-            way.motorVehicleAccessRestrictions +
-            way.motorcarAccessRestrictions +
-            way.onewayBicycleKind +
-            way.onewayKind +
-            way.smoothnessKind +
-            way.surfaceKind +
-            way.trackType +
-            way.vehicleAccessRestrictions;
+        return way.reachable + Object.values(way.definedTags).join();
     }
 }

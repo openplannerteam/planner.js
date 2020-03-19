@@ -73,10 +73,10 @@ export function visualizeIsochrone(registry: RoutableTileRegistry, pathTree: IPa
         }
     }
 
-    nodes.push({ latitude: 90, longitude: 180, id: "1" });
-    nodes.push({ latitude: -90, longitude: 180, id: "2" });
-    nodes.push({ latitude: 90, longitude: -180, id: "3" });
-    nodes.push({ latitude: -90, longitude: -180, id: "4" });
+    nodes.push({ latitude: 90, longitude: 180, id: "1", definedTags: {}, freeformTags: [] });
+    nodes.push({ latitude: -90, longitude: 180, id: "2", definedTags: {}, freeformTags: [] });
+    nodes.push({ latitude: 90, longitude: -180, id: "3", definedTags: {}, freeformTags: [] });
+    nodes.push({ latitude: -90, longitude: -180, id: "4", definedTags: {}, freeformTags: [] });
 
     costs["1"] = Infinity;
     costs["2"] = Infinity;

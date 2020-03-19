@@ -12,12 +12,13 @@ export class RoutableTileNode implements ILocation {
     public longitude: number;
     public id: string;
 
-    public barrierKind?: Barrier;
-    public highwayKind?: Highway;
-    public crossingKind?: Crossing;
+    public definedTags: object;
+    public freeformTags: string[];
 
     constructor(id: string) {
         this.id = id;
+        this.definedTags = {};
+        this.freeformTags = [];
     }
 }
 

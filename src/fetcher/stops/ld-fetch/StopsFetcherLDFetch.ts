@@ -87,6 +87,7 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
   private transformPredicate(triple: Triple): Triple {
     return Rdf.transformPredicate({
       "http://xmlns.com/foaf/0.1/name": "name",
+      "http://schema.org/name": "name",
       "http://www.w3.org/2003/01/geo/wgs84_pos#lat": "latitude",
       "http://www.w3.org/2003/01/geo/wgs84_pos#long": "longitude",
     }, triple);

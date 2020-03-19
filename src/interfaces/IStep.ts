@@ -5,6 +5,7 @@ import { DistanceM, DurationMs } from "./units";
 export default interface IStep {
   startLocation: ILocation;
   stopLocation: ILocation;
+  through?: string;
   startTime?: Date;
   stopTime?: Date;
   duration: IProbabilisticValue<DurationMs>;

@@ -3,6 +3,10 @@ import Context from "../Context";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
+import CatalogFetcherDefault from "../fetcher/catalog/CatalogFetcherDefault";
+import CatalogProviderDefault from "../fetcher/catalog/CatalogProviderDefault";
+import ICatalogFetcher from "../fetcher/catalog/ICatalogFetcher";
+import ICatalogProvider from "../fetcher/catalog/ICatalogProvider";
 import ConnectionsFetcherRaw from "../fetcher/connections/ConnectionsFetcherRaw";
 import ConnectionsProviderDefault from "../fetcher/connections/ConnectionsProviderDefault";
 import IConnectionsFetcher from "../fetcher/connections/IConnectionsFetcher";
@@ -74,6 +78,9 @@ container.bind<IShortestPathAlgorithm>(TYPES.ShortestPathAlgorithm).to(BidirDijk
 container.bind<PathfinderProvider>(TYPES.PathfinderProvider).to(PathfinderProvider).inSingletonScope();
 container.bind<IProfileFetcher>(TYPES.ProfileFetcher).to(ProfileFetcherDefault).inSingletonScope();
 container.bind<IProfileProvider>(TYPES.ProfileProvider).to(ProfileProviderDefault).inSingletonScope();
+
+container.bind<ICatalogFetcher>(TYPES.CatalogFetcher).to(CatalogFetcherDefault).inSingletonScope();
+container.bind<ICatalogProvider>(TYPES.CatalogProvider).to(CatalogProviderDefault).inSingletonScope();
 
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
