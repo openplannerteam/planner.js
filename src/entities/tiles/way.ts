@@ -1,13 +1,3 @@
-import Access from "../../enums/Access";
-import Construction from "../../enums/Construction";
-import Crossing from "../../enums/Crossing";
-import Cycleway from "../../enums/Cycleway";
-import Footway from "../../enums/Footway";
-import Highway from "../../enums/Highway";
-import Oneway from "../../enums/Oneway";
-import Smoothness from "../../enums/Smoothness";
-import Surface from "../../enums/Surface";
-import TrackType from "../../enums/TrackType";
 import Edge from "./edge";
 
 export class RoutableTileWay {
@@ -20,27 +10,16 @@ export class RoutableTileWay {
     public weights?: number[][]; // distances between the nodes in the segments
     public name: string;
     public reachable?: boolean; // not part of OSM but a result of preprocessing, do not use this (yet)
+    public maxSpeed?: number;
 
-    public accessRestrictions?: Access;
-    public bicycleAccessRestrictions?: Access;
-    public constructionKind?: Construction;
-    public crossingKind?: Crossing;
-    public cyclewayKind?: Cycleway;
-    public footwayKind?: Footway;
-    public highwayKind: Highway;
-    public maxSpeed: number;
-    public motorVehicleAccessRestrictions?: Access;
-    public motorcarAccessRestrictions?: Access;
-    public onewayBicycleKind?: Oneway;
-    public onewayKind?: Oneway;
-    public smoothnessKind?: Smoothness;
-    public surfaceKind?: Surface;
-    public trackType?: TrackType;
-    public vehicleAccessRestrictions?: Access;
+    public definedTags: object;
+    public freeformTags: string[];
 
     constructor(id: string) {
         this.id = id;
         this.weights = [[]];
+        this.definedTags = {};
+        this.freeformTags = [];
     }
 
     public mergeDefinitions(other: RoutableTileWay): RoutableTileWay {
@@ -48,6 +27,8 @@ export class RoutableTileWay {
         // copy data fields
         Object.assign(result, this);
         Object.assign(result, other);
+        const definedTags = Object.assign({}, this.definedTags, other.definedTags);
+        result.definedTags = definedTags;
         // special cases
         if (this.reachable === false || other.reachable === false) {
             result.reachable = false;
@@ -60,6 +41,10 @@ export class RoutableTileWay {
         result.weights = [];
         result.weights = result.weights.concat(this.weights);
         result.weights = result.weights.concat(other.weights);
+
+        result.freeformTags = [];
+        result.freeformTags = result.freeformTags.concat(this.freeformTags);
+        result.freeformTags = result.freeformTags.concat(other.freeformTags);
         return result;
     }
 

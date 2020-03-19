@@ -25,25 +25,6 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
   ) {
     this.pathfinderProvider = pathfinderProvider;
     this.routableTileRegistry = RoutableTileRegistry.getInstance();
-    this.mapping = {};
-
-    this.mapping["osm:barrier"] = "barrierKind";
-    this.mapping["osm:access"] = "accessRestrictions";
-    this.mapping["osm:bicycle"] = "bicycleAccessRestrictions";
-    this.mapping["osm:construction"] = "constructionKind";
-    this.mapping["osm:crossing"] = "crossingKind";
-    this.mapping["osm:cycleway"] = "cyclewayKind";
-    this.mapping["osm:footway"] = "footwayKind";
-    this.mapping["osm:highway"] = "highwayKind";
-    this.mapping["osm:maxspeed"] = "maxSpeed";
-    this.mapping["osm:motor_vehicle"] = "motorVehicleAccessRestrictions";
-    this.mapping["osm:motorcar"] = "motorcarAccessRestrictions";
-    this.mapping["osm:oneway_bicycle"] = "onewayBicycleKind";
-    this.mapping["osm:oneway"] = "onewayKind";
-    this.mapping["osm:smoothness"] = "smoothnessKind";
-    this.mapping["osm:surface"] = "surfaceKind";
-    this.mapping["osm:tracktype"] = "trackType";
-    this.mapping["osm:vehicle"] = "vehicleAccessRestrictions";
   }
 
   public async get(url: string): Promise<RoutableTile> {
@@ -93,7 +74,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       return parseInt(response.headers.get("content-length"), 10);
     } else {
       try {
-        return response.body._chunkSize;
+        return response.body._outOffset;
       } catch (e) {
         //
       }
@@ -120,9 +101,18 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     node.latitude = parseFloat(blob["geo:lat"]);
     node.longitude = parseFloat(blob["geo:long"]);
 
-    for (const [tag, field] of Object.entries(this.mapping)) {
-      if (blob[tag] && !node[field]) {
-        node[field] = URI.fakeExpand(OSM, blob[tag]);
+    for (const [key, value] of Object.entries(blob)) {
+      if (key === "osm:hasTag") {
+        node.freeformTags = value as string[];
+      } else if (key.indexOf("osm:") === 0) {
+        const expandedKey = URI.fakeExpand(OSM, key);
+
+        if (value.toString().indexOf("osm:") === 0) {
+          const expandedValue = URI.fakeExpand(OSM, value.toString());
+          node.definedTags[expandedKey] = expandedValue;
+        } else {
+          node.definedTags[expandedKey] = value;
+        }
       }
     }
 
@@ -145,9 +135,21 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
 
     way.name = blob["osm:name"];
 
-    for (const [tag, field] of Object.entries(this.mapping)) {
-      if (blob[tag] && !way[field]) {
-        way[field] = URI.fakeExpand(OSM, blob[tag]);
+    for (const [key, value] of Object.entries(blob)) {
+      if (key === "osm:hasNodes" || key === "osm:hasWeights") {
+        // not tags, these are our own properties
+        continue;
+      } else if (key === "osm:hasTag") {
+        way.freeformTags = value as string[];
+      } else if (key.indexOf("osm:") === 0) {
+        const expandedKey = URI.fakeExpand(OSM, key);
+
+        if (value.toString().indexOf("osm:") === 0) {
+          const expandedValue = URI.fakeExpand(OSM, value.toString());
+          way.definedTags[expandedKey] = expandedValue;
+        } else {
+          way.definedTags[expandedKey] = value;
+        }
       }
     }
 

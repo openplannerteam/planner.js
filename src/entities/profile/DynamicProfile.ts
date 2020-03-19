@@ -1,4 +1,3 @@
-import getOsmTagMapping from "../../enums/OSMTags";
 import { DistanceM, DurationMs } from "../../interfaces/units";
 import Geo from "../../util/Geo";
 import { RoutableTileNode } from "../tiles/node";
@@ -22,12 +21,9 @@ export default class DynamicProfile extends Profile {
     public maxSpeed: number;
     public usePublicTransport: boolean;
 
-    private mapping;
-
     constructor(url: string) {
         super();
         this.id = url;
-        this.mapping = getOsmTagMapping();
 
         this.accessRules = [];
         this.onewayRules = [];
@@ -50,8 +46,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.isOneway !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = this.mapping[rule.condition.predicate];
-                    if (way[field] === rule.condition.object) {
+                    if (way.definedTags[rule.condition.predicate] === rule.condition.object) {
                         return rule.conclusion.isOneway;
                     }
                 } else {
@@ -66,8 +61,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.hasAccess !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = this.mapping[rule.condition.predicate];
-                    if (way[field] === rule.condition.object) {
+                    if (way.definedTags[rule.condition.predicate] === rule.condition.object) {
                         return rule.conclusion.hasAccess;
                     }
                 } else {
@@ -92,8 +86,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.speed !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = this.mapping[rule.condition.predicate];
-                    if (way[field] === rule.condition.object) {
+                    if (way.definedTags[rule.condition.predicate] === rule.condition.object) {
                         if (typeof (rule.conclusion.speed) === "number") {
                             return Math.min(rule.conclusion.speed, speedLimit);
                         }
@@ -125,8 +118,7 @@ export default class DynamicProfile extends Profile {
             if (rule.conclusion.priority !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = this.mapping[rule.condition.predicate];
-                    if (way[field] === rule.condition.object) {
+                    if (way.definedTags[rule.condition.predicate] === rule.condition.object) {
                         return 1 - (rule.conclusion.priority - 1);
                     }
                 } else {
@@ -141,12 +133,16 @@ export default class DynamicProfile extends Profile {
     }
 
     public isObstacle(node: RoutableTileNode): boolean {
+        if (!node.definedTags) {
+            // not a real OSM node, we're probably embedding a location onto the network
+            return false;
+        }
+
         for (const rule of this.obstacleRules) {
             if (rule.conclusion.isObstacle !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = this.mapping[rule.condition.predicate];
-                    if (node[field] === rule.condition.object) {
+                    if (node.definedTags[rule.condition.predicate] === rule.condition.object) {
                         return rule.conclusion.isObstacle;
                     }
                 } else {
@@ -157,17 +153,23 @@ export default class DynamicProfile extends Profile {
     }
 
     public getObstacleTime(node: RoutableTileNode): DurationMs {
+        if (!node.definedTags) {
+            // not a real OSM node, we're probably embedding a location onto the network
+            return 0;
+        }
+
         for (const rule of this.obstacleTimeRules) {
             if (rule.conclusion.obstacleTime !== undefined) {
                 // should always be the case, but just in case
                 if (rule.condition !== undefined) {
-                    const field = this.mapping[rule.condition.predicate];
-                    if (node[field] && rule.condition.object === undefined) {
+                    const field = rule.condition.predicate;
+                    if (node.definedTags[field] && rule.condition.object === undefined) {
                         return rule.conclusion.obstacleTime * 1000;
                     }
-                    if (node[field] === rule.condition.object && rule.condition.object !== undefined) {
+                    if (node.definedTags[field] === rule.condition.object && rule.condition.object !== undefined) {
                         return rule.conclusion.obstacleTime * 1000;
                     }
+
                 } else {
                     return rule.conclusion.obstacleTime * 1000;
                 }

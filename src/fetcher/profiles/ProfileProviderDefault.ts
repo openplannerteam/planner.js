@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify";
-import PedestrianProfile from "../../entities/profile/PedestrianProfile";
 import Profile from "../../entities/profile/Profile";
 import TYPES from "../../types";
 import IProfileFetcher from "./IProfileFetcher";
