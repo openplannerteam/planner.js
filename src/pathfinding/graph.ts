@@ -3,6 +3,7 @@ interface IEdge {
     distance: number;
     duration: number;
     cost: number;
+    through: string;
 }
 
 interface INodeMap {
@@ -30,11 +31,11 @@ export default class PathfindingGraph {
         this.breakPoints = {};
     }
 
-    public addEdge(from: string, to: string, distance: number, duration: number, cost: number) {
+    public addEdge(from: string, to: string, through: string, distance: number, duration: number, cost: number) {
         const fromIndex = this.getNodeIndex(from);
         const toIndex = this.getNodeIndex(to);
-        this.adjacencyList[fromIndex].push({ node: toIndex, distance, cost, duration });
-        this.reverseAdjacencyList[toIndex].push({ node: fromIndex, distance, cost, duration });
+        this.adjacencyList[fromIndex].push({ node: toIndex, through, distance, cost, duration });
+        this.reverseAdjacencyList[toIndex].push({ node: fromIndex, through, distance, cost, duration });
     }
 
     public getNodeMap() {

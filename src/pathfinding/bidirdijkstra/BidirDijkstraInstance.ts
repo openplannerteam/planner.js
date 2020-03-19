@@ -132,11 +132,13 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
         while (this.backwardParents[currentPosition] !== undefined) {
             let nextEdge;
             let nextPositionCost = Infinity;
+            let way;
 
             for (const edge of this.graph.getAdjacencyList()[currentPosition]) {
                 if (this.getBackwardCost(edge.node) < nextPositionCost) {
                     nextPositionCost = this.getBackwardCost(edge.node);
                     nextEdge = edge;
+                    way = edge.through;
                 }
             }
 
@@ -147,6 +149,7 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
             backwardSteps.push({
                 from: this.graph.getLabel(currentPosition),
                 to: this.graph.getLabel(nextEdge.node),
+                through: way,
                 distance: nextEdge.distance,
                 duration: nextEdge.duration,
             });
@@ -158,11 +161,13 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
         while (this.forwardParents[currentPosition] !== undefined) {
             let nextEdge;
             let nextPositionCost = Infinity;
+            let way;
 
             for (const edge of this.graph.getReverseAdjacencyList()[currentPosition]) {
                 if (this.getForwardCost(edge.node) < nextPositionCost) {
                     nextPositionCost = this.getForwardCost(edge.node);
                     nextEdge = edge;
+                    way = edge.through;
                 }
             }
 
@@ -173,6 +178,7 @@ export class BidirDijkstraInstance implements IShortestPathInstance {
             forwardSteps.push({
                 from: this.graph.getLabel(nextEdge.node),
                 to: this.graph.getLabel(currentPosition),
+                through: way,
                 distance: nextEdge.distance,
                 duration: nextEdge.duration,
             });

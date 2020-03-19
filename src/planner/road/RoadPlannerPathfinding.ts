@@ -113,6 +113,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
             steps.push({
                 startLocation: from,
                 stopLocation: to,
+                through: step.through,
                 duration: { average: step.duration },
                 distance: step.distance,
             });

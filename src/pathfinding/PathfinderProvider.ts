@@ -228,7 +228,7 @@ export default class PathfinderProvider {
     distance = distance || profile.getDistance(from, to, way);
     const duration = profile.getDuration(from, to, way);
     const cost = profile.getCost(from, to, way);
-    graph.addEdge(Geo.getId(from), Geo.getId(to), distance, duration, cost);
+    graph.addEdge(Geo.getId(from), Geo.getId(to), way.id, distance, duration, cost);
   }
 
   private segmentDistToPoint(segA: ILocation, segB: ILocation, p: ILocation): number {

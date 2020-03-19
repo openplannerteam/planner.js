@@ -117,11 +117,13 @@ export class DijkstraInstance implements IShortestPathInstance {
         while (!isNaN(this.previousNodes[currentPosition])) {
             let nextEdge;
             let nextPositionCost = Infinity;
+            let way;
 
             for (const edge of this.graph.getReverseAdjacencyList()[currentPosition]) {
                 if (this.getCost(edge.node) < nextPositionCost) {
                     nextPositionCost = this.getCost(edge.node);
                     nextEdge = edge;
+                    way = edge.through;
                 }
             }
 
@@ -134,6 +136,7 @@ export class DijkstraInstance implements IShortestPathInstance {
                 to: this.graph.getLabel(currentPosition),
                 distance: nextEdge.distance,
                 duration: nextEdge.duration,
+                through: way,
             });
 
             currentPosition = nextEdge.node;

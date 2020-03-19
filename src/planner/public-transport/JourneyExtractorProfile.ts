@@ -164,6 +164,7 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
           {
             minimum: transferDepartureTime - departureTime,
           },
+          null,
           new Date(departureTime - timeToSubtract),
           new Date(transferDepartureTime - timeToSubtract),
         );
@@ -220,6 +221,7 @@ export default class JourneyExtractorProfile implements IJourneyExtractor {
             {
               minimum: arrivalTime.getTime() - transferArrivalTime.getTime(),
             },
+            null,
             transferArrivalTime,
             arrivalTime,
           );
