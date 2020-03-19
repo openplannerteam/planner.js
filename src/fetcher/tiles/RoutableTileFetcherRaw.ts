@@ -130,7 +130,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     } else {
       const weights = blob["osm:hasEdges"];
       way.segments = [weights["osm:hasNodes"]];
-      way.weights = [weights["osm:hasWeights"]];
+      way.distances = [weights["osm:hasWeights"]];
     }
 
     way.name = blob["osm:name"];

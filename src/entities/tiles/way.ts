@@ -7,7 +7,7 @@ export class RoutableTileWay {
 
     public id: string;
     public segments: string[][]; // ids of nodes that are part of this road
-    public weights?: number[][]; // distances between the nodes in the segments
+    public distances?: number[][]; // distances between the nodes in the segments
     public name: string;
     public reachable?: boolean; // not part of OSM but a result of preprocessing, do not use this (yet)
     public maxSpeed?: number;
@@ -17,7 +17,7 @@ export class RoutableTileWay {
 
     constructor(id: string) {
         this.id = id;
-        this.weights = [[]];
+        this.distances = [[]];
         this.definedTags = {};
         this.freeformTags = [];
     }
@@ -38,9 +38,9 @@ export class RoutableTileWay {
         result.segments = result.segments.concat(this.segments);
         result.segments = result.segments.concat(other.segments);
 
-        result.weights = [];
-        result.weights = result.weights.concat(this.weights);
-        result.weights = result.weights.concat(other.weights);
+        result.distances = [];
+        result.distances = result.distances.concat(this.distances);
+        result.distances = result.distances.concat(other.distances);
 
         result.freeformTags = [];
         result.freeformTags = result.freeformTags.concat(this.freeformTags);
@@ -51,10 +51,10 @@ export class RoutableTileWay {
     public getParts(): Edge[] {
         const result: Edge[] = [];
         for (let index = 0; index < this.segments.length; index++) {
-            const weights = this.weights[index];
+            const distances = this.distances[index];
             const segment = this.segments[index];
             for (let i = 0; i < segment.length - 1; i++) {
-                result.push({from: segment[i], to: segment[i + 1], distance: weights[i]});
+                result.push({from: segment[i], to: segment[i + 1], distance: distances[i]});
             }
         }
         return result;
