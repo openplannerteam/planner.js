@@ -5,18 +5,12 @@ import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetc
 import Units from "../../util/Units";
 import ReachableStopsFinderBirdsEye from "./ReachableStopsFinderBirdsEye";
 
-const DE_LIJN_STOPS_URLS = [
-  "http://openplanner.ilabt.imec.be/delijn/Antwerpen/stops",
-  "http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops",
-  "http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops",
-  "http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops",
-  "http://openplanner.ilabt.imec.be/delijn/Limburg/stops",
-];
+const DE_LIJN_STOPS_URL =  "http://openplanner.ilabt.imec.be/delijn/stops";
 
 const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
-stopsFetcher.setAccessUrl(DE_LIJN_STOPS_URLS[2]);
+stopsFetcher.setAccessUrl(DE_LIJN_STOPS_URL);
 
 const reachableStopsFinder = new ReachableStopsFinderBirdsEye(stopsFetcher);
 
