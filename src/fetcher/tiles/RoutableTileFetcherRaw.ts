@@ -69,6 +69,8 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     }
   }
 
+  
+
   protected parseResponseLength(response): number {
     if (response.headers.get("content-length")) {
       return parseInt(response.headers.get("content-length"), 10);

@@ -5,6 +5,7 @@ import TYPES from "../../types";
 import IRoutableTileFetcher from "./IRoutableTileFetcher";
 import RoutableTileProviderDefault from "./RoutableTileProviderDefault";
 
+//can be replaced by TransitTileProviderDefault
 @injectable()
 export default class RoutableTileProviderTransit extends RoutableTileProviderDefault {
 

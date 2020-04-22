@@ -32,6 +32,19 @@ import FlexibleTransitPlanner from "./planner/configurations/FlexibleTransitPlan
 import GeospatialFragmentedPlanner from "./planner/configurations/GeospatialFragmentedPlanner";
 import ReducedCarPlanner from "./planner/configurations/ReducedCarPlanner";
 import TriangleTransitPlanner from "./planner/configurations/TriangleTransitPlanner";
+import RoadPlannerPathfinding from "./planner/road/RoadPlannerPathfinding";
+import PathfinderProvider from "./pathfinding/PathfinderProvider";
+import LDFetch from "./fetcher/LDFetch";
+import RoutableTileProviderDefault from "./fetcher/tiles/RoutableTileProviderDefault";
+import RoutableTileFetcherRaw from "./fetcher/tiles/RoutableTileFetcherRaw";
+import DijkstraTree from "./pathfinding/dijkstra-tree/DijkstraTree";
+import { Dijkstra } from "./pathfinding/dijkstra/Dijkstra";
+import ProfileProviderDefault from "./fetcher/profiles/ProfileProviderDefault";
+import ProfileFetcherDefault from "./fetcher/profiles/ProfileFetcherDefault";
+import LocationResolverDefault from "./query-runner/LocationResolverDefault";
+import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
+import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
+import TransitTileFetcherRaw from "./fetcher/tiles/TransitTileFetcherRaw";
 
 // classes
 export { default as IsochroneGenerator } from "./analytics/isochrones/main";
@@ -90,3 +103,43 @@ export default {
     ReducedCarPlanner,
     TriangleTransitPlanner,
 };
+
+import defaultContainer from "./configs/triangle_transit";
+import TYPES from "./types";
+import TransitTileProviderDefault from "./fetcher/tiles/TransitTileProviderDefault";
+import { RoutableTileCoordinate } from "./entities/tiles/coordinate";
+
+
+//INFO: this piece of code uses LDFetch to fetch transit data and transform them to Triples
+// const fetcher = new LDFetch();
+
+// fetcher.get("http://192.168.56.1:8080/car/transit/14/8294/5481.json").then(
+//     (resp) => {
+//         for(const triple of resp.triples){
+//             if(triple.object.value === "https://w3id.org/tree#GeospatiallyContainsRelation"){
+//                 console.log(triple.object.value);
+//             }
+//         }
+//     });
+
+//INFO: this piece of code tests the TRANSITTILEFETCHER
+
+const container = defaultContainer;
+const pathfindingProvider = container.get<PathfinderProvider>(TYPES.PathfinderProvider);
+const transitTileFetcher = new TransitTileFetcherRaw(pathfindingProvider);
+
+// transitTileFetcher.get("http://192.168.56.1:8080/car/transit/14/8294/5481.json").then(
+//     (resp) =>{
+//         console.log(resp);
+//     }
+// );
+
+// INFO: this piece of code tests the TRANSITTILEPROVIDERDEFAULT
+
+const transitTileDefaultProvider = new TransitTileProviderDefault(transitTileFetcher);
+
+transitTileDefaultProvider.getByTileCoords(new RoutableTileCoordinate(14, 8294, 5488)).then(
+    (resp) => {
+        console.log(resp);
+    }
+)

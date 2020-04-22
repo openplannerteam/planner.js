@@ -136,6 +136,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         return new Path([leg]);
     }
 
+    
     private pickTile(node: RoutableTileNode) {
         let coordinate: RoutableTileCoordinate;
         for (let zoom = 8; zoom < 15; zoom++) {
@@ -200,7 +201,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             }
         }
     }
-
+    //je begint op random coordinaaat en wil dat embedden in OSM, de hij zoekt dichtsbijzijnde straat bij dat punt en dan het dichtste punt
     private async embedLocation(from: ILocation, invert = false) {
         const zoom = 14;
         const padding = 0.005;

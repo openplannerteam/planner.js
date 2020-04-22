@@ -1,7 +1,9 @@
 import GeometryValue from "./geometry";
 
-enum RelationTypes {
-    GEOSPATIALLYC_CONTAINS = "https://w3id.org/tree#GeospatiallyContainsRelation",
+export enum RelationTypes {
+    //later nog aanpassen naar uitbreiding via de NAMESPACE, weet nu niet direct hoe het te doen
+    //GEOSPATIALLY_CONTAINS = "https://w3id.org/tree#GeospatiallyContainsRelation",
+    GEOSPATIALLY_CONTAINS = "tree:GeospatiallyContainsRelation",
 }
 
 export default class HypermediaTreeRelation {

@@ -26,6 +26,9 @@ export default async function classifyDataSource(accessUrl: string): Promise<IDa
             usedPredicates.add(predicate.value);
         }
 
+
+        //hier ergens zou ik kunnen checken op predicates die te maken hebben met transit tiles
+
         if (usedPredicates.has(URI.inNS(LC, "departureStop"))) {
             datatype = DATATYPE.Connections;
         } else if (usedPredicates.has(URI.inNS(GEO, "lat"))) {
