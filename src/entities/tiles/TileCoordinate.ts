@@ -1,4 +1,4 @@
-export class RoutableTileCoordinate {
+export default class TileCoordinate {
     public zoom: number;
     public x: number;
     public y: number;
@@ -9,7 +9,7 @@ export class RoutableTileCoordinate {
         this.y = y;
     }
 
-    public contains(other: RoutableTileCoordinate): boolean {
+    public contains(other: TileCoordinate): boolean {
         const n = Math.pow(2, other.zoom - this.zoom);
         const otherX = Math.floor(other.x / n);
         const otherY = Math.floor(other.y / n);

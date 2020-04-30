@@ -25,6 +25,40 @@ import Units from "../../util/Units";
 import Path from "../Path";
 import IRoadPlanner from "../road/IRoadPlanner";
 
+/*
+          ,-.
+          `-'
+          /|\
+           |                ,-------.             ,-----------.
+          / \               |Planner|             |QueryRunner|
+      Application           `---+---'             `-----+-----'
+           |       query        |                       |
+           |------------------->|                       |
+           |                    |                       |
+           |                    |      run(query)       |
+           |                    |---------------------->|
+           |                    |                       |
+           |                    |           ,----------------------!.
+           |                    |           |Resolve ids to objects|_\
+           |                    |           `------------------------'
+           |                    |                       ----.
+           |                    |                           | resolveQuery(query)
+           |                    |                       <---'
+           |                    |                       |
+           |           ,---------------------------------------------------------------!.
+           |           |Query is delegated to RoadPlanner or PublicTransportPlanner now|_\
+           |           `-----------------------------------------------------------------'
+          ,-----------------------------------------!.  |
+          |Add context, intermediate path steps, ...|_\ |
+          `-------------------------------------------' |
+           |                    ----.                   |
+           |                        | completePath(path)|
+           |                    <---'                   |
+           |                    |                       |
+           |                    |                       |
+
+*/
+
 /**
  * Allows to ask route planning queries. Emits events defined in [[EventType]]
  */

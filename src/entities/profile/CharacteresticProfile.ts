@@ -1,4 +1,4 @@
-import { RoutableTileWay } from "../tiles/way";
+import { RoutableTileWay } from "../tiles/RoutableTileWay";
 import DynamicProfile from "./DynamicProfile";
 
 export default class CharacteristicProfile extends DynamicProfile {

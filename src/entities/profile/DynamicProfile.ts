@@ -1,7 +1,7 @@
 import { DistanceM, DurationMs } from "../../interfaces/units";
 import Geo from "../../util/Geo";
-import { RoutableTileNode } from "../tiles/node";
-import { RoutableTileWay } from "../tiles/way";
+import { RoutableTileNode } from "../tiles/RoutableTileNode";
+import { RoutableTileWay } from "../tiles/RoutableTileWay";
 import Profile from "./Profile";
 import ProfileRule from "./ProfileRule";
 

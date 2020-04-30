@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
-import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
-import RoutableTileRegistry from "../../entities/tiles/registry";
-import { RoutableTileSet } from "../../entities/tiles/set";
-import { IRoutableTileIndex, RoutableTile } from "../../entities/tiles/tile";
+import { IRoutableTileIndex, RoutableTile } from "../../entities/tiles/RoutableTile";
+import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
+import { RoutableTileSet } from "../../entities/tiles/RoutableTileSet";
+import TileCoordinate from "../../entities/tiles/TileCoordinate";
 import ILocation from "../../interfaces/ILocation";
 import TYPES from "../../types";
 import { lat_to_tile, long_to_tile } from "../../util/Tiles";
@@ -30,22 +30,22 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
   public getIdForLocation(zoom: number, location: ILocation): string {
     const y = lat_to_tile(location.latitude, zoom);
     const x = long_to_tile(location.longitude, zoom);
-    const coordinate = new RoutableTileCoordinate(zoom, x, y);
+    const coordinate = new TileCoordinate(zoom, x, y);
     return this.getIdForTileCoords(coordinate);
   }
 
-  public getIdForTileCoords(coordinate: RoutableTileCoordinate): string {
+  public getIdForTileCoords(coordinate: TileCoordinate): string {
     return `https://tiles.openplanner.team/planet/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
   }
 
   public getByLocation(zoom: number, location: ILocation): Promise<RoutableTile> {
     const y = this.lat2tile(location.latitude, zoom);
     const x = this.long2tile(location.longitude, zoom);
-    const coordinate = new RoutableTileCoordinate(zoom, x, y);
+    const coordinate = new TileCoordinate(zoom, x, y);
     return this.getByTileCoords(coordinate);
   }
 
-  public async getByTileCoords(coordinate: RoutableTileCoordinate): Promise<RoutableTile> {
+  public async getByTileCoords(coordinate: TileCoordinate): Promise<RoutableTile> {
     const url = this.getIdForTileCoords(coordinate);
     const tile = await this.getByUrl(url);
     tile.coordinate = coordinate;  // todo, get these from server response
@@ -76,7 +76,7 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
     return new RoutableTileSet(tiles);
   }
 
-  public async getMultipleByTileCoords(coordinates: RoutableTileCoordinate[]): Promise<RoutableTileSet> {
+  public async getMultipleByTileCoords(coordinates: TileCoordinate[]): Promise<RoutableTileSet> {
     const tiles = await Promise.all(coordinates.map((coordinate) => {
       return this.getByTileCoords(coordinate);
     }));

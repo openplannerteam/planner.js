@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
+import TileCoordinate from "../../entities/tiles/TileCoordinate";
 import TYPES from "../../types";
 import IRoutableTileFetcher from "./IRoutableTileFetcher";
 import RoutableTileProviderDefault from "./RoutableTileProviderDefault";
@@ -13,7 +13,7 @@ export default class RoutableTileProviderIntermediate extends RoutableTileProvid
       super(fetcher);
   }
 
-  public getIdForTileCoords(coordinate: RoutableTileCoordinate): string {
+  public getIdForTileCoords(coordinate: TileCoordinate): string {
     return `https://hdelva.be/tiles/transit/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
   }
 }

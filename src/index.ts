@@ -10,7 +10,7 @@ import createPlanner from "./create";
 import classifyDataSource from "./data/classify";
 
 // instances
-import RoutableTileRegistry_ from "./entities/tiles/registry";
+import RoutableTileRegistry_ from "./entities/tiles/RoutableTileRegistry";
 import EventBus_ from "./events/EventBus";
 
 // enums

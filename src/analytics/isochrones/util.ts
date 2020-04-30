@@ -1,4 +1,4 @@
-import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
+import TileCoordinate from "../../entities/tiles/TileCoordinate";
 
 export function edgesOfTriangle(t) {
     // from https://mapbox.github.io/delaunator
@@ -11,7 +11,7 @@ export function pointsOfTriangle(delaunay, t) {
         .map((e) => delaunay.triangles[e]);
 }
 
-export function getNeighborTiles(coordinate: RoutableTileCoordinate): RoutableTileCoordinate[] {
+export function getNeighborTiles(coordinate: TileCoordinate): TileCoordinate[] {
     const result = [];
 
     for (const xDelta of [-1, 0, 1]) {

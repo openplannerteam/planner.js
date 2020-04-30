@@ -2,10 +2,10 @@ import proj4 from "proj4";
 
 import { inject, injectable } from "inversify";
 import Profile from "../entities/profile/Profile";
-import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/node";
-import RoutableTileRegistry from "../entities/tiles/registry";
-import { RoutableTile } from "../entities/tiles/tile";
-import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/way";
+import { RoutableTile } from "../entities/tiles/RoutableTile";
+import { IRoutableTileNodeIndex } from "../entities/tiles/RoutableTileNode";
+import RoutableTileRegistry from "../entities/tiles/RoutableTileRegistry";
+import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/RoutableTileWay";
 import ProfileProvider from "../fetcher/profiles/ProfileProviderDefault";
 import ILocation from "../interfaces/ILocation";
 import ILocationResolver from "../query-runner/ILocationResolver";

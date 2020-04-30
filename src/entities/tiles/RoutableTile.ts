@@ -1,20 +1,20 @@
 import ILocation from "../../interfaces/ILocation";
-import { RoutableTileCoordinate } from "./coordinate";
+import TileCoordinate from "./TileCoordinate";
 
-function tile_to_lat(coordinate: RoutableTileCoordinate) {
+function tile_to_lat(coordinate: TileCoordinate) {
     // from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     const n = Math.PI - 2 * Math.PI * coordinate.y / Math.pow(2, coordinate.zoom);
     return (180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))));
 }
 
-function tile_to_long(coordinate: RoutableTileCoordinate) {
+function tile_to_long(coordinate: TileCoordinate) {
     // from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     return (coordinate.x / Math.pow(2, coordinate.zoom) * 360 - 180);
 }
 
 export class RoutableTile {
     public id: string;
-    public coordinate?: RoutableTileCoordinate;
+    public coordinate?: TileCoordinate;
     protected nodes: Set<string>;
     protected ways: Set<string>;
 
@@ -36,7 +36,7 @@ export class RoutableTile {
         const top = tile_to_lat(this.coordinate);
         const left = tile_to_long(this.coordinate);
 
-        const next = new RoutableTileCoordinate(this.coordinate.zoom, this.coordinate.x + 1, this.coordinate.y + 1);
+        const next = new TileCoordinate(this.coordinate.zoom, this.coordinate.x + 1, this.coordinate.y + 1);
 
         const bottom = tile_to_lat(next);
         const right = tile_to_long(next);

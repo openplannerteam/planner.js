@@ -1,7 +1,7 @@
 import concaveman = require("concaveman");
 import { Delaunay } from "d3-delaunay";
-import { RoutableTileNode } from "../../entities/tiles/node";
-import RoutableTileRegistry from "../../entities/tiles/registry";
+import { RoutableTileNode } from "../../entities/tiles/RoutableTileNode";
+import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
 import ILocation from "../../interfaces/ILocation";
 import { IPathTree } from "../../pathfinding/pathfinder";
 import ILocationResolver from "../../query-runner/ILocationResolver";

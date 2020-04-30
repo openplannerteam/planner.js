@@ -1,10 +1,10 @@
 import fetch from "cross-fetch";
 import { inject, injectable } from "inversify";
 import { DataType } from "../..";
-import { IRoutableTileNodeIndex, RoutableTileNode } from "../../entities/tiles/node";
-import RoutableTileRegistry from "../../entities/tiles/registry";
-import { RoutableTile } from "../../entities/tiles/tile";
-import { IRoutableTileWayIndex, RoutableTileWay } from "../../entities/tiles/way";
+import { RoutableTile } from "../../entities/tiles/RoutableTile";
+import { IRoutableTileNodeIndex, RoutableTileNode } from "../../entities/tiles/RoutableTileNode";
+import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
+import { IRoutableTileWayIndex, RoutableTileWay } from "../../entities/tiles/RoutableTileWay";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import PathfinderProvider from "../../pathfinding/PathfinderProvider";

@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
 import { Footpath, IFootpathIndex } from "../../entities/footpaths/footpath";
-import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
+import TileCoordinate from "../../entities/tiles/TileCoordinate";
 import ILocation from "../../interfaces/ILocation";
 import { LDLoader } from "../../loader/ldloader";
 import { IndexThingView } from "../../loader/views";
@@ -45,22 +45,22 @@ export default class FootpathsProviderDefault implements IFootpathsProvider {
     public getIdForLocation(zoom: number, location: ILocation): string {
         const y = lat_to_tile(location.latitude, zoom);
         const x = long_to_tile(location.longitude, zoom);
-        const coordinate = new RoutableTileCoordinate(zoom, x, y );
+        const coordinate = new TileCoordinate(zoom, x, y );
         return this.getIdForTileCoords(coordinate);
       }
 
-    public getIdForTileCoords(coordinate: RoutableTileCoordinate): string {
+    public getIdForTileCoords(coordinate: TileCoordinate): string {
         return `https://hdelva.be/stops/distances/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
     }
 
     public getByLocation(zoom: number, location: ILocation): Promise<IFootpathIndex> {
         const y = lat_to_tile(location.latitude, zoom);
         const x = long_to_tile(location.longitude, zoom);
-        const coordinate = new RoutableTileCoordinate(zoom, x, y);
+        const coordinate = new TileCoordinate(zoom, x, y);
         return this.getByTileCoords(coordinate);
     }
 
-    public async getByTileCoords(coordinate: RoutableTileCoordinate): Promise<IFootpathIndex> {
+    public async getByTileCoords(coordinate: TileCoordinate): Promise<IFootpathIndex> {
         const url = this.getIdForTileCoords(coordinate);
         return await this.getByUrl(url);
     }

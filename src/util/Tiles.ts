@@ -1,4 +1,4 @@
-import { RoutableTileCoordinate } from "../entities/tiles/coordinate";
+import TileCoordinate from "../entities/tiles/TileCoordinate";
 
 export function lat_to_tile(lat: number, zoom: number) {
     // from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
@@ -10,6 +10,6 @@ export function long_to_tile(lon: number, zoom: number) {
     // from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     return Math.floor((lon + 180) / 360 * Math.pow(2, zoom));
 }
-export function toTileCoordinate(lat: number, long: number, zoom = 14): RoutableTileCoordinate {
-    return new RoutableTileCoordinate(zoom, long_to_tile(long, zoom), lat_to_tile(lat, zoom));
+export function toTileCoordinate(lat: number, long: number, zoom = 14): TileCoordinate {
+    return new TileCoordinate(zoom, long_to_tile(long, zoom), lat_to_tile(lat, zoom));
 }

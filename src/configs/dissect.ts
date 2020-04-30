@@ -1,7 +1,6 @@
 import { Container, interfaces } from "inversify";
 
 import Context from "../Context";
-import RoutableTileRegistry from "../entities/tiles/registry";
 import ReachableStopsSearchPhase from "../enums/ReachableStopsSearchPhase";
 import RoutingPhase from "../enums/RoutingPhase";
 import TravelMode from "../enums/TravelMode";
