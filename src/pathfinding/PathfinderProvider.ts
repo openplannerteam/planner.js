@@ -3,7 +3,7 @@ import proj4 from "proj4";
 import { inject, injectable } from "inversify";
 import Profile from "../entities/profile/Profile";
 import { RoutableTile } from "../entities/tiles/RoutableTile";
-import { IRoutableTileNodeIndex } from "../entities/tiles/RoutableTileNode";
+import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/RoutableTileNode";
 import RoutableTileRegistry from "../entities/tiles/RoutableTileRegistry";
 import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/RoutableTileWay";
 import ProfileProvider from "../fetcher/profiles/ProfileProviderDefault";
@@ -70,19 +70,19 @@ export default class PathfinderProvider {
     return this.shortestPathTree.createInstance(graph);
   }
 
-  public async registerEdges(ways: IRoutableTileWayIndex, nodes: IRoutableTileNodeIndex): Promise<void> {
+  public async registerEdges(ways: RoutableTileWay[]): Promise<void> {
     // add new edges to existing graphs
     for (const profileId of Object.keys(this.graphs)) {
       const profile = await this.profileProvider.getProfile(profileId);
 
-      for (const way of Object.values(ways)) {
+      for (const way of ways) {
         if (!profile.hasAccess(way)) {
           continue;
         }
 
         for (const edge of way.getParts()) {
-          const from = nodes[edge.from];
-          const to = nodes[edge.to];
+          const from = this.routableTileRegistry.getNode(edge.from);
+          const to = this.routableTileRegistry.getNode(edge.to);
           if (from && to) {
             if (profile.isObstacle(from) || profile.isObstacle(to)) {
               continue;

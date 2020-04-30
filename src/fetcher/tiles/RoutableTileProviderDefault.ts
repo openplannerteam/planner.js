@@ -4,6 +4,7 @@ import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
 import { RoutableTileSet } from "../../entities/tiles/RoutableTileSet";
 import TileCoordinate from "../../entities/tiles/TileCoordinate";
 import ILocation from "../../interfaces/ILocation";
+import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import TYPES from "../../types";
 import { lat_to_tile, long_to_tile } from "../../util/Tiles";
 import IRoutableTileFetcher from "./IRoutableTileFetcher";
@@ -15,10 +16,13 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
   protected fetcher: IRoutableTileFetcher;
   protected registry: RoutableTileRegistry;
   protected tiles: IRoutableTileIndex = {};
+  protected pathfinderProvider: PathfinderProvider;
 
   constructor(
+    @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
     @inject(TYPES.RoutableTileFetcher) fetcher: IRoutableTileFetcher,
   ) {
+    this.pathfinderProvider = pathfinderProvider;
     this.fetcher = fetcher;
     this.registry = RoutableTileRegistry.getInstance();
   }
@@ -55,6 +59,10 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
   public async getByUrl(url: string): Promise<RoutableTile> {
     if (!this.tiles[url]) {
       this.tiles[url] = this.fetcher.get(url);
+      const tile = await this.tiles[url];
+      // pointless copies because ES6 is still garbage
+      const ways = Array.from(tile.getWays()).map((v: string) => this.registry.getWay(v));
+      this.pathfinderProvider.registerEdges(ways);
     }
 
     return await this.tiles[url];
