@@ -30,6 +30,7 @@ export default class ProfileProviderDefault implements IProfileProvider {
   }
 
   public async parseDevelopmentProfile(blob: object): Promise<string> {
+    this.profiles = {};
     this.developmentProfileCounter += 1;
     const newProfile = await this.fetcher.parseProfileBlob(blob, "" + this.developmentProfileCounter);
     if (this.developmentProfile) {

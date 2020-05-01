@@ -20,6 +20,8 @@ enum EventType {
   ReachableTransfer = "ReachableTransfer", // planning reached a transfer
 
   ResourceFetch = "ResourceFetch",
+
+  ZoiZone = "ZoiZone",
 }
 
 export default EventType;

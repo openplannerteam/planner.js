@@ -9,11 +9,9 @@ export default interface IRoutableTileProvider {
     getIdForLocation(zoom: number, location: ILocation): string;
     getIdForTileCoords(coordinate: TileCoordinate): string;
 
-    getByUrl(url: string): Promise<RoutableTile>;
     getByLocation(zoom: number, location: ILocation): Promise<RoutableTile>;
     getByTileCoords(coordinate: TileCoordinate): Promise<RoutableTile>;
 
-    getMultipleByUrl(urls: string[]): Promise<RoutableTileSet>;
     getmultipleByLocation(zoom: number, locations: ILocation[]): Promise<RoutableTileSet>;
     getMultipleByTileCoords(coordinates: TileCoordinate[]): Promise<RoutableTileSet>;
 }

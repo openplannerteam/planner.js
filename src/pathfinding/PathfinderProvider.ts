@@ -70,12 +70,13 @@ export default class PathfinderProvider {
     return this.shortestPathTree.createInstance(graph);
   }
 
-  public async registerEdges(ways: RoutableTileWay[]): Promise<void> {
+  public async registerEdges(ways: Set<string>): Promise<void> {
     // add new edges to existing graphs
     for (const profileId of Object.keys(this.graphs)) {
       const profile = await this.profileProvider.getProfile(profileId);
 
-      for (const way of ways) {
+      for (const wayId of ways) {
+        const way = this.routableTileRegistry.getWay(wayId);
         if (!profile.hasAccess(way)) {
           continue;
         }
@@ -98,13 +99,13 @@ export default class PathfinderProvider {
   }
 
   public async embedLocation(p: ILocation, tileset: RoutableTile, invert = false) {
-    if (this.embedded.has(Geo.getId(p))) {
-      return;
-    }
-
-    this.embedded.add(Geo.getId(p));
-
     for (const profile of await this.profileProvider.getProfiles()) {
+      if (this.embedded.has(profile.getID() + Geo.getId(p))) {
+        continue;
+      }
+
+      this.embedded.add(profile.getID() + Geo.getId(p));
+
       let bestDistance = Infinity;
       let bestSegment: [RoutableTileWay, ILocation, ILocation];
 

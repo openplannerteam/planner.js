@@ -56,26 +56,6 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
     return tile;
   }
 
-  public async getByUrl(url: string): Promise<RoutableTile> {
-    if (!this.tiles[url]) {
-      this.tiles[url] = this.fetcher.get(url);
-      const tile = await this.tiles[url];
-      // pointless copies because ES6 is still garbage
-      const ways = Array.from(tile.getWays()).map((v: string) => this.registry.getWay(v));
-      this.pathfinderProvider.registerEdges(ways);
-    }
-
-    return await this.tiles[url];
-  }
-
-  public async getMultipleByUrl(urls: string[]): Promise<RoutableTileSet> {
-    const tiles = await Promise.all(urls.map((url) => {
-      return this.getByUrl(url);
-    }));
-
-    return new RoutableTileSet(tiles);
-  }
-
   public async getmultipleByLocation(zoom: number, locations: ILocation[]): Promise<RoutableTileSet> {
     const tiles = await Promise.all(locations.map((location) => {
       return this.getByLocation(zoom, location);
@@ -90,6 +70,16 @@ export default class RoutableTileProviderDefault implements IRoutableTileProvide
     }));
 
     return new RoutableTileSet(tiles);
+  }
+
+  protected async getByUrl(url: string): Promise<RoutableTile> {
+    if (!this.tiles[url]) {
+      this.tiles[url] = this.fetcher.get(url);
+      const tile = await this.tiles[url];
+      this.pathfinderProvider.registerEdges(tile.getWays());
+    }
+
+    return await this.tiles[url];
   }
 
   private long2tile(lon: number, zoom: number) {

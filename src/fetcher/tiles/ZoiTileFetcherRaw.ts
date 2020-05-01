@@ -12,6 +12,8 @@ import PathfinderProvider from "../../pathfinding/PathfinderProvider";
 import JSONLDContext from "../../uri/JSONLDContext";
 import IZoiTileFetcher from "./IZoiTileFetcherRaw";
 
+import { EventEmitter } from "events";
+
 function parseWktLiteral(raw: string) {
   const [reference, ...rest] = raw.split(" ");
   if (reference === "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>") {
@@ -25,6 +27,11 @@ export default class ZoiTileFetcherRaw implements IZoiTileFetcher {
 
   protected mapping: object;
   protected pathfinderProvider: PathfinderProvider;
+  protected eventBus: EventEmitter;
+
+  public constructor() {
+    this.eventBus = EventBus.getInstance();
+  }
 
   public async get(url: string): Promise<ZoiTile> {
     const beginTime = new Date();

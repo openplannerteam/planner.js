@@ -189,8 +189,8 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
     private async fetchTile(coordinate: TileCoordinate) {
         const tileId = this.tileProvider.getIdForTileCoords(coordinate);
         if (!this.reachedTiles.has(tileId)) {
-            this.eventBus.emit(EventType.ReachableTile, coordinate);
             const tile = await this.tileProvider.getByTileCoords(coordinate);
+            this.eventBus.emit(EventType.ReachableTile, coordinate);
             this.reachedTiles.add(tileId);
             const boundaryNodes: Set<string> = new Set();
 

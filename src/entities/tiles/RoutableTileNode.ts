@@ -15,10 +15,13 @@ export class RoutableTileNode implements ILocation {
     public definedTags: object;
     public freeformTags: string[];
 
+    public proximity;
+
     constructor(id: string) {
         this.id = id;
         this.definedTags = {};
         this.freeformTags = [];
+        this.proximity = {};
     }
 }
 
