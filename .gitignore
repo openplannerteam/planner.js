@@ -8,3 +8,4 @@ lib
 docs/code/*
 docs/js/planner*
 distances
+.vscode/launch.json
