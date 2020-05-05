@@ -50,6 +50,7 @@ import IQueryRunner from "../query-runner/IQueryRunner";
 import LocationResolverConvenience from "../query-runner/LocationResolverConvenience";
 import TYPES from "../types";
 
+
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
 container.bind<IQueryRunner>(TYPES.QueryRunner).to(QueryRunnerExponential);
@@ -116,6 +117,7 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderIntermediate).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
 
 container.bind<IFootpathsFetcher>(TYPES.FootpathsProvider).to(FootpathsProviderDefault).inSingletonScope();
+
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();

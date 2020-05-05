@@ -1,6 +1,7 @@
 import ILocation from "../../interfaces/ILocation";
 import { RoutableTileCoordinate } from "./coordinate";
 import HypermediaTreeRelation from "../tree/relation";
+import GeometryValue from "../tree/geometry";
 
 function tile_to_lat(coordinate: RoutableTileCoordinate) {
     // from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
@@ -55,15 +56,18 @@ export class TransitTile {
     public id: string;
     //routabletilecoordinate is the same as a transit tile coordinate so atm this is good enough
     public coordinate?: RoutableTileCoordinate;
+    public area : GeometryValue;
     protected nodes: Set<string>;
     protected ways: Set<string>;
     protected relations: Set<HypermediaTreeRelation>;
 
-    constructor(id: string, nodes: Set<string>, ways: Set<string>, relations?: Set<HypermediaTreeRelation>) {
+    constructor(id: string, nodes: Set<string>, ways: Set<string>, area: GeometryValue, coordinate?: RoutableTileCoordinate, relations?: Set<HypermediaTreeRelation>) {
         this.id = id;
         this.nodes = nodes;
         this.ways = ways;
         this.relations = relations;
+        this.area = area;
+        this.coordinate = coordinate;
     }
 
     public getWays() {
@@ -76,6 +80,14 @@ export class TransitTile {
 
     public getRelations(){
         return this.relations;
+    }
+
+    public getArea(): GeometryValue {
+        return this.area;
+    }
+
+    public getCoordinate(): RoutableTileCoordinate{
+        return this.coordinate;
     }
 
     public contains(location: ILocation): boolean {

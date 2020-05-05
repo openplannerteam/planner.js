@@ -31,6 +31,8 @@ const TYPES = {
   TransitTileProvider: Symbol("TransitTileProvider"),
   TransitTileFetcher: Symbol("TransitTileFetcher"),
 
+  SmartTileProvider: Symbol("SmartTileProvider"),
+
   FootpathsProvider: Symbol("FootpathsProvider"),
 
   PublicTransportPlanner: Symbol("PublicTransportPlanner"),

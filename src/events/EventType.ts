@@ -20,6 +20,8 @@ enum EventType {
   ReachableTransfer = "ReachableTransfer", // planning reached a transfer
 
   ResourceFetch = "ResourceFetch",
+
+  AddLocalNode = "AddLocalNode", //a local node (start or endpoint) was added 
 }
 
 export default EventType;

@@ -29,6 +29,12 @@ import IRoutableTileProvider from "../fetcher/tiles/IRoutableTileProvider";
 import RoutableTileFetcherRaw from "../fetcher/tiles/RoutableTileFetcherRaw";
 import RoutableTileProviderDefault from "../fetcher/tiles/RoutableTileProviderDefault";
 import RoutableTileProviderTransit from "../fetcher/tiles/RoutableTileProviderTransit";
+import ITransitTileFetcher from "../fetcher/tiles/ITransitTileFetcher";
+import TransitTileFetcherRaw from "../fetcher/tiles/TransitTileFetcherRaw";
+import ITransitTileProvider from "../fetcher/tiles/ISmartTileProvider";
+import TransitTileProviderDefault from "../fetcher/tiles/SmartTileProvider";
+import SmartTileProvider from "../fetcher/tiles/SmartTileProvider";
+import ISmartTileProvider from '../fetcher/tiles/ISmartTileProvider';
 
 import { LDLoader } from "../loader/ldloader";
 import DijkstraTree from "../pathfinding/dijkstra-tree/DijkstraTree";
@@ -118,6 +124,10 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderDefault).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Base);
 container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderTransit).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
+
+  container.bind<ITransitTileFetcher>(TYPES.TransitTileFetcher).to(TransitTileFetcherRaw).inSingletonScope();
+  container.bind<ITransitTileProvider>(TYPES.TransitTileProvider).to(TransitTileProviderDefault);
+  container.bind<ISmartTileProvider>(TYPES.SmartTileProvider).to(SmartTileProvider);
 
 // Init LDFetch
 container.bind<LDFetch>(TYPES.LDFetch).to(LDFetch).inSingletonScope();
