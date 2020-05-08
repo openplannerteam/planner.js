@@ -3,6 +3,9 @@ import { GEO, LC, PROFILE } from "../uri/constants";
 import URI from "../uri/uri";
 import DATATYPE from "./Datatypes";
 import IDataSource from "./IDataSource";
+import { Catalog } from "../entities/catalog/catalog";
+import { Dataset } from "../entities/catalog/dataset";
+import { DataType } from "..";
 
 export default async function classifyDataSource(accessUrl: string): Promise<IDataSource> {
     let datatype: symbol;
@@ -44,4 +47,32 @@ export default async function classifyDataSource(accessUrl: string): Promise<IDa
         accessUrl,
         datatype,
     };
+}
+
+export function classifyDataSet(dataSet: Dataset): IDataSource{
+    let datatype: symbol;
+    let accessUrl: string;
+    let profile: string;
+
+    if(dataSet.derivations){
+        for(const derivation of dataSet.derivations){
+            if(derivation.activity.algorithm === "https://hdelva.be/reduce_option/transit"){
+                datatype = DataType.TransitTile;
+            }
+            if(derivation.activity.usedProfile){
+                profile = derivation.activity.usedProfile;
+            }
+        }
+    }
+    else{
+        datatype = DataType.RoutableTile
+    }
+
+    accessUrl = dataSet.distributions[0].accessUrl;
+
+    return {
+        accessUrl,
+        datatype,
+        profile,
+    }
 }

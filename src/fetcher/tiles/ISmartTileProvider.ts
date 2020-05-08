@@ -5,19 +5,23 @@ import ILocation from "../../interfaces/ILocation";
 import { RoutableTileNode } from "../../entities/tiles/node";
 
 //keeps routabletilecoordinate, as a coordinate doesnt alter based on routable of transit tiles, so maybe change the name of RoutableTileCoordinate instead
-export default interface ITransitTileProvider {
+export default interface ISmartTileProvider {
     wait(): Promise<void>;
 
-    getIdForLocation(zoom: number, location: ILocation): string;
+    selectDataSources(catalogUrl: string, profileID: string)
+
+    getIdForLocation(zoom: number, location: ILocation, local?:boolean): string;
     getIdForTileCoords(coordinate: RoutableTileCoordinate): string;
 
-    getByUrl(url: string): Promise<TransitTile | RoutableTile>;
+    getByUrl(url: string): Promise<TransitTile>;
+    getRTByUrl(url:string): Promise<RoutableTile>;
     getByLocation(zoom: number, location: ILocation): Promise<TransitTile | RoutableTile>;
     getByTileCoords(coordinate: RoutableTileCoordinate): Promise<TransitTile | RoutableTile>;
 
     //functions in this block are added by Thomas Neuser
     fetchCorrectTile(node: RoutableTileNode, local?: boolean);
     traverseTransitTree(node: RoutableTileNode);
+    traverseRoutableTree(node: RoutableTileNode);
     addLocalNodes(nodes: ILocation[]);
     getTileFromCache(id:string);
 

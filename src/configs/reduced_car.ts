@@ -55,6 +55,7 @@ import ILocationResolver from "../query-runner/ILocationResolver";
 import IQueryRunner from "../query-runner/IQueryRunner";
 import LocationResolverConvenience from "../query-runner/LocationResolverConvenience";
 import TYPES from "../types";
+import CatalogFetcherRaw from "../fetcher/catalog/CatalogFetcherRaw";
 
 const container = new Container();
 container.bind<Context>(TYPES.Context).to(Context).inSingletonScope();
@@ -90,7 +91,7 @@ container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
-container.bind<ICatalogFetcher>(TYPES.CatalogFetcher).to(CatalogFetcherDefault).inSingletonScope();
+container.bind<ICatalogFetcher>(TYPES.CatalogFetcher).to(CatalogFetcherRaw).inSingletonScope();
 container.bind<ICatalogProvider>(TYPES.CatalogProvider).to(CatalogProviderDefault).inSingletonScope();
 
 container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderDefault).inSingletonScope();

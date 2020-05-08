@@ -45,6 +45,7 @@ import LocationResolverDefault from "./query-runner/LocationResolverDefault";
 import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import TransitTileFetcherRaw from "./fetcher/tiles/TransitTileFetcherRaw";
+import { classifyDataSet } from "./data/classify";
 
 // classes
 export { default as IsochroneGenerator } from "./analytics/isochrones/main";
@@ -112,6 +113,9 @@ import { RoutableTileCoordinate } from "./entities/tiles/coordinate";
 import RoadPlannerPathfindingExperimental from "./planner/road/RoadPlannerPathfindingExperimental";
 import IRoadPlanner from "./planner/road/IRoadPlanner";
 import { RoutableTileNode } from "./entities/tiles/node";
+import ICatalogProvider from "./fetcher/catalog/ICatalogProvider";
+import ICatalogFetcher from "./fetcher/catalog/ICatalogFetcher";
+import { Catalog } from "./entities/catalog/catalog";
 
 
 //INFO: this piece of code uses LDFetch to fetch transit data and transform them to Triples
@@ -144,10 +148,10 @@ const transitTileProvider = container.get<ITransitTileProvider>(TYPES.TransitTil
 // from: [{ latitude: 50.93278, longitude: 5.32665 }], // Pita Aladin, Hasselt
 // //     to: [{ latitude: 50.7980187, longitude: 3.1877779 }], // Burger Pita Pasta, Menen
 
-let startNode = new RoutableTileNode("start");
-let stopNode = new RoutableTileNode("stop");
+// let startNode = new RoutableTileNode("start");
+// let stopNode = new RoutableTileNode("stop");
 
-let testNode = new RoutableTileNode("test");
+// let testNode = new RoutableTileNode("test");
 
 // POINT(4.1877779 50.8080187) ergens links van Brussel
 // POINT(5.2 50.85)
@@ -249,7 +253,7 @@ planner.plan({
                 const stop = new Date();
                 const stopTime = stop.getTime();
                 console.log(stopTime-startTime);
-                //console.log(leg.getStopTime());
+                console.log(leg.getSteps().length);
                 for (let step of leg.getSteps()) {
                     //console.log("startLocation: " + step.startLocation.latitude + "-" + step.startLocation.longitude + " , stoplocation: " + step.stopLocation.latitude + "-" + step.stopLocation.longitude);
                 }
@@ -258,3 +262,23 @@ planner.plan({
         })
     }
 )
+
+// const catalogProvider = container.get<ICatalogProvider>(TYPES.CatalogProvider);
+// const catalogFetcher = container.get<ICatalogFetcher>(TYPES.CatalogFetcher);
+
+// catalogFetcher.get("http://192.168.56.1:8080/tiles/catalog_v2.json").then( resp => {
+
+//     for(const dataset of resp.datasets){
+//         console.log(classifyDataSet(dataset));
+//     }
+
+// });
+
+// catalogProvider.getCatalog("http://192.168.56.1:8080/tiles/catalog_v2.json").then(catalog => {
+
+
+//     console.log(catalog.id);
+//     for (const set of catalog.datasets) {
+//         console.log(set.id);
+//     }
+// });

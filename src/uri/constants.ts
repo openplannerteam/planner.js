@@ -13,3 +13,5 @@ export const LC = "http://semweb.mmlab.be/ns/linkedconnections#";
 export const DCAT = "http://www.w3.org/ns/dcat#";
 export const DCT = "http://purl.org/dc/terms/";
 export const GTFS = "http://vocab.gtfs.org/terms#";
+export const PROV = "https://www.w3.org/TR/prov-o/#";
+export const EX = "https://example.org/#";

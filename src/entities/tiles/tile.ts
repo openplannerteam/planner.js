@@ -16,14 +16,23 @@ function tile_to_long(coordinate: RoutableTileCoordinate) {
 
 export class RoutableTile {
     public id: string;
+    public area : GeometryValue;
     public coordinate?: RoutableTileCoordinate;
     protected nodes: Set<string>;
     protected ways: Set<string>;
+    protected relations: Set<HypermediaTreeRelation>;
 
-    constructor(id: string, nodes: Set<string>, ways: Set<string>) {
+    constructor(id: string, nodes: Set<string>, ways: Set<string>, area?: GeometryValue,coordinate?: RoutableTileCoordinate, relations?: Set<HypermediaTreeRelation>) {
         this.id = id;
         this.nodes = nodes;
         this.ways = ways;
+        this.relations = relations;
+        this.area = area;
+        this.coordinate = coordinate;
+    }
+
+    public getCoordinate(): RoutableTileCoordinate{
+        return this.coordinate;
     }
 
     public getWays() {
@@ -32,6 +41,23 @@ export class RoutableTile {
 
     public getNodes() {
         return this.nodes;
+    }
+
+    public getArea(): GeometryValue {
+        return this.area;
+    }
+
+    public getRelations(){
+        return this.relations;
+    }
+
+    public containsGeoValue(location: ILocation): boolean{
+        if(this.area.area){
+            return this.area.contains(location);
+        }
+        else{
+            return this.contains(location);
+        }
     }
 
     public contains(location: ILocation): boolean {
@@ -89,6 +115,11 @@ export class TransitTile {
     public getCoordinate(): RoutableTileCoordinate{
         return this.coordinate;
     }
+
+    public containsGeoValue(location: ILocation): boolean{
+        return this.area.contains(location);
+    }
+
 
     public contains(location: ILocation): boolean {
         const top = tile_to_lat(this.coordinate);

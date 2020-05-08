@@ -1,4 +1,5 @@
 import DatasetDistribution from "./dataset_distribution";
+import { Derivation } from "./derivation";
 
 export class Dataset {
     public static create(id: string) {
@@ -12,6 +13,8 @@ export class Dataset {
     public area: string;
     public rights: string;
     public distributions: DatasetDistribution[];
+    public derivations: Derivation[];
+    public baseDataUrl: string;
 
     constructor(id: string) {
         this.id = id;

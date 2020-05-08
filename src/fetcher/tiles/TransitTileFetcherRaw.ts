@@ -108,6 +108,59 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
     }
   }
 
+  public async getMetaData(url: string): Promise<TransitTile> {
+    const beginTime = new Date();
+    const response = await fetch(url);
+    const responseText = await response.text();
+    if (response.status !== 200) {
+      EventBus.getInstance().emit(EventType.Warning, `${url} responded with status code ${response.status}`);
+    }
+    if (response.status === 200 && responseText) {
+      const blob = JSON.parse(responseText);
+
+      //kunnen nog veranderd worden naar transittilenodeindex en transittilewayindex maar 
+      //zou exact hetzelfde zijn
+      const nodes: IRoutableTileNodeIndex = {};
+      const ways: IRoutableTileWayIndex = {};
+      let relations = new Set<HypermediaTreeRelation>();
+      let area: GeometryValue;
+      let coordinate: RoutableTileCoordinate;
+
+      const size = this.parseResponseLength(response);
+      const duration = (new Date()).getTime() - beginTime.getTime();
+
+      if (blob["tree:relation"]) {
+        for (const entity of blob["tree:relation"]) {
+          const relation = this.createRelation(entity);
+          relations.add(relation);
+        }
+      }
+
+      EventBus.getInstance().emit(
+        EventType.ResourceFetch,
+        {
+          DataType: DataType.TransitTile,
+          url,
+          duration,
+          size,
+        },
+      );
+
+      //hier wordt in de tile gestoken welke area hij zelf bevat
+      area = new GeometryValue();
+
+      if (blob["tiles:GeospatiallyContains"]) {
+        area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
+      }
+
+      coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
+
+      return new TransitTile(url, new Set(), new Set(), area, coordinate, relations);
+    } else {
+      return new TransitTile(url, new Set(), new Set(), new GeometryValue());
+    }
+  }
+
   private parseWktLiteral(raw: string) {
     const [reference, ...rest] = raw.split(" ");
     if (reference === "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>") {

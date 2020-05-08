@@ -78,6 +78,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
 
         const paths = [];
         const profile = await this.profileProvider.getProfile(profileID);
+        await this.smartTileProvider.selectDataSources("http://192.168.56.1:8080/tiles/catalog_v2.json", profileID);
 
         if (fromLocations && toLocations && fromLocations.length && toLocations.length) {
 
@@ -237,6 +238,8 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
 
     private async fetchTile(node: RoutableTileNode) {
         let local = false;
+        let baseTileId: string;
+        let transitTileId: string;
 
         for (const localNode of this.localNodes) {
             if (node.latitude === localNode.latitude && node.longitude === localNode.longitude) {
@@ -245,48 +248,45 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             }
         }
 
-        //hier wordt de accessURL gegenereerd waarmee je eventueel de tiles zou kunnen fetchen
-        let baseTile : RoutableTile;
-        if(local == true){
-            baseTile = await this.smartTileProvider.fetchCorrectTile(node, true);
+        if(local){
+            baseTileId = await this.smartTileProvider.traverseRoutableTree(node);
         }
-            const transitTile = await this.smartTileProvider.fetchCorrectTile(node);
+        else{
+            transitTileId = await this.smartTileProvider.traverseTransitTree(node);
+        }
 
-        if (!this.reachedTiles.has(transitTile.id) && !this.reachedTiles.has(baseTile.id)) {
+        if ((local || !this.reachedTiles.has(transitTileId)) && (!local || !this.reachedTiles.has(baseTileId))) {
             this.eventBus.emit(EventType.ReachableTile, node);
             let tile: RoutableTile;
             let tTile: TransitTile;
 
-            if (local) {
-                tile = await this.smartTileProvider.fetchCorrectTile(node, true);
-                this.reachedTiles.add(baseTile.id);
-                this.reachedTiles.add(transitTile.id);
-                console.log(baseTile.id);
-                console.log(transitTile.id);
-            } else {
-                tTile = await this.smartTileProvider.fetchCorrectTile(node);
-                this.reachedTiles.add(transitTile.id);
-                console.log(transitTile.id);
-            }
-
             const boundaryNodes: Set<string> = new Set();
 
-            if (tile) {
+            if (local) {
+                tile = await this.smartTileProvider.getRTByUrl(baseTileId);
+                this.reachedTiles.add(baseTileId);
+                console.log(baseTileId);
+
                 for (const nodeId of tile.getNodes()) {
                     const node = this.registry.getNode(nodeId);
-                    if (!tile.contains(node)) {
+                    if (!tile.containsGeoValue(node)) {
                         boundaryNodes.add(nodeId);
                     }
                 }
-            }
-            if (tTile) {
+
+            } else {
+                tTile = await this.smartTileProvider.getByUrl(transitTileId);
+                this.reachedTiles.add(transitTileId);
+                console.log(transitTileId);
+
                 for (const nodeId of tTile.getNodes()) {
                     const node = this.registry.getNode(nodeId);
-                    if (!tTile.contains(node)) {
+                    if (!tTile.containsGeoValue(node)) {
                         boundaryNodes.add(nodeId);
                     }
                 }
             }
+
             const self = this;
             for (const profile of await this.profileProvider.getProfiles()) {
                 const graph = this.pathfinderProvider.getGraphForProfile(profile);

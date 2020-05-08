@@ -12,6 +12,11 @@ import TYPES from "../../types";
 import { OSM } from "../../uri/constants";
 import URI from "../../uri/uri";
 import IRoutableTileFetcher from "./IRoutableTileFetcher";
+import HypermediaTreeRelation from "../../entities/tree/relation";
+import { RelationTypes } from "../../entities/tree/relation";
+import GeometryValue from "../../entities/tree/geometry";
+import parse = require("wellknown");
+import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 
 @injectable()
 export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
@@ -39,6 +44,8 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
 
       const nodes: IRoutableTileNodeIndex = {};
       const ways: IRoutableTileWayIndex = {};
+      let coordinate: RoutableTileCoordinate;
+      let area: GeometryValue;
 
       const size = this.parseResponseLength(response);
       const duration = (new Date()).getTime() - beginTime.getTime();
@@ -62,8 +69,60 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
           size,
         },
       );
+      area = new GeometryValue();
+      coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
 
-      return this.processTileData(url, nodes, ways);
+      return this.processTileData(url, nodes, ways, area, coordinate);
+    } else {
+      return new RoutableTile(url, new Set(), new Set());
+    }
+  }
+
+  public async getMetaData(url: string): Promise<RoutableTile> {
+    const beginTime = new Date();
+    const response = await fetch(url);
+    const responseText = await response.text();
+    if (response.status !== 200) {
+      EventBus.getInstance().emit(EventType.Warning, `${url} responded with status code ${response.status}`);
+    }
+    if (response.status === 200 && responseText) {
+      const blob = JSON.parse(responseText);
+
+      const nodes: IRoutableTileNodeIndex = {};
+      const ways: IRoutableTileWayIndex = {};
+      let relations = new Set<HypermediaTreeRelation>();
+      let area: GeometryValue;
+      let coordinate: RoutableTileCoordinate;
+
+      const size = this.parseResponseLength(response);
+      const duration = (new Date()).getTime() - beginTime.getTime();
+
+      if (blob["tree:relation"]) {
+        for (const entity of blob["tree:relation"]) {
+          const relation = this.createRelation(entity);
+          relations.add(relation);
+        }
+      }
+
+      EventBus.getInstance().emit(
+        EventType.ResourceFetch,
+        {
+          DataType: DataType.RoutableTile,
+          url,
+          duration,
+          size,
+        },
+      );
+
+      area = new GeometryValue();
+
+      if (blob["tiles:GeospatiallyContains"]) {
+        area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
+      }
+
+      coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
+
+      return this.processTileData(url, nodes, ways, area, coordinate, relations);
     } else {
       return new RoutableTile(url, new Set(), new Set());
     }
@@ -83,7 +142,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     }
   }
 
-  protected processTileData(url: string, nodes: IRoutableTileNodeIndex, ways: IRoutableTileWayIndex) {
+  protected processTileData(url: string, nodes: IRoutableTileNodeIndex, ways: IRoutableTileWayIndex, area?: GeometryValue, coordinate?: RoutableTileCoordinate, relations?: Set<HypermediaTreeRelation>) {
     this.pathfinderProvider.registerEdges(ways, nodes);
 
     for (const node of Object.values(nodes)) {
@@ -94,7 +153,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       this.routableTileRegistry.registerWay(way);
     }
 
-    return new RoutableTile(url, new Set(Object.keys(nodes)), new Set(Object.keys(ways)));
+    return new RoutableTile(url, new Set(Object.keys(nodes)), new Set(Object.keys(ways)), area, coordinate, relations);
   }
 
   private createNode(blob): RoutableTileNode {
@@ -156,5 +215,30 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     }
 
     return way;
+  }
+
+  private createRelation(blob): HypermediaTreeRelation {
+    //what to use for id? tree:node points at the node on which this relation applies (as in this node contains that polygon)
+    const id = blob["tree:node"];
+    const relation = HypermediaTreeRelation.create(id);
+
+    //this if structure looks stupid but did it to put a RelationType value into relation.type instead of assigning the string to it
+    //maybe relation.type = blob["type"] would be better
+    if (blob["@type"] === RelationTypes.GEOSPATIALLY_CONTAINS) {
+      relation.type = RelationTypes.GEOSPATIALLY_CONTAINS;
+    }
+    relation.geoValue = GeometryValue.create(blob["tree:value"]);
+    relation.geoValue.area = this.parseWktLiteralPolygon(blob["tree:value"]);
+    relation.node = id;
+
+    return relation;
+  }
+
+  private parseWktLiteralPolygon(raw: string) {
+    const [reference, ...rest] = raw.split(" ");
+    if (reference === "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>") {
+      return parse(rest.join(" "));
+    }
+    return parse(raw);
   }
 }

@@ -6,9 +6,11 @@ import DatasetDistribution from "../../entities/catalog/dataset_distribution";
 import { LDLoader } from "../../loader/ldloader";
 import { ThingView } from "../../loader/views/single";
 import TYPES from "../../types";
-import { DCAT, DCT } from "../../uri/constants";
+import { DCAT, DCT, PROV, EX } from "../../uri/constants";
 import URI from "../../uri/uri";
 import ICatalogFetcher from "./ICatalogFetcher";
+import { Derivation } from "../../entities/catalog/derivation";
+import { Activity } from "../../entities/catalog/activity";
 
 @injectable()
 export default class CatalogFetcherDefault implements ICatalogFetcher {
@@ -62,6 +64,7 @@ export default class CatalogFetcherDefault implements ICatalogFetcher {
         view.addMapping(URI.inNS(DCT, "spatial"), "area");
         view.addMapping(URI.inNS(DCAT, "accessRights"), "rights");
         view.addMapping(URI.inNS(DCAT, "distribution"), "distributions", this.getDistributionView());
+        view.addMapping(URI.inNS(PROV, "qualifiedDerivation"), "qualifiedDerivation", this.getDerivationView());
         return view;
     }
 
@@ -69,6 +72,22 @@ export default class CatalogFetcherDefault implements ICatalogFetcher {
         const view = new ThingView(DatasetDistribution.create);
         view.addMapping(URI.inNS(DCAT, "accessURL"), "accessUrl");
         view.addMapping(URI.inNS(DCAT, "mediaType"), "mediatypes");
+        return view;
+    }
+
+    protected getDerivationView(){
+        const view = new ThingView(Derivation.create);
+        view.addMapping(URI.inNS(PROV, "entity"), "entity");
+        view.addMapping(URI.inNS(PROV, "hadActivity"), "hadActivity", this.getActivityView());
+    
+        return view;
+    }
+
+    protected getActivityView(){
+        const view = new ThingView(Activity.create);
+        view.addMapping(URI.inNS(EX, "algorithm"), "algorithm");
+        view.addMapping(URI.inNS(EX, "onData"), "baseData", this.getDerivationView());
+
         return view;
     }
 }

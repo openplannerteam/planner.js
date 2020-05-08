@@ -21,11 +21,11 @@ export default class CatalogProviderDefault implements ICatalogProvider {
         this.fetcher = fetcher;
     }
 
-    public getCatalog(catalogId: string): Promise<Catalog> {
+    public async getCatalog(catalogId: string): Promise<Catalog> {
         if (this.catalogs[catalogId] === undefined) {
             this.catalogs[catalogId] = this.fetcher.get(catalogId);
         }
-        return this.catalogs[catalogId];
+        return await this.catalogs[catalogId];
     }
 
     public getCatalogs(): Promise<Catalog[]> {

@@ -1,9 +1,9 @@
 import { injectable, inject } from "inversify";
-import { TransitTileSet } from "../../entities/tiles/set";
-import ITransitTileProvider from "./ISmartTileProvider";
+import { TransitTileSet, RoutableTileSet } from "../../entities/tiles/set";
+import ISmartTileProvider from "./ISmartTileProvider";
 import ITransitTileFetcher from "./ITransitTileFetcher";
 import RoutableTileRegistry from "../../entities/tiles/registry";
-import { ITransitTileIndex, TransitTile, IRoutableTileIndex } from "../../entities/tiles/tile";
+import { ITransitTileIndex, TransitTile, IRoutableTileIndex, RoutableTile } from "../../entities/tiles/tile";
 import ILocation from "../../interfaces/ILocation";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import { lat_to_tile, long_to_tile } from "../../util/Tiles";
@@ -13,28 +13,54 @@ import { EventEmitter } from "events";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
 import IRoutableTileFetcher from "./IRoutableTileFetcher";
+import ICatalogProvider from "../catalog/ICatalogProvider";
+import { classifyDataSet } from "../../data/classify";
+import { DataType } from "../..";
 
 @injectable()
-export default class TransitTileProviderDefault implements ITransitTileProvider {
+export default class SmartTileProvider implements ISmartTileProvider {
 
     protected fetcher: ITransitTileFetcher;
     protected baseFetcher: IRoutableTileFetcher;
     protected registry: RoutableTileRegistry;
     protected tiles: ITransitTileIndex = {};
+    protected metaTiles: ITransitTileIndex = {};
     protected baseTiles: IRoutableTileIndex = {};
+    protected metaBaseTiles: IRoutableTileIndex = {};
     private localNodes: ILocation[];
-    private transitRoot: string = "http://192.168.56.1:8080/tiles/car/transit_geo/0/0.json";
-    private routableRoot: string = "https://tiles.openplannerteam/planet/"
+    private transitRoot: string; // = "http://192.168.56.1:8080/tiles/car/transit_geo/0/0.json";
+    private routableRoot: string; // = "http://192.168.56.1:8080/tiles/tree/routable/0/0.json";
     private eventBus: EventEmitter;
+    protected catalogProvider: ICatalogProvider;
 
     constructor(
         @inject(TYPES.TransitTileFetcher) fetcher: ITransitTileFetcher,
         @inject(TYPES.RoutableTileFetcher) baseFetcher: IRoutableTileFetcher,
+        @inject(TYPES.CatalogProvider) catalogProvider: ICatalogProvider,
     ) {
         this.fetcher = fetcher;
         this.baseFetcher = baseFetcher;
+        this.catalogProvider = catalogProvider;
         this.registry = RoutableTileRegistry.getInstance();
         this.eventBus = EventBus.getInstance();
+    }
+
+    public async selectDataSources(catalogUrl: string, profileID: string){
+        const catalog = await this.catalogProvider.getCatalog(catalogUrl);
+
+        for(const dataset of catalog.datasets){
+            const source = classifyDataSet(dataset);
+            if(source.datatype === DataType.TransitTile && source.profile === profileID){
+                this.transitRoot = source.accessUrl;
+            }
+            if(source.datatype === DataType.RoutableTile){
+                this.routableRoot = source.accessUrl;
+            }
+        }
+
+        if(!this.transitRoot || !this.routableRoot){
+            EventBus.getInstance().emit(EventType.Warning, "Didn't found enough datasources to perform planning");
+        }
     }
 
     //not sure what this does
@@ -67,21 +93,21 @@ export default class TransitTileProviderDefault implements ITransitTileProvider 
         return `http://192.168.56.1:8080/car/transit_geo/${coordinate.zoom}/${coordinate.x}/${coordinate.y}.json`;
     }
 
-    public getByLocation(zoom: number, location: ILocation): Promise<TransitTile> {
+    public getByLocation(zoom: number, location: ILocation): Promise<TransitTile | RoutableTile> {
         const y = this.lat2tile(location.latitude, zoom);
         const x = this.long2tile(location.longitude, zoom);
         const coordinate = new RoutableTileCoordinate(zoom, x, y);
         return this.getByTileCoords(coordinate);
     }
 
-    public async getByTileCoords(coordinate: RoutableTileCoordinate): Promise<TransitTile> {
+    public async getByTileCoords(coordinate: RoutableTileCoordinate): Promise<TransitTile | RoutableTile> {
         const url = this.getIdForTileCoords(coordinate);
         const tile = await this.getByUrl(url);
         tile.coordinate = coordinate;  // todo, get these from server response -> ?
         return tile;
     }
 
-    public async getByUrl(url: string, routable?: boolean): Promise<TransitTile> {
+    public async getByUrl(url: string): Promise<TransitTile> {
         if (!this.tiles[url]) {
             this.tiles[url] = this.fetcher.get(url);
         }
@@ -89,34 +115,60 @@ export default class TransitTileProviderDefault implements ITransitTileProvider 
         return await this.tiles[url];
     }
 
-    public async getMultipleByUrl(urls: string[]): Promise<TransitTileSet> {
-        const tiles = await Promise.all(urls.map((url) => {
-            return this.getByUrl(url);
-        }));
+    public async getRTByUrl(url:string): Promise<RoutableTile>{
+        if (!this.baseTiles[url]) {
+            this.baseTiles[url] = this.baseFetcher.get(url);
+        }
 
-        return new TransitTileSet(tiles);
+        return await this.baseTiles[url];
     }
 
-    public async getmultipleByLocation(zoom: number, locations: ILocation[]): Promise<TransitTileSet> {
-        const tiles = await Promise.all(locations.map((location) => {
-            return this.getByLocation(zoom, location);
-        }));
+    
 
-        return new TransitTileSet(tiles);
+    public async getMetaByUrl(url: string, routable?:boolean): Promise<TransitTile>{
+        if (!this.metaTiles[url]) {
+            this.metaTiles[url] = this.fetcher.getMetaData(url);
+        }
+
+        return await this.metaTiles[url];
     }
 
-    public async getMultipleByTileCoords(coordinates: RoutableTileCoordinate[]): Promise<TransitTileSet> {
-        const tiles = await Promise.all(coordinates.map((coordinate) => {
-            return this.getByTileCoords(coordinate);
-        }));
+    public async getRoutableMetaByUrl(url:string, routable?:boolean): Promise<RoutableTile>{
+        if (!this.metaBaseTiles[url]) {
+            this.metaBaseTiles[url] = this.baseFetcher.getMetaData(url);
+        }
 
-        return new TransitTileSet(tiles);
+        return await this.metaBaseTiles[url];
     }
+
+    // public async getMultipleByUrl(urls: string[]): Promise<TransitTileSet | RoutableTileSet> {
+    //     const tiles = await Promise.all(urls.map((url) => {
+    //         return this.getByUrl(url);
+    //     }));
+
+    //     return new TransitTileSet(tiles);
+    // }
+
+    // public async getmultipleByLocation(zoom: number, locations: ILocation[]): Promise<TransitTileSet> {
+    //     const tiles = await Promise.all(locations.map((location) => {
+    //         return this.getByLocation(zoom, location);
+    //     }));
+
+    //     return new TransitTileSet(tiles);
+    // }
+
+    // public async getMultipleByTileCoords(coordinates: RoutableTileCoordinate[]): Promise<TransitTileSet> {
+    //     const tiles = await Promise.all(coordinates.map((coordinate) => {
+    //         return this.getByTileCoords(coordinate);
+    //     }));
+
+    //     return new TransitTileSet(tiles);
+    //}
 
     public async fetchCorrectTile(node: RoutableTileNode, local?: boolean) {
         if (local) {
             //geef de URL naar de routable tile terug, zal afhangen van wat keuze is
-            return await this.getByUrl(this.getIdForLocation(14, node, true));
+            return await this.getByUrl(await this.traverseRoutableTree(node));
         }
         else {
             return await this.getByUrl(await this.traverseTransitTree(node));
@@ -128,13 +180,13 @@ export default class TransitTileProviderDefault implements ITransitTileProvider 
         let tile: TransitTile;
         let newTile: TransitTile;
 
-        tile = await this.getByUrl(this.transitRoot);
+        tile = await this.getMetaByUrl(this.transitRoot);
 
         while (tile.getArea().contains(this.localNodes[0]) || tile.getArea().contains(this.localNodes[1])) {
            
             for (const rel of tile.getRelations()) {
                 if (rel.geoValue.contains(node)) {
-                    newTile = await this.getByUrl(rel.id);
+                    newTile = await this.getMetaByUrl(rel.id);
                 }
             }
 
@@ -149,12 +201,33 @@ export default class TransitTileProviderDefault implements ITransitTileProvider 
                 return null;
             }
         }
-        //eens je uit de while loop komt heb je ofwel een transitTile op een niveau < 14 die geen start of eindpunt bevat maar wel de node zelf,
-        //of heb je een routableTile van op niveau 14  indien er nog een laatste relatie zit naar de overeenkomstige routable tile zelf dan
-
-        //interessant om de id mee te geven als je hier toch al de tile zelf gefetcht hebt? maakt wss niet veel uit aangezien hij al zal gecached zijn dus gwn lokaal ophalen
         return tile.id;
     }
+
+
+    public async traverseRoutableTree(node: ILocation){
+        let tile: RoutableTile;
+        let newTile: RoutableTile;
+
+        tile = await this.getRoutableMetaByUrl(this.routableRoot);
+
+        while(tile.getRelations().size > 0){
+            for (const rel of tile.getRelations()) {
+                if (rel.geoValue.contains(node)) {
+                    newTile = await this.getRoutableMetaByUrl(rel.id);
+                }
+            }
+            if(newTile){
+                tile = newTile;
+            }
+            else{
+                return null;
+            }
+        }
+        return tile.id;
+    }
+
+
 
     public getTileFromCache(id: string){
         return this.tiles[id];
