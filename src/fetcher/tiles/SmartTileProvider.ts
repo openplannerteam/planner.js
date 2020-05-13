@@ -32,6 +32,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
     private routableRoot: string; // = "http://192.168.56.1:8080/tiles/tree/routable/0/0.json";
     private eventBus: EventEmitter;
     protected catalogProvider: ICatalogProvider;
+    public static numReq: number;
 
     constructor(
         @inject(TYPES.TransitTileFetcher) fetcher: ITransitTileFetcher,
@@ -43,6 +44,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
         this.catalogProvider = catalogProvider;
         this.registry = RoutableTileRegistry.getInstance();
         this.eventBus = EventBus.getInstance();
+        SmartTileProvider.numReq = 0;
     }
 
     public async selectDataSources(catalogUrl: string, profileID: string){
@@ -71,44 +73,45 @@ export default class SmartTileProvider implements ISmartTileProvider {
     public addLocalNodes(nodes: ILocation[]) {
         this.localNodes = nodes;
         for(const node of this.localNodes){
-        console.log(node.id + " " + node.longitude + " " + node.latitude);
+        //console.log(node.id + " " + node.longitude + " " + node.latitude);
         //this.eventBus.emit(EventType.AddLocalNode, node);
         }
     }
 
-    public getIdForLocation(zoom: number, location: ILocation, local?: boolean): string {
-        const y = lat_to_tile(location.latitude, zoom);
-        const x = long_to_tile(location.longitude, zoom);
-        const coordinate = new RoutableTileCoordinate(zoom, x, y);
-        return this.getIdForTileCoords(coordinate, local);
-    }
+    // public getIdForLocation(zoom: number, location: ILocation, local?: boolean): string {
+    //     const y = lat_to_tile(location.latitude, zoom);
+    //     const x = long_to_tile(location.longitude, zoom);
+    //     const coordinate = new RoutableTileCoordinate(zoom, x, y);
+    //     return this.getIdForTileCoords(coordinate, local);
+    // }
 
-    //this URL is hardcoded to my own (local) fileserver with transit tile data, + points to blabla.json
-    public getIdForTileCoords(coordinate: RoutableTileCoordinate, local?: boolean): string {
-        //return `https://hdelva.be/tiles/transit/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
+    // //this URL is hardcoded to my own (local) fileserver with transit tile data, + points to blabla.json
+    // public getIdForTileCoords(coordinate: RoutableTileCoordinate, local?: boolean): string {
+    //     //return `https://hdelva.be/tiles/transit/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
 
-        if(local){
-            return `https://tiles.openplanner.team/planet/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
-        }
-        return `http://192.168.56.1:8080/car/transit_geo/${coordinate.zoom}/${coordinate.x}/${coordinate.y}.json`;
-    }
+    //     if(local){
+    //         return `https://tiles.openplanner.team/planet/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
+    //     }
+    //     return `http://192.168.56.1:8080/car/transit_geo/${coordinate.zoom}/${coordinate.x}/${coordinate.y}.json`;
+    // }
 
-    public getByLocation(zoom: number, location: ILocation): Promise<TransitTile | RoutableTile> {
-        const y = this.lat2tile(location.latitude, zoom);
-        const x = this.long2tile(location.longitude, zoom);
-        const coordinate = new RoutableTileCoordinate(zoom, x, y);
-        return this.getByTileCoords(coordinate);
-    }
+    // public getByLocation(zoom: number, location: ILocation): Promise<TransitTile | RoutableTile> {
+    //     const y = this.lat2tile(location.latitude, zoom);
+    //     const x = this.long2tile(location.longitude, zoom);
+    //     const coordinate = new RoutableTileCoordinate(zoom, x, y);
+    //     return this.getByTileCoords(coordinate);
+    // }
 
-    public async getByTileCoords(coordinate: RoutableTileCoordinate): Promise<TransitTile | RoutableTile> {
-        const url = this.getIdForTileCoords(coordinate);
-        const tile = await this.getByUrl(url);
-        tile.coordinate = coordinate;  // todo, get these from server response -> ?
-        return tile;
-    }
+    // public async getByTileCoords(coordinate: RoutableTileCoordinate): Promise<TransitTile | RoutableTile> {
+    //     const url = this.getIdForTileCoords(coordinate);
+    //     const tile = await this.getByUrl(url);
+    //     tile.coordinate = coordinate;  // todo, get these from server response -> ?
+    //     return tile;
+    // }
 
     public async getByUrl(url: string): Promise<TransitTile> {
         if (!this.tiles[url]) {
+            SmartTileProvider.numReq++;
             this.tiles[url] = this.fetcher.get(url);
         }
 
@@ -117,6 +120,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
 
     public async getRTByUrl(url:string): Promise<RoutableTile>{
         if (!this.baseTiles[url]) {
+            SmartTileProvider.numReq++;
             this.baseTiles[url] = this.baseFetcher.get(url);
         }
 
@@ -127,6 +131,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
 
     public async getMetaByUrl(url: string, routable?:boolean): Promise<TransitTile>{
         if (!this.metaTiles[url]) {
+            SmartTileProvider.numReq++;
             this.metaTiles[url] = this.fetcher.getMetaData(url);
         }
 
@@ -135,6 +140,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
 
     public async getRoutableMetaByUrl(url:string, routable?:boolean): Promise<RoutableTile>{
         if (!this.metaBaseTiles[url]) {
+            SmartTileProvider.numReq++;
             this.metaBaseTiles[url] = this.baseFetcher.getMetaData(url);
         }
 

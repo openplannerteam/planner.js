@@ -10,13 +10,13 @@ export default interface ISmartTileProvider {
 
     selectDataSources(catalogUrl: string, profileID: string)
 
-    getIdForLocation(zoom: number, location: ILocation, local?:boolean): string;
-    getIdForTileCoords(coordinate: RoutableTileCoordinate): string;
+    // getIdForLocation(zoom: number, location: ILocation, local?:boolean): string;
+    // getIdForTileCoords(coordinate: RoutableTileCoordinate): string;
 
     getByUrl(url: string): Promise<TransitTile>;
     getRTByUrl(url:string): Promise<RoutableTile>;
-    getByLocation(zoom: number, location: ILocation): Promise<TransitTile | RoutableTile>;
-    getByTileCoords(coordinate: RoutableTileCoordinate): Promise<TransitTile | RoutableTile>;
+    // getByLocation(zoom: number, location: ILocation): Promise<TransitTile | RoutableTile>;
+    // getByTileCoords(coordinate: RoutableTileCoordinate): Promise<TransitTile | RoutableTile>;
 
     //functions in this block are added by Thomas Neuser
     fetchCorrectTile(node: RoutableTileNode, local?: boolean);

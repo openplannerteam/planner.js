@@ -31,8 +31,6 @@ import RoutableTileProviderDefault from "../fetcher/tiles/RoutableTileProviderDe
 import RoutableTileProviderTransit from "../fetcher/tiles/RoutableTileProviderTransit";
 import ITransitTileFetcher from "../fetcher/tiles/ITransitTileFetcher";
 import TransitTileFetcherRaw from "../fetcher/tiles/TransitTileFetcherRaw";
-import ITransitTileProvider from "../fetcher/tiles/ISmartTileProvider";
-import TransitTileProviderDefault from "../fetcher/tiles/SmartTileProvider";
 import SmartTileProvider from "../fetcher/tiles/SmartTileProvider";
 import ISmartTileProvider from '../fetcher/tiles/ISmartTileProvider';
 
@@ -127,7 +125,6 @@ container.bind<IRoutableTileProvider>(TYPES.RoutableTileProvider)
   .to(RoutableTileProviderTransit).inSingletonScope().whenTargetTagged("phase", RoutingPhase.Transit);
 
   container.bind<ITransitTileFetcher>(TYPES.TransitTileFetcher).to(TransitTileFetcherRaw).inSingletonScope();
-  container.bind<ITransitTileProvider>(TYPES.TransitTileProvider).to(TransitTileProviderDefault);
   container.bind<ISmartTileProvider>(TYPES.SmartTileProvider).to(SmartTileProvider);
 
 // Init LDFetch

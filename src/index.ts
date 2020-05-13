@@ -45,6 +45,7 @@ import LocationResolverDefault from "./query-runner/LocationResolverDefault";
 import StopsProviderDefault from "./fetcher/stops/StopsProviderDefault";
 import StopsFetcherLDFetch from "./fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import TransitTileFetcherRaw from "./fetcher/tiles/TransitTileFetcherRaw";
+import SmartTileProvider from "./fetcher/tiles/SmartTileProvider";
 import { classifyDataSet } from "./data/classify";
 
 // classes
@@ -144,7 +145,7 @@ const transitTileFetcher = new TransitTileFetcherRaw(pathfindingProvider);
 
 // // INFO: this piece of code tests the TRANSITTILEPROVIDERDEFAULT
 
-const transitTileProvider = container.get<ITransitTileProvider>(TYPES.TransitTileProvider);
+// const transitTileProvider = container.get<ITransitTileProvider>(TYPES.TransitTileProvider);
 // from: [{ latitude: 50.93278, longitude: 5.32665 }], // Pita Aladin, Hasselt
 // //     to: [{ latitude: 50.7980187, longitude: 3.1877779 }], // Burger Pita Pasta, Menen
 
@@ -246,7 +247,6 @@ planner.plan({
     to: [{ latitude: 50.7980187, longitude: 3.1877779 }], // Burger Pita Pasta, Menen
 }).then(
     (resp) => {
-        //console.log(resp);
         resp.each((path) => {
             for (let leg of path.legs) {
 
@@ -254,6 +254,7 @@ planner.plan({
                 const stopTime = stop.getTime();
                 console.log(stopTime-startTime);
                 console.log(leg.getSteps().length);
+                console.log("Num of req: " + SmartTileProvider.numReq)
                 for (let step of leg.getSteps()) {
                     //console.log("startLocation: " + step.startLocation.latitude + "-" + step.startLocation.longitude + " , stoplocation: " + step.stopLocation.latitude + "-" + step.stopLocation.longitude);
                 }

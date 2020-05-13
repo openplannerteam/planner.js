@@ -84,9 +84,11 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
       //hier wordt in de tile gestoken welke area hij zelf bevat
       area = new GeometryValue();
 
-      if (blob["tiles:GeospatiallyContains"]) {
-        area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
-      }
+      // if(blob["tiles:GeospatiallyContains"]){
+        if (blob["geo:asWKT"]) {
+          // area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
+          area.area = this.parseWktLiteralPolygon(blob["geo:asWKT"])
+        }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
 
@@ -148,9 +150,10 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
 
       //hier wordt in de tile gestoken welke area hij zelf bevat
       area = new GeometryValue();
-
-      if (blob["tiles:GeospatiallyContains"]) {
-        area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
+      // if(blob["tiles:GeospatiallyContains"]){
+      if (blob["geo:asWKT"]) {
+        // area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
+        area.area = this.parseWktLiteralPolygon(blob["geo:asWKT"])
       }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);

@@ -265,7 +265,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             if (local) {
                 tile = await this.smartTileProvider.getRTByUrl(baseTileId);
                 this.reachedTiles.add(baseTileId);
-                console.log(baseTileId);
+                //console.log(baseTileId);
 
                 for (const nodeId of tile.getNodes()) {
                     const node = this.registry.getNode(nodeId);
@@ -277,7 +277,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             } else {
                 tTile = await this.smartTileProvider.getByUrl(transitTileId);
                 this.reachedTiles.add(transitTileId);
-                console.log(transitTileId);
+                //console.log(transitTileId);
 
                 for (const nodeId of tTile.getNodes()) {
                     const node = this.registry.getNode(nodeId);
@@ -349,7 +349,6 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             fromTiles.push(fromTile);
         }
 
-        console.log("localNodes in roadplanner: " + this.localNodes);
         const fromTileset = new RoutableTileSet(fromTiles);
 
         // this won't download anything new
