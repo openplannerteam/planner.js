@@ -1,7 +1,6 @@
 import { ArrayIterator, AsyncIterator } from "asynciterator";
 import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
-import inBBox from "tiles-in-bbox";
 import Profile from "../../entities/profile/Profile";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 import { RoutableTileNode } from "../../entities/tiles/node";
@@ -14,7 +13,6 @@ import EventType from "../../events/EventType";
 import IProfileProvider from "../../fetcher/profiles/IProfileProvider";
 import IRoutableTileProvider from "../../fetcher/tiles/IRoutableTileProvider";
 import ISmartTileProvider from "../../fetcher/tiles/ISmartTileProvider";
-import SmartTileProvider from "../../fetcher/tiles/SmartTileProvider";
 import ILocation from "../../interfaces/ILocation";
 import IPath from "../../interfaces/IPath";
 import IStep from "../../interfaces/IStep";
@@ -31,8 +29,6 @@ import { RoutableTileSet } from "../../entities/tiles/set";
 
 @injectable()
 export default class RoadPlannerPathfindingExperimental implements IRoadPlanner {
-    private baseTileProvider: IRoutableTileProvider;
-    //private transitTileProvider: IRoutableTileProvider;
     private smartTileProvider: ISmartTileProvider;
     private pathfinderProvider: PathfinderProvider;
     private profileProvider: IProfileProvider;
@@ -43,23 +39,15 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
     // STATEFUL!
     // will misbehave when processing several queries concurrently
     private reachedTiles: Set<string>;
-    private localTiles: RoutableTileCoordinate[];
     private localNodes: ILocation[];
 
     constructor(
-        @inject(TYPES.RoutableTileProvider)
-        @tagged("phase", RoutingPhase.Base)
-        baseTileProvider: IRoutableTileProvider,
-        //@inject(TYPES.RoutableTileProvider)
-        // @tagged("phase", RoutingPhase.Transit)
-        // transitTileProvider: IRoutableTileProvider,
         @inject(TYPES.SmartTileProvider)
         smartTileProvider: ISmartTileProvider,
         @inject(TYPES.PathfinderProvider) pathfinderProvider: PathfinderProvider,
         @inject(TYPES.ProfileProvider) profileProvider: IProfileProvider,
         @inject(TYPES.LocationResolver) locationResolver: ILocationResolver,
     ) {
-        this.baseTileProvider = baseTileProvider;
         this.smartTileProvider = smartTileProvider;
         this.pathfinderProvider = pathfinderProvider;
         this.profileProvider = profileProvider;
@@ -69,7 +57,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         this.reachedTiles = new Set();
     }
 
-    public async plan(query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+    public async plan(query: IResolvedQuery, catalogUrl: string): Promise<AsyncIterator<IPath>> {
         const {
             from: fromLocations,
             to: toLocations,
@@ -78,7 +66,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
 
         const paths = [];
         const profile = await this.profileProvider.getProfile(profileID);
-        await this.smartTileProvider.selectDataSources("http://192.168.56.1:8080/tiles/catalog_v2.json", profileID);
+        await this.smartTileProvider.selectDataSources(catalogUrl, profileID);
 
         if (fromLocations && toLocations && fromLocations.length && toLocations.length) {
 
@@ -101,20 +89,11 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         return new ArrayIterator<IPath>(paths);
     }
 
-    //krijgt een van-locatie en een naar-locatie mee en een profile, geeft een path terug uiteindelijk
-    //een path bestaat uit legs die uit steps bestaan, een step is het kleinste deel en gaat van een location naar een location
     private async getPathBetweenLocations(
         from: ILocation,
         to: ILocation,
         profile: Profile,
     ): Promise<IPath> {
-
-        //de tilecoordinaten van start en eindpunt worden in localtiles gestoken
-        this.localTiles = [
-            toTileCoordinate(from.latitude, from.longitude),
-            toTileCoordinate(to.latitude, to.longitude),
-        ];
-
         this.localNodes = [from, to];
         this.smartTileProvider.addLocalNodes(this.localNodes)
 
@@ -152,90 +131,6 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         return new Path([leg]);
     }
 
-    //het start van vanboven en geeft de eerst mogelijke tile terug die niet start of eindtile bevat
-    // private pickTile(node: RoutableTileNode) {
-    //     let coordinate: RoutableTileCoordinate;
-    //     for (let zoom = 8; zoom < 15; zoom++) {
-    //         coordinate = toTileCoordinate(node.latitude, node.longitude, zoom);
-    //         let ok = true;
-    //         for (const localTile of this.localTiles) {
-    //             if (coordinate.contains(localTile)) {
-    //                 ok = false;
-    //                 break;
-    //             }
-    //         }
-    //         if (ok) {
-    //             return coordinate;
-    //         }
-    //     }
-    //     return coordinate;
-    // }
-
-    //boom structuur alternatief voor pickTile
-    // private async traverseTransitTree(node: RoutableTileNode) {
-    //     let tile: TransitTile;
-    //     const rootUrl = "http://192.168.56.1:8080/transitTree/root";
-
-    //     tile = await this.transitTileProvider.getByUrl(rootUrl);
-
-    //     while (tile.getArea().contains(this.localNodes[0]) || tile.getArea().contains(this.localNodes[1])) {
-    //         //als je op laagste niveau bent, breek uit de while loop
-    //         if (tile.coordinate.zoom === 14) {
-    //             break; //hier zou je ook een check kunnen doen op zit er 1 van de 2 in, zoja geef link naar de routableTile
-    //         }
-
-    //         //alternatief voor if zoomlevel == 14 want op dat level zullen er geen 4 kinderen meer inzitten
-    //         if (tile.getRelations().size != 4) {
-    //             break;
-    //         }
-
-    //         for (const rel of tile.getRelations()) {
-    //             if (rel.geoValue.contains(node)) {
-    //                 tile = await this.transitTileProvider.getByUrl(rel.id);
-    //             }
-    //         }
-    //     }
-    //     //dan krijg je hier de grootst mogelijke tile die wel de node bevat maar niet het start- of eindpunt bevat
-    //     return tile.coordinate;
-    // }
-
-
-
-    // private async customFetchTile(coordinate: RoutableTileCoordinate){
-    //     let local = false;
-
-    //     for(const localTile of this.localTiles){
-    //         if(coordinate.x === localTile.x && coordinate.y == localTile.y && coordinate.zoom === localTile.zoom){
-    //             local = true;
-    //             break;
-    //         }
-    //     }
-
-    //     //dit maakt de URL aan waarmee je de tiles zou kunnen fetchen, en is eigenlijk ook gewoon de ID van een tile
-    //     const baseTileId = this.baseTileProvider.getIdForTileCoords(coordinate);
-    //     const transitTileId = this.transitTileProvider.getIdForTileCoords(coordinate);
-
-    //     if(!this.reachedTiles.has(baseTileId) && !this.reachedTiles.has(transitTileId)){
-    //         let tile: RoutableTile;
-    //         let transitTile: TransitTile;
-
-    //         if(local){
-    //             tile = await this.baseTileProvider.getByTileCoords(coordinate);
-    //             this.reachedTiles.add(baseTileId);
-    //         }
-
-    //         const boundaryNodes: Set<string> = new Set();
-
-    //         if(tile){
-    //             for(const nodeId of tile.getNodes()){
-    //                 const node = this.registry.getNode(nodeId);
-    //             }
-    //         }
-
-    //     }
-
-    // }
-
     private async fetchTile(node: RoutableTileNode) {
         let local = false;
         let baseTileId: string;
@@ -248,10 +143,10 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             }
         }
 
-        if(local){
+        if (local) {
             baseTileId = await this.smartTileProvider.traverseRoutableTree(node);
         }
-        else{
+        else {
             transitTileId = await this.smartTileProvider.traverseTransitTree(node);
         }
 
@@ -265,7 +160,6 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             if (local) {
                 tile = await this.smartTileProvider.getRTByUrl(baseTileId);
                 this.reachedTiles.add(baseTileId);
-                //console.log(baseTileId);
 
                 for (const nodeId of tile.getNodes()) {
                     const node = this.registry.getNode(nodeId);
@@ -277,7 +171,6 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             } else {
                 tTile = await this.smartTileProvider.getByUrl(transitTileId);
                 this.reachedTiles.add(transitTileId);
-                //console.log(transitTileId);
 
                 for (const nodeId of tTile.getNodes()) {
                     const node = this.registry.getNode(nodeId);
@@ -300,23 +193,15 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             }
         }
     }
-    //je begint op random coordinaaat en wil dat embedden in OSM, de hij zoekt dichtsbijzijnde straat bij dat punt en dan het dichtste punt
+
     private async embedLocation(from: ILocation, invert = false) {
         const zoom = 14;
         const padding = 0.005;
 
-        // const fromBBox = {
-        //     top: from.latitude + padding,
-        //     bottom: from.latitude - padding,
-        //     left: from.longitude - padding,
-        //     right: from.longitude + padding,
-        // };
-
-        //hacky solution to get around the bounding box and so to be able to pass nodes to the method fetchTile
-        let corner1 = new RoutableTileNode("");
-        let corner2 = new RoutableTileNode("");
-        let corner3 = new RoutableTileNode("");
-        let corner4 = new RoutableTileNode("");
+        let corner1 = new RoutableTileNode();
+        let corner2 = new RoutableTileNode();
+        let corner3 = new RoutableTileNode();
+        let corner4 = new RoutableTileNode();
 
         corner1.latitude = from.latitude + padding;
         corner1.longitude = from.longitude - padding;
@@ -340,7 +225,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         let fromTiles: RoutableTile[] = [];
 
         for (const n of fromNodes) {
-            let rtNode = new RoutableTileNode(n.id);
+            let rtNode = new RoutableTileNode();
             rtNode.longitude = n.longitude;
             rtNode.latitude = n.latitude;
             this.localNodes.push(rtNode);
@@ -353,7 +238,6 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
 
         // this won't download anything new
         // but we need the tile data to embed the starting location
-        // const fromTileset = await this.baseTileProvider.getMultipleByTileCoords(fromTileCoords);
         await this.pathfinderProvider.embedLocation(from, fromTileset, invert);
     }
 }

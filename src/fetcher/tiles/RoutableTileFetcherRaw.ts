@@ -115,9 +115,8 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       );
 
       area = new GeometryValue();
-
-      if (blob["tiles:GeospatiallyContains"]) {
-        area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
+      if (blob["geo:asWKT"]) {
+        area.area = this.parseWktLiteralPolygon(blob["geo:asWKT"])
       }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
@@ -128,7 +127,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
     }
   }
 
-  
+
 
   protected parseResponseLength(response): number {
     if (response.headers.get("content-length")) {
@@ -218,12 +217,9 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
   }
 
   private createRelation(blob): HypermediaTreeRelation {
-    //what to use for id? tree:node points at the node on which this relation applies (as in this node contains that polygon)
     const id = blob["tree:node"];
     const relation = HypermediaTreeRelation.create(id);
 
-    //this if structure looks stupid but did it to put a RelationType value into relation.type instead of assigning the string to it
-    //maybe relation.type = blob["type"] would be better
     if (blob["@type"] === RelationTypes.GEOSPATIALLY_CONTAINS) {
       relation.type = RelationTypes.GEOSPATIALLY_CONTAINS;
     }

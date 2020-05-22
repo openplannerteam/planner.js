@@ -3,7 +3,6 @@ import { GEO, LC, PROFILE } from "../uri/constants";
 import URI from "../uri/uri";
 import DATATYPE from "./Datatypes";
 import IDataSource from "./IDataSource";
-import { Catalog } from "../entities/catalog/catalog";
 import { Dataset } from "../entities/catalog/dataset";
 import { DataType } from "..";
 
@@ -28,9 +27,6 @@ export default async function classifyDataSource(accessUrl: string): Promise<IDa
             const { predicate } = t;
             usedPredicates.add(predicate.value);
         }
-
-
-        //hier ergens zou ik kunnen checken op predicates die te maken hebben met transit tiles
 
         if (usedPredicates.has(URI.inNS(LC, "departureStop"))) {
             datatype = DATATYPE.Connections;

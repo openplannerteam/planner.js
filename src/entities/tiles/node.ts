@@ -4,7 +4,7 @@ import Highway from "../../enums/Highway";
 import ILocation from "../../interfaces/ILocation";
 
 export class RoutableTileNode implements ILocation {
-    public static create(id: string) {
+    public static create(id?: string) {
         return new RoutableTileNode(id);
     }
 
@@ -15,7 +15,7 @@ export class RoutableTileNode implements ILocation {
     public definedTags: object;
     public freeformTags: string[];
 
-    constructor(id: string) {
+    constructor(id?: string) {
         this.id = id;
         this.definedTags = {};
         this.freeformTags = [];

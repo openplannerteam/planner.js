@@ -7,7 +7,6 @@ import { Dataset } from "../../entities/catalog/dataset";
 import DatasetDistribution from "../../entities/catalog/dataset_distribution";
 import { Derivation } from "../../entities/catalog/derivation";
 import { Activity } from "../../entities/catalog/activity";
-import { tesselate } from "@turf/turf";
 
 @injectable()
 export default class CatalogFetcherRaw implements ICatalogFetcher {
@@ -26,13 +25,11 @@ export default class CatalogFetcherRaw implements ICatalogFetcher {
             catalog = Catalog.create(blob["@id"]);
 
             let datasets: Dataset[] = [];
-            //hier start je met het overlopen van de datasets
             for (const entity of blob["dataset"]) {
                 let dataset = Dataset.create(entity["@id"]);
 
                 let datasetDistributions: DatasetDistribution[] = [];
 
-                //hier start je met het overlopen van de distributions
                 for (const dist of entity["dcat:distribution"]) {
                     let distribution = DatasetDistribution.create(dist["@id"]);
                     distribution.accessUrl = dist["accessURL"];
@@ -45,10 +42,10 @@ export default class CatalogFetcherRaw implements ICatalogFetcher {
                 if (entity["prov:qualifiedDerivation"]) {
 
                     let derivationJSON = entity["prov:qualifiedDerivation"];
-                    let derivationObject = Derivation.create("");
+                    let derivationObject = Derivation.create();
 
                     let activityJSON = derivationJSON["prov:hadActivity"];
-                    let activityObject = Activity.create("");
+                    let activityObject = Activity.create();
                     activityObject.algorithm = activityJSON["ex:algorithm"];
 
                     derivationObject.entity = derivationJSON["prov:entity"];
@@ -58,11 +55,10 @@ export default class CatalogFetcherRaw implements ICatalogFetcher {
 
                     while (onDataJSON["prov:qualifiedDerivation"]) {
                         derivations.push(derivationObject);
-
                         derivationJSON = onDataJSON["prov:qualifiedDerivation"];
-                        derivationObject = Derivation.create("");
+                        derivationObject = Derivation.create();
                         activityJSON = derivationJSON["prov:hadActivity"];
-                        activityObject = Activity.create("");
+                        activityObject = Activity.create();
                         activityObject.algorithm = activityJSON["ex:algorithm"];
                         activityObject.usedProfile = activityJSON["ex:usingProfile"];
 
@@ -76,13 +72,10 @@ export default class CatalogFetcherRaw implements ICatalogFetcher {
                     dataset.baseDataUrl = onDataJSON;
                     dataset.derivations = derivations;
                 }
-
                 datasets.push(dataset);
             }
-
             catalog.datasets = datasets;
         }
         return catalog;
     }
-
 }

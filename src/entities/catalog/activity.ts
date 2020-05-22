@@ -1,7 +1,5 @@
-import { Derivation } from "./derivation";
-
-export class Activity{
-    public static create(id:string){
+export class Activity {
+    public static create(id?: string) {
         return new Activity(id);
     }
 
@@ -9,8 +7,7 @@ export class Activity{
     public algorithm: string;
     public usedProfile: string;
 
-    //thingview
-    constructor(id: string){
+    constructor(id?: string) {
         this.id = id;
     }
 }

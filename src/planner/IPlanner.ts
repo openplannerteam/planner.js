@@ -7,5 +7,5 @@ import IResolvedQuery from "../query-runner/IResolvedQuery";
  * and the [[IRoadPlanner]] interface
  */
 export default interface IPlanner {
-  plan: (query: IResolvedQuery) => Promise<AsyncIterator<IPath>>;
+  plan: (query: IResolvedQuery, catalogUrl?: string) => Promise<AsyncIterator<IPath>>;
 }

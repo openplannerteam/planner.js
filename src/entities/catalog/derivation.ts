@@ -1,7 +1,7 @@
 import { Activity } from "./activity";
 
 export class Derivation {
-    public static create(id: string){
+    public static create(id?: string) {
         return new Derivation(id);
     }
 
@@ -9,8 +9,7 @@ export class Derivation {
     public entity: string;
     public activity: Activity;
 
-    //oplossing voor probleem met ThingView
-    constructor(id: string){
+    constructor(id?: string) {
         this.id = id;
     }
 }

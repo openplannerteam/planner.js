@@ -15,7 +15,6 @@ import HypermediaTreeRelation from "../../entities/tree/relation";
 import { RelationTypes } from "../../entities/tree/relation";
 import GeometryValue from "../../entities/tree/geometry";
 import parse = require("wellknown");
-import { polygon, Polygon } from "@turf/turf";
 import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
 
 @injectable()
@@ -23,7 +22,6 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
 
   protected mapping: object;
   protected pathfinderProvider: PathfinderProvider;
-  //is voorlopig een RoutableTileRegistry omdat de registry een singleton is en het moeilijk is om die op te gaan splitsen, mss nog naamwijziging voorzien
   protected transitTileRegistry: RoutableTileRegistry;
 
   constructor(
@@ -43,8 +41,6 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
     if (response.status === 200 && responseText) {
       const blob = JSON.parse(responseText);
 
-      //kunnen nog veranderd worden naar transittilenodeindex en transittilewayindex maar 
-      //zou exact hetzelfde zijn
       const nodes: IRoutableTileNodeIndex = {};
       const ways: IRoutableTileWayIndex = {};
       let relations = new Set<HypermediaTreeRelation>();
@@ -81,17 +77,12 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
         },
       );
 
-      //hier wordt in de tile gestoken welke area hij zelf bevat
       area = new GeometryValue();
-
-      // if(blob["tiles:GeospatiallyContains"]){
-        if (blob["geo:asWKT"]) {
-          // area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
-          area.area = this.parseWktLiteralPolygon(blob["geo:asWKT"])
-        }
+      if (blob["geo:asWKT"]) {
+        area.area = this.parseWktLiteral(blob["geo:asWKT"])
+      }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
-
       return this.processTileData(url, nodes, ways, area, coordinate, relations);
     } else {
       return new TransitTile(url, new Set(), new Set(), new GeometryValue());
@@ -120,10 +111,6 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
     if (response.status === 200 && responseText) {
       const blob = JSON.parse(responseText);
 
-      //kunnen nog veranderd worden naar transittilenodeindex en transittilewayindex maar 
-      //zou exact hetzelfde zijn
-      const nodes: IRoutableTileNodeIndex = {};
-      const ways: IRoutableTileWayIndex = {};
       let relations = new Set<HypermediaTreeRelation>();
       let area: GeometryValue;
       let coordinate: RoutableTileCoordinate;
@@ -148,12 +135,9 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
         },
       );
 
-      //hier wordt in de tile gestoken welke area hij zelf bevat
       area = new GeometryValue();
-      // if(blob["tiles:GeospatiallyContains"]){
       if (blob["geo:asWKT"]) {
-        // area.area = this.parseWktLiteralPolygon(blob["tiles:GeospatiallyContains"])
-        area.area = this.parseWktLiteralPolygon(blob["geo:asWKT"])
+        area.area = this.parseWktLiteral(blob["geo:asWKT"])
       }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
@@ -165,15 +149,6 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
   }
 
   private parseWktLiteral(raw: string) {
-    const [reference, ...rest] = raw.split(" ");
-    if (reference === "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>") {
-        return parse(rest.join(" "));
-    }
-    return parse(raw);
-}
-
-  //DEZE GEBRUIKEN NA DE CORRECTE TRANSFORMATIE
-  private parseWktLiteralPolygon(raw: string) {
     const [reference, ...rest] = raw.split(" ");
     if (reference === "<http://www.opengis.net/def/crs/OGC/1.3/CRS84>") {
       return parse(rest.join(" "));
@@ -212,17 +187,14 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
   }
 
   private createRelation(blob): HypermediaTreeRelation {
-    //what to use for id? tree:node points at the node on which this relation applies (as in this node contains that polygon)
     const id = blob["tree:node"];
     const relation = HypermediaTreeRelation.create(id);
 
-    //this if structure looks stupid but did it to put a RelationType value into relation.type instead of assigning the string to it
-    //maybe relation.type = blob["type"] would be better
     if (blob["@type"] === RelationTypes.GEOSPATIALLY_CONTAINS) {
       relation.type = RelationTypes.GEOSPATIALLY_CONTAINS;
     }
     relation.geoValue = GeometryValue.create(blob["tree:value"]);
-    relation.geoValue.area = this.parseWktLiteralPolygon(blob["tree:value"]);
+    relation.geoValue.area = this.parseWktLiteral(blob["tree:value"]);
     relation.node = id;
 
     return relation;
@@ -265,8 +237,6 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
     return way;
   }
 
-  //for now, these relations are just passed to the new TransitTile without proper processing,
-  //another later addition, put the relations in the transittile only by their id?
   protected processTileData(url: string, nodes: IRoutableTileNodeIndex, ways: IRoutableTileWayIndex, area: GeometryValue, coordinate: RoutableTileCoordinate, relations: Set<HypermediaTreeRelation>) {
     this.pathfinderProvider.registerEdges(ways, nodes);
 
@@ -280,5 +250,4 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
 
     return new TransitTile(url, new Set(Object.keys(nodes)), new Set(Object.keys(ways)), area, coordinate, relations);
   }
-
 }
