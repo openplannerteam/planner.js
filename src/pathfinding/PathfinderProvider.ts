@@ -128,13 +128,10 @@ export default class PathfinderProvider {
               continue;
             }
 
-            const embedding = this.segmentDistToPoint(from, to, p);
-            if (embedding) {
-              const distance = this.segmentDistToPoint(from, to, p);
-              if (distance < bestDistance) {
-                bestDistance = distance;
-                bestSegment = [way, from, to];
-              }
+            const distance = this.segmentDistToPoint(from, to, p);
+            if (distance < bestDistance) {
+              bestDistance = distance;
+              bestSegment = [way, from, to];
             }
           }
         }
