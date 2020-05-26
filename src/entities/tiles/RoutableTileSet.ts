@@ -1,4 +1,4 @@
-import { RoutableTile } from "./tile";
+import { RoutableTile } from "./RoutableTile";
 
 export class RoutableTileSet extends RoutableTile {
     public tiles: RoutableTile[];

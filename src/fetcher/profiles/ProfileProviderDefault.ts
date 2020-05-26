@@ -33,7 +33,7 @@ export default class ProfileProviderDefault implements IProfileProvider {
     this.developmentProfileCounter += 1;
     const newProfile = await this.fetcher.parseProfileBlob(blob, "" + this.developmentProfileCounter);
     if (this.developmentProfile) {
-      delete this.profiles[this.developmentProfile.getID()];
+      // delete this.profiles[this.developmentProfile.getID()];
     }
     this.developmentProfile = newProfile;
     this.profiles[this.developmentProfile.getID()] = Promise.resolve(newProfile);

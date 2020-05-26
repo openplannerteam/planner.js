@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
-import { IRoutableTileNodeIndex, RoutableTileNode } from "./node";
-import { IRoutableTileWayIndex, RoutableTileWay } from "./way";
+import { IRoutableTileNodeIndex, RoutableTileNode } from "./RoutableTileNode";
+import { IRoutableTileWayIndex, RoutableTileWay } from "./RoutableTileWay";
 
 @injectable()
 export default class RoutableTileRegistry {

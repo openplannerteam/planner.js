@@ -1,7 +1,6 @@
 import "jest";
 import LDFetch from "ldfetch";
 import Defaults from "../../Defaults";
-import RoutableTileRegistry from "../../entities/tiles/registry";
 import TravelMode from "../../enums/TravelMode";
 import ConnectionsFetcherRaw from "../../fetcher/connections/ConnectionsFetcherRaw";
 import ConnectionsProviderDefault from "../../fetcher/connections/ConnectionsProviderDefault";

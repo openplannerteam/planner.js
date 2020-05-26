@@ -3,8 +3,8 @@ import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
 import inBBox from "tiles-in-bbox";
 import Profile from "../../entities/profile/Profile";
-import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
-import RoutableTileRegistry from "../../entities/tiles/registry";
+import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
+import TileCoordinate from "../../entities/tiles/TileCoordinate";
 import RoutingPhase from "../../enums/RoutingPhase";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
@@ -23,6 +23,64 @@ import { toTileCoordinate } from "../../util/Tiles";
 import Leg from "../Leg";
 import Path from "../Path";
 import IRoadPlanner from "./IRoadPlanner";
+
+/*
+      ,-----------.          ,------------------.
+      |RoadPlanner|          |PathfinderProvider|
+      `-----+-----'          `--------+---------'
+ plan(query)|                         |
+ ----------->                         |
+            |                         |
+   ,-----------------!.               |
+   |See other diagram|_\              |
+   `-------------------'              |
+            |----.                    |
+            |    | fetchTile          |
+            |<---'                    |
+            |                         |
+            |    ,------------------------------------------!.
+            |    |Connect begin/end location to road network|_\
+            |    `--------------------------------------------'
+            |      embedLocation      |
+            | ------------------------>
+            |                         |
+            |                         |              ,-------------------------------!.
+            |                         |              |Contains the pathfinding state,|_\
+            |                         |              |which is query-specific          |
+            |                         |              `---------------------------------'
+            |                  queryPath                   ,--------------------.
+            | -------------------------------------------->|ShortestPathInstance|
+            |                         |                    `--------------------'
+            |                         |
+*/
+
+/*
+         ,-----------.          ,--------------------.                          ,------------------.
+         |RoadPlanner|          |RoutableTileProvider|                          |PathfinderProvider|
+         `-----+-----'          `---------+----------'                          `--------+---------'
+   fetchTile   |                          |                                              |
+ ------------->|                          |                                              |
+               |                          |                                              |
+               |           get            |                                              |
+               |------------------------->|                                              |
+               |                          |                                              |
+               |                          |         ,--------------------------!.        |
+               |                          |         |Boundary nodes lie outside|_\       |
+               |                          |         |the tile's bounding box     |       |
+               |                          |         `----------------------------'       |
+               |              get_boundary_nodes                ,----.                   |
+               |----------------------------------------------> |Tile|                   |
+               |                          |                     `----'                   |
+  ,------------------------!.             |                       |                      |
+  |Call this function again|_\            |                       |                      |
+  |when pathfinding reaches  |            |                       |                      |
+  |a boundary node           |            |                       |                      |
+  `--------------------------'            |                       |                      |
+               |             add_breakpoint(boundary_node, this.fetchTile)               |
+               |------------------------------------------------------------------------>|
+               |                          |                       |                      |
+               |                          |                       |                      |
+*/
 
 @injectable()
 export default class RoadPlannerPathfinding implements IRoadPlanner {
@@ -128,11 +186,11 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         return new Path([leg], context);
     }
 
-    private async fetchTile(coordinate: RoutableTileCoordinate) {
+    private async fetchTile(coordinate: TileCoordinate) {
         const tileId = this.tileProvider.getIdForTileCoords(coordinate);
         if (!this.reachedTiles.has(tileId)) {
-            this.eventBus.emit(EventType.ReachableTile, coordinate);
             const tile = await this.tileProvider.getByTileCoords(coordinate);
+            this.eventBus.emit(EventType.ReachableTile, coordinate);
             this.reachedTiles.add(tileId);
             const boundaryNodes: Set<string> = new Set();
 
@@ -170,7 +228,7 @@ export default class RoadPlannerPathfinding implements IRoadPlanner {
         };
 
         const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
-            const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
+            const coordinate = new TileCoordinate(zoom, obj.x, obj.y);
             this.fetchTile(coordinate);
             return coordinate;
         });

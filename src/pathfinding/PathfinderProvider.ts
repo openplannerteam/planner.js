@@ -2,10 +2,10 @@ import proj4 from "proj4";
 
 import { inject, injectable } from "inversify";
 import Profile from "../entities/profile/Profile";
-import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/node";
-import RoutableTileRegistry from "../entities/tiles/registry";
-import { RoutableTile } from "../entities/tiles/tile";
-import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/way";
+import { RoutableTile } from "../entities/tiles/RoutableTile";
+import { IRoutableTileNodeIndex, RoutableTileNode } from "../entities/tiles/RoutableTileNode";
+import RoutableTileRegistry from "../entities/tiles/RoutableTileRegistry";
+import { IRoutableTileWayIndex, RoutableTileWay } from "../entities/tiles/RoutableTileWay";
 import ProfileProvider from "../fetcher/profiles/ProfileProviderDefault";
 import ILocation from "../interfaces/ILocation";
 import ILocationResolver from "../query-runner/ILocationResolver";
@@ -70,19 +70,20 @@ export default class PathfinderProvider {
     return this.shortestPathTree.createInstance(graph);
   }
 
-  public async registerEdges(ways: IRoutableTileWayIndex, nodes: IRoutableTileNodeIndex): Promise<void> {
+  public async registerEdges(ways: Set<string>): Promise<void> {
     // add new edges to existing graphs
     for (const profileId of Object.keys(this.graphs)) {
       const profile = await this.profileProvider.getProfile(profileId);
 
-      for (const way of Object.values(ways)) {
+      for (const wayId of ways) {
+        const way = this.routableTileRegistry.getWay(wayId);
         if (!profile.hasAccess(way)) {
           continue;
         }
 
         for (const edge of way.getParts()) {
-          const from = nodes[edge.from];
-          const to = nodes[edge.to];
+          const from = this.routableTileRegistry.getNode(edge.from);
+          const to = this.routableTileRegistry.getNode(edge.to);
           if (from && to) {
             if (profile.isObstacle(from) || profile.isObstacle(to)) {
               continue;
@@ -98,13 +99,13 @@ export default class PathfinderProvider {
   }
 
   public async embedLocation(p: ILocation, tileset: RoutableTile, invert = false) {
-    if (this.embedded.has(Geo.getId(p))) {
-      return;
-    }
-
-    this.embedded.add(Geo.getId(p));
-
     for (const profile of await this.profileProvider.getProfiles()) {
+      if (this.embedded.has(profile.getID() + Geo.getId(p))) {
+        continue;
+      }
+
+      this.embedded.add(profile.getID() + Geo.getId(p));
+
       let bestDistance = Infinity;
       let bestSegment: [RoutableTileWay, ILocation, ILocation];
 
@@ -222,9 +223,10 @@ export default class PathfinderProvider {
     // this specifically adds an edge that corresponds to an actual street
     // if you need to add any other edge, you'll need to create a different method
     graph = graph || this.getGraphForProfile(profile);
-    distance = distance || profile.getDistance(from, to, way);
-    const duration = profile.getDuration(from, to, way);
-    const cost = profile.getCost(from, to, way);
+    // make sure we never have 0 costs, this confuses dijkstra
+    distance = distance || profile.getDistance(from, to, way) || 0.01;
+    const duration = profile.getDuration(from, to, way) || 1;
+    const cost = profile.getCost(from, to, way) || 1;
     graph.addEdge(Geo.getId(from), Geo.getId(to), way.id, distance, duration, cost);
   }
 

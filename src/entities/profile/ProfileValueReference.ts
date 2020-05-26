@@ -1,6 +1,6 @@
 import { IEntity } from "../../loader/common";
-import { RoutableTileNode } from "../tiles/node";
-import { RoutableTileWay } from "../tiles/way";
+import { RoutableTileNode } from "../tiles/RoutableTileNode";
+import { RoutableTileWay } from "../tiles/RoutableTileWay";
 
 export default class ProfileValueReference implements IEntity {
     public static create(id: string): ProfileValueReference {

@@ -3,10 +3,10 @@ import { EventEmitter } from "events";
 import { inject, injectable, tagged } from "inversify";
 import inBBox from "tiles-in-bbox";
 import Profile from "../../entities/profile/Profile";
-import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
-import { RoutableTileNode } from "../../entities/tiles/node";
-import RoutableTileRegistry from "../../entities/tiles/registry";
-import { RoutableTile } from "../../entities/tiles/tile";
+import { RoutableTile } from "../../entities/tiles/RoutableTile";
+import { RoutableTileNode } from "../../entities/tiles/RoutableTileNode";
+import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
+import TileCoordinate from "../../entities/tiles/TileCoordinate";
 import RoutingPhase from "../../enums/RoutingPhase";
 import TravelMode from "../../enums/TravelMode";
 import EventBus from "../../events/EventBus";
@@ -39,7 +39,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
     // STATEFUL!
     // will misbehave when processing several queries concurrently
     private reachedTiles: Set<string>;
-    private localTiles: RoutableTileCoordinate[];
+    private localTiles: TileCoordinate[];
 
     constructor(
         @inject(TYPES.RoutableTileProvider)
@@ -137,7 +137,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
     }
 
     private pickTile(node: RoutableTileNode) {
-        let coordinate: RoutableTileCoordinate;
+        let coordinate: TileCoordinate;
         for (let zoom = 8; zoom < 15; zoom++) {
             coordinate = toTileCoordinate(node.latitude, node.longitude, zoom);
             let ok = true;
@@ -154,7 +154,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         return coordinate;
     }
 
-    private async fetchTile(coordinate: RoutableTileCoordinate) {
+    private async fetchTile(coordinate: TileCoordinate) {
         let local = false;
         for (const localTile of this.localTiles) {
             if (coordinate.x === localTile.x && coordinate.y === localTile.y && coordinate.zoom === localTile.zoom) {
@@ -213,7 +213,7 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
         };
 
         const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
-            const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
+            const coordinate = new TileCoordinate(zoom, obj.x, obj.y);
             this.fetchTile(coordinate);
             return coordinate;
         });

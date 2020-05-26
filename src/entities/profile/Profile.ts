@@ -1,7 +1,7 @@
 import ILocation from "../../interfaces/ILocation";
 import { DistanceM, DurationMs } from "../../interfaces/units";
-import { RoutableTileNode } from "../tiles/node";
-import { RoutableTileWay } from "../tiles/way";
+import { RoutableTileNode } from "../tiles/RoutableTileNode";
+import { RoutableTileWay } from "../tiles/RoutableTileWay";
 
 export default abstract class Profile {
     public abstract getID(): string;

@@ -32,6 +32,7 @@ export default class ProfileFetcherDefault implements IProfileFetcher {
     this.ldLoader.defineCollection(URI.inNS(PROFILE, "hasPriorityRules"));
     this.ldLoader.defineCollection(URI.inNS(PROFILE, "hasObstacleRules"));
     this.ldLoader.defineCollection(URI.inNS(PROFILE, "hasObstacleTimeRules"));
+    this.ldLoader.defineCollection(URI.inNS(PROFILE, "hasProximityRules"));
   }
 
   public async parseProfileBlob(blob: object, id: string): Promise<Profile> {
@@ -75,6 +76,7 @@ export default class ProfileFetcherDefault implements IProfileFetcher {
     view.addMapping(URI.inNS(PROFILE, "hasPriorityRules"), "priorityRules", this.getRuleView());
     view.addMapping(URI.inNS(PROFILE, "hasObstacleRules"), "obstacleRules", this.getRuleView());
     view.addMapping(URI.inNS(PROFILE, "hasObstacleTimeRules"), "obstacleTimeRules", this.getRuleView());
+    view.addMapping(URI.inNS(PROFILE, "hasProximityRules"), "proximityRules", this.getRuleView());
     view.addMapping(URI.inNS(PROFILE, "hasMaxSpeed"), "maxSpeed");
     view.addMapping(URI.inNS(PROFILE, "usePublicTransport"), "usePublicTransport");
     return view;
@@ -94,7 +96,8 @@ export default class ProfileFetcherDefault implements IProfileFetcher {
   protected getConditionView() {
     const view = new ThingView(ProfileCondition.create);
     view.addFilter((entity) =>
-      entity[URI.inNS(PROFILE, "hasPredicate")] !== undefined,
+      entity[URI.inNS(PROFILE, "hasPredicate")] !== undefined ||
+      entity[URI.inNS(PROFILE, "hasObject")] !== undefined,
     );
     view.addMapping(URI.inNS(PROFILE, "hasPredicate"), "predicate");
     view.addMapping(URI.inNS(PROFILE, "hasObject"), "object");

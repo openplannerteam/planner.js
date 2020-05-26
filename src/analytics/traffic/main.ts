@@ -5,9 +5,9 @@ import "reflect-metadata";
 import inBBox from "tiles-in-bbox";
 import defaultContainer from "../../configs/default";
 import Profile from "../../entities/profile/Profile";
-import { RoutableTileCoordinate } from "../../entities/tiles/coordinate";
-import RoutableTileRegistry from "../../entities/tiles/registry";
-import { RoutableTile } from "../../entities/tiles/tile";
+import { RoutableTile } from "../../entities/tiles/RoutableTile";
+import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
+import TileCoordinate from "../../entities/tiles/TileCoordinate";
 import RoutingPhase from "../../enums/RoutingPhase";
 import EventBus from "../../events/EventBus";
 import EventType from "../../events/EventType";
@@ -144,7 +144,7 @@ export default class TrafficEstimator {
         };
 
         const fromTileCoords = inBBox.tilesInBbox(fromBBox, zoom).map((obj) => {
-            const coordinate = new RoutableTileCoordinate(zoom, obj.x, obj.y);
+            const coordinate = new TileCoordinate(zoom, obj.x, obj.y);
             this.fetchTile(coordinate, true);
             return coordinate;
         });
@@ -155,7 +155,7 @@ export default class TrafficEstimator {
         await this.pathfinderProvider.embedLocation(from, fromTileset);
     }
 
-    private async fetchTile(coordinate: RoutableTileCoordinate, base) {
+    private async fetchTile(coordinate: TileCoordinate, base) {
         let tileId: string;
         if (base) {
             tileId = this.baseTileProvider.getIdForTileCoords(coordinate);

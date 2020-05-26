@@ -10,7 +10,7 @@ import createPlanner from "./create";
 import classifyDataSource from "./data/classify";
 
 // instances
-import RoutableTileRegistry_ from "./entities/tiles/registry";
+import RoutableTileRegistry_ from "./entities/tiles/RoutableTileRegistry";
 import EventBus_ from "./events/EventBus";
 
 // enums
@@ -32,6 +32,7 @@ import FlexibleTransitPlanner from "./planner/configurations/FlexibleTransitPlan
 import GeospatialFragmentedPlanner from "./planner/configurations/GeospatialFragmentedPlanner";
 import ReducedCarPlanner from "./planner/configurations/ReducedCarPlanner";
 import TriangleTransitPlanner from "./planner/configurations/TriangleTransitPlanner";
+import ZoiDemoPlanner from "./planner/configurations/ZoiDemoPlanner";
 
 // classes
 export { default as IsochroneGenerator } from "./analytics/isochrones/main";
@@ -60,6 +61,7 @@ export { default as FlexibleTransitPlanner } from "./planner/configurations/Flex
 export { default as GeospatialFragmentedPlanner } from "./planner/configurations/GeospatialFragmentedPlanner";
 export { default as ReducedCarPlanner } from "./planner/configurations/ReducedCarPlanner";
 export { default as TriangleTransitPlanner } from "./planner/configurations/TriangleTransitPlanner";
+export { default as ZoiDemoPlanner } from "./planner/configurations/ZoiDemoPlanner";
 
 export default {
     // classes
@@ -89,4 +91,5 @@ export default {
     GeospatialFragmentedPlanner, // experimental
     ReducedCarPlanner,
     TriangleTransitPlanner,
+    ZoiDemoPlanner, // experimental
 };

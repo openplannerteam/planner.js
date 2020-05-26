@@ -1,7 +1,7 @@
 import { DistanceM, DurationMs } from "../../interfaces/units";
 import Geo from "../../util/Geo";
-import { RoutableTileNode } from "../tiles/node";
-import { RoutableTileWay } from "../tiles/way";
+import { RoutableTileNode } from "../tiles/RoutableTileNode";
+import { RoutableTileWay } from "../tiles/RoutableTileWay";
 import Profile from "./Profile";
 import ProfileRule from "./ProfileRule";
 
@@ -17,6 +17,7 @@ export default class DynamicProfile extends Profile {
     public priorityRules: ProfileRule[];
     public obstacleRules: ProfileRule[];
     public obstacleTimeRules: ProfileRule[];
+    public proximityRules: ProfileRule[];
 
     public maxSpeed: number;
     public usePublicTransport: boolean;
@@ -31,6 +32,7 @@ export default class DynamicProfile extends Profile {
         this.priorityRules = [];
         this.obstacleRules = [];
         this.obstacleTimeRules = [];
+        this.proximityRules = [];
 
         this.maxSpeed = 10;
         this.usePublicTransport = true;
@@ -129,7 +131,32 @@ export default class DynamicProfile extends Profile {
     }
 
     public getCost(from: RoutableTileNode, to: RoutableTileNode, way: RoutableTileWay): number {
-        return this.getMultiplier(way) * (this.getDuration(from, to, way) + this.getObstacleTime(to));
+        const toWeight = this.getNodeWeight(to);
+        const fromWeight = this.getNodeWeight(from);
+        const weight = Math.max(toWeight, fromWeight);
+        return weight * this.getMultiplier(way) * (this.getDuration(from, to, way) + this.getObstacleTime(to));
+    }
+
+    public getNodeWeight(node: RoutableTileNode) {
+        let count = 1;
+        let acc = 1;
+
+        if (node.proximity) {
+            for (const rule of this.proximityRules) {
+                if (rule.conclusion.priority !== undefined) {
+                    // should always be the case, but just in case
+                    if (rule.condition !== undefined) {
+                        if (node.proximity[rule.condition.object]) {
+                            const penalty = rule.conclusion.priority;
+                            count += node.proximity[rule.condition.object];
+                            acc += penalty * node.proximity[rule.condition.object];
+                        }
+                    }
+                }
+            }
+        }
+
+        return 1 / ((acc * acc) / (count * count));
     }
 
     public isObstacle(node: RoutableTileNode): boolean {

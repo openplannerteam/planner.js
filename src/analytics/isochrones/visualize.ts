@@ -1,7 +1,7 @@
 import concaveman = require("concaveman");
 import { Delaunay } from "d3-delaunay";
-import { RoutableTileNode } from "../../entities/tiles/node";
-import RoutableTileRegistry from "../../entities/tiles/registry";
+import { RoutableTileNode } from "../../entities/tiles/RoutableTileNode";
+import RoutableTileRegistry from "../../entities/tiles/RoutableTileRegistry";
 import ILocation from "../../interfaces/ILocation";
 import { IPathTree } from "../../pathfinding/pathfinder";
 import ILocationResolver from "../../query-runner/ILocationResolver";
@@ -73,10 +73,10 @@ export function visualizeIsochrone(registry: RoutableTileRegistry, pathTree: IPa
         }
     }
 
-    nodes.push({ latitude: 90, longitude: 180, id: "1", definedTags: {}, freeformTags: [] });
-    nodes.push({ latitude: -90, longitude: 180, id: "2", definedTags: {}, freeformTags: [] });
-    nodes.push({ latitude: 90, longitude: -180, id: "3", definedTags: {}, freeformTags: [] });
-    nodes.push({ latitude: -90, longitude: -180, id: "4", definedTags: {}, freeformTags: [] });
+    nodes.push({ latitude: 90, longitude: 180, id: "1", definedTags: {}, freeformTags: [], proximity: {} });
+    nodes.push({ latitude: -90, longitude: 180, id: "2", definedTags: {}, freeformTags: [], proximity: {} });
+    nodes.push({ latitude: 90, longitude: -180, id: "3", definedTags: {}, freeformTags: [], proximity: {} });
+    nodes.push({ latitude: -90, longitude: -180, id: "4", definedTags: {}, freeformTags: [], proximity: {} });
 
     costs["1"] = Infinity;
     costs["2"] = Infinity;

@@ -1,4 +1,4 @@
-import { RoutableTile } from "../../entities/tiles/tile";
+import { RoutableTile } from "../../entities/tiles/RoutableTile";
 
 export default interface IRoutableTileFetcher {
     get(url: string): Promise<RoutableTile>;
