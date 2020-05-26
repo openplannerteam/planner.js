@@ -60,6 +60,7 @@ export default class ZoiTileFetcherRaw implements IZoiTileFetcher {
           properties[property] = degree;
         } else if (entity["geo:asWKT"]) {
           const zone = this.createZone(entity, subjects, properties);
+          this.eventBus.emit(EventType.ZoiZone, zone);
           zones.push(zone);
         }
       }

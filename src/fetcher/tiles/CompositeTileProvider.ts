@@ -37,6 +37,11 @@ export default class CompositeTileProvider extends RoutableTileProviderDefault {
         return tile;
     }
 
+    public getIdForTileCoords(coordinate: TileCoordinate): string {
+        // only for pedestrians right now
+        return `https://hdelva.be/tiles/pedestrian/${coordinate.zoom}/${coordinate.x}/${coordinate.y}`;
+      }
+
     protected async getByUrl(url: string, zoiUrl?: string): Promise<RoutableTile> {
         if (!this.tiles[url]) {
             this.tiles[url] = this.fetcher.get(url);

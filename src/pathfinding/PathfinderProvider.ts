@@ -223,9 +223,10 @@ export default class PathfinderProvider {
     // this specifically adds an edge that corresponds to an actual street
     // if you need to add any other edge, you'll need to create a different method
     graph = graph || this.getGraphForProfile(profile);
-    distance = distance || profile.getDistance(from, to, way);
-    const duration = profile.getDuration(from, to, way);
-    const cost = profile.getCost(from, to, way);
+    // make sure we never have 0 costs, this confuses dijkstra
+    distance = distance || profile.getDistance(from, to, way) || 0.01;
+    const duration = profile.getDuration(from, to, way) || 1;
+    const cost = profile.getCost(from, to, way) || 1;
     graph.addEdge(Geo.getId(from), Geo.getId(to), way.id, distance, duration, cost);
   }
 
