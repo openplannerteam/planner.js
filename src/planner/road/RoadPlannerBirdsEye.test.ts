@@ -1,6 +1,5 @@
 import "jest";
 import LDFetch from "ldfetch";
-import RoutableTileRegistry from "../../entities/tiles/registry";
 import StopsFetcherLDFetch from "../../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import IPath from "../../interfaces/IPath";
 import LocationResolverDefault from "../../query-runner/LocationResolverDefault";
