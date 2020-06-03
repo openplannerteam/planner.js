@@ -159,23 +159,26 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
 
             if (local) {
                 tile = await this.smartTileProvider.getRTByUrl(baseTileId);
-                this.reachedTiles.add(baseTileId);
 
-                for (const nodeId of tile.getNodes()) {
-                    const node = this.registry.getNode(nodeId);
-                    if (!tile.containsGeoValue(node)) {
-                        boundaryNodes.add(nodeId);
+                if (tile) {
+                    this.reachedTiles.add(baseTileId);
+                    for (const nodeId of tile.getNodes()) {
+                        const node = this.registry.getNode(nodeId);
+                        if (!tile.containsGeoValue(node)) {
+                            boundaryNodes.add(nodeId);
+                        }
                     }
                 }
-
             } else {
                 tTile = await this.smartTileProvider.getByUrl(transitTileId);
-                this.reachedTiles.add(transitTileId);
 
-                for (const nodeId of tTile.getNodes()) {
-                    const node = this.registry.getNode(nodeId);
-                    if (!tTile.containsGeoValue(node)) {
-                        boundaryNodes.add(nodeId);
+                if (tTile) {
+                    this.reachedTiles.add(transitTileId);
+                    for (const nodeId of tTile.getNodes()) {
+                        const node = this.registry.getNode(nodeId);
+                        if (!tTile.containsGeoValue(node)) {
+                            boundaryNodes.add(nodeId);
+                        }
                     }
                 }
             }
@@ -229,9 +232,11 @@ export default class RoadPlannerPathfindingExperimental implements IRoadPlanner 
             rtNode.longitude = n.longitude;
             rtNode.latitude = n.latitude;
             this.localNodes.push(rtNode);
-            await this.fetchTile(rtNode);
             const fromTile: RoutableTile = await this.smartTileProvider.fetchCorrectTile(rtNode, true);
-            fromTiles.push(fromTile);
+            await this.fetchTile(rtNode);
+            if (fromTile) {
+                fromTiles.push(fromTile);
+            }
         }
 
         const fromTileset = new RoutableTileSet(fromTiles);

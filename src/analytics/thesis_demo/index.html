@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>Master's thesis demo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+        }
+        .link_container{
+            display: flex;
+            flex-direction: row;
+        }
+        .title_header{
+            text-align: center;
+        }
+        .title_header_2{
+            text-align: center;
+            margin-bottom: 5%;
+        }
+        .link_thesis{
+            font-weight: bold;
+            border-top: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            <h1 class="title_header display-2">A routeplanner based on Open Data: how hypermedia controls can be used to improve the
+                semantic description of datasets used by Planner.js</h1>
+        </div>
+        <div>
+            <h1 class="title_header_2 display-4">Thomas Neuser</h1>
+        </div>
+        <div class="link_container">
+            <a href="./demo_routeplanner.html" class="link_thesis list-group-item list-group-item-action">Go to routeplanning demo</a>
+            <a href="./demo_tiles.html" class="link_thesis list-group-item list-group-item-action">Go to transit tile tree traversal
+                demo</a>
+            <a href="http://193.190.127.203/tiles/tree/transit_geo_contracted/0/0.json"
+                class="link_thesis list-group-item list-group-item-action">Go to transit tile tree root (GEO)</a>
+            <a href="http://193.190.127.203/tiles/tree/transit_wkt_contracted/0/0.json"
+                class="link_thesis list-group-item list-group-item-action">Go to transit tile tree root node (WKT)</a>
+            <a href="http://193.190.127.203/tiles/tree/routable/0/0.json"
+                class="link_thesis list-group-item list-group-item-action">Go
+                to routable tile metadata tree root node</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

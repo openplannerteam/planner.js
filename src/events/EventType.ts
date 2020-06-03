@@ -22,6 +22,12 @@ enum EventType {
   ResourceFetch = "ResourceFetch",
 
   AddLocalNode = "AddLocalNode", //a local node (start or endpoint) was added 
+
+  NoTransitTilePossible = "NoTransitTilePossible", //for master thesis demo
+  RoutePlanningNextStep = "RoutePlanningNextStep", //for master thesis demo
+  RoutePlanningFinished = "RoutePlanningFinished", //for master thesis demo
+  NoRouteFound = "NoRouteFound", //for master thesis demo
+  FetchedTile = "FetchedTile", //for master thesis demo
 }
 
 export default EventType;

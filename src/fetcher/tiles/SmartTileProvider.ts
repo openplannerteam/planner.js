@@ -71,7 +71,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
     }
 
     public async getByUrl(url: string): Promise<TransitTile> {
-        if (!this.tiles[url]) {
+        if (url && !this.tiles[url]) {
             SmartTileProvider.numReq++;
             this.tiles[url] = this.fetcher.get(url);
         }
@@ -80,7 +80,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
     }
 
     public async getRTByUrl(url: string): Promise<RoutableTile> {
-        if (!this.baseTiles[url]) {
+        if (url && !this.baseTiles[url]) {
             SmartTileProvider.numReq++;
             this.baseTiles[url] = this.baseFetcher.get(url);
         }
@@ -88,10 +88,8 @@ export default class SmartTileProvider implements ISmartTileProvider {
         return await this.baseTiles[url];
     }
 
-
-
     public async getMetaByUrl(url: string): Promise<TransitTile> {
-        if (!this.metaTiles[url]) {
+        if (url && !this.metaTiles[url]) {
             SmartTileProvider.numReq++;
             this.metaTiles[url] = this.fetcher.getMetaData(url);
         }
@@ -100,7 +98,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
     }
 
     public async getRoutableMetaByUrl(url: string): Promise<RoutableTile> {
-        if (!this.metaBaseTiles[url]) {
+        if (url && !this.metaBaseTiles[url]) {
             SmartTileProvider.numReq++;
             this.metaBaseTiles[url] = this.baseFetcher.getMetaData(url);
         }
@@ -110,7 +108,7 @@ export default class SmartTileProvider implements ISmartTileProvider {
 
     public async fetchCorrectTile(node: RoutableTileNode, local?: boolean) {
         if (local) {
-            return await this.getByUrl(await this.traverseRoutableTree(node));
+            return await this.getRTByUrl(await this.traverseRoutableTree(node));
         }
         else {
             return await this.getByUrl(await this.traverseTransitTree(node));
@@ -118,25 +116,21 @@ export default class SmartTileProvider implements ISmartTileProvider {
     }
 
     public async traverseTransitTree(node: ILocation) {
-
         let tile: TransitTile;
-        let newTile: TransitTile;
-
         tile = await this.getMetaByUrl(this.transitRoot);
 
         while (tile.getArea().contains(this.localNodes[0]) || tile.getArea().contains(this.localNodes[1])) {
-
+            let newTile: TransitTile;
             for (const rel of tile.getRelations()) {
-                if (rel.geoValue.contains(node)) {
+                if (rel.geoValue.contains(node) && !(rel.geoValue.contains(this.localNodes[0]) || rel.geoValue.contains(this.localNodes[1]))) {
+                    newTile = await this.getByUrl(rel.id);
+                }
+                else if (rel.geoValue.contains(node)) {
                     newTile = await this.getMetaByUrl(rel.id);
                 }
             }
-
-            if (tile.coordinate.x == newTile.coordinate.x && tile.coordinate.y === newTile.coordinate.y && tile.coordinate.zoom === newTile.coordinate.zoom) {
-                break;
-            }
-
             if (newTile) {
+                this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: tile.area.area.coordinates, tileNumberX: tile.coordinate.x, tileNumberY: tile.coordinate.y, tileZoom: tile.coordinate.zoom });
                 tile = newTile;
             }
             else {
@@ -157,9 +151,15 @@ export default class SmartTileProvider implements ISmartTileProvider {
             for (const rel of tile.getRelations()) {
                 if (rel.geoValue.contains(node)) {
                     newTile = await this.getRoutableMetaByUrl(rel.id);
+                    if (newTile && newTile.getRelations().size === 0) {
+                        this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: rel.geoValue.area.coordinates, tileNumberX: tile.coordinate.x, tileNumberY: tile.coordinate.y, tileZoom: tile.coordinate.zoom });
+                    }
                 }
             }
             if (newTile) {
+                if (newTile.getRelations().size != 0) {
+                    this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: tile.area.area.coordinates, tileNumberX: tile.coordinate.x, tileNumberY: tile.coordinate.y, tileZoom: tile.coordinate.zoom });
+                }
                 tile = newTile;
             }
             else {
