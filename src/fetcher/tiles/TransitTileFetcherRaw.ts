@@ -78,8 +78,8 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
       );
 
       area = new GeometryValue();
-      if (blob["geo:asWKT"]) {
-        area.area = this.parseWktLiteral(blob["geo:asWKT"])
+      if (blob["geosparql:asWKT"]) {
+        area.area = this.parseWktLiteral(blob["geosparql:asWKT"])
       }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
@@ -136,8 +136,8 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
       );
 
       area = new GeometryValue();
-      if (blob["geo:asWKT"]) {
-        area.area = this.parseWktLiteral(blob["geo:asWKT"])
+      if (blob["geosparql:asWKT"]) {
+        area.area = this.parseWktLiteral(blob["geosparql:asWKT"])
       }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
@@ -163,7 +163,7 @@ export default class TransitTileFetcherRaw implements ITransitTileFetcher {
     node.longitude = parseFloat(blob["geo:long"]);
 
     if (!node.latitude && !node.longitude) {
-      const rest = this.parseWktLiteral(blob["geo:asWKT"]);
+      const rest = this.parseWktLiteral(blob["geosparql:asWKT"]);
       node.longitude = parseFloat(rest.coordinates[0]);
       node.latitude = parseFloat(rest.coordinates[1]);
     }

@@ -115,8 +115,8 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
       );
 
       area = new GeometryValue();
-      if (blob["geo:asWKT"]) {
-        area.area = this.parseWktLiteralPolygon(blob["geo:asWKT"])
+      if (blob["geosparql:asWKT"]) {
+        area.area = this.parseWktLiteralPolygon(blob["geosparql:asWKT"])
       }
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
