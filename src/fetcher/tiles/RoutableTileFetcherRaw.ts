@@ -121,7 +121,7 @@ export default class RoutableTileFetcherRaw implements IRoutableTileFetcher {
 
       coordinate = new RoutableTileCoordinate(blob["tiles:zoom"], blob["tiles:longitudeTile"], blob["tiles:latitudeTile"]);
 
-      return this.processTileData(url, nodes, ways, area, coordinate, relations);
+      return new RoutableTile(url, new Set(), new Set(), area, coordinate, relations);
     } else {
       return new RoutableTile(url, new Set(), new Set());
     }
