@@ -60,7 +60,7 @@ export default class SmartRoadPlannerDemo {
         let tile: TransitTile;
 
         //for demo purposes
-        tile = await this.getMetaByUrl("http://193.190.127.203/tiles/tree/transit_wkt_contracted/0/0.json");
+        tile = await this.getMetaByUrl("http://193.190.127.203/tiles/tree/transit_wkt_contracted/0/0/0.json");
 
         while (tile.getArea().contains(this.localNodes[0]) || tile.getArea().contains(this.localNodes[1])) {
 

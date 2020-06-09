@@ -145,13 +145,10 @@
 
         PlannerJS.EventBus.on(PlannerJS.EventType.FetchedTile, (info) => {
             let {
-                tileCoordinates,
-                tileNumberX,
-                tileNumberY,
-                tileZoom
+                tileCoordinates
             } = info;
             if(tileCoordinates){
-                drawTraversingTiles(tileCoordinates, tileZoom);
+                drawTraversingTiles(tileCoordinates);
             }
         })
 
@@ -234,7 +231,7 @@
         }
 
         //this function gets a matrix of polygon coordinates and returns the polygon WKT string
-        function drawTraversingTiles(area, zoom){
+        function drawTraversingTiles(area){
             let pointList = [];
 
             for(let i=0; i< area.length; i++){

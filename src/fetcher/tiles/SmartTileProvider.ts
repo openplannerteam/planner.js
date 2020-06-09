@@ -124,13 +124,13 @@ export default class SmartTileProvider implements ISmartTileProvider {
             for (const rel of tile.getRelations()) {
                 if (rel.geoValue.contains(node) && !(rel.geoValue.contains(this.localNodes[0]) || rel.geoValue.contains(this.localNodes[1]))) {
                     newTile = await this.getByUrl(rel.id);
+                    this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: rel.geoValue.area.coordinates });
                 }
                 else if (rel.geoValue.contains(node)) {
                     newTile = await this.getMetaByUrl(rel.id);
                 }
             }
             if (newTile) {
-                this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: tile.area.area.coordinates, tileNumberX: tile.coordinate.x, tileNumberY: tile.coordinate.y, tileZoom: tile.coordinate.zoom });
                 tile = newTile;
             }
             else {
@@ -152,13 +152,13 @@ export default class SmartTileProvider implements ISmartTileProvider {
                 if (rel.geoValue.contains(node)) {
                     newTile = await this.getRoutableMetaByUrl(rel.id);
                     if (newTile && newTile.getRelations().size === 0) {
-                        this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: rel.geoValue.area.coordinates, tileNumberX: tile.coordinate.x, tileNumberY: tile.coordinate.y, tileZoom: tile.coordinate.zoom });
+                        this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: rel.geoValue.area.coordinates });
                     }
                 }
             }
             if (newTile) {
                 if (newTile.getRelations().size != 0) {
-                    this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: tile.area.area.coordinates, tileNumberX: tile.coordinate.x, tileNumberY: tile.coordinate.y, tileZoom: tile.coordinate.zoom });
+                    this.eventBus.emit(EventType.FetchedTile, { tileCoordinates: tile.area.area.coordinates });
                 }
                 tile = newTile;
             }
