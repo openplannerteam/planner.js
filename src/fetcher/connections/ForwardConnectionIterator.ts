@@ -58,10 +58,10 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
             return undefined;
         }
 
-        if (this.count > 25) {
+        /*if (this.count > 25) {
             this.close();
             return null;
-        }
+        }*/
 
         if (this.currentIndex >= this.currentPage.getConnections().length) {
             // end of this page, fetch the next one
