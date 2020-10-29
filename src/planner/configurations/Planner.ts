@@ -210,8 +210,8 @@ export default abstract class Planner {
     const completeIterator: BufferedIterator<IPath> = new BufferedIterator();
 
     pathIterator.on("data", async (path) => {
-      const completePath = await this.completePath(path);
-      completeIterator._push(completePath);
+      // const completePath = await this.completePath(path); // no need for footpath details in the evaluation
+      completeIterator._push(path);
 
       if (pathIterator.closed) {
         completeIterator.close();

@@ -64,7 +64,7 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
         }*/
 
         if (this.currentIndex >= this.currentPage.getConnections().length) {
-            if (!this.currentPage.getNextPageId) {
+            if (!this.currentPage.getNextPageId()) {
                 // No next page available
                 this.close();
                 return null;

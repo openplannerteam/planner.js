@@ -64,7 +64,7 @@ export default class JourneyExtractorEarliestArrival implements IJourneyExtracto
     }
 
     if (!path.legs.length) {
-      return new EmptyIterator();
+      return new SingletonIterator<IPath>(undefined);
     }
 
     return new SingletonIterator<IPath>(path);
