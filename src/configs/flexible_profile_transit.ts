@@ -44,7 +44,7 @@ import IRoadPlanner from "../planner/road/IRoadPlanner";
 import RoadPlannerPathfinding from "../planner/road/RoadPlannerPathfinding";
 import IReachableStopsFinder from "../planner/stops/IReachableStopsFinder";
 import ReachableStopsFinderBirdsEyeCached from "../planner/stops/ReachableStopsFinderBirdsEyeCached";
-import ReachableStopsFinderDelaunay from "../planner/stops/ReachableStopsFinderDelaunay";
+import ReachableStopsFinderOnlySelf from "../planner/stops/ReachableStopsFinderOnlySelf";
 import QueryRunnerExponential from "../query-runner/exponential/QueryRunnerExponential";
 import ILocationResolver from "../query-runner/ILocationResolver";
 import IQueryRunner from "../query-runner/IQueryRunner";
@@ -83,11 +83,11 @@ container.bind<ICatalogFetcher>(TYPES.CatalogFetcher).to(CatalogFetcherDefault).
 container.bind<ICatalogProvider>(TYPES.CatalogProvider).to(CatalogProviderDefault).inSingletonScope();
 
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Initial);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
   .to(ReachableStopsFinderBirdsEyeCached).whenTargetTagged("phase", ReachableStopsSearchPhase.Transfer);
 container.bind<IReachableStopsFinder>(TYPES.ReachableStopsFinder)
-  .to(ReachableStopsFinderDelaunay).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
+  .to(ReachableStopsFinderOnlySelf).whenTargetTagged("phase", ReachableStopsSearchPhase.Final);
 
 container.bind<IConnectionsProvider>(TYPES.ConnectionsProvider).to(ConnectionsProviderDefault).inSingletonScope();
 container.bind<IConnectionsFetcher>(TYPES.ConnectionsFetcher).to(ConnectionsFetcherRaw);
