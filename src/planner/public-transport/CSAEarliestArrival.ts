@@ -116,18 +116,14 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
     const self = this;
     return new Promise((resolve, reject) => {
-      let isDone: boolean = false;
 
-      const done = () => {
-        if (!isDone) {
-          connectionsQueue.close();
-
+      const done = (finished: boolean) => {
+        connectionsQueue.close();
+        if (finished) {
           self.extractJourneys(queryState, query)
             .then((resultIterator) => {
               resolve(resultIterator);
             });
-
-          isDone = true;
         }
       };
 
@@ -135,7 +131,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         self.processConnections(queryState, query, done),
       );
 
-      connectionsIterator.on("end", () => done());
+      connectionsIterator.on("end", () => done(true));
 
       // iterator may have become readable before the listener was attached
       self.processConnections(queryState, query, done);
@@ -168,7 +164,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     return this.journeyExtractor.extractJourneys(state.profilesByStop, query);
   }
 
-  private async processConnections(state: IQueryState, query: IResolvedQuery, resolve: () => void) {
+  private async processConnections(state: IQueryState, query: IResolvedQuery, resolve: (finished: boolean) => void) {
     const { from, to, minimumDepartureTime } = query;
     const departureStopId: string = from[0].id;
     const arrivalStopId: string = to[0].id;
@@ -187,7 +183,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       if (this.getProfile(state, arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
         // stopping criterion
         // we cannot improve the tentative arrival time anymore
-        return resolve();
+        return resolve(false);
       }
 
       const tripId = connection.tripId;

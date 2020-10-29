@@ -34,6 +34,11 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
     }
 
     public async get(url: string): Promise<LinkedConnectionsPage> {
+        if (!url) {
+            // Reached the end of available Linked Connection pages
+            return new LinkedConnectionsPage(url, [], undefined, undefined);
+        }
+
         const beginTime = new Date();
 
         const response = await fetch(url);
