@@ -73,10 +73,10 @@ export default async (logResults) => {
         // to: "https://data.delijn.be/stops/502481", // Tielt Metaalconstructie Goossens
         // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
         // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
-        // from: "Ingelmunster", // Ingelmunster
-        // to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-        from: { latitude: 50.93278, longitude: 5.32665 }, // Pita Aladin, Hasselt
-        to: { latitude: 50.7980187, longitude: 3.1877779 }, // Burger Pita Pasta, Menen
+        from: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+        to: "http://irail.be/stations/NMBS/008819406", // Zaventem
+        // from: { latitude: 50.93278, longitude: 5.32665 }, // Pita Aladin, Hasselt
+        // to: { latitude: 50.7980187, longitude: 3.1877779 }, // Burger Pita Pasta, Menen
         // from: "Hasselt",
         // to: "Kortrijk",
         minimumDepartureTime: new Date(),
