@@ -1,0 +1,1 @@
+{"version":3,"file":"dataset_distribution.js","sourceRoot":"","sources":["../../../src/entities/catalog/dataset_distribution.ts"],"names":[],"mappings":";;AAAA,MAAqB,mBAAmB;IASpC,YAAY,EAAU;QAClB,IAAI,CAAC,EAAE,GAAG,EAAE,CAAC;IACjB,CAAC;IAVM,MAAM,CAAC,MAAM,CAAC,EAAU;QAC3B,OAAO,IAAI,mBAAmB,CAAC,EAAE,CAAC,CAAC;IACvC,CAAC;CASJ;AAZD,sCAYC"}

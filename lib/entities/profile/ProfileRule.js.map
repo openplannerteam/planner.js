@@ -1,0 +1,1 @@
+{"version":3,"file":"ProfileRule.js","sourceRoot":"","sources":["../../../src/entities/profile/ProfileRule.ts"],"names":[],"mappings":";;AAIA,MAAqB,WAAW;IAU5B,YAAY,EAAU;QAClB,IAAI,CAAC,EAAE,GAAG,EAAE,CAAC;IACjB,CAAC;IAXM,MAAM,CAAC,MAAM,CAAC,EAAU;QAC3B,OAAO,IAAI,WAAW,CAAC,EAAE,CAAC,CAAC;IAC/B,CAAC;IAWM,KAAK;QACR,OAAO,IAAI,CAAC,EAAE,CAAC;IACnB,CAAC;CACJ;AAjBD,8BAiBC"}

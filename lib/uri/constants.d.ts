@@ -1,0 +1,15 @@
+export declare const XMLS = "http://www.w3.org/2001/XMLSchema";
+export declare const HYDRA = "http://www.w3.org/ns/hydra/core";
+export declare const OSM = "https://w3id.org/openstreetmap/terms";
+export declare const GEO = "http://www.w3.org/2003/01/geo/wgs84_pos";
+export declare const GEOSPARQL = "http://www.opengis.net/ont/geosparql#";
+export declare const RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns";
+export declare const RDFS = "http://www.w3.org/2000/01/rdf-schema";
+export declare const ROUTE = "https://w3id.org/routabletiles/terms#";
+export declare const PLANNER = "https://planner.js.org/terms#";
+export declare const PROFILE = "https://w3id.org/openplannerteam/profile#";
+export declare const TREE = "https://w3id.org/tree#";
+export declare const LC = "http://semweb.mmlab.be/ns/linkedconnections#";
+export declare const DCAT = "http://www.w3.org/ns/dcat#";
+export declare const DCT = "http://purl.org/dc/terms/";
+export declare const GTFS = "http://vocab.gtfs.org/terms#";
