@@ -44,11 +44,13 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
     }
 
     public async getByUrl(url: string): Promise<LinkedConnectionsPage> {
-        if (!this.pages[url]) {
+        /*if (!this.pages[url]) {
             this.pages[url] = this.fetcher.get(url);
         }
 
-        return await this.pages[url];
+        return await this.pages[url];*/
+        // Bypass parsed LC document cache for the evaluation
+        return await this.fetcher.get(url);
     }
 
     public async getByTime(date: Date, region?: GeometryValue): Promise<LinkedConnectionsPage> {
