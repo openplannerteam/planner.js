@@ -40,8 +40,8 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
         }
 
         const beginTime = new Date();
-
-        const response = await fetch(url);
+        // Force non-cached requests for the evaluation
+        const response = await fetch(url, { headers: { "cache-control": "no-cache" } });
         const size = this.parseResponseLength(response);
         const duration = (new Date()).getTime() - beginTime.getTime();
 
