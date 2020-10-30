@@ -37,7 +37,7 @@ export default abstract class Planner {
      * @param query An [[IQuery]] specifying a route planning query
      * @returns An [[AsyncIterator]] of [[IPath]] instances
      */
-    query(query: IQuery): AsyncIterator<IPath>;
+    query(query: IQuery, fresh?: boolean): AsyncIterator<IPath>;
     prefetchStops(): void;
     prefetchConnections(from: Date, to: Date): void;
     setDevelopmentProfile(blob: object): Promise<this>;

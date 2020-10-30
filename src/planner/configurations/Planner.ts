@@ -187,7 +187,14 @@ export default abstract class Planner {
    * @param query An [[IQuery]] specifying a route planning query
    * @returns An [[AsyncIterator]] of [[IPath]] instances
    */
-  public query(query: IQuery): AsyncIterator<IPath> {
+  public query(query: IQuery, fresh = false): AsyncIterator<IPath> {
+    // Hack to refresh connections provider on each query
+    if (fresh) {
+      const connectionSource = this.connectionsProvider.getSources()[0];
+      this.connectionsProvider = defaultContainer.get<IConnectionsProvider>(TYPES.ConnectionsProvider);
+      this.connectionsProvider.addConnectionSource(connectionSource);
+    }
+
     this.eventBus.emit(EventType.Query, query);
 
     query.profileID = this.activeProfileID;
