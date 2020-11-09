@@ -181,7 +181,9 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       }
 
       if (this.eventBus) {
-        this.eventBus.emit(EventType.ConnectionScan, connection);
+        if (connection.travelMode !== "walking") {
+          this.eventBus.emit(EventType.ConnectionScan, connection);
+        }
       }
 
       if (this.getProfile(state, arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
