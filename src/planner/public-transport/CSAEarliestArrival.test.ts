@@ -23,7 +23,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
     jest.setTimeout(100000);
 
     const createCSA = (connections) => {
-      const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+      const ldFetch = new LDFetch();
 
       const connectionProvider = new ConnectionsProviderNMBSTest(connections);
       const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
@@ -169,7 +169,7 @@ describe("[PublicTransportPlannerCSAEarliestArrival]", () => {
 
   describe("real-time data", () => {
     const createQueryRunner = () => {
-      const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+      const ldFetch = new LDFetch();
 
       const connectionProvider = new ConnectionsProviderDefault(
         (travelMode: TravelMode) => {

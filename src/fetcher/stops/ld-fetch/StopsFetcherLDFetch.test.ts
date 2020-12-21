@@ -5,7 +5,7 @@ import StopsFetcherLDFetch from "./StopsFetcherLDFetch";
 
 const DE_LIJN_STOPS_URL = "http://openplanner.ilabt.imec.be/delijn/stops";
 
-const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const ldFetch = new LDFetch();
 
 const deLijnFetcher = new StopsFetcherLDFetch(ldFetch);
 deLijnFetcher.setAccessUrl(DE_LIJN_STOPS_URL);

@@ -3,7 +3,7 @@ import "reflect-metadata";
 import TravelMode from "../enums/TravelMode";
 
 /*
-const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const ldFetch = new LDFetch();
 
 const upperBoundDate = new Date();
 upperBoundDate.setHours(upperBoundDate.getHours() + 2);
