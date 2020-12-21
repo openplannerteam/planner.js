@@ -116,7 +116,6 @@ export default class CSAEarliestArrivalDynamic implements IPublicTransportPlanne
         const mergedQueue = new MergeIterator(
             [connectionsIterator, footpathsQueue],
             forwardsConnectionSelector,
-            true,
         );
 
         const queryState: IQueryState = {
@@ -228,7 +227,6 @@ export default class CSAEarliestArrivalDynamic implements IPublicTransportPlanne
             state.mergedQueue = new MergeIterator(
                 [newConnectionIterator, state.footpathsQueue],
                 forwardsConnectionSelector,
-                true,
             );
         }
     }

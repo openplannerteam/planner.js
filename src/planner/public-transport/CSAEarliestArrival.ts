@@ -37,7 +37,7 @@ export interface IQueryState {
   profilesByStop: IProfileByStop; // S
   enterConnectionByTrip: IEnterConnectionByTrip; // T
   footpathsQueue: FootpathQueue;
-  connectionsQueue: AsyncIterator<IConnection>;
+  connectionsQueue: MergeIterator<IConnection>;
 }
 
 // Implementation is as close as possible to the original paper: https://arxiv.org/pdf/1703.05997.pdf
@@ -94,7 +94,6 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     const connectionsQueue = new MergeIterator(
       [connectionsIterator, footpathsQueue],
       forwardsConnectionSelector,
-      true,
     );
 
     const queryState: IQueryState = {
@@ -203,17 +202,17 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       );
 
       if (canRemainSeated || canTakeTransfer) {
-        // enterConnectionByTrip should point to the first reachable connection
-        if (!state.enterConnectionByTrip[tripId]) {
-          state.enterConnectionByTrip[tripId] = connection;
-        }
-
         // limited walking optimization
         const canImprove = connection.arrivalTime.getTime() <
           this.getProfile(state, connection.arrivalStop).arrivalTime;
         const canLeave = connection.dropOffType !== DropOffType.NotAvailable;
 
         if (canLeave && canImprove) {
+          // enterConnectionByTrip should point to the first reachable connection
+          if (!state.enterConnectionByTrip[tripId]) {
+            state.enterConnectionByTrip[tripId] = connection;
+          }
+
           this.updateProfile(state, query, connection);
           await this.scheduleExtraConnections(state, query, connection);
         }

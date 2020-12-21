@@ -53,11 +53,11 @@ export default class ConnectionsProviderDefault implements IConnectionsProvider 
     const selector = options.backward ? backwardsConnectionsSelector : forwardsConnectionSelector;
 
     if (options.excludedModes) {
-      return new MergeIterator(iterators, selector, true).filter((item) => {
+      return new MergeIterator(iterators, selector).filter((item) => {
         return !options.excludedModes.has(item.travelMode);
       });
     } else {
-      return new MergeIterator(iterators, selector, true);
+      return new MergeIterator(iterators, selector);
     }
   }
 
@@ -74,9 +74,7 @@ export default class ConnectionsProviderDefault implements IConnectionsProvider 
     const readListeners = existingIterator.listeners("readable");
     const endListeners = existingIterator.listeners("end");
 
-    existingIterator.removeAllListeners();
-
-    const mergedIterator = new MergeIterator([...iterators, existingIterator], selector, true);
+    const mergedIterator = new MergeIterator([...iterators, existingIterator], selector);
     for (const listener of dataListeners) {
       mergedIterator.addListener("data", listener as (...args: any[]) => void);
     }

@@ -116,7 +116,7 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
 
         existingIterator.removeAllListeners();
 
-        const mergedIterator = new MergeIterator([iterator, existingIterator], selector, true);
+        const mergedIterator = new MergeIterator([iterator, existingIterator], selector);
         for (const listener of dataListeners) {
             mergedIterator.addListener("data", listener as (...args: any[]) => void);
         }
