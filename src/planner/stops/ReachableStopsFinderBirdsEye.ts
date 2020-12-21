@@ -39,9 +39,9 @@ export default class ReachableStopsFinderBirdsEye implements IReachableStopsFind
       if (Math.abs(sourceOrTargetStop.latitude - possibleTarget.latitude) < 0.05 &&
         Math.abs(sourceOrTargetStop.longitude - possibleTarget.longitude) < 0.05) {
         const distance = Geo.getDistanceBetweenStops(sourceOrTargetStop, possibleTarget);
-        const duration = Units.toDuration(distance, minimumSpeed);
+        const duration = Math.max(1, Units.toDuration(distance, minimumSpeed));
 
-        if (duration >= 0 && duration <= maximumDuration) {
+        if (sourceOrTargetStop.id !== possibleTarget.id && duration <= maximumDuration) {
           reachableStops.push({ stop: possibleTarget, duration });
         }
       }

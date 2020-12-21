@@ -392,26 +392,25 @@ export default class CSAEarliestArrivalDynamic implements IPublicTransportPlanne
         }
 
         for (const reachableStop of reachableStops) {
-            const { stop: stop, duration: duration } = reachableStop;
+            const stop = reachableStop.stop;
+            const duration = Math.max(reachableStop.duration, 1);
 
-            if (duration) {
-                // create a connection that resembles a footpath
-                // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
-                const transferConnection: IConnection = {
-                    id: `MOVE_TO:${stop.id}`,
-                    tripId: `MOVE_TO:${stop.id}`,
-                    travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
-                    departureTime: query.minimumDepartureTime,
-                    departureStop: fromLocation.id,
-                    arrivalTime: new Date(query.minimumDepartureTime.getTime() + duration),
-                    arrivalStop: stop.id,
-                    dropOffType: DropOffType.Regular,
-                    pickupType: PickupType.Regular,
-                    headsign: stop.id,
-                };
+            // create a connection that resembles a footpath
+            // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
+            const transferConnection: IConnection = {
+                id: `MOVE_TO:${stop.id}`,
+                tripId: `MOVE_TO:${stop.id}`,
+                travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
+                departureTime: query.minimumDepartureTime,
+                departureStop: fromLocation.id,
+                arrivalTime: new Date(query.minimumDepartureTime.getTime() + duration),
+                arrivalStop: stop.id,
+                dropOffType: DropOffType.Regular,
+                pickupType: PickupType.Regular,
+                headsign: stop.id,
+            };
 
-                state.footpathsQueue.write(transferConnection);
-            }
+            state.footpathsQueue.write(transferConnection);
         }
 
         return true;
@@ -447,10 +446,12 @@ export default class CSAEarliestArrivalDynamic implements IPublicTransportPlanne
         }
 
         for (const reachableStop of reachableStops) {
-            if (reachableStop.duration > 0) {
+            const duration = Math.max(reachableStop.duration, 1);
+
+            if (reachableStop.id !== toLocation.id) {
                 state.finalReachableStops[reachableStop.stop.id] = {
                     stop: toLocation as IStop,
-                    duration: reachableStop.duration,
+                    duration,
                 };
             }
         }

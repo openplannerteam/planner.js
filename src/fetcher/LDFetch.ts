@@ -22,7 +22,7 @@ export default class LDFetch implements LDFetchBase {
   private httpStartTimes: { [url: string]: Date };
 
   constructor() {
-    this.ldFetchBase = new LDFetchBase({ headers: { Accept: "application/ld+json" } });
+    this.ldFetchBase = new LDFetchBase();
     this.eventBus = EventBus.getInstance();
 
     this.setupEvents();

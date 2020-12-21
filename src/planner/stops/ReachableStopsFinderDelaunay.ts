@@ -68,7 +68,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
 
       const durations = await Iterators.toArray(durationIterator);
       if (durations.length) {
-        const shortestDuration = Math.min(...durations);
+        const shortestDuration = Math.max(1, Math.min(...durations));
         reachableStops.push({ stop: possibleTarget, duration: shortestDuration });
       }
     }));
