@@ -232,13 +232,17 @@ export default class PathfinderProvider {
 
   private segmentDistToPoint(segA: ILocation, segB: ILocation, p: ILocation): number {
     // potential 'catastrophic cancellation'
-    const sx1 = segA.longitude;
-    const sx2 = segB.longitude;
-    const px = p.longitude;
+    const mSegA = proj4("EPSG:4326", "EPSG:3857", [segA.longitude, segA.latitude]);
+    const mSegB = proj4("EPSG:4326", "EPSG:3857", [segB.longitude, segB.latitude]);
+    const mP = proj4("EPSG:4326", "EPSG:3857", [p.longitude, p.latitude]);
 
-    const sy1 = segA.latitude;
-    const sy2 = segB.latitude;
-    const py = p.latitude;
+    const sx1 = mSegA[0];
+    const sx2 = mSegB[0];
+    const px = mP[0];
+
+    const sy1 = mSegA[1];
+    const sy2 = mSegB[1];
+    const py = mP[1];
 
     const px2 = sx2 - sx1;  // <-
     const py2 = sy2 - sy1;  // <-
@@ -261,9 +265,10 @@ export default class PathfinderProvider {
     const x = sx1 + u * px2;
     const y = sy1 + u * py2;
 
+    const intersection = proj4("EPSG:3857", "EPSG:4326", [x, y]);
     const result = {
-      longitude: x,
-      latitude: y,
+      longitude: intersection[0],
+      latitude: intersection[1],
     };
 
     const dist = Geo.getDistanceBetweenLocations(p, result);
