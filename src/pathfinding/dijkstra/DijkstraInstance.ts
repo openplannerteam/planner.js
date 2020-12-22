@@ -120,8 +120,8 @@ export class DijkstraInstance implements IShortestPathInstance {
             let way;
 
             for (const edge of this.graph.getReverseAdjacencyList()[currentPosition]) {
-                if (this.getCost(edge.node) < nextPositionCost) {
-                    nextPositionCost = this.getCost(edge.node);
+                if (this.getCost(edge.node) + edge.cost < nextPositionCost) {
+                    nextPositionCost = this.getCost(edge.node) + edge.cost;
                     nextEdge = edge;
                     way = edge.through;
                 }
