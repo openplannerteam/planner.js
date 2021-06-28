@@ -116,7 +116,10 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
 
     const self = this;
     return new Promise((resolve, reject) => {
-
+      this.eventBus.once(EventType.AbortQuery, () => {
+        connectionsIterator.close();
+        reject();
+      });
       const done = (finished: boolean) => {
         connectionsQueue.close();
         if (finished) {
