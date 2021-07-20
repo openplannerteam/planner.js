@@ -34,7 +34,7 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
             this.readable = false;
             this.waiting = true;
             this.currentPage = null;
-            this.currentPage = await this.connectionsProvider.getByUrl(url);
+            this.currentPage = await this.connectionsProvider.getByUrl(url, this.options.mementoDate);
             this.count += 1;
             this.waiting = false;
             this.currentIndex = 0;
@@ -42,7 +42,7 @@ export default class ForwardConnectionIterator extends AsyncIterator<IConnection
 
             if (this.currentPage.getNextPageId()) {
                 // prefetch the next page to reduce IO
-                this.connectionsProvider.getByUrl(this.currentPage.getNextPageId());
+                this.connectionsProvider.getByUrl(this.currentPage.getNextPageId(), this.options.mementoDate);
             }
         }
     }

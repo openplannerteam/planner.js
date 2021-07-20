@@ -21,4 +21,5 @@ export default interface IQuery {
     maximumTravelDuration?: DurationMs;
     excludedTravelModes?: TravelMode[];
     minimized?: boolean;
+    mementoDate?: Date;
 }

@@ -22,4 +22,5 @@ export default interface IResolvedQuery {
     maximumTransfers?: number;
     maximumTravelDuration?: DurationMs;
     excludedTravelModes?: Set<TravelMode>;
+    mementoDate?: Date;
 }

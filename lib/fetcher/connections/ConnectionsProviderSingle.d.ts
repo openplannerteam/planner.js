@@ -18,7 +18,7 @@ export default class ConnectionsProviderSingle implements IConnectionsProvider {
     constructor(connectionsFetcherFactory: ConnectionsFetcherFactory, catalog: IConnectionsSourceConfig, templateFetcher: IHydraTemplateFetcher);
     addConnectionSource(source: IConnectionsSourceConfig): void;
     getSources(): IConnectionsSourceConfig[];
-    getByUrl(url: string): Promise<LinkedConnectionsPage>;
+    getByUrl(url: string, mementoDate?: Date): Promise<LinkedConnectionsPage>;
     getByTime(date: Date, region?: GeometryValue): Promise<LinkedConnectionsPage>;
     getIdForTime(date: Date, region?: GeometryValue): Promise<string>;
     prefetchConnections(lowerBound: Date, upperBound: Date): void;

@@ -7,6 +7,7 @@ import TravelMode from "../../enums/TravelMode";
 export default interface IConnectionsIteratorOptions {
     upperBoundDate?: Date;
     lowerBoundDate?: Date;
+    mementoDate?: Date;
     backward?: boolean;
     excludedModes?: Set<TravelMode>;
     region: GeometryValue;

@@ -89,6 +89,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       lowerBoundDate,
       excludedModes: query.excludedTravelModes,
       region: null,
+      mementoDate: query.mementoDate,
     });
 
     const connectionsQueue = new MergeIterator(

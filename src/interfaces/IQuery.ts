@@ -22,4 +22,5 @@ export default interface IQuery {
   maximumTravelDuration?: DurationMs;
   excludedTravelModes?: TravelMode[];
   minimized?: boolean; // contain all details, or only start/stop locations?
+  mementoDate?: Date;
 }

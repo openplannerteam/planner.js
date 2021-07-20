@@ -10,6 +10,6 @@ export default interface IConnectionsProvider {
     prefetchConnections(lowerBound: Date, upperBound: Date): void;
     appendIterator(options: IConnectionsIteratorOptions, existingIterator: AsyncIterator<IConnection>): Promise<AsyncIterator<IConnection>>;
     createIterator(options: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>>;
-    getByUrl(url: string): Promise<LinkedConnectionsPage>;
+    getByUrl(url: string, mementoDate?: Date): Promise<LinkedConnectionsPage>;
     getByTime(date: Date, region?: GeometryValue): Promise<LinkedConnectionsPage>;
 }

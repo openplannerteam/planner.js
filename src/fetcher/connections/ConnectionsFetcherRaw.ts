@@ -33,15 +33,19 @@ export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
         this.travelMode = travelMode;
     }
 
-    public async get(url: string): Promise<LinkedConnectionsPage> {
+    public async get(url: string, mementoDate?: Date): Promise<LinkedConnectionsPage> {
         if (!url) {
             // Reached the end of available Linked Connection pages
             return new LinkedConnectionsPage(url, [], undefined, undefined);
         }
 
         const beginTime = new Date();
-        // Force non-cached requests for the evaluation
-        const response = await fetch(url, { headers: { "cache-control": "no-cache" } });
+        const headers = {};
+        if (mementoDate) {
+            headers["accept-datetime"] = mementoDate.toISOString();
+        }
+
+        const response = await fetch(url, { headers });
         const size = this.parseResponseLength(response);
         const duration = (new Date()).getTime() - beginTime.getTime();
 

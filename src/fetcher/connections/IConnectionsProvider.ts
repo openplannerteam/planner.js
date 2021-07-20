@@ -16,6 +16,6 @@ export default interface IConnectionsProvider {
   ): Promise<AsyncIterator<IConnection>>;
   createIterator(options: IConnectionsIteratorOptions): Promise<AsyncIterator<IConnection>>;
 
-  getByUrl(url: string): Promise<LinkedConnectionsPage>;
+  getByUrl(url: string, mementoDate?: Date): Promise<LinkedConnectionsPage>;
   getByTime(date: Date, region?: GeometryValue): Promise<LinkedConnectionsPage>;
 }

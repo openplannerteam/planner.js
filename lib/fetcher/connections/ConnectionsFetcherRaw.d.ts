@@ -4,6 +4,6 @@ import IConnectionsFetcher from "./IConnectionsFetcher";
 export default class ConnectionsFetcherRaw implements IConnectionsFetcher {
     protected travelMode: TravelMode;
     setTravelMode(travelMode: TravelMode): void;
-    get(url: string): Promise<LinkedConnectionsPage>;
+    get(url: string, mementoDate?: Date): Promise<LinkedConnectionsPage>;
     private parseResponseLength;
 }
