@@ -32,7 +32,7 @@ export default class FootpathQueue extends AsyncIterator<IConnection> {
         if (this.buffer.length) {
             item = this.buffer.pop();
         } else {
-            item = null;
+            item = undefined;
         }
 
         if (this.shouldClose) {

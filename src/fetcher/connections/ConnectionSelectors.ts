@@ -1,6 +1,6 @@
 import IConnection from "../../entities/connections/connections";
 
-export function forwardsConnectionSelector(connections: IConnection[]): number {
+export function forwardsConnectionSelector(connections: Array<IConnection | undefined | null>): number {
     if (connections.length === 1) {
         return 0;
     }
@@ -11,11 +11,15 @@ export function forwardsConnectionSelector(connections: IConnection[]): number {
     for (let i = 1; i < connections.length; i++) {
         const connection = connections[i];
 
-        if (connection.departureTime < earliest.departureTime) {
+        if (connection === null || connection === undefined) {
+            continue;
+        }
+
+        if (!earliest || connection.departureTime < earliest.departureTime) {
             earliestIndex = i;
             earliest = connection;
         } else if (connection.departureTime === earliest.departureTime
-            && connection.arrivalTime < earliest.arrivalTime) {
+            && connection.id < earliest.id) {
             earliestIndex = i;
             earliest = connection;
         }
@@ -24,7 +28,7 @@ export function forwardsConnectionSelector(connections: IConnection[]): number {
     return earliestIndex;
 }
 
-export function backwardsConnectionsSelector(connections: IConnection[]): number {
+export function backwardsConnectionsSelector(connections: Array<IConnection | undefined | null>): number {
     if (connections.length === 1) {
         return 0;
     }
@@ -35,7 +39,11 @@ export function backwardsConnectionsSelector(connections: IConnection[]): number
     for (let i = 1; i < connections.length; i++) {
         const connection = connections[i];
 
-        if (connection.departureTime > latest.departureTime) {
+        if (connection === null || connection === undefined) {
+            continue;
+        }
+
+        if (!latest || connection.departureTime > latest.departureTime) {
             latestIndex = i;
             latest = connection;
         }

@@ -27,7 +27,7 @@ describe("[QueryRunnerExponential]", () => {
   };
 
   const createExponentialQueryRunner = () => {
-    const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+    const ldFetch = new LDFetch();
 
     const connectionsFetcher = new ConnectionsFetcherRaw();
     const stopsFetcher = new StopsFetcherLDFetch(ldFetch);

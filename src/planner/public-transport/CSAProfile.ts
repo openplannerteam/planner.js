@@ -114,7 +114,6 @@ export default class CSAProfile implements IPublicTransportPlanner {
     const mergedIterator = new MergeIterator(
       [connectionsIterator, footpathQueue],
       backwardsConnectionsSelector,
-      true,
     );
 
     const queryState: IQueryState = {
@@ -507,7 +506,7 @@ export default class CSAProfile implements IPublicTransportPlanner {
         for (const reachableStop of reachableStops) {
           const { stop: stop, duration: duration } = reachableStop;
 
-          if (duration && stop.id) {
+          if (stop.id) {
             const newDepartureTime = new Date(connection.departureTime.getTime() - duration);
 
             if (newDepartureTime >= queryState.query.minimumDepartureTime) {

@@ -7,7 +7,7 @@ import Iterators from "../../util/Iterators";
 import IRoadPlanner from "./IRoadPlanner";
 import RoadPlannerBirdsEye from "./RoadPlannerBirdsEye";
 
-const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const ldFetch = new LDFetch();
 const planner: IRoadPlanner = new RoadPlannerBirdsEye();
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);

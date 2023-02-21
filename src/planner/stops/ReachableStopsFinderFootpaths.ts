@@ -41,7 +41,7 @@ export default class ReachableStopsFinderFootpaths implements IReachableStopsFin
         }
 
         if (otherStop) {
-            const duration = Units.toDuration(footpath.distance, minimumSpeed);
+            const duration = Math.max(Units.toDuration(footpath.distance, minimumSpeed), 1);
             reachableStops.push({stop: otherStop, duration, id: footpath.id});
         }
     }

@@ -32,12 +32,12 @@ interface IFinalReachableStops {
   [stop: string]: IReachableStop;
 }
 
-interface IQueryState {
+export interface IQueryState {
   finalReachableStops: IFinalReachableStops;
   profilesByStop: IProfileByStop; // S
   enterConnectionByTrip: IEnterConnectionByTrip; // T
   footpathsQueue: FootpathQueue;
-  connectionsQueue: AsyncIterator<IConnection>;
+  connectionsQueue: MergeIterator<IConnection>;
 }
 
 // Implementation is as close as possible to the original paper: https://arxiv.org/pdf/1703.05997.pdf
@@ -94,7 +94,6 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     const connectionsQueue = new MergeIterator(
       [connectionsIterator, footpathsQueue],
       forwardsConnectionSelector,
-      true,
     );
 
     const queryState: IQueryState = {
@@ -164,11 +163,11 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     EventBus.getInstance().emit(EventType.ReachableID, connection.arrivalStop);
   }
 
-  private async extractJourneys(state: IQueryState, query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
+  protected async extractJourneys(state: IQueryState, query: IResolvedQuery): Promise<AsyncIterator<IPath>> {
     return this.journeyExtractor.extractJourneys(state.profilesByStop, query);
   }
 
-  private async processConnections(state: IQueryState, query: IResolvedQuery, resolve: () => void) {
+  protected async processConnections(state: IQueryState, query: IResolvedQuery, resolve: () => void) {
     const { from, to, minimumDepartureTime } = query;
     const departureStopId: string = from[0].id;
     const arrivalStopId: string = to[0].id;
@@ -182,6 +181,10 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         // skip connections before the minimum departure time
         connection = state.connectionsQueue.read();
         continue;
+      }
+
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.ConnectionScan, connection);
       }
 
       if (this.getProfile(state, arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
@@ -203,17 +206,17 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       );
 
       if (canRemainSeated || canTakeTransfer) {
-        // enterConnectionByTrip should point to the first reachable connection
-        if (!state.enterConnectionByTrip[tripId]) {
-          state.enterConnectionByTrip[tripId] = connection;
-        }
-
         // limited walking optimization
         const canImprove = connection.arrivalTime.getTime() <
           this.getProfile(state, connection.arrivalStop).arrivalTime;
         const canLeave = connection.dropOffType !== DropOffType.NotAvailable;
 
         if (canLeave && canImprove) {
+          // enterConnectionByTrip should point to the first reachable connection
+          if (!state.enterConnectionByTrip[tripId]) {
+            state.enterConnectionByTrip[tripId] = connection;
+          }
+
           this.updateProfile(state, query, connection);
           await this.scheduleExtraConnections(state, query, connection);
         }
@@ -228,7 +231,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
   }
 
-  private getProfile(state: IQueryState, stopId: string): ITransferProfile {
+  protected getProfile(state: IQueryState, stopId: string): ITransferProfile {
     if (!state.profilesByStop[stopId]) {
       state.profilesByStop[stopId] = {
         departureTime: Infinity,
@@ -238,7 +241,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     return state.profilesByStop[stopId];
   }
 
-  private async scheduleExtraConnections(state: IQueryState, query: IResolvedQuery, sourceConnection: IConnection) {
+  protected async scheduleExtraConnections(state: IQueryState, query: IResolvedQuery, sourceConnection: IConnection) {
     try {
       const arrivalStop: ILocation = await this.locationResolver.resolve(sourceConnection.arrivalStop);
       const reachableStops: IReachableStop[] = await this.transferReachableStopsFinder.findReachableStops(
@@ -256,7 +259,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
       for (const reachableStop of reachableStops) {
         const { stop: stop, duration: duration } = reachableStop;
 
-        if (duration && stop.id) {
+        if (stop.id) {
           const transferTentativeArrival = this.getProfile(state, stop.id).arrivalTime;
           const newArrivalTime = new Date(sourceConnection.arrivalTime.getTime() + duration);
 
@@ -290,7 +293,7 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
   }
 
-  private async initInitialReachableStops(state: IQueryState, query: IResolvedQuery): Promise<boolean> {
+  protected async initInitialReachableStops(state: IQueryState, query: IResolvedQuery): Promise<boolean> {
     const fromLocation: ILocation = query.from[0];
 
     // Making sure the departure location has an id
@@ -320,32 +323,31 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
 
     for (const reachableStop of reachableStops) {
-      const { stop: stop, duration: duration } = reachableStop;
+      const stop = reachableStop.stop;
+      const duration = Math.max(reachableStop.duration, 1);
 
-      if (duration) {
-        // create a connection that resembles a footpath
-        // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
-        const transferConnection: IConnection = {
-          id: `MOVE_TO:${stop.id}`,
-          tripId: `MOVE_TO:${stop.id}`,
-          travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
-          departureTime: query.minimumDepartureTime,
-          departureStop: fromLocation.id,
-          arrivalTime: new Date(query.minimumDepartureTime.getTime() + duration),
-          arrivalStop: stop.id,
-          dropOffType: DropOffType.Regular,
-          pickupType: PickupType.Regular,
-          headsign: stop.id,
-        };
+      // create a connection that resembles a footpath
+      // TODO, ditch the IReachbleStop and IConnection interfaces and make these proper objects
+      const transferConnection: IConnection = {
+        id: `MOVE_TO:${stop.id}`,
+        tripId: `MOVE_TO:${stop.id}`,
+        travelMode: TravelMode.Walking,  // TODO, this should be part of the reachable stop object
+        departureTime: query.minimumDepartureTime,
+        departureStop: fromLocation.id,
+        arrivalTime: new Date(query.minimumDepartureTime.getTime() + duration),
+        arrivalStop: stop.id,
+        dropOffType: DropOffType.Regular,
+        pickupType: PickupType.Regular,
+        headsign: stop.id,
+      };
 
-        state.footpathsQueue.write(transferConnection);
-      }
+      state.footpathsQueue.write(transferConnection);
     }
 
     return true;
   }
 
-  private async initFinalReachableStops(state: IQueryState, query: IResolvedQuery): Promise<boolean> {
+  protected async initFinalReachableStops(state: IQueryState, query: IResolvedQuery): Promise<boolean> {
     const toLocation: ILocation = query.to[0];
 
     // Making sure the departure location has an id
@@ -375,10 +377,12 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
     }
 
     for (const reachableStop of reachableStops) {
-      if (reachableStop.duration > 0) {
+      const duration = Math.max(reachableStop.duration, 1);
+
+      if (reachableStop.id !== toLocation.id) {
         state.finalReachableStops[reachableStop.stop.id] = {
           stop: toLocation as IStop,
-          duration: reachableStop.duration,
+          duration,
         };
       }
     }

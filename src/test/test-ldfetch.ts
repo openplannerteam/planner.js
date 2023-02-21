@@ -1,7 +1,7 @@
 import LDFetch from "ldfetch";
 import Rdf from "../util/Rdf";
 
-const ldfetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const ldfetch = new LDFetch();
 
 // ldfetch.get("http://irail.be/stations/NMBS/008896008")
 ldfetch.get("https://openplanner.ilabt.imec.be/delijn/Limburg/stops")

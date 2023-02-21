@@ -49,7 +49,6 @@ export default class StopsFetcherRaw implements IStopsFetcher {
 
     public async getStopById(stopId: string): Promise<IStop> {
         await this.ensureStopsLoaded();
-
         return this.stops[stopId];
     }
 

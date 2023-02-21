@@ -3,7 +3,7 @@ import LDFetch from "ldfetch";
 import StopsFetcherLDFetch from "../fetcher/stops/ld-fetch/StopsFetcherLDFetch";
 import LocationResolverConvenience from "./LocationResolverConvenience";
 
-const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const ldFetch = new LDFetch();
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");

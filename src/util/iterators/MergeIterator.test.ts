@@ -15,68 +15,45 @@ const createSources = (IteratorClass) => {
 const expected = [1, 3, 4, 5, 6, 8, 10, 11, 12, 13, 18];
 
 const uncondensedSelector = (numbers: number[]) => {
-
   let smallestIndex = -1;
 
   for (let i = 0; i < numbers.length; i++) {
-    if (smallestIndex < 0 && numbers[i] !== undefined) {
+    if (numbers[i] === null || numbers[i] === undefined) {
+      continue;
+    }
+
+    if (smallestIndex < 0) {
       smallestIndex = i;
       continue;
     }
 
-    if (numbers[i] !== undefined && numbers[i] < numbers[smallestIndex]) {
+    if (numbers[i] < numbers[smallestIndex]) {
       smallestIndex = i;
     }
   }
 
-  return smallestIndex;
-};
-
-const condensedSelector = (numbers: number[]) => {
-
-  let smallestIndex = 0;
-
-  for (let i = 1; i < numbers.length; i++) {
-    if (numbers[i] !== undefined && numbers[i] < numbers[smallestIndex]) {
-      smallestIndex = i;
-    }
-  }
-
-  return smallestIndex;
+  return Math.max(smallestIndex, 0);
 };
 
 describe("[MergeIterator]", () => {
-
   describe("sync sources", () => {
 
     it("uncondensed", (done) => {
-      const mergeIterator = new MergeIterator<number>(createSources(ArrayIterator), uncondensedSelector, false);
+      const mergeIterator = new MergeIterator<number>(createSources(ArrayIterator), uncondensedSelector);
       let current = 0;
 
       mergeIterator.each((str) => {
+        console.log(str);
         expect(expected[current++]).toBe(str);
       });
 
       mergeIterator.on("end", () => done());
     });
-
-    it("condensed", (done) => {
-      const mergeIterator = new MergeIterator<number>(createSources(ArrayIterator), condensedSelector, true);
-      let current = 0;
-
-      mergeIterator.each((str) => {
-        expect(expected[current++]).toBe(str);
-      });
-
-      mergeIterator.on("end", () => done());
-    });
-
   });
 
   describe("async sources", () => {
-
     it("uncondensed", (done) => {
-      const mergeIterator = new MergeIterator<number>(createSources(AsyncArrayIterator), uncondensedSelector, false);
+      const mergeIterator = new MergeIterator<number>(createSources(AsyncArrayIterator), uncondensedSelector);
       let current = 0;
 
       mergeIterator.each((str) => {
@@ -85,24 +62,11 @@ describe("[MergeIterator]", () => {
 
       mergeIterator.on("end", () => done());
     });
-
-    it("condensed", (done) => {
-      const mergeIterator = new MergeIterator<number>(createSources(AsyncArrayIterator), condensedSelector, true);
-      let current = 0;
-
-      mergeIterator.each((str) => {
-        expect(expected[current++]).toBe(str);
-      });
-
-      mergeIterator.on("end", () => done());
-    });
-
   });
 
   describe("mixed sources", () => {
-
     it("uncondensed", (done) => {
-      const mergeIterator = new MergeIterator<number>(createSources(BurstArrayIterator), uncondensedSelector, false);
+      const mergeIterator = new MergeIterator<number>(createSources(BurstArrayIterator), uncondensedSelector);
       let current = 0;
 
       mergeIterator.each((str) => {
@@ -111,17 +75,5 @@ describe("[MergeIterator]", () => {
 
       mergeIterator.on("end", () => done());
     });
-
-    it("condensed", (done) => {
-      const mergeIterator = new MergeIterator<number>(createSources(BurstArrayIterator), condensedSelector, true);
-      let current = 0;
-
-      mergeIterator.each((str) => {
-        expect(expected[current++]).toBe(str);
-      });
-
-      mergeIterator.on("end", () => done());
-    });
-
   });
 });

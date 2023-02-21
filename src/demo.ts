@@ -1,4 +1,4 @@
-import { FlexibleProfileTransitPlanner } from ".";
+import { FlexibleTransitPlanner } from ".";
 import EventBus from "./events/EventBus";
 import EventType from "./events/EventType";
 import IPath from "./interfaces/IPath";
@@ -6,9 +6,9 @@ import Units from "./util/Units";
 
 export default async (logResults) => {
 
-  const planner = new FlexibleProfileTransitPlanner();
+  const planner = new FlexibleTransitPlanner();
   planner.addConnectionSource("https://graph.irail.be/sncb/connections");
-  planner.addStopSource("https://irail.be/stations/NMBS");
+  planner.addStopSource("https://graph.irail.be/sncb/stops");
 
   if (logResults) {
     let scannedConnections = 0;
@@ -60,7 +60,7 @@ export default async (logResults) => {
       console.log(`${new Date()} Start query`);
     }
 
-    const amount = 2;
+    const amount = 1;
     let i = 0;
 
     planner
@@ -74,9 +74,10 @@ export default async (logResults) => {
         // from: "https://data.delijn.be/stops/509927", // Tield Rameplein perron 1
         // to: "https://data.delijn.be/stops/200455", // Deinze weg op Grammene +456
         // from: "Ingelmunster", // Ingelmunster
-        // to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
-        from: { latitude: 50.93278, longitude: 5.32665 }, // Pita Aladin, Hasselt
-        to: { latitude: 50.7980187, longitude: 3.1877779 }, // Burger Pita Pasta, Menen
+        from: "http://irail.be/stations/NMBS/008833001", // Leuven
+        to: "http://irail.be/stations/NMBS/008892007", // Ghent-Sint-Pieters
+        // from: { latitude: 50.93278, longitude: 5.32665 }, // Pita Aladin, Hasselt
+        // to: { latitude: 50.7980187, longitude: 3.1877779 }, // Burger Pita Pasta, Menen
         // from: "Hasselt",
         // to: "Kortrijk",
         minimumDepartureTime: new Date(),

@@ -41,9 +41,13 @@ export default class StopsProviderDefault implements IStopsProvider {
   }
 
   public async getStopById(stopId: string): Promise<IStop> {
-    return Promise.all(this.stopsFetchers
-      .map((stopsFetcher: IStopsFetcher) => stopsFetcher.getStopById(stopId)),
-    ).then((results: IStop[]) => results.find((stop) => stop !== undefined));
+    return Promise.all(
+      this.stopsFetchers.map((stopsFetcher: IStopsFetcher) => {
+        return stopsFetcher.getStopById(stopId);
+      }),
+    ).then((results: IStop[]) => {
+      return results.find((stop) => stop !== undefined);
+    });
   }
 
   public async getAllStops(): Promise<IStop[]> {

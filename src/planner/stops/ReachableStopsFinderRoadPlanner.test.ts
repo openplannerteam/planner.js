@@ -6,7 +6,7 @@ import Units from "../../util/Units";
 import RoadPlannerBirdsEye from "../road/RoadPlannerBirdsEye";
 import ReachableStopsFinderRoadPlanner from "./ReachableStopsFinderRoadPlanner";
 
-const ldFetch = new LDFetch({ headers: { Accept: "application/ld+json" } });
+const ldFetch = new LDFetch();
 
 const stopsFetcher = new StopsFetcherLDFetch(ldFetch);
 stopsFetcher.setAccessUrl("https://irail.be/stations/NMBS");
