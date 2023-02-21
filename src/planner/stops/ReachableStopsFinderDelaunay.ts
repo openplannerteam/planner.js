@@ -54,8 +54,7 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
     const stopsNearCell: IStop[] = await this.getNearbyStops(location);
     const reachableStops: IReachableStop[] = [];
 
-    stopsNearCell.forEach((stop: IStop) => reachableStops.push({ stop, duration: 0 }));
-    /*await Promise.all(stopsNearCell.map(async (possibleTarget: IStop) => {
+    await Promise.all(stopsNearCell.map(async (possibleTarget: IStop) => {
       const query = Object.assign({}, baseQuery, {
         [otherProp]: [possibleTarget as ILocation],
       });
@@ -67,12 +66,11 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
       );
 
       const durations = await Iterators.toArray(durationIterator);
-
       if (durations.length) {
         const shortestDuration = Math.max(1, Math.min(...durations));
         reachableStops.push({ stop: possibleTarget, duration: shortestDuration });
       }
-    }));*/
+    }));
 
     return reachableStops;
   }
