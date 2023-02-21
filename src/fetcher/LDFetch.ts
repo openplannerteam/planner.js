@@ -1,12 +1,12 @@
 import { EventEmitter } from "events";
 import { injectable } from "inversify";
 import LDFetchBase from "ldfetch";
-import { Triple } from "rdf-js";
+import { Quad } from "rdf-js";
 import EventBus from "../events/EventBus";
 import EventType from "../events/EventType";
 
 export interface ILDFetchResponse {
-  triples: Triple[];
+  triples: Quad[];
   prefixes: object;
   statusCode: string;
   url: string;

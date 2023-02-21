@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import LDFetch from "ldfetch";
-import { Triple } from "rdf-js";
+import { Quad } from "rdf-js";
 import { IStopsSourceConfig } from "../../../Catalog";
 import TYPES from "../../../types";
 import Rdf from "../../../util/Rdf";
@@ -84,7 +84,7 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
     }
   }
 
-  private transformPredicate(triple: Triple): Triple {
+  private transformPredicate(triple: Quad): Quad {
     return Rdf.transformPredicate({
       "http://xmlns.com/foaf/0.1/name": "name",
       "http://schema.org/name": "name",
@@ -93,8 +93,8 @@ export default class StopsFetcherLDFetch implements IStopsFetcher {
     }, triple);
   }
 
-  private parseTriples(triples: Triple[]): IStopMap {
-    return triples.reduce((stopMap: IPartialStopMap, triple: Triple) => {
+  private parseTriples(triples: Quad[]): IStopMap {
+    return triples.reduce((stopMap: IPartialStopMap, triple: Quad) => {
       triple = this.transformPredicate(triple);
 
       const { subject: { value: subject }, predicate: { value: predicate }, object: { value: object } } = triple;

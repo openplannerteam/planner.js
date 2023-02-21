@@ -1,4 +1,4 @@
-import { Triple } from "rdf-js";
+import { Quad } from "rdf-js";
 
 /**
  * Utility class with functions dealing with rdf triples
@@ -20,9 +20,9 @@ export default class Rdf {
     subject: string | null,
     predicate: string | null,
     object: string | null,
-  ): (triple: Triple) => boolean {
+  ): (triple: Quad) => boolean {
 
-    return (triple: Triple) => {
+    return (triple: Quad) => {
       if (subject && triple.subject.value !== subject) {
         return false;
       }
@@ -51,7 +51,7 @@ export default class Rdf {
    * }, someTriple));
    * ```
    */
-  public static transformPredicate(transformMap: { [oldPredicate: string]: string }, triple: Triple): Triple {
+  public static transformPredicate(transformMap: { [oldPredicate: string]: string }, triple: Quad): Quad {
     if (triple.predicate.value in transformMap) {
       triple.predicate.value = transformMap[triple.predicate.value];
     }
@@ -70,7 +70,7 @@ export default class Rdf {
    * }, someTriple));
    * ```
    */
-  public static transformObject(transformMap: { [oldObject: string]: string }, triple: Triple): Triple {
+  public static transformObject(transformMap: { [oldObject: string]: string }, triple: Quad): Quad {
     if (triple.object.value in transformMap) {
       triple.object.value = transformMap[triple.object.value];
     }
@@ -80,8 +80,8 @@ export default class Rdf {
   /**
    * Log an array of triples to the console as a table with three columns: subject, predicate and object
    */
-  public static logTripleTable(triples: Triple[]): void {
-    console.table(triples.map((triple: Triple) => ({
+  public static logTripleTable(triples: Quad[]): void {
+    console.table(triples.map((triple: Quad) => ({
       subject: triple.subject.value,
       predicate: triple.predicate.value,
       object: triple.object.value,

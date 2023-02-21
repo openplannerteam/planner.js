@@ -3,10 +3,8 @@ const path = require("path");
 // These modules are imported by ldfetch, but are never actually used because (right now) we only fetch jsonld files
 const excludeModules = [
   "rdfa-processor",
-  //"rdf-canonize",
   "rdfxmlprocessor",
-  "xmldom",
-  'n3'
+  "xmldom"
 ];
 
 const excludeAlias = excludeModules.reduce((alias, moduleName) => {

@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Triple } from "rdf-js";
+import { Quad } from "rdf-js";
 import parse = require("wellknown");
 import { GEOSPARQL, XMLS } from "../uri/constants";
 import URI from "../uri/uri";
@@ -15,7 +15,7 @@ export class LDLoader {
         this.collectionFields.add(field);
     }
 
-    public process(triples: Triple[], views: Array<ThingView<any>>) {
+    public process(triples: Quad[], views: Array<ThingView<any>>) {
         const entities = this._extractEntities(triples);
 
         for (const entity of Object.values(entities)) {
