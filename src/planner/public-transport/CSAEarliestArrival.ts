@@ -183,6 +183,10 @@ export default class CSAEarliestArrival implements IPublicTransportPlanner {
         continue;
       }
 
+      if (this.eventBus) {
+        this.eventBus.emit(EventType.ConnectionScan, connection);
+      }
+
       if (this.getProfile(state, arrivalStopId).arrivalTime <= connection.departureTime.getTime()) {
         // stopping criterion
         // we cannot improve the tentative arrival time anymore
