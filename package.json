@@ -1,6 +1,6 @@
 {
   "name": "plannerjs",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "The JavaScript framework for journey planning.",
   "main": "lib/index.js",
   "license": "MIT",
