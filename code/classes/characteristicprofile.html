@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>CharacteristicProfile | plannerjs - v0.4.0</title>
+	<title>CharacteristicProfile | plannerjs - v0.4.1</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2335,7 +2335,7 @@ img {
 		<div class="container">
 			<div class="table-wrap">
 				<div class="table-cell">
-					<strong><a href="../index.html">plannerjs - v0.4.0</a></strong>
+					<strong><a href="../index.html">plannerjs - v0.4.1</a></strong>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -2391,6 +2391,9 @@ img {
 					<a href="characteristicprofile.html#priorityrules" class="tsd-kind-icon">priority<wbr>Rules</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a href="characteristicprofile.html#proximityrules" class="tsd-kind-icon">proximity<wbr>Rules</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a href="characteristicprofile.html#speedrules" class="tsd-kind-icon">speed<wbr>Rules</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
@@ -2416,6 +2419,9 @@ img {
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a href="characteristicprofile.html#getmultiplier" class="tsd-kind-icon">get<wbr>Multiplier</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a href="characteristicprofile.html#getnodeweight" class="tsd-kind-icon">get<wbr>Node<wbr>Weight</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 					<a href="characteristicprofile.html#getobstacletime" class="tsd-kind-icon">get<wbr>Obstacle<wbr>Time</a>
@@ -2474,6 +2480,7 @@ img {
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="characteristicprofile.html#obstacletimerules" class="tsd-kind-icon">obstacle<wbr>Time<wbr>Rules</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="characteristicprofile.html#onewayrules" class="tsd-kind-icon">oneway<wbr>Rules</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="characteristicprofile.html#priorityrules" class="tsd-kind-icon">priority<wbr>Rules</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="characteristicprofile.html#proximityrules" class="tsd-kind-icon">proximity<wbr>Rules</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="characteristicprofile.html#speedrules" class="tsd-kind-icon">speed<wbr>Rules</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="characteristicprofile.html#usepublictransport" class="tsd-kind-icon">use<wbr>Public<wbr>Transport</a></li>
 						</ul>
@@ -2488,6 +2495,7 @@ img {
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="characteristicprofile.html#getid" class="tsd-kind-icon">getID</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="characteristicprofile.html#getmaxspeed" class="tsd-kind-icon">get<wbr>Max<wbr>Speed</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="characteristicprofile.html#getmultiplier" class="tsd-kind-icon">get<wbr>Multiplier</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="characteristicprofile.html#getnodeweight" class="tsd-kind-icon">get<wbr>Node<wbr>Weight</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="characteristicprofile.html#getobstacletime" class="tsd-kind-icon">get<wbr>Obstacle<wbr>Time</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="characteristicprofile.html#getspeed" class="tsd-kind-icon">get<wbr>Speed</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="characteristicprofile.html#hasaccess" class="tsd-kind-icon">has<wbr>Access</a></li>
@@ -2512,7 +2520,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/CharacteresticProfile.ts#L12">src/entities/profile/CharacteresticProfile.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/CharacteresticProfile.ts#L12">src/entities/profile/CharacteresticProfile.ts:12</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2535,7 +2543,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#accessrules">accessRules</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L14">src/entities/profile/DynamicProfile.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L14">src/entities/profile/DynamicProfile.ts:14</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2546,7 +2554,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#id">id</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L13">src/entities/profile/DynamicProfile.ts:13</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L13">src/entities/profile/DynamicProfile.ts:13</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2557,7 +2565,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#maxspeed">maxSpeed</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L21">src/entities/profile/DynamicProfile.ts:21</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L22">src/entities/profile/DynamicProfile.ts:22</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2568,7 +2576,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#obstaclerules">obstacleRules</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L18">src/entities/profile/DynamicProfile.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L18">src/entities/profile/DynamicProfile.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2579,7 +2587,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#obstacletimerules">obstacleTimeRules</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L19">src/entities/profile/DynamicProfile.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L19">src/entities/profile/DynamicProfile.ts:19</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2590,7 +2598,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#onewayrules">onewayRules</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L15">src/entities/profile/DynamicProfile.ts:15</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L15">src/entities/profile/DynamicProfile.ts:15</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2601,7 +2609,18 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#priorityrules">priorityRules</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L17">src/entities/profile/DynamicProfile.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L17">src/entities/profile/DynamicProfile.ts:17</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a name="proximityrules" class="tsd-anchor"></a>
+				<h3>proximity<wbr>Rules</h3>
+				<div class="tsd-signature tsd-kind-icon">proximity<wbr>Rules<span class="tsd-signature-symbol">:</span> <a href="profilerule.html" class="tsd-signature-type">ProfileRule</a><span class="tsd-signature-symbol">[]</span></div>
+				<aside class="tsd-sources">
+					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#proximityrules">proximityRules</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L20">src/entities/profile/DynamicProfile.ts:20</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2612,7 +2631,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#speedrules">speedRules</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L16">src/entities/profile/DynamicProfile.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L16">src/entities/profile/DynamicProfile.ts:16</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2623,7 +2642,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#usepublictransport">usePublicTransport</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L22">src/entities/profile/DynamicProfile.ts:22</a></li>
+						<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L23">src/entities/profile/DynamicProfile.ts:23</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2642,7 +2661,7 @@ img {
 							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getcost">getCost</a></p>
 							<p>Overrides <a href="profile.html">Profile</a>.<a href="profile.html#getcost">getCost</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L131">src/entities/profile/DynamicProfile.ts:131</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L133">src/entities/profile/DynamicProfile.ts:133</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2673,7 +2692,7 @@ img {
 							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getdefaultspeed">getDefaultSpeed</a></p>
 							<p>Overrides <a href="profile.html">Profile</a>.<a href="profile.html#getdefaultspeed">getDefaultSpeed</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L74">src/entities/profile/DynamicProfile.ts:74</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L76">src/entities/profile/DynamicProfile.ts:76</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -2692,7 +2711,7 @@ img {
 							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getdistance">getDistance</a></p>
 							<p>Overrides <a href="profile.html">Profile</a>.<a href="profile.html#getdistance">getDistance</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L105">src/entities/profile/DynamicProfile.ts:105</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L107">src/entities/profile/DynamicProfile.ts:107</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2723,7 +2742,7 @@ img {
 							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getduration">getDuration</a></p>
 							<p>Overrides <a href="profile.html">Profile</a>.<a href="profile.html#getduration">getDuration</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L109">src/entities/profile/DynamicProfile.ts:109</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L111">src/entities/profile/DynamicProfile.ts:111</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2753,7 +2772,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getid">getID</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/CharacteresticProfile.ts#L23">src/entities/profile/CharacteresticProfile.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/CharacteresticProfile.ts#L23">src/entities/profile/CharacteresticProfile.ts:23</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -2772,7 +2791,7 @@ img {
 							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getmaxspeed">getMaxSpeed</a></p>
 							<p>Overrides <a href="profile.html">Profile</a>.<a href="profile.html#getmaxspeed">getMaxSpeed</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L78">src/entities/profile/DynamicProfile.ts:78</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L80">src/entities/profile/DynamicProfile.ts:80</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -2790,13 +2809,37 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getmultiplier">getMultiplier</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/CharacteresticProfile.ts#L60">src/entities/profile/CharacteresticProfile.ts:60</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/CharacteresticProfile.ts#L60">src/entities/profile/CharacteresticProfile.ts:60</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
 								<h5>way: <a href="routabletileway.html" class="tsd-signature-type">RoutableTileWay</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a name="getnodeweight" class="tsd-anchor"></a>
+				<h3>get<wbr>Node<wbr>Weight</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Node<wbr>Weight<span class="tsd-signature-symbol">(</span>node<span class="tsd-signature-symbol">: </span><a href="routabletilenode.html" class="tsd-signature-type">RoutableTileNode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getnodeweight">getNodeWeight</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L140">src/entities/profile/DynamicProfile.ts:140</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>node: <a href="routabletilenode.html" class="tsd-signature-type">RoutableTileNode</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -2815,7 +2858,7 @@ img {
 							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getobstacletime">getObstacleTime</a></p>
 							<p>Overrides <a href="profile.html">Profile</a>.<a href="profile.html#getobstacletime">getObstacleTime</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L155">src/entities/profile/DynamicProfile.ts:155</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L182">src/entities/profile/DynamicProfile.ts:182</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2839,7 +2882,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#getspeed">getSpeed</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/CharacteresticProfile.ts#L49">src/entities/profile/CharacteresticProfile.ts:49</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/CharacteresticProfile.ts#L49">src/entities/profile/CharacteresticProfile.ts:49</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2863,7 +2906,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#hasaccess">hasAccess</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/CharacteresticProfile.ts#L38">src/entities/profile/CharacteresticProfile.ts:38</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/CharacteresticProfile.ts#L38">src/entities/profile/CharacteresticProfile.ts:38</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2888,7 +2931,7 @@ img {
 							<p>Inherited from <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#isobstacle">isObstacle</a></p>
 							<p>Overrides <a href="profile.html">Profile</a>.<a href="profile.html#isobstacle">isObstacle</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/DynamicProfile.ts#L135">src/entities/profile/DynamicProfile.ts:135</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/DynamicProfile.ts#L162">src/entities/profile/DynamicProfile.ts:162</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2912,7 +2955,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#isoneway">isOneWay</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/CharacteresticProfile.ts#L27">src/entities/profile/CharacteresticProfile.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/CharacteresticProfile.ts#L27">src/entities/profile/CharacteresticProfile.ts:27</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2936,7 +2979,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides <a href="dynamicprofile.html">DynamicProfile</a>.<a href="dynamicprofile.html#create">create</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/79d95c8/src/entities/profile/CharacteresticProfile.ts#L5">src/entities/profile/CharacteresticProfile.ts:5</a></li>
+								<li>Defined in <a href="https://github.com/openplannerteam/planner.js/blob/047ed2e/src/entities/profile/CharacteresticProfile.ts#L5">src/entities/profile/CharacteresticProfile.ts:5</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
