@@ -1,6 +1,5 @@
 import { AsyncIterator } from "asynciterator";
 import { inject, injectable } from "inversify";
-import { cat } from "shelljs";
 import Defaults from "../Defaults";
 import InvalidQueryError from "../errors/InvalidQueryError";
 import ILocation from "../interfaces/ILocation";

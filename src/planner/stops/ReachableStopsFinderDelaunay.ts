@@ -9,7 +9,6 @@ import IPath from "../../interfaces/IPath";
 import { DurationMs, SpeedKmH } from "../../interfaces/units";
 import IResolvedQuery from "../../query-runner/IResolvedQuery";
 import TYPES from "../../types";
-import Geo from "../../util/Geo";
 import Iterators from "../../util/Iterators";
 import IRoadPlanner from "../road/IRoadPlanner";
 import IReachableStopsFinder, { IReachableStop } from "./IReachableStopsFinder";
@@ -55,7 +54,8 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
     const stopsNearCell: IStop[] = await this.getNearbyStops(location);
     const reachableStops: IReachableStop[] = [];
 
-    await Promise.all(stopsNearCell.map(async (possibleTarget: IStop) => {
+    stopsNearCell.forEach((stop: IStop) => reachableStops.push({ stop, duration: 0 }));
+    /*await Promise.all(stopsNearCell.map(async (possibleTarget: IStop) => {
       const query = Object.assign({}, baseQuery, {
         [otherProp]: [possibleTarget as ILocation],
       });
@@ -67,11 +67,12 @@ export default class ReachableStopsFinderDelaunay implements IReachableStopsFind
       );
 
       const durations = await Iterators.toArray(durationIterator);
+
       if (durations.length) {
         const shortestDuration = Math.max(1, Math.min(...durations));
         reachableStops.push({ stop: possibleTarget, duration: shortestDuration });
       }
-    }));
+    }));*/
 
     return reachableStops;
   }
