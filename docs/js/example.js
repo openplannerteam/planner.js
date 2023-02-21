@@ -1,16 +1,9 @@
 const map = L.map("mapid").setView([51.050043, 3.719926], 10);
 
-L.tileLayer(
-  "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
-  {
-    attribution:
-      "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-    maxZoom: 18,
-    id: "mapbox.streets",
-    accessToken:
-      "pk.eyJ1IjoibWF4aW10bWFydGluIiwiYSI6ImNqcHdqbjdhaDAzYzc0Mm04eDFhamkzenMifQ.0uNbKJ2WHATkKBBSADuhyQ"
-  }
-).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 18
+}).addTo(map);
 
 const planner = new PlannerJS.FlexibleTransitPlanner();
 planner.addConnectionSource("https://graph.irail.be/sncb/connections");
