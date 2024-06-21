@@ -224,9 +224,9 @@ export default class PathfinderProvider {
     // if you need to add any other edge, you'll need to create a different method
     graph = graph || this.getGraphForProfile(profile);
     // make sure we never have 0 costs, this confuses dijkstra
-    distance = distance || profile.getDistance(from, to, way) || 0.01;
-    const duration = profile.getDuration(from, to, way) || 1;
-    const cost = profile.getCost(from, to, way) || 1;
+    distance = Math.max(distance || profile.getDistance(from, to, way) || 0.01, 0.01);
+    const duration = Math.max(profile.getDuration(from, to, way) || 1, 1);
+    const cost = Math.max(profile.getCost(from, to, way) || 1, 1);
     graph.addEdge(Geo.getId(from), Geo.getId(to), way.id, distance, duration, cost);
   }
 
